@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Language</title>
+    <style type="text/css" media="screen">
+    td {vertical-align:top;}
+    em {color:red;}
+    
+    .keyword {color: blue;}
+    .entity {color: orange;}
+    .literal {color:green;}
+    .string {color:green;}
+    .directive {color:#996633;}
+    .comment {color:gray;}
+    .annotation {color:#996633;}
+    </style>
+</head>
+<body>
+    <div>
+        <table>
+            <tr>
+                <th>Language</th>
+                <th>C</th>
+            </tr>
+            <tr><th colspan="2">Core Types</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+<span class="entity">bool</span>
+<span class="entity">int</span>:32
+<span class="entity">natural</span>:32
+<span class="entity">real</span>:32
+<span class="entity">void</span>
+<span class="entity">natural</span>
+
+  <span class="entity">int</span>
+ *<span class="entity">int</span>
+**<span class="entity">int</span>
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<span class="entity">_Bool</span>
+<span class="entity">int</span>
+<span class="entity">unsigned int</span>
+<span class="entity">float</span>
+<span class="entity">void</span>
+<span class="entity">uintptr_t</span>
+
+<span class="entity">int</span>
+<span class="entity">int</span>*
+<span class="entity">int</span>**
+                    </code></pre>
+                </td>
+            </tr>
+            <tr><th colspan="2">String Types</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+<span class="entity">char</span>
+<span class="entity">char</span>:<span class="entity">ascii</span>
+<span class="entity">char</span>:<span class="entity">utf8</span>
+<span class="entity">char</span>:<span class="entity">utf16</span>
+<span class="entity">char</span>:<span class="entity">utf32</span>
+<span class="entity">natural</span>:8
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<span class="entity">char</span>
+<span class="entity">char</span>
+<span class="entity">char</span>
+<span class="entity">char16_t</span> or <span class="entity">wchar_t</span>
+<span class="entity">char32_t</span>
+<span class="entity">unsigned char</span>
+                    </code></pre>
+                </td>
+            </tr>
+            <tr><th colspan="2">Literals</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+<span class="literal">true</span>
+<span class="literal">false</span>
+
+<span class="literal">1234</span>
+<span class="literal">1234</span>:<span class="entity">int</span>:64
+<span class="literal">1234</span>:<span class="entity">natural</span>:64
+<span class="literal">-1234</span>
+<span class="literal">1234.0</span>
+<span class="literal">1234.0</span>:<span class="entity">real</span>:32
+<span class="literal">1.23e-2</span>
+<span class="literal">0x4d2</span>
+<span class="literal">0b010011010010</span>
+
+<span class="literal">null</span>
+
+<span class="string">"hello"</span>:<span class="entity">ascii</span>
+<span class="string">"hello UTF8\n: \u8023"</span>
+<span class="string">"hello UTF16"</span>:<span class="entity">utf16</span>
+<span class="string">"hello UTF32`"</span>:<span class="entity">utf32</span>
+
+<span class="literal">'A'</span>:<span class="entity">ascii</span>
+<span class="literal">'Ω'</span>
+<span class="literal">'\u2603'</span>:<span class="entity">utf16</span>
+<span class="literal">'\U0010ffff'</span>:<span class="entity">utf32</span>
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+((<span class="entity">_Bool</span>)<span class="literal">1</span>)
+((<span class="entity">_Bool</span>)<span class="literal">0</span>)
+
+<span class="literal">1234</span>
+<span class="literal">1234l</span>
+<span class="literal">1234ul</span>
+<span class="literal">-1234</span>
+<span class="literal">1234.0</span>
+<span class="literal">1234.0f</span>
+<span class="literal">1.23e-2</span>
+<span class="literal">0x4d2</span>
+<em>No Equivalent</em>
+
+((<span class="entity">void</span>*)<span class="literal">0</span>)
+
+<span class="string">"hello"</span>
+<span class="string">u8"hello UTF8\n: \u8023"</span>
+<span class="string">u"hello UTF16"</span>
+<span class="string">U"hello UTF32"</span>
+
+<span class="literal">'A'</span>
+<span class="literal">u'Ω'</span>
+<span class="literal">u'\u2603'</span>
+<span class="literal">U'\U0010ffff'</span>
+                    </code></pre>
+                </td>
+            </tr>
+            <tr><th colspan="2">Compound Types</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+<span class="keyword">def</span> <span class="entity">natural</span>:64 <span class="entity">uint64_t</span>
+
+<span class="keyword">struct</span>:1 <span class="entity">MyStructure</span>
+  <span class="entity">int</span>        value1,
+  <span class="entity">int</span>:32     value2,
+  <span class="entity">int</span>:64     value3,
+  <span class="entity">natural</span>:32 value4,
+  <span class="entity">int</span>:5      value5
+<span class="keyword">end</span>
+
+
+
+
+<span class="keyword">union</span> MyUnion
+  <span class="entity">int</span>:32  int_value,
+  <span class="entity">real</span>:32 fp_value
+<span class="keyword">end</span>
+
+<span class="keyword">enum</span> MyEnum
+  Value1 = 0,
+  Value2
+<span class="keyword">end</span>
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<span class="keyword">typedef</span> <span class="entity">unsigned long long</span> <span class="entity">uint64_t</span>
+
+<span class="directive">#pragma pack(push)</span>
+<span class="directive">#pragma pack(1)</span>
+<span class="keyword">typedef struct</span> {
+    <span class="entity">int</span>      value1,
+    <span class="entity">int32_t</span>  value2,
+    <span class="entity">int64_t</span>  value3,
+    <span class="entity">uint32_t</span> value4,
+    <span class="entity">int</span>      value5 : 5
+} <span class="entity">MyStructure</span>;
+<span class="directive">#pragma pack(pop)</span>
+
+<span class="keyword">typedef union</span> {
+    <span class="entity">int</span>   int_value,
+    <span class="entity">float</span> fp_value
+} <span class="entity">MyUnion</span>;
+
+<span class="keyword">typedef enum</span> {
+    Value1 = 0,
+    Value2
+} <span class="entity">MyEnum</span>;
+                    </code></pre>
+                </td>
+            </tr>
+            <tr><th colspan="2">Operators</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+*x
+&amp;x
+<span class="keyword">sizeof</span>(x)
+<span class="keyword">alignof</span>(x)
+<span class="keyword">offsetof</span>(struct, field)
+<span class="keyword">typeof</span>(x)
+-x
+++x
+x++
+--x
+x--
+
+x + y
+x - y
+x / y
+x % y
+x * y
+
+x == y
+x != y
+x ≠ y
+x &gt; y
+x &lt; y
+x &gt;= y
+x ≥ y
+x &lt;= y
+x ≤ y
+x &amp;&amp; y
+x and y
+x || y
+x or y
+x ^^ y
+x xor y
+!x
+not x
+
+~x
+x &amp; y
+x | y
+x ^ y
+x &lt;&lt; y
+x &gt;&gt; y
+
+x += y
+x -= y
+x *= y
+x /= y
+x %= y
+x &amp;= y
+x |= y
+x ^= y
+x &lt;&lt;= y
+x &gt;&gt;= y
+x &amp;&amp;= y
+x ||= y
+
+x ? y : z
+x <span class="keyword">cas</span> y : z
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+*x
+&amp;x
+<span class="keyword">sizeof</span>(x)
+<span class="keyword">alignof</span>(x)
+<span class="keyword">offsetof</span>(struct, field)
+<span class="keyword">typeof</span>(x)
+-x
+++x
+x++
+--x
+x--
+
+x + y
+x - y
+x / y
+x % y
+x * y
+
+x == y
+x != y
+x != y
+x &gt; y
+x &lt; y
+x &gt;= y
+x &gt;= y
+x &lt;= y
+x &lt;= y
+x &amp;&amp; y
+x &amp;&amp; y
+x || y
+x || y
+(x &amp;&amp; !y) || (!x &amp;&amp; y)
+(x &amp;&amp; !y) || (!x &amp;&amp; y)
+!x
+!x
+
+~x
+x &amp; y
+x | y
+x ^ y
+x &lt;&lt; y
+x &gt;&gt; y
+
+x += y
+x -= y
+x *= y
+x /= y
+x %= y
+x &amp;= y
+x |= y
+x ^= y
+x &lt;&lt;= y
+x &gt;&gt;= y
+if (y) { x = y; }
+if (!x) { x = y; }
+
+x ? y : z
+<em>No Equivalent</em>
+                    </code></pre>
+                </td>
+            </tr>
+            <tr><th colspan="2">Function Definitions</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+<span class="keyword">def</span> foo(*<span class="entity">int</span>:32 x, <span class="entity">int</span>:32 y; <span class="entity">int</span>:32)
+  <span class="keyword">return</span> *x + y
+<span class="keyword">end</span>
+
+<span class="keyword">def</span> bar(*<span class="entity">char</span> fmt, <span class="keyword">vararg</span> ap)
+  <span class="keyword">vararg</span> ap2
+
+  ap2 = ap
+
+  printf(<span class="string">"arg 1 = %d\n"</span>, <span class="keyword">vararg_next</span>(ap))
+  printf(<span class="string">"arg 1 = %d\n"</span>, <span class="keyword">vararg_next</span>(ap))
+
+  vprintf(<span class="string">"%d %d\n"</span>, ap2)
+<span class="keyword">end</span>
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<span class="entity">int32_t</span> foo(<span class="entity">int32_t</span>* x, <span class="entity">int32_t</span> y) {
+    <span class="keyword">return</span> *x + y;
+}
+
+<span class="entity">void</span> bar(<span class="entity">char</span> *fmt, ...) {
+    <span class="directive">va_list</span> ap;
+    <span class="directive">va_list</span> ap2;
+    
+    <span class="directive">va_copy</span>(ap2, ap);
+    
+    <span class="directive">va_start</span>(ap, fmt);
+    
+    printf(<span class="string">"arg 1 = %d\n"</span>, <span class="directive">va_arg</span>(ap, <span class="entity">int</span>));
+    printf(<span class="string">"arg 2 = %d\n"</span>, <span class="directive">va_arg</span>(ap, <span class="entity">int</span>));
+    
+    vprintf(<span class="string">"%d %d\n"</span>, ap2);
+    
+    <span class="directive">va_end</span>(ap2);
+    
+    <span class="directive">va_end</span>(ap);
+}
+                    </code></pre>
+                </td>
+            </tr>
+            <tr><th colspan="2">Closures</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+<span class="entity">int</span>             x
+<span class="entity">int</span>             y
+{<span class="entity">int</span>, <span class="entity">int</span>; <span class="entity">int</span>} closure
+
+x = 42
+y = 43
+
+<span class="comment">// captures x by reference, y by value</span>
+closure = (<span class="entity">int</span> a, <span class="entity">int</span> b; <span class="entity">int</span>; x) {
+    x = a + b + y
+    
+    <span class="keyword">return</span> a + b
+}
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<em>No Equivalent*</em>
+                    </code></pre>
+                </td>
+            </tr>
+            <tr><th colspan="2">Function Pointers</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+*(<span class="entity">int</span>, <span class="entity">int</span>; <span class="entity">int</span>) function_ptr_a
+*(<span class="entity">int</span>, <span class="entity">int</span>)      function_ptr_b
+*{<span class="entity">int</span>, <span class="entity">int</span>; <span class="entity">int</span>} closure_ptr
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<span class="entity">int</span>  (*function_ptr_a)(<span class="entity">int</span>, <span class="entity">int</span>);
+<span class="entity">void</span> (*function_ptr_b)(<span class="entity">int</span>, <span class="entity">int</span>);
+<em>No Equivalent*</em>
+                    </code></pre>
+                </td>
+            </tr>
+            <tr><th colspan="2">Conditionals</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+<span class="keyword">if</span> <span class="literal">true</span>
+  <em>body</em>
+<span class="keyword">else</span>
+  <em>body</em>
+<span class="keyword">end</span>
+
+<span class="keyword">switch</span> value
+<span class="keyword">case</span> 1
+  <em>body</em>
+<span class="keyword">case</span> 2
+  <em>body</em>
+<span class="keyword">case</span> some_other_value
+  <em>body</em>
+<span class="keyword">else</span>
+  <em>body</em>
+<span class="keyword">end</span>
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<span class="keyword">if</span> <span class="literal">true</span> {
+    <em>body</em>
+} <span class="keyword">else</span> {
+    <em>body</em>
+}
+
+<span class="keyword">if</span> (<span class="literal">value</span> == <span class="literal">1</span>) {
+    <em>body</em>
+} <span class="keyword">else if</span> (<span class="literal">value</span> == <span class="literal">2</span>) {
+    <em>body</em>
+} <span class="keyword">else if</span> (<span class="literal">value</span> == some_other_value) {
+    <em>body</em>
+}  <span class="keyword">else</span> {
+    <em>body</em>
+}
+                    </code></pre>
+                </td>
+            </tr>
+            <tr><th colspan="2">Loops</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+<span class="keyword">loop</span>
+  <em>body</em>
+<span class="keyword">end</span>
+
+<span class="keyword">loop</span> !done
+  <em>body</em>
+<span class="keyword">end</span>
+
+<span class="keyword">loop</span> (<span class="entity">int</span> i = <span class="literal">0</span>; i &lt; <span class="literal">10</span>; i++)
+  <em>body</em>
+<span class="keyword">end</span>
+
+<span class="keyword">loop</span> (<span class="entity">int</span> a = <span class="literal">0</span>; a == <span class="literal">0</span>)
+  <em>body</em>
+<span class="keyword">end</span>
+
+<span class="keyword">loop</span>:outer
+  <span class="keyword">loop</span>
+    <span class="keyword">break</span> outer
+    <span class="keyword">continue</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<span class="keyword">while</span> (<span class="literal">1</span>) {
+    <em>body</em>
+}
+
+<span class="keyword">while</span> (!done) {
+    <em>body</em>
+}
+
+<span class="keyword">for</span> (<span class="entity">int</span> i = <span class="literal">0</span>; i &lt; <span class="literal">10</span>; ++i) {
+    <em>body</em>
+}
+
+<span class="entity">int</span> a = <span class="literal">0</span>;
+<span class="keyword">do</span> {
+    <em>body</em>
+} <span class="keyword">while</span> (a == <span class="literal">0</span>)
+
+<span class="keyword">while</span> (<span class="literal">1</span>) {
+    <span class="keyword">while</span> (<span class="literal">1</span>) {
+        <span class="keyword">goto</span> end;
+        <span class="keyword">continue</span>;
+    }
+}
+
+end:
+                    </code></pre>
+                </td>
+            </tr>
+            <tr><th colspan="2">Atomic Operations</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+<span class="entity">int</span>:32 a
+
+<span class="keyword">barrier</span>
+
+b = <span class="keyword">atomic</span>(a += <span class="literal">1</span>)
+b = <span class="keyword">atomic</span>(<span class="keyword">relaxed</span>; a += <span class="literal">1</span>)
+
+b = <span class="keyword">atomic</span>(<span class="keyword">ordered</span>; a cas b : c )
+
+
+
+
+<span class="keyword">atomic</span>
+  a = foo()
+  <span class="keyword">atomic</span>:<span class="keyword">strict</span>
+    b = bar()
+    <span class="keyword">abort</span> <span class="keyword">if</span> b > 10
+  <span class="keyword">end</span>
+<span class="keyword">else</span>
+  <span class="comment">// memory transaction failed</span>
+<span class="keyword">end</span>
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<span class="entity">_Atomic</span>(<span class="entity">int</span>) a;
+
+atomic_thread_fence(<span class="directive">memory_order_seq_cst</span>);
+
+b = atomic_fetch_add(&amp;a, <span class="literal">1</span>);
+b = atomic_fetch_add_explicit(&amp;a, <span class="literal">1</span>, <span class="directive">memory_order_relaxed</span>);
+
+b = atomic_compare_exchange_strong_explicit(&amp;a,
+                                            &amp;b,
+                                            &amp;c,
+                                            <span class="directive">memory_order_seq_cst</span>,
+                                            <span class="directive">memory_order_seq_cst</span>);
+                    </code></pre>
+                </td>
+            </tr>
+            <tr><th colspan="2">Annotations</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+<span class="keyword">def</span> f() <span class="annotation">@noreturn</span>
+<span class="keyword">def</span> f() <span class="annotation">@available("MyModule", 1.0, 2.0, 2.1)</span>
+
+<span class="annotation">@common(x > 0)</span>
+<span class="keyword">if</span> x > 0
+  <span class="annotation">@optimize(speed)</span>
+  <em>body</em>
+<span class="keyword">else</span>
+  <span class="annotation">@optimize(size)</span>
+  <em>body</em>
+<span class="keyword">end</span>
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<span class="entity">void</span> f() <span class="annotation">_Noreturn</span>;
+<span class="entity">void</span> f() <span class="annotation">__attribute__((deprecated))</span>;
+                    </code></pre>
+                </td>
+            </tr>
+            <tr><th colspan="2">Comments and Documentation</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+<span class="comment">// Line Comment</span>
+<em>No Equivalent</em>
+
+<span class="annotation">@brief</span>   Does Foo
+<span class="annotation">@summary</span> This is a function that does foo
+<span class="annotation">@param</span>   x first input into foo
+<span class="annotation">@param   @read(1)</span> y non-null pointer to a
+                  single integer read-only
+                  input
+<span class="annotation">@return</span>  The value of x + the value
+         pointed to by y
+<span class="annotation">@check   @pure @success(return == 0)</span>
+<span class="keyword">def</span> foo(<span class="entity">int</span> x, *<span class="entity">int</span> y; <span class="entity">int</span>)
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<span class="comment">// Line Comment</span>
+<span class="comment">/* Span Comment */</span>
+
+<em>No Equivalent</em>
+                    </code></pre>
+                </td>
+            </tr>
+            <tr><th colspan="2">Directives</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+<span class="directive">import</span> stdlib
+<span class="literal">ABC</span> = <span class="literal">132.0</span>
+<em>No Equivalent</em>
+
+<span class="directive">linkage</span>(none)
+<span class="directive">abi</span>(cdecl)
+<span class="keyword">def</span> foo(; <span class="entity">int</span>)
+
+<span class="keyword">debug</span>
+  printf(<span class="string">"debugging statement here\n"</span>)
+<span class="keyword">end</span>
+
+<span class="keyword">namespace</span> Foo
+  <span class="keyword">def</span> bar(; <span class="entity">int</span>)
+<span class="keyword">end</span>
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<span class="directive">#include &lt;stdlib.h&gt;</span>
+<span class="directive">#define</span> ABC 123.0
+<span class="directive">#pragma once</span>
+
+
+
+<span class="keyword">static</span> <span class="entity">int</span> foo(<span class="entity">void</span>);
+
+<span class="directive">#if DEBUG</span>
+    printf(<span class="string">"debugging statement here\n"</span>);
+<span class="directive">#endif</span>
+
+<span class="directive">#define NamespacePrefix Foo</span>
+<span class="directive">#define NamespaceConcat(p1, p2) _NamespaceConcat(p1, p2)</span>
+<span class="directive">#define _NamespaceConcat(p1, p2) p1 ## p2</span>
+<span class="directive">#define Namespace(symbol) NamespaceConcat(NamespacePrefix, symbol)</span>
+
+<span class="entity">int</span> <span class="directive">Namespace</span>(bar)(<span class="entity">void</span>);
+                    </code></pre>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
