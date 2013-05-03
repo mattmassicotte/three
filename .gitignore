@@ -3,4 +3,5 @@
 *.gch
 *.o
 *.a
-gtest/*
+gtest
+build
