@@ -49,9 +49,10 @@ file "#{BUILD_DIR}/Compiler.o" => ['compiler/compiler.cpp', BUILD_DIR] do
 end
 
 CLOBBER.include("#{BUILD_DIR}/lang")
+task :default => "#{BUILD_DIR}/lang"
 file "#{BUILD_DIR}/lang" => ["#{BUILD_DIR}/Compiler.o", "#{BUILD_DIR}/Token.o", "#{BUILD_DIR}/Lexer.o", BUILD_DIR] do
   inputs = ["#{BUILD_DIR}/Token.o", "#{BUILD_DIR}/Compiler.o", "#{BUILD_DIR}/Lexer.o"]
-  executable(inputs, 'lang')
+  executable(inputs, "#{BUILD_DIR}/lang")
 end
 
 # gtest stuff
@@ -99,8 +100,4 @@ end
 CLOBBER.include("#{BUILD_DIR}/gtest/libgtest_main.a")
 file "#{BUILD_DIR}/gtest/libgtest_main.a" => ["#{BUILD_DIR}/gtest/gtest_main.o", "#{BUILD_DIR}/gtest"] do
   library(["#{BUILD_DIR}/gtest/gtest_main.o"], "#{BUILD_DIR}/gtest/libgtest_main.a")
-end
-
-task :default => 'lang' do
-  puts("Build default")
 end
