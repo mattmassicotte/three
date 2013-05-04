@@ -3,6 +3,7 @@
 #include "Token.h"
 
 #include <iostream>
+#include <vector>
 
 namespace Language {
     class Lexer {
@@ -28,12 +29,16 @@ namespace Language {
         Token lexPunctuation();
         Token lexIdentifier();
 
-    public:
-        // actual function for consuming tokens
         Token nextToken();
 
+    public:
+        // actual function for consuming tokens
+        Token next();
+        Token peek(unsigned int distance = 1);
+
     private:
-        std::istream* _stream;
-        Token         _subtoken;
+        std::istream*      _stream;
+        Token              _subtoken;
+        std::vector<Token> _tokenBuffer;
     };
 }

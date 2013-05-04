@@ -293,4 +293,27 @@ namespace Language {
 
         return this->nextSubtoken();
     }
+
+    Token Lexer::next() {
+        Token t;
+
+        _tokenBuffer.push_back(this->nextToken());
+
+        t = _tokenBuffer.front();
+
+        // remove the first token, which is now out of date
+        _tokenBuffer.erase(_tokenBuffer.begin());
+
+        return t;
+    }
+
+    Token Lexer::peek(unsigned int distance) {
+        assert(distance > 0);
+
+        for (int i = (distance - _tokenBuffer.size()); i > 0; --i) {
+            _tokenBuffer.push_back(this->nextToken());
+        }
+
+        return _tokenBuffer.at(distance - 1);
+    }
 }

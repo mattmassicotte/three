@@ -8,18 +8,17 @@ namespace Language {
     public:
         Parser(Lexer* lexer);
 
-        ASTNode rootASTNode();
+        ASTNode* rootASTNode();
 
     protected:
         ASTNode* parseTopLevelNode();
         ASTNode* parseDefinition();
 
-    protected:
-        Token peekToken();
-        Token nextToken();
+    public:
+        Token peek(unsigned int distance=1);
+        Token next();
 
     private:
         Lexer* _lexer;
-        Token  _token;
     };
 }

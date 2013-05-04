@@ -1,47 +1,61 @@
 #include "Parser.h"
+#include "AST/RootNode.h"
+#include "AST/FunctionDefinitionNode.h"
+
+#include <assert.h>
 
 namespace Language {
     Parser::Parser(Lexer* lexer) : _lexer(lexer) {
-        _token = _lexer->nextToken();
     }
 
-    ASTNode Parser::rootASTNode() {
-        ASTNode root;
+    ASTNode* Parser::rootASTNode() {
+        RootNode* root;
 
-        while (!this->peekToken().isEnd()) {
-            root.addChild(this->parseTopLevelNode());
+        root = new RootNode();
+
+        while (!this->peek().isEnd()) {
+            root->addChild(this->parseTopLevelNode());
         }
 
         return root;
     }
 
     ASTNode* Parser::parseTopLevelNode() {
-        switch (this->peekToken().type()) {
+        std::cout << "Parser: top level" << std::endl;
+        
+        switch (this->peek().type()) {
             case Token::Type::KeywordDef:
                 return this->parseDefinition();
             default:
-                this->nextToken();
-                return new ASTNode();
+                this->next();
+                return new RootNode();
         }
 
         return NULL;
     }
 
     ASTNode* Parser::parseDefinition() {
-        this->nextToken();
+        std::cout << "Parser: definition" << std::endl;
 
-        return new ASTNode();
+        // the kinds of definitions we have are:
+        // - a function body
+        // - a function prototype
+        // - a type
+
+        assert(this->next().type() == Token::Type::KeywordDef); // skip over the "def"
+
+        if (this->peek(2).str() == "(") {
+            return FunctionDefinitionNode::parse(*this);
+        }
+
+        return new RootNode();
     }
 
-    Token Parser::peekToken() {
-        return _token;
+    Token Parser::peek(unsigned int distance) {
+        return _lexer->peek(distance);
     }
 
-    Token Parser::nextToken() {
-        Token tmp = _token;
-
-        _token = _lexer->nextToken();
-
-        return tmp;
+    Token Parser::next() {
+        return _lexer->next();
     }
 }

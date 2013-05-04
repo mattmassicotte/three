@@ -17,7 +17,7 @@ protected:
         delete _stream;
     }
 
-    Language::ASTNode parse(const char* input) {
+    Language::ASTNode* parse(const char* input) {
         std::string inputString(input);
 
         assert(!_stream);
@@ -32,7 +32,7 @@ protected:
         return _parser->rootASTNode();
     }
 
-    Language::ASTNode parseString() {
+    Language::ASTNode* parseString() {
         return _parser->rootASTNode();
     }
 
@@ -42,7 +42,11 @@ protected:
 };
 
 TEST_F(ParserTest, SingleIdentifierWithDigit) {
-    this->parse("def main(int argc, **char argv; int)\n    printf(\"hello world\")\n end\n");
+    Language::ASTNode* node;
+    
+    node = this->parse("def main(int argc, **char argv; int)\n    printf(\"hello world\")\n end\n");
+
+    std::cout << node->recursiveStr() << std::endl;
 
     ASSERT_TRUE(true);
 }

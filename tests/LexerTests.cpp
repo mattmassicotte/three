@@ -10,7 +10,7 @@ EXPECT_EQ(exp_type, tmp.type()); \
 ASSERT_EQ(exp_value, tmp.str()); \
 } while(0)
 
-#define ASSERT_NEXT_TOKEN(exp_type, exp_value) ASSERT_TOKEN(Language::Token::Type::exp_type, exp_value, this->nextToken())
+#define ASSERT_NEXT_TOKEN(exp_type, exp_value) ASSERT_TOKEN(Language::Token::Type::exp_type, exp_value, this->next())
 
 class LexerTest : public testing::Test {
 protected:
@@ -26,7 +26,7 @@ protected:
 
     void lex(const char* input) {
         std::string inputString(input);
-        
+
         assert(!_stream);
         _stream = new std::istringstream(inputString);
 
@@ -34,12 +34,16 @@ protected:
         _lexer = new Language::Lexer(_stream);
     }
 
-    Language::Token nextToken() {
-        return _lexer->nextToken();
+    Language::Token next() {
+        return _lexer->next();
     }
-    
+
+    Language::Token peek(unsigned int distance = 1) {
+        return _lexer->peek(distance);
+    }
+
     std::istringstream* _stream;
-    Language::Lexer* _lexer;
+    Language::Lexer*    _lexer;
 };
 
 TEST_F(LexerTest, SingleIdentifierWithDigit) {
@@ -117,4 +121,13 @@ TEST_F(LexerTest, Annotation) {
     this->lex("@common");
 
     ASSERT_NEXT_TOKEN(Annotation,  "@common");
+}
+
+TEST_F(LexerTest, LookAhead) {
+    this->lex("hell0 goodbye yes no");
+
+    ASSERT_EQ("goodbye", this->peek(2).str());
+    ASSERT_EQ("no", this->peek(4).str());
+    ASSERT_EQ("yes", this->peek(3).str());
+    ASSERT_EQ("hell0", this->peek(1).str());
 }

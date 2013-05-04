@@ -1,3 +1,15 @@
+COMPILER_SOURCES = FileList['compiler/**/*.cpp']
+
+# COMPILER_SOURCES.each do |source|
+#   # define the path
+#   object_path = File.join(BUILD_DIR,File.dirname(source))
+#   directory object_path
+#   
+#   object_path += File.basename(source, '.*') + '.o'
+#   file object_path => source
+#   puts source
+# end
+
 file 'compiler/Token.cpp'
 file 'compiler/Token.h'
 CLEAN.include("#{BUILD_DIR}/Token.o")
@@ -32,6 +44,20 @@ file "#{BUILD_DIR}/AST/ASTNode.o" => ['compiler/AST/ASTNode.cpp', "#{BUILD_DIR}/
   compile('compiler/AST/ASTNode.cpp', "#{BUILD_DIR}/AST/ASTNode.o")
 end
 
+directory "#{BUILD_DIR}/AST" => BUILD_DIR
+file 'compiler/AST/FunctionDefinitionNode.cpp' => ['compiler/AST/FunctionDefinitionNode.h']
+CLEAN.include("#{BUILD_DIR}/AST/FunctionDefinitionNode.o")
+file "#{BUILD_DIR}/AST/FunctionDefinitionNode.o" => ['compiler/AST/FunctionDefinitionNode.cpp', "#{BUILD_DIR}/AST"] do
+  compile('compiler/AST/FunctionDefinitionNode.cpp', "#{BUILD_DIR}/AST/FunctionDefinitionNode.o")
+end
+
+directory "#{BUILD_DIR}/AST" => BUILD_DIR
+file 'compiler/AST/RootNode.cpp' => ['compiler/AST/RootNode.h']
+CLEAN.include("#{BUILD_DIR}/AST/RootNode.o")
+file "#{BUILD_DIR}/AST/RootNode.o" => ['compiler/AST/RootNode.cpp', "#{BUILD_DIR}/AST"] do
+  compile('compiler/AST/RootNode.cpp', "#{BUILD_DIR}/AST/RootNode.o")
+end
+
 directory "#{BUILD_DIR}/tests"
 
 file 'tests/LexerTests.cpp'
@@ -52,6 +78,8 @@ object_files << "#{BUILD_DIR}/Token.o"
 object_files << "#{BUILD_DIR}/Lexer.o"
 object_files << "#{BUILD_DIR}/Parser.o"
 object_files << "#{BUILD_DIR}/AST/ASTNode.o"
+object_files << "#{BUILD_DIR}/AST/FunctionDefinitionNode.o"
+object_files << "#{BUILD_DIR}/AST/RootNode.o"
 object_files << "#{BUILD_DIR}/tests/LexerTests.o"
 object_files << "#{BUILD_DIR}/tests/ParserTests.o"
 object_files << "#{BUILD_DIR}/gtest/gtest_main.o"
