@@ -9,7 +9,7 @@ namespace Language {
         ASTNode root;
 
         while (!this->peekToken().isEnd()) {
-            this->parseTopLevelNode();
+            root.addChild(this->parseTopLevelNode());
         }
 
         return root;

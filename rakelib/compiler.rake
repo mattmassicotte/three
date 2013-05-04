@@ -25,10 +25,11 @@ file "#{BUILD_DIR}/Parser.o" => ['compiler/Parser.cpp', BUILD_DIR] do
   compile('compiler/Parser.cpp', "#{BUILD_DIR}/Parser.o")
 end
 
-file 'compiler/ASTNode.cpp' => ['compiler/ASTNode.h']
-CLEAN.include("#{BUILD_DIR}/ASTNode.o")
-file "#{BUILD_DIR}/ASTNode.o" => ['compiler/ASTNode.cpp', BUILD_DIR] do
-  compile('compiler/ASTNode.cpp', "#{BUILD_DIR}/ASTNode.o")
+directory "#{BUILD_DIR}/AST" => BUILD_DIR
+file 'compiler/AST/ASTNode.cpp' => ['compiler/AST/ASTNode.h']
+CLEAN.include("#{BUILD_DIR}/AST/ASTNode.o")
+file "#{BUILD_DIR}/AST/ASTNode.o" => ['compiler/AST/ASTNode.cpp', "#{BUILD_DIR}/AST"] do
+  compile('compiler/AST/ASTNode.cpp', "#{BUILD_DIR}/AST/ASTNode.o")
 end
 
 directory "#{BUILD_DIR}/tests"
@@ -50,7 +51,7 @@ object_files = []
 object_files << "#{BUILD_DIR}/Token.o"
 object_files << "#{BUILD_DIR}/Lexer.o"
 object_files << "#{BUILD_DIR}/Parser.o"
-object_files << "#{BUILD_DIR}/ASTNode.o"
+object_files << "#{BUILD_DIR}/AST/ASTNode.o"
 object_files << "#{BUILD_DIR}/tests/LexerTests.o"
 object_files << "#{BUILD_DIR}/tests/ParserTests.o"
 object_files << "#{BUILD_DIR}/gtest/gtest_main.o"

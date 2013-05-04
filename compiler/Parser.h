@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Lexer.h"
-#include "ASTNode.h"
+#include "AST/ASTNode.h"
 
 namespace Language {
     class Parser {
