@@ -14,7 +14,10 @@ namespace Language {
             Punctuation,
             String,
             StringEscape,
-            Annotation
+            Annotation,
+            Comment,
+            KeywordDef,
+            KeywordEnd
         } Type;
 
     public:

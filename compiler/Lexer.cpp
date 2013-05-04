@@ -31,6 +31,14 @@ namespace Language {
         return _stream->get();
     }
 
+    void Lexer::translateKeyword(Token& token) {
+        if (token.str() == "def") {
+            token = Token("def", Token::Type::KeywordDef);
+        } else if (token.str() == "end") {
+            token = Token("end", Token::Type::KeywordEnd);
+        }
+    }
+
     Token Lexer::nextSubtoken() {
         Token tmp = _subtoken;
 
@@ -51,13 +59,34 @@ namespace Language {
         while (this->characterPeek(c)) {
             assert(c > 0);
 
+            // std::cout << "lex: '" << c << "'" << std::endl;
+            switch (type) {
+                case Token::Type::String:
+                    if (c == '"') {
+                        this->characterAdvance();
+                        return Token(s.str(), type);
+                    }
+
+                    s << this->characterAdvance();
+                    continue;
+                case Token::Type::Comment:
+                    if (c == '\n') {
+                        this->characterAdvance();
+                        return Token(s.str(), type);
+                    }
+
+                    s << this->characterAdvance();
+                    continue;
+                default:
+                    break;
+            }
+
             switch (c) {
                 case ' ':
                     if (type != Token::Type::EndOfInput) {
                         return Token(s.str(), type);
                     }
 
-                    // advance past the space
                     this->characterAdvance();
                     break;
                 case '\n':
@@ -68,9 +97,29 @@ namespace Language {
                     // advance past the newline
                     this->characterAdvance();
 
-                    return Token("<newline>", Token::Type::Newline);
-                case '.':
+                    return Token("", Token::Type::Newline);
                 case '"':
+                    if (type != Token::Type::EndOfInput) {
+                        return Token(s.str(), type);
+                    }
+                    
+                    type = Token::Type::String;
+                    
+                    this->characterAdvance(); // skip past the opening quote
+                    break;
+                case '/':
+                    if (type != Token::Type::EndOfInput) {
+                        return Token(s.str(), type);
+                    }
+
+                    s << this->characterAdvance();
+
+                    this->characterPeek(c);
+                    if (c == '/') {
+                        type = Token::Type::Comment;
+                    }
+                    break;
+                case '.':
                 case '{':
                 case '}':
                 case '(':
@@ -118,7 +167,7 @@ namespace Language {
 
                     return Token(s.str(), type);
                 default:
-                    if (type == Token::Type::NumericLiteral) {
+                    if ((type != Token::Type::EndOfInput) && (type != Token::Type::Identifier)) {
                         return Token(s.str(), type);
                     }
 
@@ -127,8 +176,8 @@ namespace Language {
                     break;
             }
         }
-        
-        return Token("", Token::Type::EndOfInput);
+
+        return Token(s.str(), type);
     }
 
     Token Lexer::lexNumericLiteral() {
@@ -188,53 +237,60 @@ namespace Language {
         return Token(s.str(), Token::Type::Annotation);
     }
 
+    Token Lexer::lexForwardSlash() {
+        std::stringstream s;
+
+        assert(this->peekSubtoken().str().at(0) == '/');
+
+        s << this->nextSubtoken().str();
+
+        if (this->peekSubtoken().str().at(0) != '/') {
+            return Token(s.str(), Token::Type::Punctuation);
+        }
+
+        do {
+            s << this->nextSubtoken().str();
+        } while (this->peekSubtoken().type() != Token::Type::Newline);
+
+        return Token(s.str(), Token::Type::Comment);
+    }
+
     Token Lexer::lexPunctuation() {
         switch (this->peekSubtoken().str().at(0)) {
             case '@':
                 return this->lexAnnotation();
-            case '"':
-                return this->lexString();
+            case '/':
+                return this->lexForwardSlash();
         }
 
         return this->nextSubtoken();
     }
 
-    Token Lexer::lexString() {
-        std::stringstream s;
+    Token Lexer::lexIdentifier() {
+        Token t = this->nextSubtoken();
 
-        assert(this->peekSubtoken().str().at(0) == '"');
+        // if this is a keyword, translate it
+        this->translateKeyword(t);
 
-        do {
-            s << this->nextSubtoken().str();
-        } while (this->peekSubtoken().str().at(0) != '"');
-
-        s << this->nextSubtoken().str();
-
-        return Token(s.str(), Token::Type::String);
+        return t;
     }
 
     Token Lexer::nextToken() {
-        std::stringstream s;
-        Token::Type       type;
+        Token t = this->peekSubtoken();
 
-        while (1) {
-            Token t = this->peekSubtoken();
-
-            switch (t.type()) {
-                case Token::Type::NumericLiteral:
-                    return this->lexNumericLiteral();
-                case Token::Type::Punctuation:
-                    return this->lexPunctuation();
-                case Token::Type::Identifier:
-                case Token::Type::EndOfInput:
-                case Token::Type::String:
-                default:
-                    break;
-            }
-
-            return this->nextSubtoken();
+        switch (t.type()) {
+            case Token::Type::NumericLiteral:
+                return this->lexNumericLiteral();
+            case Token::Type::Punctuation:
+                return this->lexPunctuation();
+            case Token::Type::Identifier:
+                return this->lexIdentifier();
+            case Token::Type::EndOfInput:
+            case Token::Type::String:
+            default:
+                break;
         }
 
-        return Token(s.str(), Token::Type::Identifier);
+        return this->nextSubtoken();
     }
 }

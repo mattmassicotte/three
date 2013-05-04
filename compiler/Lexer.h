@@ -14,6 +14,8 @@ namespace Language {
         bool characterPeek(char& c);
         char characterAdvance();
 
+        void translateKeyword(Token& token);
+
         // working with subtoken stream
         Token nextSubtoken();
         Token peekSubtoken();
@@ -22,8 +24,9 @@ namespace Language {
         // lexing functions for more complex tokens
         Token lexNumericLiteral();
         Token lexAnnotation();
+        Token lexForwardSlash();
         Token lexPunctuation();
-        Token lexString();
+        Token lexIdentifier();
 
     public:
         // actual function for consuming tokens
