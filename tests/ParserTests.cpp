@@ -44,7 +44,7 @@ protected:
 TEST_F(ParserTest, SingleIdentifierWithDigit) {
     Language::ASTNode* node;
     
-    node = this->parse("def main(int argc, **char argv; int)\n    printf(\"hello world\")\n end\n");
+    node = this->parse("def main(Int argc, **Char argv; Int)\n    printf(\"hello world\")\n end\n");
 
     std::cout << node->recursiveStr() << std::endl;
 

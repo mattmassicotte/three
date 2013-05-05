@@ -9,6 +9,7 @@ namespace Language {
         typedef enum {
             EndOfInput,
             Newline,
+            DataType,
             Identifier,
             NumericLiteral,
             Punctuation,
@@ -26,6 +27,7 @@ namespace Language {
 
         bool isEmpty();
         bool isEnd();
+        bool isDataType();
 
         bool isBinaryLiteralSubtoken() const;
         bool isHexLiteralSubtoken() const;

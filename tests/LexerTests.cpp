@@ -65,20 +65,20 @@ TEST_F(LexerTest, SingleString) {
 }
 
 TEST_F(LexerTest, HelloWorldProgram) {
-    this->lex("def main(int argc, **char argv; int)\n    printf(\"hello world\")\n end\n");
+    this->lex("def main(Int argc, **Char argv; Int)\n    printf(\"hello world\")\n end\n");
 
     ASSERT_NEXT_TOKEN(KeywordDef,  "def");
     ASSERT_NEXT_TOKEN(Identifier,  "main");
     ASSERT_NEXT_TOKEN(Punctuation, "(");
-    ASSERT_NEXT_TOKEN(Identifier,  "int");
+    ASSERT_NEXT_TOKEN(DataType,    "Int");
     ASSERT_NEXT_TOKEN(Identifier,  "argc");
     ASSERT_NEXT_TOKEN(Punctuation, ",");
     ASSERT_NEXT_TOKEN(Punctuation, "*");
     ASSERT_NEXT_TOKEN(Punctuation, "*");
-    ASSERT_NEXT_TOKEN(Identifier,  "char");
+    ASSERT_NEXT_TOKEN(DataType,    "Char");
     ASSERT_NEXT_TOKEN(Identifier,  "argv");
     ASSERT_NEXT_TOKEN(Punctuation, ";");
-    ASSERT_NEXT_TOKEN(Identifier,  "int");
+    ASSERT_NEXT_TOKEN(DataType,    "Int");
     ASSERT_NEXT_TOKEN(Punctuation, ")");
     ASSERT_NEXT_TOKEN(Newline,     "");
     ASSERT_NEXT_TOKEN(Identifier,  "printf");
