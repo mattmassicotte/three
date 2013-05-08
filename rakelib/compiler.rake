@@ -47,8 +47,15 @@ end
 directory "#{BUILD_DIR}/AST" => BUILD_DIR
 file 'compiler/AST/FunctionDefinitionNode.cpp' => ['compiler/AST/FunctionDefinitionNode.h']
 CLEAN.include("#{BUILD_DIR}/AST/FunctionDefinitionNode.o")
-file "#{BUILD_DIR}/AST/FunctionDefinitionNode.o" => ['compiler/AST/FunctionDefinitionNode.cpp', "#{BUILD_DIR}/AST"] do
+file "#{BUILD_DIR}/AST/FunctionDefinitionNode.o" => ['compiler/AST/FunctionDefinitionNode.cpp', 'compiler/Parser.h', "#{BUILD_DIR}/AST"] do
   compile('compiler/AST/FunctionDefinitionNode.cpp', "#{BUILD_DIR}/AST/FunctionDefinitionNode.o")
+end
+
+directory "#{BUILD_DIR}/AST" => BUILD_DIR
+file 'compiler/AST/FunctionCallNode.cpp' => ['compiler/AST/FunctionCallNode.h']
+CLEAN.include("#{BUILD_DIR}/AST/FunctionCallNode.o")
+file "#{BUILD_DIR}/AST/FunctionCallNode.o" => ['compiler/AST/FunctionCallNode.cpp', 'compiler/Parser.h', "#{BUILD_DIR}/AST"] do
+  compile('compiler/AST/FunctionCallNode.cpp', "#{BUILD_DIR}/AST/FunctionCallNode.o")
 end
 
 directory "#{BUILD_DIR}/AST" => BUILD_DIR
@@ -79,6 +86,7 @@ object_files << "#{BUILD_DIR}/Lexer.o"
 object_files << "#{BUILD_DIR}/Parser.o"
 object_files << "#{BUILD_DIR}/AST/ASTNode.o"
 object_files << "#{BUILD_DIR}/AST/FunctionDefinitionNode.o"
+object_files << "#{BUILD_DIR}/AST/FunctionCallNode.o"
 object_files << "#{BUILD_DIR}/AST/RootNode.o"
 object_files << "#{BUILD_DIR}/tests/LexerTests.o"
 object_files << "#{BUILD_DIR}/tests/ParserTests.o"

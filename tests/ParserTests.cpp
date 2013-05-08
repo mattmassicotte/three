@@ -41,7 +41,7 @@ protected:
     Language::Parser*   _parser;
 };
 
-TEST_F(ParserTest, SingleIdentifierWithDigit) {
+TEST_F(ParserTest, SimpleHelloWorldProgram) {
     Language::ASTNode* node;
     
     node = this->parse("def main(Int argc, **Char argv; Int)\n    printf(\"hello world\")\n end\n");

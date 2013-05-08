@@ -269,10 +269,6 @@ namespace Language {
     Token Lexer::lexIdentifier() {
         Token t = this->nextSubtoken();
 
-        if (t.isDataType()) {
-            return Token(t.str(), Token::Type::DataType);
-        }
-
         // if this is a keyword, translate it
         this->translateKeyword(t);
 

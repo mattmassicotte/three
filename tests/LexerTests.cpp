@@ -70,15 +70,15 @@ TEST_F(LexerTest, HelloWorldProgram) {
     ASSERT_NEXT_TOKEN(KeywordDef,  "def");
     ASSERT_NEXT_TOKEN(Identifier,  "main");
     ASSERT_NEXT_TOKEN(Punctuation, "(");
-    ASSERT_NEXT_TOKEN(DataType,    "Int");
+    ASSERT_NEXT_TOKEN(Identifier,  "Int");
     ASSERT_NEXT_TOKEN(Identifier,  "argc");
     ASSERT_NEXT_TOKEN(Punctuation, ",");
     ASSERT_NEXT_TOKEN(Punctuation, "*");
     ASSERT_NEXT_TOKEN(Punctuation, "*");
-    ASSERT_NEXT_TOKEN(DataType,    "Char");
+    ASSERT_NEXT_TOKEN(Identifier,  "Char");
     ASSERT_NEXT_TOKEN(Identifier,  "argv");
     ASSERT_NEXT_TOKEN(Punctuation, ";");
-    ASSERT_NEXT_TOKEN(DataType,    "Int");
+    ASSERT_NEXT_TOKEN(Identifier,  "Int");
     ASSERT_NEXT_TOKEN(Punctuation, ")");
     ASSERT_NEXT_TOKEN(Newline,     "");
     ASSERT_NEXT_TOKEN(Identifier,  "printf");

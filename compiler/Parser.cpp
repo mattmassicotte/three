@@ -1,6 +1,7 @@
 #include "Parser.h"
 #include "AST/RootNode.h"
 #include "AST/FunctionDefinitionNode.h"
+#include "AST/FunctionCallNode.h"
 
 #include <assert.h>
 
@@ -18,6 +19,22 @@ namespace Language {
         }
 
         return root;
+    }
+
+    ASTNode* Parser::parseStatement() {
+        std::cout << "Parser: statement" << std::endl;
+
+        switch (this->peek().type()) {
+            case Token::Type::Identifier:
+                if (this->peek(2).str().at(0) == '(') {
+                    return FunctionCallNode::parse(*this);
+                }
+            default:
+                std::cout << "Parser: unhandled '" << this->next().str() << "'" << std::endl;
+                break;
+        }
+
+        return new RootNode();
     }
 
     ASTNode* Parser::parseTopLevelNode() {

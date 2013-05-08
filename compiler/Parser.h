@@ -10,6 +10,8 @@ namespace Language {
 
         ASTNode* rootASTNode();
 
+        ASTNode* parseStatement();
+
     protected:
         ASTNode* parseTopLevelNode();
         ASTNode* parseDefinition();

@@ -17,15 +17,6 @@ namespace Language {
         return this->isEmpty();
     }
 
-    bool Token::isDataType() {
-        std::string::const_iterator it;
-
-        it = _string.begin();
-
-        // if the first character is upper-case
-        return (*it) >= 'A' && (*it) <= 'Z';
-    }
-
     bool Token::isBinaryLiteralSubtoken() const {
         std::string::const_iterator it;
 
