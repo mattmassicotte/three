@@ -17,6 +17,16 @@ namespace Language {
         // now, we need to parse the arguments, which of which
         // is an expression
 
+        while (parser.peek().str().at(0) != ')') {
+            node->addChild(parser.parseExpression());
+
+            if (parser.peek().str().at(0) == ',') {
+                assert(parser.next().str().at(0) == ',');
+            }
+        }
+
+        assert(parser.next().str().at(0) == ')');
+
         return node;
     }
 

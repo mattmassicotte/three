@@ -99,6 +99,9 @@ namespace Language {
             node->addChild(parser.parseStatement());
         }
 
+        assert(parser.next().type() == Token::Type::KeywordEnd);
+        assert(parser.next().type() == Token::Type::Newline);
+
         return node;
     }
 

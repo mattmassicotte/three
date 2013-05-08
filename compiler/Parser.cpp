@@ -22,19 +22,45 @@ namespace Language {
     }
 
     ASTNode* Parser::parseStatement() {
+        ASTNode* node = NULL;
+
         std::cout << "Parser: statement" << std::endl;
 
         switch (this->peek().type()) {
             case Token::Type::Identifier:
                 if (this->peek(2).str().at(0) == '(') {
-                    return FunctionCallNode::parse(*this);
+                    node = FunctionCallNode::parse(*this);
                 }
+                break;
+            default:
+                break;
+        }
+
+        if (!node) {
+            std::cout << "Parser: unhandled '" << this->next().str() << "'" << std::endl;
+            node = new RootNode();
+        }
+
+        assert(this->next().type() == Token::Type::Newline);
+
+        return node;
+    }
+    ASTNode* Parser::parseExpression()
+     {
+        ASTNode* node = new RootNode();
+
+        std::cout << "Parser: expression" << std::endl;
+        switch (this->peek().type()) {
+            case Token::Type::String:
+            // new string literal here
+                std::cout << "Parser: string literal '" << this->next().str() << std::endl;
+                break;
             default:
                 std::cout << "Parser: unhandled '" << this->next().str() << "'" << std::endl;
                 break;
         }
 
-        return new RootNode();
+        return node;
     }
 
     ASTNode* Parser::parseTopLevelNode() {
@@ -43,6 +69,9 @@ namespace Language {
         switch (this->peek().type()) {
             case Token::Type::KeywordDef:
                 return this->parseDefinition();
+            case Token::Type::EndOfInput:
+                assert(0 && "parseTopLevelNode invalid state");
+                break;
             default:
                 this->next();
                 return new RootNode();
