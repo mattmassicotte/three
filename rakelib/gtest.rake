@@ -28,20 +28,20 @@ end
 directory "#{BUILD_DIR}/gtest"
 CLEAN.include("#{BUILD_DIR}/gtest/gtest-all.o")
 file "#{BUILD_DIR}/gtest/gtest-all.o" => ['gtest/src/gtest-all.cc', "#{BUILD_DIR}/gtest"] do
-  compile('gtest/src/gtest-all.cc', "#{BUILD_DIR}/gtest/gtest-all.o", GTEST_CC_FLAGS)
+  BuildFunctions::compile('gtest/src/gtest-all.cc', "#{BUILD_DIR}/gtest/gtest-all.o", GTEST_CC_FLAGS)
 end
 
 CLEAN.include("#{BUILD_DIR}/gtest/gtest_main.o")
 file "#{BUILD_DIR}/gtest/gtest_main.o" => ['gtest/src/gtest_main.cc', "#{BUILD_DIR}/gtest"] do
-  compile('gtest/src/gtest_main.cc', "#{BUILD_DIR}/gtest/gtest_main.o", GTEST_CC_FLAGS)
+  BuildFunctions::compile('gtest/src/gtest_main.cc', "#{BUILD_DIR}/gtest/gtest_main.o", GTEST_CC_FLAGS)
 end
 
 CLOBBER.include("#{BUILD_DIR}/gtest/libgtest.a")
 file "#{BUILD_DIR}/gtest/libgtest.a" => ["#{BUILD_DIR}/gtest/gtest-all.o"] do
-  library(["#{BUILD_DIR}/gtest/gtest-all.o"], "#{BUILD_DIR}/gtest/libgtest.a")
+  BuildFunctions::library(["#{BUILD_DIR}/gtest/gtest-all.o"], "#{BUILD_DIR}/gtest/libgtest.a")
 end
 
 CLOBBER.include("#{BUILD_DIR}/gtest/libgtest_main.a")
 file "#{BUILD_DIR}/gtest/libgtest_main.a" => ["#{BUILD_DIR}/gtest/gtest_main.o", "#{BUILD_DIR}/gtest"] do
-  library(["#{BUILD_DIR}/gtest/gtest_main.o"], "#{BUILD_DIR}/gtest/libgtest_main.a")
+  BuildFunctions::library(["#{BUILD_DIR}/gtest/gtest_main.o"], "#{BUILD_DIR}/gtest/libgtest_main.a")
 end

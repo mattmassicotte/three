@@ -31,17 +31,5 @@ int main () {
         return -1;
     }
 
-    Language::Lexer lexer(&inputFile);
-
-    while (1) {
-        Language::Token token = lexer.nextToken();
-        if (token.isEnd()) {
-            std::cout << "End reached" << std::endl;
-            break;
-        }
-
-        std::cout << token.type() << " " << token.str() << std::endl;
-    }
-
     return 0;
 }
