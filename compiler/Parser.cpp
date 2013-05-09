@@ -2,6 +2,7 @@
 #include "AST/RootNode.h"
 #include "AST/FunctionDefinitionNode.h"
 #include "AST/FunctionCallNode.h"
+#include "AST/StringLiteralNode.h"
 
 #include <assert.h>
 
@@ -45,22 +46,17 @@ namespace Language {
 
         return node;
     }
-    ASTNode* Parser::parseExpression()
-     {
-        ASTNode* node = new RootNode();
-
+    ASTNode* Parser::parseExpression() {
         std::cout << "Parser: expression" << std::endl;
         switch (this->peek().type()) {
             case Token::Type::String:
-            // new string literal here
-                std::cout << "Parser: string literal '" << this->next().str() << std::endl;
-                break;
+                return StringLiteralNode::parse(*this);
             default:
                 std::cout << "Parser: unhandled '" << this->next().str() << "'" << std::endl;
                 break;
         }
 
-        return node;
+        return new RootNode();
     }
 
     ASTNode* Parser::parseTopLevelNode() {

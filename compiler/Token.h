@@ -13,7 +13,6 @@ namespace Language {
             NumericLiteral,
             Punctuation,
             String,
-            StringEscape,
             Annotation,
             Comment,
             KeywordDef,
