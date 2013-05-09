@@ -14,6 +14,8 @@ namespace Language {
 
         void setFunctionName(const std::string& name);
         std::string functionName() const;
+        std::vector<DataType> parameters() const;
+        DataType returnType() const;
 
     private:
         std::string _functionName;

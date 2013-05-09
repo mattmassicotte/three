@@ -20,15 +20,19 @@ namespace Language {
         _childNodes.push_back(node);
     }
 
-    ASTNode* ASTNode::childAtIndex(unsigned int i) const {
+    ASTNode* ASTNode::childAtIndex(uint32_t i) const {
         return _childNodes.at(i);
+    }
+
+    uint32_t ASTNode::childCount() const {
+        return _childNodes.size();
     }
 
     std::string ASTNode::str() const {
         return this->name();
     }
 
-    std::string ASTNode::recursiveStr(unsigned int depth) const {
+    std::string ASTNode::recursiveStr(uint32_t depth) const {
         std::stringstream s;
 
         // padding

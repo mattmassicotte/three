@@ -84,6 +84,14 @@ namespace Language {
         return _functionName;
     }
 
+    std::vector<DataType> FunctionDefinitionNode::parameters() const {
+        return _parameterTypes;
+    }
+
+    DataType FunctionDefinitionNode::returnType() const {
+        return _returnType;
+    }
+
     std::string FunctionDefinitionNode::str() const {
         std::stringstream s;
 
