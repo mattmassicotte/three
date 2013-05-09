@@ -1,13 +1,11 @@
 #pragma once
 
 #include "ASTNode.h"
+#include "DataType.h"
 
 namespace Language {
     class FunctionDefinitionNode : public ASTNode {
     public:
-        static std::string parseType(Parser& parser) ;
-        static std::string parseParameter(Parser& parser);
-
         static FunctionDefinitionNode* parse(Parser& parser);
 
     public:
@@ -20,7 +18,7 @@ namespace Language {
     private:
         std::string _functionName;
 
-        std::vector<std::string> _parameterTypes;
-        std::string              _returnType;
+        std::vector<DataType> _parameterTypes;
+        DataType              _returnType;
     };
 }

@@ -5,42 +5,6 @@
 #include <sstream>
 
 namespace Language {
-    std::string FunctionDefinitionNode::parseType(Parser& parser) {
-        std::stringstream s;
-
-        // a type, followed by an identifier
-
-        // parse '*', if they are there
-        while (parser.peek().str().at(0) == '*') {
-            s << parser.next().str();
-        }
-
-        // parse the type identifier
-        s << parser.next().str();
-
-        // parser ":<specialization>", if present
-        while (parser.peek().str().at(0) == ':') {
-            s << parser.next().str();
-
-            s << parser.next().str();
-        }
-
-        return s.str();
-    }
-
-    std::string FunctionDefinitionNode::parseParameter(Parser& parser) {
-        std::stringstream s;
-
-        s << FunctionDefinitionNode::parseType(parser);
-
-        // finally, read the actual identifier
-        s << " ";
-
-        s << parser.next().str();
-
-        return s.str();
-    }
-    
     FunctionDefinitionNode* FunctionDefinitionNode::parse(Parser& parser) {
         FunctionDefinitionNode* node;
         Token t;
@@ -68,7 +32,10 @@ namespace Language {
                 break;
             }
 
-            node->_parameterTypes.push_back(parseParameter(parser));
+            node->_parameterTypes.push_back(DataType::parse(parser));
+
+            // the parameter identifier
+            parser.next().str();
 
             // a ',' means another paramter was specified
             if (parser.peek().str().at(0) == ',') {
@@ -83,7 +50,7 @@ namespace Language {
             // move past the ';'
             assert(parser.next().str().at(0) == ';');
 
-            node->_returnType = parseType(parser);
+            node->_returnType = DataType::parse(parser);
         }
 
         // parse the close paren
@@ -123,11 +90,11 @@ namespace Language {
         s << this->name() << ": " << this->functionName();
 
         s << " params: ";
-        for (std::string str : _parameterTypes) {
-            s << "'" << str << "', ";
+        for (DataType dt : _parameterTypes) {
+            s << "'" << dt.str() << "', ";
         }
 
-        s << "return: " << _returnType;
+        s << "return: " << _returnType.str();
 
         return s.str();
     }
