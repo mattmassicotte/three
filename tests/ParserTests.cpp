@@ -26,6 +26,11 @@ Language::ReturnNode* tmp = dynamic_cast<Language::ReturnNode*>(node); \
 ASSERT_EQ("Return", tmp->name()); \
 } while(0)
 
+#define ASSERT_DATA_TYPE(dt_name, dt_indirection, obj) do {\
+ASSERT_EQ(dt_name, obj.typeName()); \
+ASSERT_EQ(dt_indirection, obj.indirectionDepth()); \
+} while(0)
+
 class ParserTest : public testing::Test {
 protected:
     virtual void SetUp() {
@@ -80,12 +85,9 @@ TEST_F(ParserTest, SimpleHelloWorldProgram) {
     ASSERT_EQ(2, defNode->childCount());
     ASSERT_EQ("main", defNode->functionName());
 
-    ASSERT_EQ("Int", defNode->parameters().at(0).typeName());
-    ASSERT_EQ(0, defNode->parameters().at(0).indirectionDepth());
-    ASSERT_EQ("Char", defNode->parameters().at(1).typeName());
-    ASSERT_EQ(2, defNode->parameters().at(1).indirectionDepth());
-    ASSERT_EQ("Int", defNode->returnType().typeName());
-    ASSERT_EQ(0, defNode->returnType().indirectionDepth());
+    ASSERT_DATA_TYPE("Int",  0, defNode->parameters().at(0));
+    ASSERT_DATA_TYPE("Char", 2, defNode->parameters().at(1));
+    ASSERT_DATA_TYPE("Int",  0, defNode->returnType());
 
     Language::FunctionCallNode* callNode;
 
@@ -103,4 +105,11 @@ TEST_F(ParserTest, SimpleHelloWorldProgram) {
     ASSERT_RETURN_NODE(returnNode);
     ASSERT_EQ(1, returnNode->childCount());
     ASSERT_INTEGER_LITERAL_NODE(0, returnNode->childAtIndex(0));
+
+    std::stringstream s;
+
+    node->renderCCode(s);
+
+    std::cout << s.str() << std::endl;
+
 }
