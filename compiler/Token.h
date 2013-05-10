@@ -16,7 +16,8 @@ namespace Language {
             Annotation,
             Comment,
             KeywordDef,
-            KeywordEnd
+            KeywordEnd,
+            KeywordReturn
         } Type;
 
     public:

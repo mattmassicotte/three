@@ -3,6 +3,7 @@
 #include "AST/FunctionDefinitionNode.h"
 #include "AST/FunctionCallNode.h"
 #include "AST/StringLiteralNode.h"
+#include "AST/ReturnNode.h"
 
 #include <assert.h>
 
@@ -32,6 +33,9 @@ namespace Language {
                 if (this->peek(2).str().at(0) == '(') {
                     node = FunctionCallNode::parse(*this);
                 }
+                break;
+            case Token::Type::KeywordReturn:
+                node = ReturnNode::parse(*this);
                 break;
             default:
                 break;

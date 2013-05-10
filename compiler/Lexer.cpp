@@ -36,6 +36,8 @@ namespace Language {
             token = Token("def", Token::Type::KeywordDef);
         } else if (token.str() == "end") {
             token = Token("end", Token::Type::KeywordEnd);
+        } else if (token.str() == "return") {
+            token = Token("return", Token::Type::KeywordReturn);
         }
     }
 
