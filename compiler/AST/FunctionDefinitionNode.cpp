@@ -70,6 +70,8 @@ namespace Language {
         assert(parser.next().type() == Token::Type::KeywordEnd);
         assert(parser.next().type() == Token::Type::Newline);
 
+        node->setStatement(true);
+
         return node;
     }
 

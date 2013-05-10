@@ -14,6 +14,8 @@ namespace Language {
             node->addChild(parser.parseExpression());
         }
 
+        node->setStatement(true);
+
         return node;
     }
 
