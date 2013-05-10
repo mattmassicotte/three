@@ -3,16 +3,29 @@
 #include "compiler/AST/FunctionCallNode.h"
 #include "compiler/AST/DataType.h"
 #include "compiler/AST/StringLiteralNode.h"
+#include "compiler/AST/ReturnNode.h"
+#include "compiler/AST/IntegerLiteralNode.h"
 
 #include <assert.h>
 #include <gtest/gtest.h>
 
-#define ASSERT_TOKEN(exp_type, exp_value, token) do {\
-Language::Token tmp = token; \
-EXPECT_EQ(exp_type, tmp.type()); \
-ASSERT_EQ(exp_value, tmp.str()); \
+#define ASSERT_STRING_LITERAL_NODE(str_value, node) do {\
+Language::StringLiteralNode* tmp = dynamic_cast<Language::StringLiteralNode*>(node); \
+ASSERT_EQ("StringLiteral", tmp->name()); \
+ASSERT_EQ(str_value, tmp->stringValue()); \
 } while(0)
-    
+
+#define ASSERT_INTEGER_LITERAL_NODE(num_value, node) do {\
+Language::IntegerLiteralNode* tmp = dynamic_cast<Language::IntegerLiteralNode*>(node); \
+ASSERT_EQ("IntegerLiteral", tmp->name()); \
+ASSERT_EQ(num_value, tmp->value()); \
+} while(0)
+
+#define ASSERT_RETURN_NODE(node) do {\
+Language::ReturnNode* tmp = dynamic_cast<Language::ReturnNode*>(node); \
+ASSERT_EQ("Return", tmp->name()); \
+} while(0)
+
 class ParserTest : public testing::Test {
 protected:
     virtual void SetUp() {
@@ -54,7 +67,7 @@ protected:
 TEST_F(ParserTest, SimpleHelloWorldProgram) {
     Language::ASTNode* node;
 
-    node = this->parse("def main(Int argc, **Char argv; Int)\n    printf(\"hello world\")\n end\n");
+    node = this->parse("def main(Int argc, **Char argv; Int)\n    printf(\"hello world\")\n    return 0\nend\n");
 
     ASSERT_EQ("Root", node->name());
     ASSERT_EQ(1, node->childCount());
@@ -64,9 +77,9 @@ TEST_F(ParserTest, SimpleHelloWorldProgram) {
     defNode = (Language::FunctionDefinitionNode *)node->childAtIndex(0);
 
     ASSERT_EQ("FunctionDefinition", defNode->name());
-    ASSERT_EQ(1, defNode->childCount());
+    ASSERT_EQ(2, defNode->childCount());
     ASSERT_EQ("main", defNode->functionName());
-    
+
     ASSERT_EQ("Int", defNode->parameters().at(0).typeName());
     ASSERT_EQ(0, defNode->parameters().at(0).indirectionDepth());
     ASSERT_EQ("Char", defNode->parameters().at(1).typeName());
@@ -82,8 +95,12 @@ TEST_F(ParserTest, SimpleHelloWorldProgram) {
     ASSERT_EQ("printf", callNode->functionName());
     ASSERT_EQ(1, callNode->childCount());
 
-    Language::StringLiteralNode* stringNode = dynamic_cast<Language::StringLiteralNode*>(callNode->childAtIndex(0));
+    ASSERT_STRING_LITERAL_NODE("hello world", callNode->childAtIndex(0));
 
-    ASSERT_EQ("StringLiteral", stringNode->name());
-    ASSERT_EQ("hello world", stringNode->stringValue());
+    // return statement
+    Language::ReturnNode* returnNode = dynamic_cast<Language::ReturnNode*>(defNode->childAtIndex(1));
+
+    ASSERT_RETURN_NODE(returnNode);
+    ASSERT_EQ(1, returnNode->childCount());
+    ASSERT_INTEGER_LITERAL_NODE(0, returnNode->childAtIndex(0));
 }

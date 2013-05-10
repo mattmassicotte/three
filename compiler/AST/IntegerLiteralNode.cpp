@@ -9,11 +9,25 @@ namespace Language {
 
         assert(parser.peek().type() == Token::Type::NumericLiteral);
 
-        parser.next();
-
-        node->setValue(42);
+        node->setValue(integerValue(parser.next().str()));
 
         return node;
+    }
+
+    uint64_t IntegerLiteralNode::integerValue(const std::string& string) {
+        const char* cString = string.c_str();
+
+        // might have a zero-encoded string, but check for length, because
+        // it could just be zero
+        if ((cString[0] == '0') && (string.length() > 1)) {
+            if (cString[1] == 'x') {
+                return strtol(cString, NULL, 16);
+            }
+
+            assert(0 && "Unhandled integer value type");
+        }
+
+        return strtol(cString, NULL, 10);
     }
 
     std::string IntegerLiteralNode::name() const {

@@ -6,6 +6,7 @@ namespace Language {
     class IntegerLiteralNode : public ASTNode {
     public:
         static IntegerLiteralNode* parse(Parser& parser);
+        static uint64_t integerValue(const std::string& string);
 
     public:
         virtual std::string name() const;
