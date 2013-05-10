@@ -4,6 +4,7 @@
 #include "AST/FunctionCallNode.h"
 #include "AST/StringLiteralNode.h"
 #include "AST/ReturnNode.h"
+#include "AST/IntegerLiteralNode.h"
 
 #include <assert.h>
 
@@ -55,6 +56,8 @@ namespace Language {
         switch (this->peek().type()) {
             case Token::Type::String:
                 return StringLiteralNode::parse(*this);
+            case Token::Type::NumericLiteral:
+                return IntegerLiteralNode::parse(*this);
             default:
                 std::cout << "Parser: unhandled expression '" << this->next().str() << "'" << std::endl;
                 break;
