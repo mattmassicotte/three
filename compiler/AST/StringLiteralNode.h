@@ -14,6 +14,8 @@ namespace Language {
         void setStringValue(const std::string& name);
         std::string stringValue() const;
 
+        virtual void renderCCode(std::stringstream& stream);
+
     private:
         std::string _stringValue;
     };

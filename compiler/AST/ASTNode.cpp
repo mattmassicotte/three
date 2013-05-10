@@ -28,6 +28,14 @@ namespace Language {
         return _childNodes.size();
     }
 
+    bool ASTNode::statement() const {
+        return _statement;
+    }
+
+    void ASTNode::setStatement(bool value) {
+        _statement = value;
+    }
+
     std::string ASTNode::str() const {
         return this->name();
     }

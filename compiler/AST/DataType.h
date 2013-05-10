@@ -2,6 +2,7 @@
 
 #include "../Parser.h"
 
+#include <sstream>
 #include <string>
 
 namespace Language {
@@ -16,6 +17,9 @@ namespace Language {
         uint32_t indirectionDepth() const; 
         void setTypeName(const std::string& string);
         std::string typeName() const;
+
+        virtual void renderCCode(std::stringstream& stream);
+
     private:
         uint32_t    _indirectionDepth;
         std::string _typeName;

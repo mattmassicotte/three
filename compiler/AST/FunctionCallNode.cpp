@@ -27,6 +27,10 @@ namespace Language {
 
         assert(parser.next().str().at(0) == ')');
 
+        if (parser.peek().type() == Token::Type::Newline) {
+            node->setStatement(true);
+        }
+
         return node;
     }
 
@@ -50,4 +54,20 @@ namespace Language {
         return s.str();
     }
 
+    void FunctionCallNode::renderCCode(std::stringstream& stream) {
+        stream << this->functionName() << "(";
+
+        for (int i = 0; i < this->childCount() - 1; ++i) {
+            this->childAtIndex(i)->renderCCode(stream);
+            stream << ", ";
+        }
+
+        this->childAtIndex(this->childCount() - 1)->renderCCode(stream);
+
+        stream << ")";
+
+        if (this->statement()) {
+            stream << ";" << std::endl;
+        }
+    }
 }

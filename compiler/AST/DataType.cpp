@@ -1,5 +1,6 @@
 #include "DataType.h"
 
+#include <assert.h>
 #include <sstream>
 
 namespace Language {
@@ -49,5 +50,19 @@ namespace Language {
 
     std::string DataType::typeName() const {
         return _typeName;
+    }
+
+    void DataType::renderCCode(std::stringstream& stream) {
+        if (this->typeName() == "Int") {
+            stream << "int";
+        } else if (this->typeName() == "Char") {
+            stream << "char";
+        } else {
+            assert(0 && "Unhandled type for C code rendering");
+        }
+
+        for (int i = 0; i < this->indirectionDepth(); ++i) {
+            stream << "*";
+        }
     }
 }

@@ -102,9 +102,31 @@ namespace Language {
             s << "'" << dt.str() << "', ";
         }
 
-        s << "return: " << _returnType.str();
+        s << "return: " << this->returnType().str();
 
         return s.str();
+    }
+
+    void FunctionDefinitionNode::renderCCode(std::stringstream& stream) {
+        this->returnType().renderCCode(stream);
+
+        stream << " " << this->functionName() << "(";
+
+        for (int i = 0; i < _parameterTypes.size() - 1; ++i) {
+            _parameterTypes.at(i).renderCCode(stream);
+            stream << ", ";
+        }
+
+        _parameterTypes.at(_parameterTypes.size()-1).renderCCode(stream);
+
+        stream << ") {" << std::endl;
+
+        for (int i = 0; i < this->childCount(); ++i) {
+            stream << "    "; // indentation
+            this->childAtIndex(i)->renderCCode(stream);
+        }
+
+        stream << "}" << std::endl;
     }
 
 }

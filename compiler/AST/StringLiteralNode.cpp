@@ -35,4 +35,8 @@ namespace Language {
     std::string StringLiteralNode::stringValue() const {
         return _stringValue;
     }
+
+    void StringLiteralNode::renderCCode(std::stringstream& stream) {
+        stream << '"' << this->stringValue() << '"';
+    }
 }
