@@ -22,7 +22,8 @@ namespace Language {
     private:
         std::string _functionName;
 
-        std::vector<DataType> _parameterTypes;
-        DataType              _returnType;
+        std::vector<DataType>    _parameterTypes;
+        std::vector<std::string> _parameterNames;
+        DataType                 _returnType;
     };
 }

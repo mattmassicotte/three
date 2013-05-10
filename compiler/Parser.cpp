@@ -38,7 +38,7 @@ namespace Language {
         }
 
         if (!node) {
-            std::cout << "Parser: unhandled '" << this->next().str() << "'" << std::endl;
+            std::cout << "Parser: unhandled statement '" << this->next().str() << "'" << std::endl;
             node = new RootNode();
         }
 
@@ -52,7 +52,7 @@ namespace Language {
             case Token::Type::String:
                 return StringLiteralNode::parse(*this);
             default:
-                std::cout << "Parser: unhandled '" << this->next().str() << "'" << std::endl;
+                std::cout << "Parser: unhandled expression '" << this->next().str() << "'" << std::endl;
                 break;
         }
 

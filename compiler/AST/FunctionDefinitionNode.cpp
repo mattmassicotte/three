@@ -35,7 +35,8 @@ namespace Language {
             node->_parameterTypes.push_back(DataType::parse(parser));
 
             // the parameter identifier
-            parser.next().str();
+            assert(parser.peek().type() == Token::Type::Identifier);
+            node->_parameterNames.push_back(parser.next().str());
 
             // a ',' means another paramter was specified
             if (parser.peek().str().at(0) == ',') {
@@ -114,11 +115,13 @@ namespace Language {
 
         for (int i = 0; i < _parameterTypes.size() - 1; ++i) {
             _parameterTypes.at(i).renderCCode(stream);
+            stream << " " << _parameterNames.at(i);
             stream << ", ";
         }
 
         _parameterTypes.at(_parameterTypes.size()-1).renderCCode(stream);
-
+        stream << " " << _parameterNames.at(_parameterTypes.size()-1);
+        
         stream << ") {" << std::endl;
 
         for (int i = 0; i < this->childCount(); ++i) {
