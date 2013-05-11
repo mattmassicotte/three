@@ -140,11 +140,13 @@ namespace Language {
         }
 
         context.print(") {");
-        context.printNewLine(CSourceContext::Indentation::Indent);
+        context.increaseIndentation();
+        context.printNewLine();
 
         this->codeGenCSourceForChildren(context);
 
-        context.printNewLine(CSourceContext::Indentation::Outdent);
+        context.decreaseIndentation();
+        context.printNewLine();
         context.print("}");
         context.printNewLine();
     }

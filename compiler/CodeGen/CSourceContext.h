@@ -7,18 +7,14 @@
 namespace Language {
     class CSourceContext {
     public:
-        typedef enum {
-            NoChange,
-            Indent,
-            Outdent
-        } Indentation;
-        
-    public:
         CSourceContext();
 
         void print(const char* string);
         void print(const std::string& string);
-        void printNewLine(Indentation indent = NoChange);
+        void printNewLine();
+
+        void increaseIndentation();
+        void decreaseIndentation();
 
         std::string renderToString();
 

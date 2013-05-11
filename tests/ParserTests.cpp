@@ -1,7 +1,6 @@
 #include "compiler/Parser.h"
 #include "compiler/AST/FunctionDefinitionNode.h"
 #include "compiler/AST/FunctionCallNode.h"
-#include "compiler/AST/DataType.h"
 #include "compiler/AST/StringLiteralNode.h"
 #include "compiler/AST/ReturnNode.h"
 #include "compiler/AST/IntegerLiteralNode.h"
@@ -113,6 +112,11 @@ TEST_F(ParserTest, SimpleHelloWorldProgram) {
     ASSERT_RETURN_NODE(returnNode);
     ASSERT_EQ(1, returnNode->childCount());
     ASSERT_INTEGER_LITERAL_NODE(0, returnNode->childAtIndex(0));
+    Language::CSourceContext c;
+
+    node->codeGenCSource(c);
+
+    std::cout << c.renderToString();
 }
 
 TEST_F(ParserTest, SimpleIfWithNoElseStatement) {

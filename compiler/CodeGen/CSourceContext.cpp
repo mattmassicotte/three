@@ -5,6 +5,7 @@
 
 namespace Language {
     CSourceContext::CSourceContext() : _indentationLevel(0) {
+        _includes.push_back("stdio.h");
     }
 
     void CSourceContext::print(const char* string) {
@@ -15,22 +16,18 @@ namespace Language {
         _stream << string;
     }
 
-    void CSourceContext::printNewLine(Indentation indent) {
+    void CSourceContext::printNewLine() {
         _stream << std::endl;
-
-        switch (indent) {
-            case Indent:
-                _indentationLevel++;
-                break;
-            case Outdent:
-                assert(_indentationLevel > 0);
-                _indentationLevel--;
-                break;
-            default:
-                break;
-        }
-
         this->printIndent();
+    }
+
+    void CSourceContext::increaseIndentation() {
+        ++_indentationLevel;
+    }
+    
+    void CSourceContext::decreaseIndentation() {
+        assert(_indentationLevel > 0);
+        --_indentationLevel;
     }
 
     void CSourceContext::printIndent() {

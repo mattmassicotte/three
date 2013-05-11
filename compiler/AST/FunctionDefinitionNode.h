@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ASTNode.h"
-#include "DataType.h"
+#include "../Constructs/DataType.h"
 
 namespace Language {
     class FunctionDefinitionNode : public ASTNode {

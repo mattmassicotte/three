@@ -57,22 +57,25 @@ namespace Language {
         this->condition()->codeGenCSource(context);
 
         context.print(") {");
-        context.printNewLine(CSourceContext::Indentation::Indent);
+        context.increaseIndentation();
+        context.printNewLine();
 
         this->codeGenCSourceForChildren(context);
 
-        context.printNewLine(CSourceContext::Indentation::Outdent);
+        context.decreaseIndentation();
+        context.printNewLine();
 
         if (this->elseStatement()) {
             context.print("} else {");
-            context.printNewLine(CSourceContext::Indentation::Indent);
+            context.increaseIndentation();
+            context.printNewLine();
 
             this->elseStatement()->codeGenCSourceForChildren(context);
 
-            context.printNewLine(CSourceContext::Indentation::Outdent);
+            context.decreaseIndentation();
+            context.printNewLine();
         }
 
         context.print("}");
-        context.printNewLine();
     }
 }
