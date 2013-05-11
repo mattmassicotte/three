@@ -119,6 +119,7 @@ TEST_F(ParserTest, SimpleIfWithNoElseStatement) {
     ASSERT_INTEGER_LITERAL_NODE(1, ifNode->condition());
     ASSERT_EQ(1, ifNode->childCount());
     ASSERT_RETURN_NODE(ifNode->childAtIndex(0));
+    ASSERT_EQ(NULL, ifNode->elseStatement());
 }
 
 TEST_F(ParserTest, SimpleIfWithElseStatement) {
@@ -126,10 +127,11 @@ TEST_F(ParserTest, SimpleIfWithElseStatement) {
 
     node = this->parse("def test()\nif 1\nreturn\nelse\nreturn\nend\nend\n");
 
-    std::stringstream s;
+    Language::IfNode* ifNode = dynamic_cast<Language::IfNode*>(node->childAtIndex(0)->childAtIndex(0));
 
-    node->renderCCode(s, 0);
-
-    std::cout << s.str() << std::endl;
-    
+    ASSERT_EQ("If", ifNode->name());
+    ASSERT_INTEGER_LITERAL_NODE(1, ifNode->condition());
+    ASSERT_EQ(1, ifNode->childCount());
+    ASSERT_RETURN_NODE(ifNode->childAtIndex(0));
+    ASSERT_RETURN_NODE(ifNode->elseStatement()->childAtIndex(0));
 }
