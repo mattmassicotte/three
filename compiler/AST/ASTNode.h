@@ -30,6 +30,7 @@ namespace Language {
         std::string recursiveStr(uint32_t depth = 0) const;
 
         virtual void renderCCode(std::stringstream& stream, uint32_t indentation) = 0;
+        void renderChildrenCCode(std::stringstream& stream, uint32_t indentation);
 
     private:
         std::vector<ASTNode*> _childNodes;

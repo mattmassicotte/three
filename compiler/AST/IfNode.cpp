@@ -60,18 +60,14 @@ namespace Language {
 
         stream << ") {" << std::endl;
 
-        this->eachChild([=, &stream] (ASTNode* node, uint32_t index) {
-            node->renderCCode(stream, indentation+1);
-        });
+        this->renderChildrenCCode(stream, indentation+1);
 
         stream << std::string(indentation*4, ' ');
 
         if (this->elseStatement()) {
             stream << "} else {" << std::endl;
 
-            for (int i = 0; i < this->elseStatement()->childCount(); ++i) {
-                this->elseStatement()->childAtIndex(i)->renderCCode(stream, indentation+1);
-            }
+            this->elseStatement()->renderChildrenCCode(stream, indentation+1);
 
             stream << std::string(indentation*4, ' ');
         }

@@ -65,4 +65,10 @@ namespace Language {
 
         return s.str();
     }
+
+    void ASTNode::renderChildrenCCode(std::stringstream& stream, uint32_t indentation) {
+        this->eachChild([=, &stream] (ASTNode* node, uint32_t index) {
+            node->renderCCode(stream, indentation);
+        });
+    }
 }
