@@ -3,6 +3,8 @@
 COMPILER_SOURCES = FileList['compiler/**/*.cpp']
 COMPILER_SOURCES.exclude('compiler/compiler.cpp')
 
+COMPILER_GTEST_CC_FLAGS = '-I. -Igtest/include -DGTEST_HAS_TR1_TUPLE=0'
+
 compiler_objects = []
 COMPILER_SOURCES.each do |source|
   # define the path
@@ -33,13 +35,13 @@ directory "#{BUILD_DIR}/tests"
 file 'tests/LexerTests.cpp'
 CLEAN.include("#{BUILD_DIR}/tests/LexerTests.o")
 file "#{BUILD_DIR}/tests/LexerTests.o" => ['tests/LexerTests.cpp', 'compiler/Lexer.h', 'compiler/Token.h', "#{BUILD_DIR}/tests"] do
-  BuildFunctions::compile('tests/LexerTests.cpp', "#{BUILD_DIR}/tests/LexerTests.o", '-I. -Igtest/include')
+  BuildFunctions::compile('tests/LexerTests.cpp', "#{BUILD_DIR}/tests/LexerTests.o", COMPILER_GTEST_CC_FLAGS)
 end
 
 file 'tests/ParserTests.cpp' => ['compiler/Parser.h']
 CLEAN.include("#{BUILD_DIR}/tests/ParserTests.o")
 file "#{BUILD_DIR}/tests/ParserTests.o" => ['tests/ParserTests.cpp', "#{BUILD_DIR}/tests"] do
-  BuildFunctions::compile('tests/ParserTests.cpp', "#{BUILD_DIR}/tests/ParserTests.o", '-I. -Igtest/include')
+  BuildFunctions::compile('tests/ParserTests.cpp', "#{BUILD_DIR}/tests/ParserTests.o", COMPILER_GTEST_CC_FLAGS)
 end
 
 CLOBBER.include("#{BUILD_DIR}/compiler_test")

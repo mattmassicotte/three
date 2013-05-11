@@ -8,7 +8,6 @@
 #include "compiler/AST/IfNode.h"
 
 #include <assert.h>
-#define GTEST_HAS_TR1_TUPLE 0
 #include <gtest/gtest.h>
 
 #define ASSERT_STRING_LITERAL_NODE(str_value, node) do {\
