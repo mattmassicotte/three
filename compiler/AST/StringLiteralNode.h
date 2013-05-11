@@ -14,7 +14,7 @@ namespace Language {
         void setStringValue(const std::string& name);
         std::string stringValue() const;
 
-        virtual void renderCCode(std::stringstream& stream, uint32_t indentation);
+        void codeGenCSource(CSourceContext& context);
 
     private:
         std::string _stringValue;

@@ -21,7 +21,7 @@ namespace Language {
         void setTypeName(const std::string& string);
         std::string typeName() const;
 
-        virtual void renderCCode(std::stringstream& stream, uint32_t indentation);
+        void codeGenCSource(CSourceContext& context);
 
     private:
         uint32_t    _indirectionDepth;

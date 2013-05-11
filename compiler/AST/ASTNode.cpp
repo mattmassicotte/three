@@ -66,9 +66,13 @@ namespace Language {
         return s.str();
     }
 
-    void ASTNode::renderChildrenCCode(std::stringstream& stream, uint32_t indentation) {
-        this->eachChild([=, &stream] (ASTNode* node, uint32_t index) {
-            node->renderCCode(stream, indentation);
+    void ASTNode::codeGenCSourceForChildren(CSourceContext& context) {
+        this->eachChild([=, &context] (ASTNode* node, uint32_t index) {
+            node->codeGenCSource(context);
+
+            if (index < this->childCount() - 1) {
+                context.printNewLine();
+            }
         });
     }
 }

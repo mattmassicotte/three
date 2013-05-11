@@ -51,27 +51,28 @@ namespace Language {
         return _elseNode;
     }
 
-    void IfNode::renderCCode(std::stringstream& stream, uint32_t indentation) {
-        stream << std::string(indentation*4, ' ');
+    void IfNode::codeGenCSource(CSourceContext& context) {
+        context.print("if (");
 
-        stream << "if (";
+        this->condition()->codeGenCSource(context);
 
-        this->condition()->renderCCode(stream, 0);
+        context.print(") {");
+        context.printNewLine(CSourceContext::Indentation::Indent);
 
-        stream << ") {" << std::endl;
+        this->codeGenCSourceForChildren(context);
 
-        this->renderChildrenCCode(stream, indentation+1);
-
-        stream << std::string(indentation*4, ' ');
+        context.printNewLine(CSourceContext::Indentation::Outdent);
 
         if (this->elseStatement()) {
-            stream << "} else {" << std::endl;
+            context.print("} else {");
+            context.printNewLine(CSourceContext::Indentation::Indent);
 
-            this->elseStatement()->renderChildrenCCode(stream, indentation+1);
+            this->elseStatement()->codeGenCSourceForChildren(context);
 
-            stream << std::string(indentation*4, ' ');
+            context.printNewLine(CSourceContext::Indentation::Outdent);
         }
 
-        stream << "}" << std::endl;
+        context.print("}");
+        context.printNewLine();
     }
 }

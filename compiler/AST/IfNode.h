@@ -16,7 +16,7 @@ namespace Language {
         ASTNode* condition() const;
         ElseNode* elseStatement() const;
 
-        virtual void renderCCode(std::stringstream& stream, uint32_t indentation);
+        void codeGenCSource(CSourceContext& context);
 
     private:
         ASTNode*  _conditionNode;

@@ -64,19 +64,19 @@ namespace Language {
         return _typeName;
     }
 
-    void DataType::renderCCode(std::stringstream& stream, uint32_t indentation) {
+    void DataType::codeGenCSource(CSourceContext& context) {
         if (this->typeName() == "Int") {
-            stream << "int";
+            context.print("int");
         } else if (this->typeName() == "Char") {
-            stream << "char";
+            context.print("char");
         } else if (this->typeName() == "Void") {
-            stream << "void";
+            context.print("void");
         } else {
             assert(0 && "Unhandled type for C code rendering");
         }
 
         for (int i = 0; i < this->indirectionDepth(); ++i) {
-            stream << "*";
+            context.print("*");
         }
     }
 }

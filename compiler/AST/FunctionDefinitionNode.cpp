@@ -116,32 +116,36 @@ namespace Language {
         return s.str();
     }
 
-    void FunctionDefinitionNode::renderCCode(std::stringstream& stream, uint32_t indentation) {
-        stream << std::string(indentation*4, ' ');
+    void FunctionDefinitionNode::codeGenCSource(CSourceContext& context) {
+        this->returnType().codeGenCSource(context);
 
-        this->returnType().renderCCode(stream, 0);
+        context.print(" ");
+        context.print(this->functionName());
+        context.print("(");
 
-        stream << " " << this->functionName() << "(";
-
+        assert(_parameterTypes.size() > 0);
         for (int i = 0; i < _parameterTypes.size() - 1; ++i) {
-            _parameterTypes.at(i).renderCCode(stream, 0);
-            stream << " " << _parameterNames.at(i);
-            stream << ", ";
+            _parameterTypes.at(i).codeGenCSource(context);
+            context.print(" ");
+            context.print(_parameterNames.at(i));
+            context.print(", ");
         }
 
-        _parameterTypes.at(_parameterTypes.size()-1).renderCCode(stream, 0);
+        _parameterTypes.at(_parameterTypes.size()-1).codeGenCSource(context);
 
         // this special-case is necessary to handle "void"
         if (_parameterNames.size() > 0) {
-            stream << " " << _parameterNames.at(_parameterTypes.size()-1);
-        }
-        
-        stream << ") {" << std::endl;
-
-        for (int i = 0; i < this->childCount(); ++i) {
-            this->childAtIndex(i)->renderCCode(stream, indentation + 1);
+            context.print(" ");
+            context.print(_parameterNames.at(_parameterTypes.size()-1));
         }
 
-        stream << "}" << std::endl;
+        context.print(") {");
+        context.printNewLine(CSourceContext::Indentation::Indent);
+
+        this->codeGenCSourceForChildren(context);
+
+        context.printNewLine(CSourceContext::Indentation::Outdent);
+        context.print("}");
+        context.printNewLine();
     }
 }

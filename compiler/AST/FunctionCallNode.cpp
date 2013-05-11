@@ -54,22 +54,21 @@ namespace Language {
         return s.str();
     }
 
-    void FunctionCallNode::renderCCode(std::stringstream& stream, uint32_t indentation) {
-        stream << std::string(indentation*4, ' ');
+    void FunctionCallNode::codeGenCSource(CSourceContext& context) {
+        context.print(this->functionName());
+        context.print("(");
 
-        stream << this->functionName() << "(";
+        this->eachChild([=, &context] (ASTNode* node, uint32_t index) {
+            node->codeGenCSource(context);
+            if (index < this->childCount() - 1) {
+                context.print(", ");
+            }
+        });
 
-        for (int i = 0; i < this->childCount() - 1; ++i) {
-            this->childAtIndex(i)->renderCCode(stream, indentation+1);
-            stream << ", ";
-        }
-
-        this->childAtIndex(this->childCount() - 1)->renderCCode(stream, indentation+1);
-
-        stream << ")";
+        context.print(")");
 
         if (this->statement()) {
-            stream << ";" << std::endl;
+            context.print(";");
         }
     }
 }

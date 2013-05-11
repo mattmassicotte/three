@@ -14,7 +14,7 @@ namespace Language {
         void setValue(uint64_t v);
         uint64_t value() const;
 
-        virtual void renderCCode(std::stringstream& stream, uint32_t indentation);
+        void codeGenCSource(CSourceContext& context);
 
     private:
         uint64_t _value;

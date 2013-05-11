@@ -2,6 +2,7 @@
 #include "../Parser.h"
 
 #include <assert.h>
+#include <sstream>
 
 namespace Language {
     IntegerLiteralNode* IntegerLiteralNode::parse(Parser& parser) {
@@ -42,7 +43,12 @@ namespace Language {
         return _value;
     }
 
-    void IntegerLiteralNode::renderCCode(std::stringstream& stream, uint32_t indentation) {
-        stream << this->value();
+    void IntegerLiteralNode::codeGenCSource(CSourceContext& context) {
+        std::stringstream s;
+
+        // TODO: this is kinda stupid just to convert into a string...
+        s << this->value();
+
+        context.print(s.str());
     }
 }

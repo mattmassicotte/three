@@ -6,6 +6,7 @@
 #include "AST/ReturnNode.h"
 #include "AST/IntegerLiteralNode.h"
 #include "AST/IfNode.h"
+#include "AST/BooleanLiteralNode.h"
 
 #include <assert.h>
 
@@ -28,7 +29,7 @@ namespace Language {
     ASTNode* Parser::parseStatement() {
         ASTNode* node = NULL;
 
-        std::cout << "Parser: statement" << std::endl;
+        // std::cout << "Parser: statement" << std::endl;
 
         switch (this->peek().type()) {
             case Token::Type::Identifier:
@@ -56,12 +57,15 @@ namespace Language {
         return node;
     }
     ASTNode* Parser::parseExpression() {
-        std::cout << "Parser: expression" << std::endl;
+        // std::cout << "Parser: expression" << std::endl;
         switch (this->peek().type()) {
             case Token::Type::String:
                 return StringLiteralNode::parse(*this);
             case Token::Type::NumericLiteral:
                 return IntegerLiteralNode::parse(*this);
+            case Token::Type::TrueLiteral:
+            case Token::Type::FalseLiteral:
+                return BooleanLiteralNode::parse(*this);
             default:
                 std::cout << "Parser: unhandled expression '" << this->next().str() << "'" << std::endl;
                 break;
@@ -71,7 +75,7 @@ namespace Language {
     }
 
     ASTNode* Parser::parseTopLevelNode() {
-        std::cout << "Parser: top level" << std::endl;
+        // std::cout << "Parser: top level" << std::endl;
         
         switch (this->peek().type()) {
             case Token::Type::KeywordDef:
@@ -88,7 +92,7 @@ namespace Language {
     }
 
     ASTNode* Parser::parseDefinition() {
-        std::cout << "Parser: definition" << std::endl;
+        // std::cout << "Parser: definition" << std::endl;
 
         // the kinds of definitions we have are:
         // - a function body

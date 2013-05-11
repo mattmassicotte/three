@@ -15,6 +15,9 @@ namespace Language {
         _keywordMap["return"] = Token::Type::KeywordReturn;
         _keywordMap["if"]     = Token::Type::KeywordIf;
         _keywordMap["else"]   = Token::Type::KeywordElse;
+        _keywordMap["true"]   = Token::Type::TrueLiteral;
+        _keywordMap["false"]  = Token::Type::FalseLiteral;
+        _keywordMap["null"]   = Token::Type::NullLiteral;
     }
 
     bool Lexer::characterPeek(char& c) {

@@ -6,6 +6,7 @@
 #include "compiler/AST/ReturnNode.h"
 #include "compiler/AST/IntegerLiteralNode.h"
 #include "compiler/AST/IfNode.h"
+#include "compiler/AST/BooleanLiteralNode.h"
 
 #include <assert.h>
 #include <gtest/gtest.h>
@@ -20,6 +21,12 @@ ASSERT_EQ(str_value, tmp->stringValue()); \
 Language::IntegerLiteralNode* tmp = dynamic_cast<Language::IntegerLiteralNode*>(node); \
 ASSERT_EQ("IntegerLiteral", tmp->name()); \
 ASSERT_EQ(num_value, tmp->value()); \
+} while(0)
+
+#define ASSERT_BOOLEAN_LITERAL_NODE(bool_value, node) do { \
+Language::BooleanLiteralNode* tmp = dynamic_cast<Language::BooleanLiteralNode*>(node); \
+ASSERT_EQ("BooleanLiteral", tmp->name()); \
+ASSERT_EQ(bool_value, tmp->value()); \
 } while(0)
 
 #define ASSERT_RETURN_NODE(node) do {\
@@ -111,12 +118,12 @@ TEST_F(ParserTest, SimpleHelloWorldProgram) {
 TEST_F(ParserTest, SimpleIfWithNoElseStatement) {
     Language::ASTNode* node;
 
-    node = this->parse("def test()\nif 1\nreturn\nend\nend\n");
+    node = this->parse("def test()\nif true\nreturn\nend\nend\n");
 
     Language::IfNode* ifNode = dynamic_cast<Language::IfNode*>(node->childAtIndex(0)->childAtIndex(0));
 
     ASSERT_EQ("If", ifNode->name());
-    ASSERT_INTEGER_LITERAL_NODE(1, ifNode->condition());
+    ASSERT_BOOLEAN_LITERAL_NODE(true, ifNode->condition());
     ASSERT_EQ(1, ifNode->childCount());
     ASSERT_RETURN_NODE(ifNode->childAtIndex(0));
     ASSERT_EQ(NULL, ifNode->elseStatement());
@@ -125,12 +132,12 @@ TEST_F(ParserTest, SimpleIfWithNoElseStatement) {
 TEST_F(ParserTest, SimpleIfWithElseStatement) {
     Language::ASTNode* node;
 
-    node = this->parse("def test()\nif 1\nreturn\nelse\nreturn\nend\nend\n");
+    node = this->parse("def test()\nif false\nreturn\nelse\nreturn\nend\nend\n");
 
     Language::IfNode* ifNode = dynamic_cast<Language::IfNode*>(node->childAtIndex(0)->childAtIndex(0));
 
     ASSERT_EQ("If", ifNode->name());
-    ASSERT_INTEGER_LITERAL_NODE(1, ifNode->condition());
+    ASSERT_BOOLEAN_LITERAL_NODE(false, ifNode->condition());
     ASSERT_EQ(1, ifNode->childCount());
     ASSERT_RETURN_NODE(ifNode->childAtIndex(0));
     ASSERT_RETURN_NODE(ifNode->elseStatement()->childAtIndex(0));

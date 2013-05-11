@@ -28,7 +28,7 @@ namespace Language {
         return "Else";
     }
 
-    void ElseNode::renderCCode(std::stringstream& stream, uint32_t indentation) {
-        assert(0 && "ElseNode cannot be rendered to C directly");
+    void ElseNode::codeGenCSource(CSourceContext& context) {
+        assert(0 && "ElseNode cannot be codegen'ed to C directly");
     }
 }

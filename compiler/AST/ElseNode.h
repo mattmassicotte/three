@@ -10,6 +10,6 @@ namespace Language {
     public:
         virtual std::string name() const;
 
-        virtual void renderCCode(std::stringstream& stream, uint32_t indentation);
+        void codeGenCSource(CSourceContext& context);
     };
 }
