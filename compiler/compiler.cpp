@@ -5,7 +5,6 @@
 #include <fstream>
 #include <string>
 
-
 #include <assert.h>
 
 void printFile(std::istream& stream) {
@@ -29,6 +28,12 @@ int main () {
 
     if (!inputFile.is_open()) {
         return -1;
+    }
+
+    Language::Lexer lexer(&inputFile);
+
+    while (!lexer.peek().type() == Language::Token::Type) {
+        std::cout << lexer.next().str() << std::endl;
     }
 
     return 0;

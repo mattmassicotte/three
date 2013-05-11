@@ -5,8 +5,10 @@
 #include "compiler/AST/StringLiteralNode.h"
 #include "compiler/AST/ReturnNode.h"
 #include "compiler/AST/IntegerLiteralNode.h"
+#include "compiler/AST/IfNode.h"
 
 #include <assert.h>
+#define GTEST_HAS_TR1_TUPLE 0
 #include <gtest/gtest.h>
 
 #define ASSERT_STRING_LITERAL_NODE(str_value, node) do {\
@@ -105,11 +107,30 @@ TEST_F(ParserTest, SimpleHelloWorldProgram) {
     ASSERT_RETURN_NODE(returnNode);
     ASSERT_EQ(1, returnNode->childCount());
     ASSERT_INTEGER_LITERAL_NODE(0, returnNode->childAtIndex(0));
+}
+
+TEST_F(ParserTest, SimpleIfWithNoElseStatement) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nif 1\nreturn\nend\nend\n");
+
+    Language::IfNode* ifNode = dynamic_cast<Language::IfNode*>(node->childAtIndex(0)->childAtIndex(0));
+
+    ASSERT_EQ("If", ifNode->name());
+    ASSERT_INTEGER_LITERAL_NODE(1, ifNode->condition());
+    ASSERT_EQ(1, ifNode->childCount());
+    ASSERT_RETURN_NODE(ifNode->childAtIndex(0));
+}
+
+TEST_F(ParserTest, SimpleIfWithElseStatement) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nif 1\nreturn\nelse\nreturn\nend\nend\n");
 
     std::stringstream s;
 
-    node->renderCCode(s);
+    node->renderCCode(s, 0);
 
     std::cout << s.str() << std::endl;
-
+    
 }

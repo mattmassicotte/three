@@ -17,7 +17,9 @@ namespace Language {
             Comment,
             KeywordDef,
             KeywordEnd,
-            KeywordReturn
+            KeywordReturn,
+            KeywordIf,
+            KeywordElse
         } Type;
 
     public:

@@ -36,7 +36,7 @@ namespace Language {
         return _stringValue;
     }
 
-    void StringLiteralNode::renderCCode(std::stringstream& stream) {
+    void StringLiteralNode::renderCCode(std::stringstream& stream, uint32_t indentation) {
         stream << '"' << this->stringValue() << '"';
     }
 }

@@ -3,7 +3,10 @@
 #include "ASTNode.h"
 
 namespace Language {
-    class RootNode : public ASTNode {
+    class ElseNode : public ASTNode {
+    public:
+        static ElseNode* parse(Parser& parser);
+
     public:
         virtual std::string name() const;
 

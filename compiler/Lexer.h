@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 namespace Language {
     class Lexer {
@@ -40,5 +41,6 @@ namespace Language {
         std::istream*      _stream;
         Token              _subtoken;
         std::vector<Token> _tokenBuffer;
+        std::map<std::string, Token::Type> _keywordMap;
     };
 }

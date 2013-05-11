@@ -1,4 +1,4 @@
-GTEST_CC_FLAGS = '-Igtest -Igtest/include'
+GTEST_CC_FLAGS = '-Igtest -Igtest/include -Wno-logical-op-parentheses -DGTEST_HAS_TR1_TUPLE=0'
 
 namespace :gtest do
   desc 'Installs the C++ unit testing package, gtest'

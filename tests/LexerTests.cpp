@@ -1,6 +1,7 @@
 #include "compiler/Lexer.h"
 
 #include <assert.h>
+#define GTEST_HAS_TR1_TUPLE 0
 #include <gtest/gtest.h>
 
 // This macro is a little crappy, but it needs to be careful about evaluation

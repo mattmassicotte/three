@@ -46,12 +46,18 @@ namespace Language {
             }
         }
 
+        if (node->_parameterTypes.size() == 0) {
+            node->_parameterTypes.push_back(DataType::voidType());
+        }
+
         // now, check for the return type
         if (parser.peek().str().at(0) == ';' && parser.peek(2).str().at(0) != ')') {
             // move past the ';'
             assert(parser.next().str().at(0) == ';');
 
             node->_returnType = DataType::parse(parser);
+        } else {
+            node->_returnType = DataType::voidType();
         }
 
         // parse the close paren
@@ -110,28 +116,32 @@ namespace Language {
         return s.str();
     }
 
-    void FunctionDefinitionNode::renderCCode(std::stringstream& stream) {
-        this->returnType().renderCCode(stream);
+    void FunctionDefinitionNode::renderCCode(std::stringstream& stream, uint32_t indentation) {
+        stream << std::string(indentation*4, ' ');
+
+        this->returnType().renderCCode(stream, 0);
 
         stream << " " << this->functionName() << "(";
 
         for (int i = 0; i < _parameterTypes.size() - 1; ++i) {
-            _parameterTypes.at(i).renderCCode(stream);
+            _parameterTypes.at(i).renderCCode(stream, 0);
             stream << " " << _parameterNames.at(i);
             stream << ", ";
         }
 
-        _parameterTypes.at(_parameterTypes.size()-1).renderCCode(stream);
-        stream << " " << _parameterNames.at(_parameterTypes.size()-1);
+        _parameterTypes.at(_parameterTypes.size()-1).renderCCode(stream, 0);
+
+        // this special-case is necessary to handle "void"
+        if (_parameterNames.size() > 0) {
+            stream << " " << _parameterNames.at(_parameterTypes.size()-1);
+        }
         
         stream << ") {" << std::endl;
 
         for (int i = 0; i < this->childCount(); ++i) {
-            stream << "    "; // indentation
-            this->childAtIndex(i)->renderCCode(stream);
+            this->childAtIndex(i)->renderCCode(stream, indentation + 1);
         }
 
         stream << "}" << std::endl;
     }
-
 }

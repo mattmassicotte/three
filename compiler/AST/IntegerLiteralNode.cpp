@@ -42,7 +42,7 @@ namespace Language {
         return _value;
     }
 
-    void IntegerLiteralNode::renderCCode(std::stringstream& stream) {
+    void IntegerLiteralNode::renderCCode(std::stringstream& stream, uint32_t indentation) {
         stream << this->value();
     }
 }

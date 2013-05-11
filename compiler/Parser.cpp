@@ -5,6 +5,7 @@
 #include "AST/StringLiteralNode.h"
 #include "AST/ReturnNode.h"
 #include "AST/IntegerLiteralNode.h"
+#include "AST/IfNode.h"
 
 #include <assert.h>
 
@@ -37,6 +38,9 @@ namespace Language {
                 break;
             case Token::Type::KeywordReturn:
                 node = ReturnNode::parse(*this);
+                break;
+            case Token::Type::KeywordIf:
+                node = IfNode::parse(*this);
                 break;
             default:
                 break;

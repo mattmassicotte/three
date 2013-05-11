@@ -23,13 +23,15 @@ namespace Language {
         return "Return";
     }
 
-    void ReturnNode::renderCCode(std::stringstream& stream) {
+    void ReturnNode::renderCCode(std::stringstream& stream, uint32_t indentation) {
+        stream << std::string(indentation*4, ' ');
+
         stream << "return";
 
         assert(this->childCount() < 2);
         if (this->childCount() == 1) {
             stream << " "; // space between keyword and expression
-            this->childAtIndex(0)->renderCCode(stream);
+            this->childAtIndex(0)->renderCCode(stream, 0);
         }
 
         stream << ";" << std::endl;

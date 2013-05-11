@@ -44,10 +44,10 @@ end
 
 CLOBBER.include("#{BUILD_DIR}/compiler_test")
 object_files = compiler_objects.dup()
-object_files << "#{BUILD_DIR}/tests/LexerTests.o"
-object_files << "#{BUILD_DIR}/tests/ParserTests.o"
 object_files << "#{BUILD_DIR}/gtest/gtest_main.o"
 object_files << "#{BUILD_DIR}/gtest/gtest-all.o"
+object_files << "#{BUILD_DIR}/tests/LexerTests.o"
+object_files << "#{BUILD_DIR}/tests/ParserTests.o"
 file "#{BUILD_DIR}/compiler_test" => object_files do
   BuildFunctions::executable(object_files, "#{BUILD_DIR}/compiler_test")
 end

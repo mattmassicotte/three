@@ -9,6 +9,12 @@ namespace Language {
     Lexer::Lexer(std::istream* stream) : _stream(stream) {
         _stream = stream;
         _subtoken = this->advanceSubtoken();
+
+        _keywordMap["def"]    = Token::Type::KeywordDef;
+        _keywordMap["end"]    = Token::Type::KeywordEnd;
+        _keywordMap["return"] = Token::Type::KeywordReturn;
+        _keywordMap["if"]     = Token::Type::KeywordIf;
+        _keywordMap["else"]   = Token::Type::KeywordElse;
     }
 
     bool Lexer::characterPeek(char& c) {
@@ -32,12 +38,10 @@ namespace Language {
     }
 
     void Lexer::translateKeyword(Token& token) {
-        if (token.str() == "def") {
-            token = Token("def", Token::Type::KeywordDef);
-        } else if (token.str() == "end") {
-            token = Token("end", Token::Type::KeywordEnd);
-        } else if (token.str() == "return") {
-            token = Token("return", Token::Type::KeywordReturn);
+        std::string str = token.str();
+
+        if (_keywordMap.find(str) != _keywordMap.end()) {
+            token = Token(str, _keywordMap[str]);
         }
     }
 

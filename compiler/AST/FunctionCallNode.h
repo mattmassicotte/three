@@ -14,7 +14,7 @@ namespace Language {
         void setFunctionName(const std::string& name);
         std::string functionName() const;
 
-        virtual void renderCCode(std::stringstream& stream);
+        virtual void renderCCode(std::stringstream& stream, uint32_t indentation);
 
     private:
         std::string _functionName;

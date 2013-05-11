@@ -17,7 +17,7 @@ namespace Language {
         std::vector<DataType> parameters() const;
         DataType returnType() const;
 
-        virtual void renderCCode(std::stringstream& stream);
+        virtual void renderCCode(std::stringstream& stream, uint32_t indentation);
 
     private:
         std::string _functionName;

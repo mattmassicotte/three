@@ -28,6 +28,18 @@ namespace Language {
         return dataType;
     }
 
+    DataType DataType::voidType() {
+        DataType type;
+
+        type.setIndirectionDepth(0);
+        type.setTypeName("Void");
+
+        return type;
+    }
+
+    DataType::DataType() : _indirectionDepth(0) {
+    }
+
     std::string DataType::str() const {
         std::stringstream s;
 
@@ -52,11 +64,13 @@ namespace Language {
         return _typeName;
     }
 
-    void DataType::renderCCode(std::stringstream& stream) {
+    void DataType::renderCCode(std::stringstream& stream, uint32_t indentation) {
         if (this->typeName() == "Int") {
             stream << "int";
         } else if (this->typeName() == "Char") {
             stream << "char";
+        } else if (this->typeName() == "Void") {
+            stream << "void";
         } else {
             assert(0 && "Unhandled type for C code rendering");
         }
