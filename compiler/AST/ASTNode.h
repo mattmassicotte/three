@@ -20,7 +20,7 @@ namespace Language {
         void     addChild(ASTNode* node);
         ASTNode* childAtIndex(uint32_t i) const;
         uint32_t childCount() const;
-        // void     eachChild(std::function<void (ASTNode*, uint32_t)> func);
+        void     eachChild(std::function<void (ASTNode*, uint32_t)> func);
 
         bool statement() const;
         void setStatement(bool value);

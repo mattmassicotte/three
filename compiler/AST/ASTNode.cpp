@@ -28,11 +28,11 @@ namespace Language {
         return _childNodes.size();
     }
 
-    // void ASTNode::eachChild(std::function<void (ASTNode*, uint32_t)> func) {
-    //     for (uint32_t i = 0; i < this->childCount(); ++i) {
-    //         func(this->childAtIndex(i), i);
-    //     }
-    // }
+    void ASTNode::eachChild(std::function<void (ASTNode*, uint32_t)> func) {
+        for (uint32_t i = 0; i < this->childCount(); ++i) {
+            func(this->childAtIndex(i), i);
+        }
+    }
 
     bool ASTNode::statement() const {
         return _statement;
