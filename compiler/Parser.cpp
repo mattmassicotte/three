@@ -12,6 +12,11 @@
 
 namespace Language {
     Parser::Parser(Lexer* lexer) : _lexer(lexer) {
+        _currentScope = Scope::createRootScope();
+    }
+
+    Parser::~Parser() {
+        delete _currentScope;
     }
 
     ASTNode* Parser::rootASTNode() {
@@ -114,5 +119,27 @@ namespace Language {
 
     Token Parser::next() {
         return _lexer->next();
+    }
+
+    Scope* Parser::currentScope() const {
+        assert(_currentScope);
+
+        return _currentScope;
+    }
+
+    void Parser::pushScope(Scope* scope) {
+        assert(scope);
+
+        this->currentScope()->setParent(scope);
+        _currentScope = scope;
+    }
+
+    void Parser::popScope() {
+        Scope* old = this->currentScope();
+
+        _currentScope = old->parent();
+        assert(_currentScope);
+
+        delete old;
     }
 }

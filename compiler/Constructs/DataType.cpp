@@ -1,4 +1,5 @@
 #include "DataType.h"
+#include "../Parser.h"
 
 #include <assert.h>
 #include <sstream>
@@ -14,27 +15,23 @@ namespace Language {
             depth++;
         }
 
-        // parse the type identifier
         dataType.setIndirectionDepth(depth);
 
-        dataType.setTypeName(parser.next().str());
+        // parse the type identifier
+        assert(parser.peek().type() == Token::Type::Identifier);
+
+        std::string identifier = parser.next().str();
+        DataStructure* structure = parser.currentScope()->dataStructureForName(identifier);
+
+        dataType.setStructure(structure);
 
         // parser ":<specialization>", if present
         while (parser.peek().str().at(0) == ':') {
-            parser.next().str(); // ":"
-            parser.next().str(); // "value"
+            parser.next(); // ":"
+            parser.next(); // "value"
         }
 
         return dataType;
-    }
-
-    DataType DataType::voidType() {
-        DataType type;
-
-        type.setIndirectionDepth(0);
-        type.setTypeName("Void");
-
-        return type;
     }
 
     DataType::DataType() : _indirectionDepth(0) {
@@ -43,7 +40,7 @@ namespace Language {
     std::string DataType::str() const {
         std::stringstream s;
 
-        s << "<indirection: " << this->indirectionDepth() << " " << this->typeName() << ">";
+        s << "<indirection: " << this->indirectionDepth() << " " << this->structure()->name() << ">";
 
         return s.str();
     }
@@ -56,20 +53,23 @@ namespace Language {
         return _indirectionDepth;
     }
 
-    void DataType::setTypeName(const std::string& string) {
-        _typeName = string;
+    void DataType::setStructure(DataStructure* value) {
+        assert(value);
+        _structure = value;
     }
 
-    std::string DataType::typeName() const {
-        return _typeName;
+    DataStructure* DataType::structure() const {
+        return _structure;
     }
 
     void DataType::codeGenCSource(CSourceContext& context) {
-        if (this->typeName() == "Int") {
+        assert(this->structure());
+
+        if (this->structure()->name() == "Int") {
             context.print("int");
-        } else if (this->typeName() == "Char") {
+        } else if (this->structure()->name() == "Char") {
             context.print("char");
-        } else if (this->typeName() == "Void") {
+        } else if (this->structure()->name() == "Void") {
             context.print("void");
         } else {
             assert(0 && "Unhandled type for C code rendering");

@@ -34,7 +34,7 @@ ASSERT_EQ("Return", tmp->name()); \
 } while(0)
 
 #define ASSERT_DATA_TYPE(dt_name, dt_indirection, obj) do {\
-ASSERT_EQ(dt_name, obj.typeName()); \
+ASSERT_EQ(dt_name, obj.structure()->name()); \
 ASSERT_EQ(dt_indirection, obj.indirectionDepth()); \
 } while(0)
 

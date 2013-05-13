@@ -47,7 +47,7 @@ namespace Language {
         }
 
         if (node->_parameterTypes.size() == 0) {
-            node->_parameterTypes.push_back(DataType::voidType());
+            node->_parameterTypes.push_back(DataType());
         }
 
         // now, check for the return type
@@ -57,7 +57,7 @@ namespace Language {
 
             node->_returnType = DataType::parse(parser);
         } else {
-            node->_returnType = DataType::voidType();
+            node->_returnType = DataType();
         }
 
         // parse the close paren

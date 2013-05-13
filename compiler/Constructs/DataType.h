@@ -1,15 +1,18 @@
 #pragma once
 
-#include "../Parser.h"
+#include "DataStructure.h"
+#include "../CodeGen/CSourceContext.h"
 
 #include <sstream>
-#include <string>
+
+namespace Language {
+    class Parser;
+}
 
 namespace Language {
     class DataType {
     public:
         static DataType parse(Parser& parser);
-        static DataType voidType();
 
     public:
         DataType();
@@ -18,13 +21,13 @@ namespace Language {
 
         void setIndirectionDepth(uint32_t depth);
         uint32_t indirectionDepth() const; 
-        void setTypeName(const std::string& string);
-        std::string typeName() const;
+        void setStructure(DataStructure* value);
+        DataStructure* structure() const;
 
         void codeGenCSource(CSourceContext& context);
 
     private:
-        uint32_t    _indirectionDepth;
-        std::string _typeName;
+        uint32_t       _indirectionDepth;
+        DataStructure* _structure;
     };
 }
