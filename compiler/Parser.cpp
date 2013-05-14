@@ -7,6 +7,7 @@
 #include "AST/IntegerLiteralNode.h"
 #include "AST/IfNode.h"
 #include "AST/BooleanLiteralNode.h"
+#include "AST/ImportNode.h"
 
 #include <assert.h>
 
@@ -79,12 +80,30 @@ namespace Language {
         return new RootNode();
     }
 
+    Module* Parser::moduleWithIdentifier(const std::string& name) {
+        Module* module = _module[name];
+
+        if (!module) {
+            // look up modules
+            std::cout << "[Parser] Need to look up module: " << name << std::endl;
+            if (name == "C.stdio") {
+                module = new Module();
+                module->setCIncludePath("stdio.h");
+                _module[name] = module;
+            }
+        }
+
+        return module;
+    }
+
     ASTNode* Parser::parseTopLevelNode() {
         // std::cout << "Parser: top level" << std::endl;
         
         switch (this->peek().type()) {
             case Token::Type::KeywordDef:
                 return this->parseDefinition();
+            case Token::Type::KeywordImport:
+                return ImportNode::parse(*this);
             case Token::Type::EndOfInput:
                 assert(0 && "parseTopLevelNode invalid state");
                 break;

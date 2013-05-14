@@ -5,7 +5,6 @@
 
 namespace Language {
     CSourceContext::CSourceContext() : _indentationLevel(0) {
-        _includes.push_back("stdio.h");
     }
 
     void CSourceContext::print(const char* string) {

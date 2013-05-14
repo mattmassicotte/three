@@ -22,7 +22,8 @@ namespace Language {
             KeywordEnd,
             KeywordReturn,
             KeywordIf,
-            KeywordElse
+            KeywordElse,
+            KeywordImport
         } Type;
 
     public:

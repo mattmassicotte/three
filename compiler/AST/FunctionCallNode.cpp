@@ -6,11 +6,21 @@
 
 namespace Language {
     FunctionCallNode* FunctionCallNode::parse(Parser& parser) {
-        FunctionCallNode* node;
+        FunctionCallNode* node = new FunctionCallNode();
+        Token t;
 
-        node = new FunctionCallNode();
+        t = parser.peek();
+        assert(t.type() == Token::Type::Identifier);
+        parser.next(); // advance past the identifier
 
-        node->setFunctionName(parser.next().str());
+        Function* func = parser.currentScope()->functionForName(t.str());
+        if (func) {
+            std::cout << "Found function: " << func->name() << std::endl;
+        } else {
+            std::cout << "Unable to find match for function: " << t.str() << std::endl;
+        }
+
+        node->setFunctionName(t.str());
 
         assert(parser.next().str().at(0) == '(');
 

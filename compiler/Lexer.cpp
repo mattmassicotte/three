@@ -10,6 +10,7 @@ namespace Language {
         _stream = stream;
         _subtoken = this->advanceSubtoken();
 
+        _keywordMap["import"] = Token::Type::KeywordImport;
         _keywordMap["def"]    = Token::Type::KeywordDef;
         _keywordMap["end"]    = Token::Type::KeywordEnd;
         _keywordMap["return"] = Token::Type::KeywordReturn;

@@ -3,6 +3,10 @@
 #include "Lexer.h"
 #include "AST/ASTNode.h"
 #include "Constructs/Scope.h"
+#include "Constructs/Module.h"
+
+#include <string>
+#include <map>
 
 namespace Language {
     class Parser {
@@ -14,6 +18,8 @@ namespace Language {
 
         ASTNode* parseStatement();
         ASTNode* parseExpression();
+
+        Module*  moduleWithIdentifier(const std::string& name);
 
     protected:
         ASTNode* parseTopLevelNode();
@@ -30,5 +36,7 @@ namespace Language {
     private:
         Lexer* _lexer;
         Scope* _currentScope;
+
+        std::map<std::string, Module*> _module;
     };
 }

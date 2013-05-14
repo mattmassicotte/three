@@ -79,14 +79,17 @@ protected:
 TEST_F(ParserTest, SimpleHelloWorldProgram) {
     Language::ASTNode* node;
 
-    node = this->parse("def main(Int argc, **Char argv; Int)\n    printf(\"hello world\")\n    return 0\nend\n");
+    node = this->parse("import C.stdio\n\ndef main(Int argc, **Char argv; Int)\n    printf(\"hello world\")\n    return 0\nend\n");
 
     ASSERT_EQ("Root", node->name());
-    ASSERT_EQ(1, node->childCount());
+    ASSERT_EQ(2, node->childCount());
 
+    // import statement
+
+    // function definition
     Language::FunctionDefinitionNode* defNode;
 
-    defNode = (Language::FunctionDefinitionNode *)node->childAtIndex(0);
+    defNode = (Language::FunctionDefinitionNode *)node->childAtIndex(1);
 
     ASSERT_EQ("FunctionDefinition", defNode->name());
     ASSERT_EQ(2, defNode->childCount());
@@ -112,6 +115,9 @@ TEST_F(ParserTest, SimpleHelloWorldProgram) {
     ASSERT_RETURN_NODE(returnNode);
     ASSERT_EQ(1, returnNode->childCount());
     ASSERT_INTEGER_LITERAL_NODE(0, returnNode->childAtIndex(0));
+
+    std::cout << node->recursiveStr() << std::endl;
+
     Language::CSourceContext c;
 
     node->codeGenCSource(c);
