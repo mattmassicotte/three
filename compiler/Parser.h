@@ -20,6 +20,7 @@ namespace Language {
         ASTNode* parseExpression();
 
         Module*  moduleWithIdentifier(const std::string& name);
+        Module*  currentModule() const;
 
     protected:
         ASTNode* parseTopLevelNode();
@@ -38,5 +39,6 @@ namespace Language {
         Scope* _currentScope;
 
         std::map<std::string, Module*> _module;
+        Module* _rootModule;
     };
 }

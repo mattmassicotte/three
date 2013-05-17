@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ASTNode.h"
-#include "../Constructs/DataType.h"
+#include "../Constructs/Function.h"
 
 namespace Language {
     class FunctionDefinitionNode : public ASTNode {
@@ -12,18 +12,11 @@ namespace Language {
         virtual std::string name() const;
         std::string str() const;
 
-        void setFunctionName(const std::string& name);
-        std::string functionName() const;
-        std::vector<DataType> parameters() const;
-        DataType returnType() const;
+        Function* function() const;
 
         void codeGenCSource(CSourceContext& context);
 
     private:
-        std::string _functionName;
-
-        std::vector<DataType>    _parameterTypes;
-        std::vector<std::string> _parameterNames;
-        DataType                 _returnType;
+        Function* _function;
     };
 }

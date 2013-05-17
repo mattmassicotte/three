@@ -31,7 +31,7 @@ namespace Language {
         std::map<std::string, Variable*>      _variables;
         std::map<std::string, Function*>      _functions;
         std::map<std::string, DataStructure*> _dataStructures;
-        
+
         Scope* _parent;
     };
 }

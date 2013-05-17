@@ -1,6 +1,12 @@
 #include "Variable.h"
 
 namespace Language {
+    Variable::Variable() {
+    }
+
+    Variable::Variable(const std::string& name, const DataType& type) : _name(name), _type(type) {
+    }
+
     void Variable::setName(const std::string& value) {
         _name = value;
     }

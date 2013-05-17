@@ -13,7 +13,7 @@ namespace Language {
         assert(t.type() == Token::Type::Identifier);
         parser.next(); // advance past the identifier
 
-        Function* func = parser.currentScope()->functionForName(t.str());
+        Function* func = parser.currentModule()->functionForName(t.str());
         if (func) {
             std::cout << "Found function: " << func->name() << std::endl;
         } else {

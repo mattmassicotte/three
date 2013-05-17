@@ -38,6 +38,12 @@ ASSERT_EQ(dt_name, obj.structure()->name()); \
 ASSERT_EQ(dt_indirection, obj.indirectionDepth()); \
 } while(0)
 
+#define ASSERT_VARIABLE(var_type, var_indirection, var_name, obj) do { \
+Language::Variable* tmp = obj; \
+ASSERT_DATA_TYPE(var_type, var_indirection, tmp->dataType()); \
+ASSERT_EQ(var_name, tmp->name()); \
+} while(0)
+
 class ParserTest : public testing::Test {
 protected:
     virtual void SetUp() {
@@ -93,11 +99,11 @@ TEST_F(ParserTest, SimpleHelloWorldProgram) {
 
     ASSERT_EQ("FunctionDefinition", defNode->name());
     ASSERT_EQ(2, defNode->childCount());
-    ASSERT_EQ("main", defNode->functionName());
+    ASSERT_EQ("main", defNode->function()->name());
 
-    ASSERT_DATA_TYPE("Int",  0, defNode->parameters().at(0));
-    ASSERT_DATA_TYPE("Char", 2, defNode->parameters().at(1));
-    ASSERT_DATA_TYPE("Int",  0, defNode->returnType());
+    ASSERT_VARIABLE("Int",  0, "argc", defNode->function()->parameterAtIndex(0));
+    ASSERT_VARIABLE("Char", 2, "argv", defNode->function()->parameterAtIndex(1));
+    ASSERT_DATA_TYPE("Int",  0, defNode->function()->returnType());
 
     Language::FunctionCallNode* callNode;
 

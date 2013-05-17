@@ -37,6 +37,9 @@ namespace Language {
     DataType::DataType() : _indirectionDepth(0) {
     }
 
+    DataType::DataType(DataStructure* ds, uint32_t depth) : _structure(ds), _indirectionDepth(depth) {
+    }
+
     std::string DataType::str() const {
         std::stringstream s;
 

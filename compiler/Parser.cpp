@@ -14,6 +14,7 @@
 namespace Language {
     Parser::Parser(Lexer* lexer) : _lexer(lexer) {
         _currentScope = Scope::createRootScope();
+        _rootModule = Module::createRootModule();
     }
 
     Parser::~Parser() {
@@ -84,16 +85,15 @@ namespace Language {
         Module* module = _module[name];
 
         if (!module) {
-            // look up modules
-            std::cout << "[Parser] Need to look up module: " << name << std::endl;
-            if (name == "C.stdio") {
-                module = new Module();
-                module->setCIncludePath("stdio.h");
-                _module[name] = module;
-            }
+            module = Module::createModule(_rootModule, name, std::vector<std::string>());
+            _rootModule->addChild(module);
         }
 
         return module;
+    }
+
+    Module* Parser::currentModule() const {
+        return _rootModule;
     }
 
     ASTNode* Parser::parseTopLevelNode() {

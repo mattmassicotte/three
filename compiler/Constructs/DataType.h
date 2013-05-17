@@ -16,6 +16,7 @@ namespace Language {
 
     public:
         DataType();
+        DataType(DataStructure* ds, uint32_t depth);
 
         std::string str() const;
 
