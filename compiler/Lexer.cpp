@@ -49,6 +49,24 @@ namespace Language {
         }
     }
 
+    Token Lexer::punctuationToken(const char c) {
+        Token::Type type;
+
+        switch (c) {
+            case '{':
+                type = Token::Type::PunctuationOpenBrace;
+                break;
+            case '}':
+                type = Token::Type::PunctuationCloseBrace;
+                break;
+            default:
+                type = Token::Type::Punctuation;
+                break;
+        }
+
+        return Token(std::string(1, c), type);
+    }
+
     Token Lexer::nextSubtoken() {
         Token tmp = _subtoken;
 
@@ -129,20 +147,27 @@ namespace Language {
                         type = Token::Type::Comment;
                     }
                     break;
-                case '.':
-                case '{':
-                case '}':
-                case '(':
-                case ')':
-                case ':':
                 case '*':
                 case '-':
                 case '+':
                 case '!':
                 case '=':
-                case '@':
                 case '>':
                 case '<':
+                case '.':
+                    if (type != Token::Type::EndOfInput) {
+                        return Token(s.str(), type);
+                    }
+
+                    s << this->characterAdvance();
+                
+                    return Token(s.str(), Token::Type::Operator);
+                case '{':
+                case '}':
+                case '(':
+                case ')':
+                case ':':
+                case '@':
                 case '\'':
                 case ';':
                 case ',':
@@ -151,9 +176,9 @@ namespace Language {
                         return Token(s.str(), type);
                     }
 
-                    s << this->characterAdvance();
+                    this->characterAdvance();
 
-                    return Token(s.str(), Token::Type::Punctuation);
+                    return this->punctuationToken(c);
                 case '1':
                 case '2':
                 case '3':
@@ -315,6 +340,15 @@ namespace Language {
         _tokenBuffer.erase(_tokenBuffer.begin());
 
         return t;
+    }
+
+    bool Lexer::nextIf(const std::string& value) {
+        if (this->peek().str() == value) {
+            this->next();
+            return true;
+        }
+
+        return false;
     }
 
     Token Lexer::peek(unsigned int distance) {

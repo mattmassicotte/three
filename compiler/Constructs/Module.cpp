@@ -7,9 +7,9 @@ namespace Language {
     Module* Module::createRootModule() {
         Module* module = new Module();
 
-        module->addDataStructure("Void", new DataStructure("Void"));
-        module->addDataStructure("Int",  new DataStructure("Int"));
-        module->addDataStructure("Char", new DataStructure("Char"));
+        module->addDataType("Void", new DataType(DataType::Flavor::Scalar, "Void"));
+        module->addDataType("Int",  new DataType(DataType::Flavor::Scalar, "Int"));
+        module->addDataType("Char", new DataType(DataType::Flavor::Scalar, "Char"));
 
         return module;
     }
@@ -22,9 +22,8 @@ namespace Language {
 
             Function* func = new Function();
             func->setName("printf");
-            func->setReturnType(DataType(rootModule->dataStructureForName("Int"), 1));
-
-            func->addParameter("format", DataType(rootModule->dataStructureForName("Char"), 1));
+            func->setReturnType(TypeReference::ref(rootModule, "Int", 0));
+            func->addParameter("format", TypeReference::ref(rootModule, "Char", 1));
 
             module->addFunction("printf", func);
         }
@@ -36,15 +35,11 @@ namespace Language {
     }
 
     Module::~Module() {
-        for (Module* child : _childModules) {
-            delete child;
-        }
-
         for (auto& kv : _functions) {
             delete kv.second;
         }
 
-        for (auto& kv : _dataStructures) {
+        for (auto& kv : _dataTypes) {
             delete kv.second;
         }
     }
@@ -63,8 +58,8 @@ namespace Language {
     }
 
     Function* Module::functionForName(const std::string& name) {
-        for (Module* child : _childModules) {
-            Function* func = child->functionForName(name);
+        for (uint32_t i = 0; i < this->childCount(); ++i) {
+            Function* func = this->childAtIndex(i)->functionForName(name);
             if (func) {
                 return func;
             }
@@ -73,16 +68,12 @@ namespace Language {
         return _functions[name];
     }
 
-    void Module::addDataStructure(const std::string& name, DataStructure* type) {
+    void Module::addDataType(const std::string& name, DataType* type) {
         assert(type != NULL);
-        _dataStructures[name] = type;
+        _dataTypes[name] = type;
     }
 
-    DataStructure* Module::dataStructureForName(const std::string& name) {
-        return _dataStructures[name];
-    }
-
-    void Module::addChild(Module* child) {
-        _childModules.push_back(child);
+    DataType* Module::dataTypeForName(const std::string& name) {
+        return _dataTypes[name];
     }
 }

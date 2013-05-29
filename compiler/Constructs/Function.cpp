@@ -1,12 +1,14 @@
 #include "Function.h"
+#include "DataType.h"
 
+#include <iostream>
 #include <sstream>
 
 namespace Language {
     Function::~Function() {
-        for (Variable* v : _parameters) {
-            delete v;
-        }
+        // this->eachChild([=] (Variable* v, uint32_t index) {
+        //     delete v;
+        // });
     }
 
     std::string Function::str() const {
@@ -16,15 +18,17 @@ namespace Language {
 
         s << "(";
 
-        for (Variable* var : _parameters) {
-            s << var->dataType().str();
-            s << ",";
-        }
+        this->eachParameterWithLast([=, &s] (Variable* v, bool last) {
+            s << v->type().referencedType()->str();
+            if (!last) {
+                s << ",";
+            }
+        });
 
         s << ")";
 
-        s << "return: " << this->returnType().str();
-
+        s << "return: " << this->returnType().referencedType()->str();
+        
         return s.str();
     }
 
@@ -36,11 +40,11 @@ namespace Language {
         return _name;
     }
 
-    void Function::setReturnType(const DataType& type) {
+    void Function::setReturnType(const TypeReference& type) {
         _returnType = type;
     }
 
-    DataType Function::returnType() const {
+    TypeReference Function::returnType() const {
         return _returnType;
     }
 
@@ -48,21 +52,19 @@ namespace Language {
         return _parameters.size();
     }
 
-    void Function::addParameter(Variable* var) {
-        _parameters.push_back(var);
+    void Function::addParameter(const std::string& name, const TypeReference& type) {
+        _parameters.push_back(new Variable(name, type));
     }
 
-    void Function::addParameter(const std::string& name, const DataType& type) {
-        this->addParameter(new Variable(name, type));
-    }
-
-    Variable* Function::parameterAtIndex(uint32_t index) {
+    Variable* Function::parameterAtIndex(uint32_t index) const {
         return _parameters.at(index);
     }
 
-    void Function::eachParameter(std::function<void (Variable*, uint32_t)> func) {
-        for (uint32_t i = 0; i < _parameters.size(); ++i) {
-            func(_parameters[i], i);
+    void Function::eachParameterWithLast(std::function<void (Variable*, bool)> func) const {
+        uint32_t lastIndex = this->parameterCount() - 1;
+
+        for (uint32_t i = 0; i < this->parameterCount(); ++i) {
+            func(this->parameterAtIndex(i), lastIndex == i);
         }
     }
 }
