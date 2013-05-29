@@ -2,31 +2,30 @@
 
 #include "DataType.h"
 #include "Variable.h"
+#include "../Helpers/TreeStructure.hpp"
 
 #include <vector>
+#include <functional>
 
 namespace Language {
-    class Function {
+    class Function : public TreeStructure<Variable*> {
     public:
         virtual ~Function();
 
-        std::string str() const;
+        virtual std::string str() const;
 
         void setName(const std::string& value);
         std::string name() const;
-        void setReturnType(const DataType& type);
-        DataType returnType() const;
+        void setReturnType(DataType* type);
+        DataType* returnType() const;
 
-        uint32_t parameterCount() const;
-        void addParameter(Variable* var);
-        void addParameter(const std::string& name, const DataType& type);
-        Variable* parameterAtIndex(uint32_t index);
+        void addParameter(const std::string& name, DataType* type);
+        uint32_t parameterCount() { return this->childCount(); }
+        Variable* parameterAtIndex(uint32_t index) const;
 
-        void eachParameter(std::function<void (Variable*, uint32_t)> func);
 
     private:
-        std::string            _name;
-        DataType               _returnType;
-        std::vector<Variable*> _parameters;
+        std::string _name;
+        DataType*   _returnType;
     };
 }

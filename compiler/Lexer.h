@@ -17,6 +17,7 @@ namespace Language {
         char characterAdvance();
 
         void translateKeyword(Token& token);
+        Token punctuationToken(const char c);
 
         // working with subtoken stream
         Token nextSubtoken();
@@ -35,6 +36,7 @@ namespace Language {
     public:
         // actual function for consuming tokens
         Token next();
+        bool  nextIf(const std::string& value);
         Token peek(unsigned int distance = 1);
 
     private:

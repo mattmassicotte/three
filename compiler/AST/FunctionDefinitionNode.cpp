@@ -35,12 +35,12 @@ namespace Language {
 
             Variable* v = new Variable();
 
-            v->setDataType(DataType::parse(parser));
+            v->setType(parser.parseType());
             
             assert(parser.peek().type() == Token::Type::Identifier);
             v->setName(parser.next().str());
 
-            node->_function->addParameter(v);
+            node->_function->addChild(v);
 
             // a ',' means another paramter was specified
             if (parser.peek().str().at(0) == ',') {
@@ -54,9 +54,9 @@ namespace Language {
             // move past the ';'
             assert(parser.next().str().at(0) == ';');
 
-            node->_function->setReturnType(DataType::parse(parser));
+            node->_function->setReturnType(parser.parseType());
         } else {
-            node->_function->setReturnType(DataType());
+            node->_function->setReturnType(parser.currentModule()->dataTypeForName("Void"));
         }
 
         // parse the close paren
@@ -100,18 +100,20 @@ namespace Language {
         Function* f = this->function();
 
         assert(f);
-        f->returnType().codeGenCSource(context);
+        // TODO: this isn't right for function pointers
+        context.print(f->returnType()->name());
 
         context.print(" ");
         context.print(f->name());
         context.print("(");
 
-        f->eachParameter([=, &context] (Variable* var, uint32_t index) {
-            var->dataType().codeGenCSource(context);
+        f->eachChildWithLast([=, &context] (Variable* var, bool last) {
+            // TODO: not wright
+            context.print(var->type()->name());
             context.print(" ");
             context.print(var->name());
 
-            if (index < (f->parameterCount() - 1)) {
+            if (!last) {
                 context.print(", ");
             }
         });

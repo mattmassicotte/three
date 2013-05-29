@@ -4,7 +4,7 @@ namespace Language {
     Variable::Variable() {
     }
 
-    Variable::Variable(const std::string& name, const DataType& type) : _name(name), _type(type) {
+    Variable::Variable(const std::string& name, DataType* type) : _name(name), _type(type) {
     }
 
     void Variable::setName(const std::string& value) {
@@ -15,11 +15,11 @@ namespace Language {
         return _name;
     }
 
-    void Variable::setDataType(const DataType& type) {
+    void Variable::setType(DataType* type) {
         _type = type;
     }
 
-    DataType Variable::dataType() const {
+    DataType* Variable::type() const {
         return _type;
     }
 }

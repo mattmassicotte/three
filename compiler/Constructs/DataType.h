@@ -1,34 +1,45 @@
 #pragma once
 
-#include "DataStructure.h"
-#include "../CodeGen/CSourceContext.h"
-
+#include <functional>
+#include <vector>
 #include <sstream>
-
-namespace Language {
-    class Parser;
-}
 
 namespace Language {
     class DataType {
     public:
-        static DataType parse(Parser& parser);
-
+        typedef enum {
+            Undefined,
+            Scalar,
+            Structure,
+            Union,
+            Function,
+            Closure
+        } Flavor;
     public:
-        DataType();
-        DataType(DataStructure* ds, uint32_t depth);
+        DataType(const Flavor& type);
+        DataType(const Flavor& type, const std::string& name);
 
         std::string str() const;
 
-        void setIndirectionDepth(uint32_t depth);
-        uint32_t indirectionDepth() const; 
-        void setStructure(DataStructure* value);
-        DataStructure* structure() const;
+        Flavor flavor() const;
+        void setFlavor(const Flavor& value);
+        std::string name() const;
+        void setName(const std::string& string);
 
-        void codeGenCSource(CSourceContext& context);
+        uint32_t childCount() const;
+        void eachChild(std::function<void (DataType*, uint32_t)> func) const;
+
+        bool isFunction() const;
+
+        DataType* returnType() const;
+        void      setReturnType(DataType* value);
+        void      eachParameterWithLast(std::function<void (DataType*, bool)> func);
 
     private:
-        uint32_t       _indirectionDepth;
-        DataStructure* _structure;
+        Flavor      _type;
+        std::string _name;
+        
+        DataType*              _returnType;
+        std::vector<DataType*> _children;
     };
 }

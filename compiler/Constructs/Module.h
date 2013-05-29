@@ -1,14 +1,15 @@
 #pragma once
 
+#include "../Helpers/TreeStructure.hpp"
 #include "Function.h"
-#include "DataStructure.h"
+#include "DataType.h"
 
 #include <string>
 #include <vector>
 #include <map>
 
 namespace Language {
-    class Module {
+    class Module : public TreeStructure<Module*> {
     public:
         static Module* createRootModule();
         static Module* createModule(Module* rootModule, const std::string& path, std::vector<std::string> basePaths);
@@ -23,18 +24,14 @@ namespace Language {
         void addFunction(const std::string& name, Function* func);
         Function* functionForName(const std::string& name);
 
-        void addDataStructure(const std::string& name, DataStructure* type);
-        DataStructure* dataStructureForName(const std::string& name);
-
-        void addChild(Module* child);
+        void addDataType(const std::string& name, DataType* type);
+        DataType* dataTypeForName(const std::string& name);
 
     private:
-        std::vector<Module*> _childModules;
-
         std::string _cIncludePath;
 
-        std::map<std::string, DataStructure*> _dataStructures;
-        std::map<std::string, Function*>      _functions;
+        std::map<std::string, DataType*> _dataTypes;
+        std::map<std::string, Function*> _functions;
         
     };
 }

@@ -2,84 +2,73 @@
 #include "../Parser.h"
 
 #include <assert.h>
-#include <sstream>
 
 namespace Language {
-    DataType DataType::parse(Parser& parser) {
-        DataType dataType;
-        uint32_t depth = 0;
-
-        // parse '*', if they are there
-        while (parser.peek().str().at(0) == '*') {
-            parser.next();
-            depth++;
-        }
-
-        dataType.setIndirectionDepth(depth);
-
-        // parse the type identifier
-        assert(parser.peek().type() == Token::Type::Identifier);
-
-        std::string identifier = parser.next().str();
-        DataStructure* structure = parser.currentScope()->dataStructureForName(identifier);
-
-        dataType.setStructure(structure);
-
-        // parser ":<specialization>", if present
-        while (parser.peek().str().at(0) == ':') {
-            parser.next(); // ":"
-            parser.next(); // "value"
-        }
-
-        return dataType;
+    DataType::DataType(const Flavor& type) : _type(type) {
     }
 
-    DataType::DataType() : _indirectionDepth(0) {
-    }
-
-    DataType::DataType(DataStructure* ds, uint32_t depth) : _structure(ds), _indirectionDepth(depth) {
+    DataType::DataType(const Flavor& type, const std::string& name) : _type(type), _name(name) {
     }
 
     std::string DataType::str() const {
-        std::stringstream s;
-
-        s << "<indirection: " << this->indirectionDepth() << " " << this->structure()->name() << ">";
-
-        return s.str();
+        return this->name();
     }
 
-    void DataType::setIndirectionDepth(uint32_t depth) {
-        _indirectionDepth = depth;
+    DataType::Flavor DataType::flavor() const {
+        return _type;
     }
 
-    uint32_t DataType::indirectionDepth() const {
-        return _indirectionDepth;
+    void DataType::setFlavor(const Flavor& value) {
+        _type = value;
     }
 
-    void DataType::setStructure(DataStructure* value) {
+    std::string DataType::name() const {
+        return _name;
+    }
+
+    void DataType::setName(const std::string& string) {
+        _name = string;
+    }
+
+    uint32_t DataType::childCount() const {
+        return _children.size();
+    }
+
+    void DataType::eachChild(std::function<void (DataType*, uint32_t)> func) const {
+        uint32_t index = 0;
+        for (DataType* child : _children) {
+            func(child, index);
+            ++index;
+        }
+    }
+
+    bool DataType::isFunction() const {
+        return _type == Flavor::Function;
+    }
+
+    DataType* DataType::returnType() const {
+        assert(this->isFunction());
+
+        return _returnType;
+    }
+
+    void DataType::setReturnType(DataType* value) {
+        assert(this->isFunction());
         assert(value);
-        _structure = value;
+
+        _returnType = value;
     }
 
-    DataStructure* DataType::structure() const {
-        return _structure;
-    }
+    void DataType::eachParameterWithLast(std::function<void (DataType*, bool)> func) {
+        assert(this->isFunction());
+        uint32_t lastIndex = this->childCount() - 1;
 
-    void DataType::codeGenCSource(CSourceContext& context) {
-        assert(this->structure());
+        this->eachChild([=] (DataType* child, uint32_t index) {
+            if (index == 0) {
+                return;
+            }
 
-        if (this->structure()->name() == "Int") {
-            context.print("int");
-        } else if (this->structure()->name() == "Char") {
-            context.print("char");
-        } else if (this->structure()->name() == "Void") {
-            context.print("void");
-        } else {
-            assert(0 && "Unhandled type for C code rendering");
-        }
-
-        for (int i = 0; i < this->indirectionDepth(); ++i) {
-            context.print("*");
-        }
+            func(child, index == lastIndex);
+        });
     }
 }
