@@ -178,20 +178,20 @@ namespace Language {
             type->setReturnType(TypeReference(this->currentModule()->dataTypeForName("Void"), 0));
             return TypeReference(type, depth);
         }
-        // 
-        // // return type seperator
-        // assert(this->nextIf(";"));
-        // 
-        // // return type
-        // if (!this->nextIf(";")) {
-        //     type._returnType = DataType::parse(*this);
-        // }
-        // 
-        // // is there a capture list
-        // if (this->nextIf("}")) {
-        //     return type;
-        // }
-        // 
+        
+        // return type seperator
+        assert(this->nextIf(";"));
+        
+        // return type
+        if (!this->nextIf(";")) {
+            type->setReturnType(this->parseType());
+        }
+        
+        // is there a capture list
+        if (this->nextIf("}")) {
+            return TypeReference(type, depth);
+        }
+        
         // type._returnType = DataType(this->currentModule()->dataStructureForName("Void"), 0);
         // 
         // // capture list
