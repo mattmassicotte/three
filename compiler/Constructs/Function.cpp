@@ -1,13 +1,14 @@
 #include "Function.h"
+#include "DataType.h"
 
 #include <iostream>
 #include <sstream>
 
 namespace Language {
     Function::~Function() {
-        this->eachChild([=] (Variable* v, uint32_t index) {
-            delete v;
-        });
+        // this->eachChild([=] (Variable* v, uint32_t index) {
+        //     delete v;
+        // });
     }
 
     std::string Function::str() const {
@@ -17,8 +18,8 @@ namespace Language {
 
         s << "(";
 
-        this->eachChild([=, &s] (Variable* v, bool last) {
-            s << v->type()->str();
+        this->eachParameterWithLast([=, &s] (Variable* v, bool last) {
+            s << v->type().referencedType()->str();
             if (!last) {
                 s << ",";
             }
@@ -26,7 +27,7 @@ namespace Language {
 
         s << ")";
 
-        s << "return: " << this->returnType()->str();
+        s << "return: " << this->returnType().referencedType()->str();
         
         return s.str();
     }
@@ -39,19 +40,31 @@ namespace Language {
         return _name;
     }
 
-    void Function::setReturnType(DataType* type) {
+    void Function::setReturnType(const TypeReference& type) {
         _returnType = type;
     }
 
-    DataType* Function::returnType() const {
+    TypeReference Function::returnType() const {
         return _returnType;
     }
 
-    void Function::addParameter(const std::string& name, DataType* type) {
-        this->addChild(new Variable(name, type));
+    uint32_t Function::parameterCount() const {
+        return _parameters.size();
+    }
+
+    void Function::addParameter(const std::string& name, const TypeReference& type) {
+        _parameters.push_back(new Variable(name, type));
     }
 
     Variable* Function::parameterAtIndex(uint32_t index) const {
-        return this->childAtIndex(index);
+        return _parameters.at(index);
+    }
+
+    void Function::eachParameterWithLast(std::function<void (Variable*, bool)> func) const {
+        uint32_t lastIndex = this->parameterCount() - 1;
+
+        for (uint32_t i = 0; i < this->parameterCount(); ++i) {
+            func(this->parameterAtIndex(i), lastIndex == i);
+        }
     }
 }

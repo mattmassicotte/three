@@ -4,7 +4,7 @@
 #include "AST/ASTNode.h"
 #include "Constructs/Scope.h"
 #include "Constructs/Module.h"
-#include "Constructs/DataType.h"
+#include "Constructs/TypeReference.h"
 
 #include <string>
 #include <map>
@@ -20,13 +20,13 @@ namespace Language {
         ASTNode* parseStatement();
         ASTNode* parseExpression();
 
-        DataType* parseType();
+        TypeReference parseType();
 
         Module*  moduleWithIdentifier(const std::string& name);
         Module*  currentModule() const;
 
     protected:
-        DataType* parseFunctionType();
+        TypeReference parseFunctionType(uint32_t depth);
         ASTNode* parseTopLevelNode();
         ASTNode* parseDefinition();
 

@@ -39,7 +39,7 @@ ASSERT_EQ(dt_name, obj->name()); \
 
 #define ASSERT_VARIABLE(var_type, var_indirection, var_name, obj) do { \
 Language::Variable* tmp = obj; \
-ASSERT_DATA_TYPE(var_type, tmp->type().dataType()); \
+ASSERT_DATA_TYPE(var_type, tmp->type().referencedType()); \
 ASSERT_EQ(var_indirection, tmp->type().indirectionDepth()); \
 ASSERT_EQ(var_name, tmp->name()); \
 } while(0)
@@ -156,8 +156,8 @@ TEST_F(ParserTest, ClosureInFunction) {
     Language::ASTNode* node;
 
     // node = this->parse("def test()\nInt x\nInt y\n{Int, Int; Int} closure\nx = 42\ny = 43\nclosure = do (int a, int b; int; x) {\nx = a + b + y\nreturn a + b\n}\n printf(\"x = %d, value = %d\\n\", x, closure(1,2))\nprintf(\"x = %d\\n\", x)\nend\n");
-    node = this->parse("def test()\nInt x\nInt y\n{Int, Int; Int} closure\nend\n");
-    // node = this->parse("def test()\nInt x\nInt y\nend\n");
+    // node = this->parse("def test()\nInt x\nInt y\n{Int, Int; Int} closure\nend\n");
+    node = this->parse("def test()\nInt x\nInt y\nend\n");
 
     std::cout << node->recursiveStr() << std::endl;
 

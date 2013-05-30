@@ -88,7 +88,7 @@ namespace Language {
         return new RootNode();
     }
 
-    DataType* Parser::parseType() {
+    TypeReference Parser::parseType() {
         DataType* dataType = NULL;
         uint32_t  depth    = 0;
 
@@ -103,17 +103,17 @@ namespace Language {
                 dataType = this->currentModule()->dataTypeForName(this->next().str());
                 break;
             case Token::Type::PunctuationOpenBrace:
-                dataType = this->parseFunctionType();
+                return this->parseFunctionType(depth);
                 break;
             default:
                 assert(0 && "Got to a weird value parsing a type");
                 break;
         }
 
-        return dataType;
+        return TypeReference(dataType, depth);
     }
 
-    DataType* Parser::parseFunctionType() {
+    TypeReference Parser::parseFunctionType(uint32_t depth) {
         DataType* type;
         bool      closure;
 
@@ -141,7 +141,7 @@ namespace Language {
                 break;
             }
 
-            type->addChild(this->parseType().dataType());
+            type->addChild(this->parseType());
 
             // here is where labels could be parsed
             assert(this->peek().type() != Token::Type::Identifier && "Label parsing?");
@@ -161,11 +161,11 @@ namespace Language {
                 type->setReturnType(TypeReference(this->currentModule()->dataTypeForName("Void"), 0));
             } else {
                 assert(this->nextIf(";"));
-                type->setReturnType(DataType::parse(*this));
+                type->setReturnType(this->parseType());
                 assert(this->nextIf(")"));
             }
         
-            return type;
+            return TypeReference(type, depth);
         }
         
         // ok, so we have a closure.
@@ -175,8 +175,8 @@ namespace Language {
         // - ;Type;capture list}
         
         if (this->nextIf("}")) {
-            type->setReturnType = DataType(this->currentModule()->dataStructureForName("Void"), 0);
-            return type;
+            type->setReturnType(TypeReference(this->currentModule()->dataTypeForName("Void"), 0));
+            return TypeReference(type, depth);
         }
         // 
         // // return type seperator
@@ -217,7 +217,7 @@ namespace Language {
         //     }
         // }
         // 
-        return type;
+        return TypeReference(type, depth);
     }
 
     Module* Parser::moduleWithIdentifier(const std::string& name) {

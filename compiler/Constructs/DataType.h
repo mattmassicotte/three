@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TypeReference.h"
+
 #include <functional>
 #include <vector>
 #include <sstream>
@@ -27,19 +29,20 @@ namespace Language {
         void setName(const std::string& string);
 
         uint32_t childCount() const;
-        void eachChild(std::function<void (DataType*, uint32_t)> func) const;
-
+        void addChild(const TypeReference& value);
+        void eachChild(std::function<void (const TypeReference&, uint32_t)> func) const;
+        
         bool isFunction() const;
 
-        DataType* returnType() const;
-        void      setReturnType(DataType* value);
-        void      eachParameterWithLast(std::function<void (DataType*, bool)> func);
+        TypeReference returnType() const;
+        void          setReturnType(const TypeReference& value);
+        void          eachParameterWithLast(std::function<void (const TypeReference&, bool)> func);
 
     private:
         Flavor      _type;
         std::string _name;
         
-        DataType*              _returnType;
-        std::vector<DataType*> _children;
+        TypeReference              _returnType;
+        std::vector<TypeReference> _children;
     };
 }

@@ -33,14 +33,9 @@ namespace Language {
                 break;
             }
 
-            Variable* v = new Variable();
+            TypeReference type = parser.parseType();
 
-            v->setType(parser.parseType());
-            
-            assert(parser.peek().type() == Token::Type::Identifier);
-            v->setName(parser.next().str());
-
-            node->_function->addChild(v);
+            node->_function->addParameter(parser.next().str(), type);
 
             // a ',' means another paramter was specified
             if (parser.peek().str().at(0) == ',') {
@@ -56,7 +51,7 @@ namespace Language {
 
             node->_function->setReturnType(parser.parseType());
         } else {
-            node->_function->setReturnType(parser.currentModule()->dataTypeForName("Void"));
+            node->_function->setReturnType(TypeReference::ref(parser.currentModule(), "Void", 0));
         }
 
         // parse the close paren
@@ -101,15 +96,15 @@ namespace Language {
 
         assert(f);
         // TODO: this isn't right for function pointers
-        context.print(f->returnType()->name());
+        context.print(f->returnType().referencedType()->name());
 
         context.print(" ");
         context.print(f->name());
         context.print("(");
 
-        f->eachChildWithLast([=, &context] (Variable* var, bool last) {
+        f->eachParameterWithLast([=, &context] (Variable* var, bool last) {
             // TODO: not wright
-            context.print(var->type()->name());
+            context.print(var->type().referencedType()->name());
             context.print(" ");
             context.print(var->name());
 

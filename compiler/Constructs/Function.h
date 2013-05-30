@@ -1,14 +1,13 @@
 #pragma once
 
-#include "DataType.h"
+#include "TypeReference.h"
 #include "Variable.h"
-#include "../Helpers/TreeStructure.hpp"
 
 #include <vector>
 #include <functional>
 
 namespace Language {
-    class Function : public TreeStructure<Variable*> {
+    class Function {
     public:
         virtual ~Function();
 
@@ -16,16 +15,17 @@ namespace Language {
 
         void setName(const std::string& value);
         std::string name() const;
-        void setReturnType(DataType* type);
-        DataType* returnType() const;
+        void setReturnType(const TypeReference& type);
+        TypeReference returnType() const;
 
-        void addParameter(const std::string& name, DataType* type);
-        uint32_t parameterCount() { return this->childCount(); }
+        void addParameter(const std::string& name, const TypeReference& type);
+        uint32_t parameterCount() const ;
         Variable* parameterAtIndex(uint32_t index) const;
-
+        void      eachParameterWithLast(std::function<void (Variable*, bool)> func) const;
 
     private:
-        std::string _name;
-        DataType*   _returnType;
+        std::string            _name;
+        TypeReference          _returnType;
+        std::vector<Variable*> _parameters;
     };
 }

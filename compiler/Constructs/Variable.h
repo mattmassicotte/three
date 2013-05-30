@@ -1,20 +1,20 @@
 #pragma once
 
-#include "DataType.h"
+#include "TypeReference.h"
 
 namespace Language {
     class Variable {
     public:
         Variable();
-        Variable(const std::string& name, DataType* type);
+        Variable(const std::string& name, const TypeReference& type);
 
         void setName(const std::string& value);
         std::string name() const;
-        void setType(DataType* type);
-        DataType* type() const;
+        void setType(const TypeReference& type);
+        TypeReference type() const;
 
     private:
-        std::string _name;
-        DataType*   _type;
+        std::string   _name;
+        TypeReference _type;
     };
 }

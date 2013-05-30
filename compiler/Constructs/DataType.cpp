@@ -34,9 +34,13 @@ namespace Language {
         return _children.size();
     }
 
-    void DataType::eachChild(std::function<void (DataType*, uint32_t)> func) const {
+    void DataType::addChild(const TypeReference& value) {
+        _children.push_back(value);
+    }
+
+    void DataType::eachChild(std::function<void (const TypeReference&, uint32_t)> func) const {
         uint32_t index = 0;
-        for (DataType* child : _children) {
+        for (const TypeReference& child : _children) {
             func(child, index);
             ++index;
         }
@@ -46,28 +50,23 @@ namespace Language {
         return _type == Flavor::Function;
     }
 
-    DataType* DataType::returnType() const {
+    TypeReference DataType::returnType() const {
         assert(this->isFunction());
 
         return _returnType;
     }
 
-    void DataType::setReturnType(DataType* value) {
+    void DataType::setReturnType(const TypeReference& value) {
         assert(this->isFunction());
-        assert(value);
 
         _returnType = value;
     }
 
-    void DataType::eachParameterWithLast(std::function<void (DataType*, bool)> func) {
+    void DataType::eachParameterWithLast(std::function<void (const TypeReference&, bool)> func) {
         assert(this->isFunction());
         uint32_t lastIndex = this->childCount() - 1;
 
-        this->eachChild([=] (DataType* child, uint32_t index) {
-            if (index == 0) {
-                return;
-            }
-
+        this->eachChild([=] (const TypeReference& child, uint32_t index) {
             func(child, index == lastIndex);
         });
     }

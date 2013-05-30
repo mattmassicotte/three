@@ -22,7 +22,7 @@ namespace Language {
 
             Function* func = new Function();
             func->setName("printf");
-            func->setReturnType(rootModule->dataTypeForName("Int"));
+            func->setReturnType(TypeReference::ref(rootModule, "Int", 0));
             func->addParameter("format", TypeReference::ref(rootModule, "Char", 1));
 
             module->addFunction("printf", func);
