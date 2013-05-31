@@ -1,11 +1,11 @@
-#include "VariableNode.h"
+#include "VariableDeclarationNode.h"
 #include "../Parser.h"
 
 #include <assert.h>
 
 namespace Language {
-    VariableNode* VariableNode::parse(Parser& parser) {
-        VariableNode* node = new VariableNode();
+    VariableDeclarationNode* VariableDeclarationNode::parse(Parser& parser) {
+        VariableDeclarationNode* node = new VariableDeclarationNode();
 
         node->_variable = new Variable();
 
@@ -20,11 +20,11 @@ namespace Language {
         return node;
     }
 
-    std::string VariableNode::name() const {
+    std::string VariableDeclarationNode::name() const {
         return "Variable";
     }
 
-    void VariableNode::codeGenCSource(CSourceContext& context) {
+    void VariableDeclarationNode::codeGenCSource(CSourceContext& context) {
         DataType* type = this->_variable->type().referencedType();
 
         if (!type->isFunction()) {

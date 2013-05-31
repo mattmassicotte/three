@@ -8,7 +8,7 @@
 #include "AST/IfNode.h"
 #include "AST/BooleanLiteralNode.h"
 #include "AST/ImportNode.h"
-#include "AST/VariableNode.h"
+#include "AST/VariableDeclarationNode.h"
 
 #include <assert.h>
 
@@ -43,16 +43,16 @@ namespace Language {
             case Token::Type::Identifier:
                 if (this->peek(2).str().at(0) == '(') {
                     node = FunctionCallNode::parse(*this);
-                } if (this->peek(2).type() == Token::Type::Operator) {
-                    node = OperatorNode::parse(*this, 0, node);
+                } else if (this->peek(2).type() == Token::Type::Operator) {
+                    node = new RootNode();
                 } else {
-                    node = VariableNode::parse(*this);
+                    node = VariableDeclarationNode::parse(*this);
                 }
 
                 break;
             case Token::Type::PunctuationOpenBrace:
                 // closure type
-                node = VariableNode::parse(*this);
+                node = VariableDeclarationNode::parse(*this);
                 break;
             case Token::Type::KeywordReturn:
                 node = ReturnNode::parse(*this);

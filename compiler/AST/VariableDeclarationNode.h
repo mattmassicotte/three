@@ -4,9 +4,9 @@
 #include "../Constructs/Variable.h"
 
 namespace Language {
-    class VariableNode : public ASTNode {
+    class VariableDeclarationNode : public ASTNode {
     public:
-        static VariableNode* parse(Parser& parser);
+        static VariableDeclarationNode* parse(Parser& parser);
 
     public:
         virtual std::string name() const;
