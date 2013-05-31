@@ -1,32 +1,31 @@
 #pragma once
 
-#include "DataType.h"
+#include "TypeReference.h"
 #include "Variable.h"
 
 #include <vector>
+#include <functional>
 
 namespace Language {
     class Function {
     public:
         virtual ~Function();
 
-        std::string str() const;
+        virtual std::string str() const;
 
         void setName(const std::string& value);
         std::string name() const;
-        void setReturnType(const DataType& type);
-        DataType returnType() const;
+        void setReturnType(const TypeReference& type);
+        TypeReference returnType() const;
 
-        uint32_t parameterCount() const;
-        void addParameter(Variable* var);
-        void addParameter(const std::string& name, const DataType& type);
-        Variable* parameterAtIndex(uint32_t index);
-
-        void eachParameter(std::function<void (Variable*, uint32_t)> func);
+        void addParameter(const std::string& name, const TypeReference& type);
+        uint32_t parameterCount() const ;
+        Variable* parameterAtIndex(uint32_t index) const;
+        void      eachParameterWithLast(std::function<void (Variable*, bool)> func) const;
 
     private:
         std::string            _name;
-        DataType               _returnType;
+        TypeReference          _returnType;
         std::vector<Variable*> _parameters;
     };
 }

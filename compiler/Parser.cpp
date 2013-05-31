@@ -8,6 +8,7 @@
 #include "AST/IfNode.h"
 #include "AST/BooleanLiteralNode.h"
 #include "AST/ImportNode.h"
+#include "AST/VariableNode.h"
 
 #include <assert.h>
 
@@ -42,7 +43,13 @@ namespace Language {
             case Token::Type::Identifier:
                 if (this->peek(2).str().at(0) == '(') {
                     node = FunctionCallNode::parse(*this);
+                } else {
+                    node = VariableNode::parse(*this);
                 }
+                break;
+            case Token::Type::PunctuationOpenBrace:
+                // closure type
+                node = VariableNode::parse(*this);
                 break;
             case Token::Type::KeywordReturn:
                 node = ReturnNode::parse(*this);
@@ -79,6 +86,138 @@ namespace Language {
         }
 
         return new RootNode();
+    }
+
+    TypeReference Parser::parseType() {
+        DataType* dataType = NULL;
+        uint32_t  depth    = 0;
+
+        // parse '*', if they are there
+        while (this->nextIf("*")) {
+            depth++;
+        }
+
+        // parse the type
+        switch (this->peek().type()) {
+            case Token::Type::Identifier:
+                dataType = this->currentModule()->dataTypeForName(this->next().str());
+                break;
+            case Token::Type::PunctuationOpenBrace:
+                return this->parseFunctionType(depth);
+                break;
+            default:
+                assert(0 && "Got to a weird value parsing a type");
+                break;
+        }
+
+        return TypeReference(dataType, depth);
+    }
+
+    TypeReference Parser::parseFunctionType(uint32_t depth) {
+        DataType* type;
+        bool      closure;
+
+        // determine if we are parsing a function type, a closure type, or we have an error
+        switch (this->peek().str().at(0)) {
+            case '(':
+                closure = false;
+                type = new DataType(DataType::Flavor::Function, "");
+                break;
+            case '{':
+                closure = true;
+                type = new DataType(DataType::Flavor::Function, "");
+                break;
+            default:
+                assert(0 && "Trying to parse a function type, but didn't find an opening '(' or '{'");
+                break;
+        }
+
+        this->next(); // advance past the opening punctuation
+
+        while (true) {
+            Token t = this->peek();
+
+            if (t.str().at(0) == ';' || t.str().at(0) == ')' || t.str().at(0) == '}') {
+                break;
+            }
+
+            type->addChild(this->parseType());
+
+            // here is where labels could be parsed
+            assert(this->peek().type() != Token::Type::Identifier && "Label parsing?");
+
+            // a ',' means another paramter was specified
+            if (!this->nextIf(",")) {
+                break;
+            }
+        }
+        
+        // a function
+        // - )
+        // - ;Type)
+        
+        if (!closure) {
+            if (this->nextIf(")")) {
+                type->setReturnType(TypeReference(this->currentModule()->dataTypeForName("Void"), 0));
+            } else {
+                assert(this->nextIf(";"));
+                type->setReturnType(this->parseType());
+                assert(this->nextIf(")"));
+            }
+        
+            return TypeReference(type, depth);
+        }
+        
+        // ok, so we have a closure.
+        // - }
+        // - ;Type}
+        // - ;;capture list}
+        // - ;Type;capture list}
+        
+        if (this->nextIf("}")) {
+            type->setReturnType(TypeReference(this->currentModule()->dataTypeForName("Void"), 0));
+            return TypeReference(type, depth);
+        }
+        
+        // return type seperator
+        assert(this->nextIf(";"));
+        
+        // return type
+        if (!this->nextIf(";")) {
+            type->setReturnType(this->parseType());
+        }
+        
+        // is there a capture list
+        if (this->nextIf("}")) {
+            return TypeReference(type, depth);
+        }
+        
+        // type._returnType = DataType(this->currentModule()->dataStructureForName("Void"), 0);
+        // 
+        // // capture list
+        // if (!references) {
+        //     return type;
+        // }
+        // 
+        // // loop over the capture list
+        // while (true) {
+        //     Token t = this->peek();
+        //     if (t.str().at(0) == '}') {
+        //         break;
+        //     }
+        // 
+        //     assert(t.type() == Token::Type::Identifier);
+        //     if (references) {
+        //         references->push_back(t.str());
+        //     }
+        //     this->next();
+        // 
+        //     if (!this->nextIf(",")) {
+        //         break;
+        //     }
+        // }
+        // 
+        return TypeReference(type, depth);
     }
 
     Module* Parser::moduleWithIdentifier(const std::string& name) {
@@ -138,6 +277,10 @@ namespace Language {
 
     Token Parser::next() {
         return _lexer->next();
+    }
+
+    bool Parser::nextIf(const std::string& value) {
+        return _lexer->nextIf(value);
     }
 
     Scope* Parser::currentScope() const {

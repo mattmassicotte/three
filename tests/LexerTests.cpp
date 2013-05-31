@@ -73,8 +73,8 @@ TEST_F(LexerTest, HelloWorldProgram) {
     ASSERT_NEXT_TOKEN(Identifier,  "Int");
     ASSERT_NEXT_TOKEN(Identifier,  "argc");
     ASSERT_NEXT_TOKEN(Punctuation, ",");
-    ASSERT_NEXT_TOKEN(Punctuation, "*");
-    ASSERT_NEXT_TOKEN(Punctuation, "*");
+    ASSERT_NEXT_TOKEN(Operator,    "*");
+    ASSERT_NEXT_TOKEN(Operator,    "*");
     ASSERT_NEXT_TOKEN(Identifier,  "Char");
     ASSERT_NEXT_TOKEN(Identifier,  "argv");
     ASSERT_NEXT_TOKEN(Punctuation, ";");

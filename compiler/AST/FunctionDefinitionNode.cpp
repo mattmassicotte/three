@@ -33,14 +33,9 @@ namespace Language {
                 break;
             }
 
-            Variable* v = new Variable();
+            TypeReference type = parser.parseType();
 
-            v->setDataType(DataType::parse(parser));
-            
-            assert(parser.peek().type() == Token::Type::Identifier);
-            v->setName(parser.next().str());
-
-            node->_function->addParameter(v);
+            node->_function->addParameter(parser.next().str(), type);
 
             // a ',' means another paramter was specified
             if (parser.peek().str().at(0) == ',') {
@@ -54,9 +49,9 @@ namespace Language {
             // move past the ';'
             assert(parser.next().str().at(0) == ';');
 
-            node->_function->setReturnType(DataType::parse(parser));
+            node->_function->setReturnType(parser.parseType());
         } else {
-            node->_function->setReturnType(DataType());
+            node->_function->setReturnType(TypeReference::ref(parser.currentModule(), "Void", 0));
         }
 
         // parse the close paren
@@ -100,18 +95,20 @@ namespace Language {
         Function* f = this->function();
 
         assert(f);
-        f->returnType().codeGenCSource(context);
+        // TODO: this isn't right for function pointers
+        context.print(f->returnType().referencedType()->name());
 
         context.print(" ");
         context.print(f->name());
         context.print("(");
 
-        f->eachParameter([=, &context] (Variable* var, uint32_t index) {
-            var->dataType().codeGenCSource(context);
+        f->eachParameterWithLast([=, &context] (Variable* var, bool last) {
+            // TODO: not wright
+            context.print(var->type().referencedType()->name());
             context.print(" ");
             context.print(var->name());
 
-            if (index < (f->parameterCount() - 1)) {
+            if (!last) {
                 context.print(", ");
             }
         });

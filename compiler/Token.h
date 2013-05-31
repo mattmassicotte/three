@@ -15,6 +15,8 @@ namespace Language {
             FalseLiteral,
             NullLiteral,
             Punctuation,
+            PunctuationOpenBrace,
+            PunctuationCloseBrace,
             String,
             Annotation,
             Comment,
@@ -23,7 +25,8 @@ namespace Language {
             KeywordReturn,
             KeywordIf,
             KeywordElse,
-            KeywordImport
+            KeywordImport,
+            Operator
         } Type;
 
     public:
