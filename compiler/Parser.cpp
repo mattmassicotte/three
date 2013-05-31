@@ -43,9 +43,12 @@ namespace Language {
             case Token::Type::Identifier:
                 if (this->peek(2).str().at(0) == '(') {
                     node = FunctionCallNode::parse(*this);
+                } if (this->peek(2).type() == Token::Type::Operator) {
+                    node = OperatorNode::parse(*this, 0, node);
                 } else {
                     node = VariableNode::parse(*this);
                 }
+
                 break;
             case Token::Type::PunctuationOpenBrace:
                 // closure type
@@ -125,7 +128,7 @@ namespace Language {
                 break;
             case '{':
                 closure = true;
-                type = new DataType(DataType::Flavor::Function, "");
+                type = new DataType(DataType::Flavor::Closure, "");
                 break;
             default:
                 assert(0 && "Trying to parse a function type, but didn't find an opening '(' or '{'");

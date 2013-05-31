@@ -152,6 +152,21 @@ TEST_F(ParserTest, SimpleIfWithElseStatement) {
     ASSERT_RETURN_NODE(ifNode->elseStatement()->childAtIndex(0));
 }
 
+TEST_F(ParserTest, AssignmentExpression) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nInt x\nx = 42\nend\n");
+
+    std::cout << node->recursiveStr() << std::endl;
+
+    Language::CSourceContext c;
+
+    node->codeGenCSource(c);
+
+    std::cout << c.renderToString();
+    
+}
+
 TEST_F(ParserTest, ClosureInFunction) {
     Language::ASTNode* node;
 

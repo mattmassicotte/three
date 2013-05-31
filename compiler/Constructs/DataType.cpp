@@ -47,7 +47,7 @@ namespace Language {
     }
 
     bool DataType::isFunction() const {
-        return _type == Flavor::Function;
+        return _type == Flavor::Function || _type == Flavor::Closure;
     }
 
     TypeReference DataType::returnType() const {
