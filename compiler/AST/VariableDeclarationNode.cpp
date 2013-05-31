@@ -21,7 +21,7 @@ namespace Language {
     }
 
     std::string VariableDeclarationNode::name() const {
-        return "Variable";
+        return "VariableDeclaration";
     }
 
     void VariableDeclarationNode::codeGenCSource(CSourceContext& context) {

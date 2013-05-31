@@ -9,6 +9,7 @@
 #include "AST/BooleanLiteralNode.h"
 #include "AST/ImportNode.h"
 #include "AST/VariableDeclarationNode.h"
+#include "AST/VariableNode.h"
 
 #include <assert.h>
 
@@ -44,7 +45,7 @@ namespace Language {
                 if (this->peek(2).str().at(0) == '(') {
                     node = FunctionCallNode::parse(*this);
                 } else if (this->peek(2).type() == Token::Type::Operator) {
-                    node = new RootNode();
+                    node = VariableNode::parse(*this);
                 } else {
                     node = VariableDeclarationNode::parse(*this);
                 }
