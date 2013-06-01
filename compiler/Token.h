@@ -29,18 +29,24 @@ namespace Language {
             Operator
         } Type;
 
+        const static uint32_t NonPrecedence     = 0;
+        const static uint32_t MinimumPrecedence = 1;
+
     public:
         Token(const std::string& string, const Type& type);
         Token();
 
         bool isEmpty();
         bool isEnd();
+        bool isStatementEnding();
 
         bool isBinaryLiteralSubtoken() const;
         bool isHexLiteralSubtoken() const;
 
         std::string str() const;
         Type type() const;
+
+        uint32_t precedence() const;
 
     private:
         std::string _string;

@@ -10,6 +10,7 @@
 #include "AST/ImportNode.h"
 #include "AST/VariableDeclarationNode.h"
 #include "AST/VariableNode.h"
+#include "AST/OperatorNode.h"
 
 #include <assert.h>
 
@@ -38,18 +39,16 @@ namespace Language {
     ASTNode* Parser::parseStatement() {
         ASTNode* node = NULL;
 
-        // std::cout << "Parser: statement" << std::endl;
+        // std::cout << "Parser: statement '" << this->peek().str() << "'" << std::endl;
+
+        // This really needs to do more exhausive checks for a variable
+        // declaration.
 
         switch (this->peek().type()) {
             case Token::Type::Identifier:
-                if (this->peek(2).str().at(0) == '(') {
-                    node = FunctionCallNode::parse(*this);
-                } else if (this->peek(2).type() == Token::Type::Operator) {
-                    node = VariableNode::parse(*this);
-                } else {
+                if (this->peek(2).type() == Token::Type::Identifier) {
                     node = VariableDeclarationNode::parse(*this);
                 }
-
                 break;
             case Token::Type::PunctuationOpenBrace:
                 // closure type
@@ -66,8 +65,8 @@ namespace Language {
         }
 
         if (!node) {
-            std::cout << "Parser: unhandled statement '" << this->next().str() << "'" << std::endl;
-            node = new RootNode();
+            std::cout << "Parser: falling back to expression statement" << std::endl;
+            node = this->parseExpression();
         }
 
         assert(this->next().type() == Token::Type::Newline);
@@ -75,21 +74,35 @@ namespace Language {
         return node;
     }
     ASTNode* Parser::parseExpression() {
-        // std::cout << "Parser: expression" << std::endl;
+        ASTNode* node = NULL;
+
+        std::cout << "Parser: expression: '" << this->peek().str() << "'" << std::endl;
         switch (this->peek().type()) {
+            case Token::Type::Identifier:
+                if (this->peek(2).str().at(0) == '(') {
+                    node = FunctionCallNode::parse(*this);
+                } else {
+                    node = VariableNode::parse(*this);
+                }
+                break;
             case Token::Type::String:
-                return StringLiteralNode::parse(*this);
+                node = StringLiteralNode::parse(*this);
+                break;
             case Token::Type::NumericLiteral:
-                return IntegerLiteralNode::parse(*this);
+                node = IntegerLiteralNode::parse(*this);
+                break;
             case Token::Type::TrueLiteral:
             case Token::Type::FalseLiteral:
-                return BooleanLiteralNode::parse(*this);
+                node = BooleanLiteralNode::parse(*this);
+                break;
             default:
                 std::cout << "Parser: unhandled expression '" << this->next().str() << "'" << std::endl;
                 break;
         }
 
-        return new RootNode();
+        assert(node != NULL);
+
+        return OperatorNode::parse(*this, Token::MinimumPrecedence, node);
     }
 
     TypeReference Parser::parseType() {

@@ -14,9 +14,7 @@ namespace Language {
         parser.next(); // advance past the identifier
 
         Function* func = parser.currentModule()->functionForName(t.str());
-        if (func) {
-            std::cout << "Found function: " << func->name() << std::endl;
-        } else {
+        if (!func) {
             std::cout << "Unable to find match for function: " << t.str() << std::endl;
         }
 
