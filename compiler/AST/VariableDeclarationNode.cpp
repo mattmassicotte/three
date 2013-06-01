@@ -11,7 +11,6 @@ namespace Language {
 
         node->_variable->setType(parser.parseType());
 
-        std::cout << parser.peek().str() << std::endl;
         assert(parser.peek().type() == Token::Type::Identifier);
         node->_variable->setName(parser.next().str());
 

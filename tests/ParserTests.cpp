@@ -34,6 +34,12 @@ Language::ReturnNode* tmp = dynamic_cast<Language::ReturnNode*>(node); \
 ASSERT_EQ("Return", tmp->name()); \
 } while(0)
 
+#define ASSERT_OPERATOR(op_value, node) do { \
+Language::OperatorNode* tmp = dynamic_cast<Language::OperatorNode*>(node); \
+ASSERT_EQ("Operator", tmp->name()); \
+ASSERT_EQ(op_value, tmp->op()); \
+} while(0)
+
 #define ASSERT_DATA_TYPE(dt_name, obj) do {\
 ASSERT_EQ(dt_name, obj->name()); \
 } while(0)
@@ -160,27 +166,30 @@ TEST_F(ParserTest, AssignmentExpression) {
 
     Language::OperatorNode* opNode = dynamic_cast<Language::OperatorNode*>(node->childAtIndex(0)->childAtIndex(1));
 
-    ASSERT_EQ("Operator", opNode->name());
-    ASSERT_EQ("=", opNode->op());
+    ASSERT_OPERATOR("=", opNode);
     ASSERT_EQ("Variable", opNode->childAtIndex(0)->name());
     ASSERT_INTEGER_LITERAL_NODE(42, opNode->childAtIndex(1));
 }
 
-// TEST_F(ParserTest, ComplexExpression) {
-//     Language::ASTNode* node;
-// 
-//     node = this->parse("def test()\nInt x\nx = 42 * (5 + 1)\nend\n");
-// 
-//     Language::OperatorNode* opNode = dynamic_cast<Language::OperatorNode*>(node->childAtIndex(0)->childAtIndex(1));
-// 
-//     std::cout << node->recursiveStr() << std::endl;
-// 
-//     Language::CSourceContext c;
-// 
-//     node->codeGenCSource(c);
-// 
-//     std::cout << c.renderToString();
-// }
+TEST_F(ParserTest, ComplexExpression) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nInt x\nx = 42 * (5 + 1)\nend\n");
+
+    Language::OperatorNode* opNode = dynamic_cast<Language::OperatorNode*>(node->childAtIndex(0)->childAtIndex(1));
+
+    ASSERT_OPERATOR("=", opNode);
+    ASSERT_EQ("Variable", opNode->childAtIndex(0)->name());
+
+    opNode = dynamic_cast<Language::OperatorNode*>(opNode->childAtIndex(1));
+    ASSERT_OPERATOR("*", opNode);
+    ASSERT_INTEGER_LITERAL_NODE(42, opNode->childAtIndex(0));
+
+    opNode = dynamic_cast<Language::OperatorNode*>(opNode->childAtIndex(1));
+    ASSERT_OPERATOR("+", opNode);
+    ASSERT_INTEGER_LITERAL_NODE(5, opNode->childAtIndex(0));
+    ASSERT_INTEGER_LITERAL_NODE(1, opNode->childAtIndex(1));
+}
 
 TEST_F(ParserTest, ClosureInFunction) {
     Language::ASTNode* node;

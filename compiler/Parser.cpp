@@ -87,6 +87,13 @@ namespace Language {
 #if DEBUG_PARSING
         std::cout << "Parser: expression: '" << this->peek().str() << "'" << std::endl;
 #endif
+
+        // TODO: clean this up!
+        if (this->nextIf("(")) {
+            node = this->parseExpression();
+
+            assert(this->next().str() == ")");
+        } else {
         switch (this->peek().type()) {
             case Token::Type::Identifier:
                 if (this->peek(2).str().at(0) == '(') {
@@ -109,6 +116,7 @@ namespace Language {
                 std::cout << "Parser: unhandled expression '" << this->next().str() << "'" << std::endl;
                 break;
         }
+    }
 
         assert(node != NULL);
 

@@ -13,7 +13,6 @@ namespace Language {
 
             // if we've gotten to the end of a statement, we have nothing left to do here
             if (t.isStatementEnding()) {
-                leftOperand->setStatement(true);
                 return leftOperand;
             }
 
@@ -52,6 +51,10 @@ namespace Language {
     }
 
     void OperatorNode::codeGenCSource(CSourceContext& context) {
+        if (!this->statement()) {
+            context.print("(");
+        }
+
         this->childAtIndex(0)->codeGenCSource(context);
         context.print(" ");
         context.print(this->op());
@@ -60,6 +63,8 @@ namespace Language {
 
         if (this->statement()) {
             context.print(";");
+        } else {
+            context.print(")");
         }
     }
 }

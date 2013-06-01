@@ -76,6 +76,13 @@ namespace Language {
     }
 
     uint32_t Token::precedence() const {
+        if (_string == "*") return 50;
+        if (_string == "%") return 50;
+        if (_string == "/") return 50;
+        if (_string == "+") return 40;
+        if (_string == "-") return 40;
+        if (_string == "<") return 30;
+        if (_string == ">") return 30;
         if (_string == "=") return 10;
 
         return Token::NonPrecedence;
