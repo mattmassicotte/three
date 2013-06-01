@@ -7,9 +7,18 @@ namespace Language {
     public:
         static ASTNode* parse(Parser& parser, uint32_t precedence, ASTNode* leftOperand);
 
+    private:
+        static OperatorNode* parseOperator(Parser& parser, ASTNode* leftOperand);
+
     public:
         virtual std::string name() const;
 
+        std::string op() const;
+        void        setOp(const std::string& string);
+
         void codeGenCSource(CSourceContext& context);
+
+    private:
+        std::string _operator;
     };
 }

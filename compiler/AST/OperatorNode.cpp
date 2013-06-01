@@ -13,6 +13,7 @@ namespace Language {
 
             // if we've gotten to the end of a statement, we have nothing left to do here
             if (t.isStatementEnding()) {
+                leftOperand->setStatement(true);
                 return leftOperand;
             }
 
@@ -20,22 +21,45 @@ namespace Language {
                 return leftOperand;
             }
 
-            OperatorNode* node = new OperatorNode();
-
-            std::cout << "Operation: " << parser.next().str() << std::endl;
-            node->addChild(leftOperand);
-            node->addChild(parser.parseExpression());
-
-            return node;
+            return OperatorNode::parseOperator(parser, leftOperand);
         }
+
         return leftOperand;
+    }
+
+    OperatorNode* OperatorNode::parseOperator(Parser& parser, ASTNode* leftOperand) {
+        OperatorNode* node;
+
+        node = new OperatorNode();
+        node->setOp(parser.next().str());
+
+        node->addChild(leftOperand);
+        node->addChild(parser.parseExpression());
+
+        return node;
     }
 
     std::string OperatorNode::name() const {
         return "Operator";
     }
 
+    std::string OperatorNode::op() const {
+        return _operator;
+    }
+
+    void OperatorNode::setOp(const std::string& string) {
+        _operator = string;
+    }
+
     void OperatorNode::codeGenCSource(CSourceContext& context) {
-        
+        this->childAtIndex(0)->codeGenCSource(context);
+        context.print(" ");
+        context.print(this->op());
+        context.print(" ");
+        this->childAtIndex(1)->codeGenCSource(context);
+
+        if (this->statement()) {
+            context.print(";");
+        }
     }
 }

@@ -14,6 +14,8 @@
 
 #include <assert.h>
 
+#define DEBUG_PARSING 0
+
 namespace Language {
     Parser::Parser(Lexer* lexer) : _lexer(lexer) {
         _currentScope = Scope::createRootScope();
@@ -39,9 +41,11 @@ namespace Language {
     ASTNode* Parser::parseStatement() {
         ASTNode* node = NULL;
 
-        // std::cout << "Parser: statement '" << this->peek().str() << "'" << std::endl;
+#if DEBUG_PARSING
+        std::cout << "Parser: statement '" << this->peek().str() << "'" << std::endl;
+#endif
 
-        // This really needs to do more exhausive checks for a variable
+        // TODO: This really needs to do more exhausive checks for a variable
         // declaration.
 
         switch (this->peek().type()) {
@@ -65,18 +69,24 @@ namespace Language {
         }
 
         if (!node) {
+#if DEBUG_PARSING
             std::cout << "Parser: falling back to expression statement" << std::endl;
+#endif
             node = this->parseExpression();
         }
 
         assert(this->next().type() == Token::Type::Newline);
+        node->setStatement(true);
 
         return node;
     }
+
     ASTNode* Parser::parseExpression() {
         ASTNode* node = NULL;
 
+#if DEBUG_PARSING
         std::cout << "Parser: expression: '" << this->peek().str() << "'" << std::endl;
+#endif
         switch (this->peek().type()) {
             case Token::Type::Identifier:
                 if (this->peek(2).str().at(0) == '(') {
