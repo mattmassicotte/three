@@ -6,6 +6,7 @@
 #include "compiler/AST/IntegerLiteralNode.h"
 #include "compiler/AST/IfNode.h"
 #include "compiler/AST/BooleanLiteralNode.h"
+#include "compiler/AST/OperatorNode.h"
 
 #include <assert.h>
 #include <gtest/gtest.h>
@@ -31,6 +32,12 @@ ASSERT_EQ(bool_value, tmp->value()); \
 #define ASSERT_RETURN_NODE(node) do {\
 Language::ReturnNode* tmp = dynamic_cast<Language::ReturnNode*>(node); \
 ASSERT_EQ("Return", tmp->name()); \
+} while(0)
+
+#define ASSERT_OPERATOR(op_value, node) do { \
+Language::OperatorNode* tmp = dynamic_cast<Language::OperatorNode*>(node); \
+ASSERT_EQ("Operator", tmp->name()); \
+ASSERT_EQ(op_value, tmp->op()); \
 } while(0)
 
 #define ASSERT_DATA_TYPE(dt_name, obj) do {\
@@ -150,6 +157,38 @@ TEST_F(ParserTest, SimpleIfWithElseStatement) {
     ASSERT_EQ(1, ifNode->childCount());
     ASSERT_RETURN_NODE(ifNode->childAtIndex(0));
     ASSERT_RETURN_NODE(ifNode->elseStatement()->childAtIndex(0));
+}
+
+TEST_F(ParserTest, AssignmentExpression) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nInt x\nx = 42\nend\n");
+
+    Language::OperatorNode* opNode = dynamic_cast<Language::OperatorNode*>(node->childAtIndex(0)->childAtIndex(1));
+
+    ASSERT_OPERATOR("=", opNode);
+    ASSERT_EQ("Variable", opNode->childAtIndex(0)->name());
+    ASSERT_INTEGER_LITERAL_NODE(42, opNode->childAtIndex(1));
+}
+
+TEST_F(ParserTest, ComplexExpression) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nInt x\nx = 42 * (5 + 1)\nend\n");
+
+    Language::OperatorNode* opNode = dynamic_cast<Language::OperatorNode*>(node->childAtIndex(0)->childAtIndex(1));
+
+    ASSERT_OPERATOR("=", opNode);
+    ASSERT_EQ("Variable", opNode->childAtIndex(0)->name());
+
+    opNode = dynamic_cast<Language::OperatorNode*>(opNode->childAtIndex(1));
+    ASSERT_OPERATOR("*", opNode);
+    ASSERT_INTEGER_LITERAL_NODE(42, opNode->childAtIndex(0));
+
+    opNode = dynamic_cast<Language::OperatorNode*>(opNode->childAtIndex(1));
+    ASSERT_OPERATOR("+", opNode);
+    ASSERT_INTEGER_LITERAL_NODE(5, opNode->childAtIndex(0));
+    ASSERT_INTEGER_LITERAL_NODE(1, opNode->childAtIndex(1));
 }
 
 TEST_F(ParserTest, ClosureInFunction) {

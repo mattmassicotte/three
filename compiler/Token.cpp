@@ -17,6 +17,10 @@ namespace Language {
         return this->isEmpty();
     }
 
+    bool Token::isStatementEnding() {
+        return this->isEnd() || (_type == Type::Newline);
+    }
+
     bool Token::isBinaryLiteralSubtoken() const {
         std::string::const_iterator it;
 
@@ -69,5 +73,18 @@ namespace Language {
 
     Token::Type Token::type() const {
         return _type;
+    }
+
+    uint32_t Token::precedence() const {
+        if (_string == "*") return 50;
+        if (_string == "%") return 50;
+        if (_string == "/") return 50;
+        if (_string == "+") return 40;
+        if (_string == "-") return 40;
+        if (_string == "<") return 30;
+        if (_string == ">") return 30;
+        if (_string == "=") return 10;
+
+        return Token::NonPrecedence;
     }
 }
