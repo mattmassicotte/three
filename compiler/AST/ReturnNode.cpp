@@ -24,14 +24,14 @@ namespace Language {
     }
 
     void ReturnNode::codeGenCSource(CSourceContext& context) {
-        context.print("return");
+        context << "return";
 
         assert(this->childCount() < 2);
         if (this->childCount() == 1) {
-            context.print(" "); // space between keyword and expression
+            context << " "; // space between keyword and expression
             this->childAtIndex(0)->codeGenCSource(context);
         }
 
-        context.print(";");
+        context << ";";
     }
 }

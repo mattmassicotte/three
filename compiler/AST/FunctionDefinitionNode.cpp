@@ -19,7 +19,7 @@ namespace Language {
         node->_function->setName(t.str());
 
         // move past the opening '('
-        assert(parser.next().str().at(0) == '(');
+        assert(parser.next().type() == Token::Type::PunctuationOpenParen);
 
         // at each point we could have:
         // - a ';'
@@ -29,7 +29,7 @@ namespace Language {
         while (true) {
             Token t = parser.peek();
 
-            if (t.str().at(0) == ';' || t.str().at(0) == ')') {
+            if (t.str().at(0) == ';' || t.type() == Token::Type::PunctuationCloseParen) {
                 break;
             }
 
@@ -45,7 +45,7 @@ namespace Language {
         }
 
         // now, check for the return type
-        if (parser.peek().str().at(0) == ';' && parser.peek(2).str().at(0) != ')') {
+        if (parser.peek().str().at(0) == ';' && parser.peek(2).type() != Token::Type::PunctuationCloseParen) {
             // move past the ';'
             assert(parser.next().str().at(0) == ';');
 
@@ -55,8 +55,11 @@ namespace Language {
         }
 
         // parse the close paren
-        assert(parser.next().str().at(0) == ')');
+        assert(parser.next().type() == Token::Type::PunctuationCloseParen);
         assert(parser.next().type() == Token::Type::Newline);
+
+        // push in a new scope for the function body
+        parser.pushScope(new Scope(node->_function->name()));
 
         // and now, parse the body
         while (true) {
@@ -66,6 +69,8 @@ namespace Language {
 
             node->addChild(parser.parseStatement());
         }
+
+        parser.popScope();
 
         assert(parser.next().type() == Token::Type::KeywordEnd);
         assert(parser.next().type() == Token::Type::Newline);
@@ -95,37 +100,28 @@ namespace Language {
         Function* f = this->function();
 
         assert(f);
-        // TODO: this isn't right for function pointers
-        context.print(f->returnType().referencedType()->name());
 
-        context.print(" ");
-        context.print(f->name());
-        context.print("(");
+        f->returnType().codeGenCSource(context.current(), "");
+
+        context.current()->print(" ");
+        context.current()->print(f->name());
+        context.current()->print("(");
 
         f->eachParameterWithLast([=, &context] (Variable* var, bool last) {
-            // TODO: not wright
-            context.print(var->type().referencedType()->name());
-            context.print(" ");
-            context.print(var->name());
-
+            var->type().codeGenCSource(context.current(), var->name());
             if (!last) {
-                context.print(", ");
+                context.current()->print(", ");
             }
         });
         
         if (f->parameterCount() == 0) {
-            context.print("void");
+            context.current()->print("void");
         }
 
-        context.print(") {");
-        context.increaseIndentation();
-        context.printNewLine();
+        context.current()->printLineAndIndent(") {");
 
         this->codeGenCSourceForChildren(context);
 
-        context.decreaseIndentation();
-        context.printNewLine();
-        context.print("}");
-        context.printNewLine();
+        context.current()->outdentAndPrintLine("}");
     }
 }

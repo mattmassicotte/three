@@ -24,30 +24,7 @@ namespace Language {
     }
 
     void VariableDeclarationNode::codeGenCSource(CSourceContext& context) {
-        DataType* type = this->_variable->type().referencedType();
-
-        if (!type->isFunction()) {
-            context.print(type->name());
-            context.print(" ");
-            context.print(this->_variable->name());
-            context.print(";");
-            return;
-        }
-
-        // return (*varName)(param1, param2);
-        context.print(type->returnType().referencedType()->name());
-        context.print("(*");
-        context.print(this->_variable->name()); // variable name
-        context.print(")(");
-
-        // parameters
-        type->eachParameterWithLast([=, &context] (const TypeReference& param, bool last) {
-            context.print(param.referencedType()->name());
-            if (!last) {
-                context.print(", ");
-            }
-        });
-
-        context.print(");");
+        this->_variable->type().codeGenCSource(context.current(), this->_variable->name());
+        context << ";";
     }
 }

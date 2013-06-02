@@ -9,7 +9,10 @@ namespace Language {
 
         assert(parser.peek().type() == Token::Type::Identifier);
 
-        node->_variable = parser.currentScope()->variableForName(parser.next().str());
+        // TODO: a VariableReference type could help simply this significantly
+        node->_variable   = parser.currentScope()->variableForName(parser.next().str());
+        node->_referenced = parser.currentScope()->referencedVariable(node->_variable->name());
+        node->_closed     = parser.currentScope()->closedVariable(node->_variable->name());
 
         return node;
     }
@@ -19,6 +22,19 @@ namespace Language {
     }
 
     void VariableNode::codeGenCSource(CSourceContext& context) {
-        context.print(this->_variable->name());
+        assert(this->_variable);
+
+        if (this->_referenced) {
+            assert(!this->_closed);
+            context << "*(self_env->" << this->_variable->name() << ")";
+            return;
+        }
+
+        if (this->_closed) {
+            context << "(self_env->" << this->_variable->name() << ")";
+            return;
+        }
+
+        context << this->_variable->name();
     }
 }

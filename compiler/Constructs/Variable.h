@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TypeReference.h"
+#include "../CodeGen/CSource.h"
 
 namespace Language {
     class Variable {
@@ -12,6 +13,10 @@ namespace Language {
         std::string name() const;
         void setType(const TypeReference& type);
         TypeReference type() const;
+
+        void codeGenCSourceForDefinition(CSource* source);
+
+        std::string _environment;
 
     private:
         std::string   _name;

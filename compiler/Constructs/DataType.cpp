@@ -30,6 +30,20 @@ namespace Language {
         _name = string;
     }
 
+    std::string DataType::cSourceName() const {
+        if (this->flavor() == Flavor::Closure) {
+            return "three_closure_t";
+        } else if (this->name() == "Int") {
+            return "int";
+        } else if (this->name() == "Char") {
+            return "char";
+        } else if (this->name() == "Void") {
+            return "void";
+        }
+
+        return this->name();
+    }
+
     uint32_t DataType::childCount() const {
         return _children.size();
     }
@@ -46,24 +60,25 @@ namespace Language {
         }
     }
 
-    bool DataType::isFunction() const {
+    bool DataType::isCallable() const {
         return _type == Flavor::Function || _type == Flavor::Closure;
     }
 
     TypeReference DataType::returnType() const {
-        assert(this->isFunction());
+        assert(this->isCallable());
 
         return _returnType;
     }
 
     void DataType::setReturnType(const TypeReference& value) {
-        assert(this->isFunction());
+        assert(this->isCallable());
+        assert(value.referencedType());
 
         _returnType = value;
     }
 
     void DataType::eachParameterWithLast(std::function<void (const TypeReference&, bool)> func) {
-        assert(this->isFunction());
+        assert(this->isCallable());
         uint32_t lastIndex = this->childCount() - 1;
 
         this->eachChild([=] (const TypeReference& child, uint32_t index) {

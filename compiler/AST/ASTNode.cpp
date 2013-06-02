@@ -34,6 +34,14 @@ namespace Language {
         }
     }
 
+    void ASTNode::eachChildWithLast(std::function<void (ASTNode*, bool)> func) {
+        uint32_t count = this->childCount();
+        
+        for (uint32_t i = 0; i < count; ++i) {
+            func(this->childAtIndex(i), i == (count - 1));
+        }
+    }
+
     bool ASTNode::statement() const {
         return _statement;
     }
@@ -67,12 +75,9 @@ namespace Language {
     }
 
     void ASTNode::codeGenCSourceForChildren(CSourceContext& context) {
-        this->eachChild([=, &context] (ASTNode* node, uint32_t index) {
+        this->eachChildWithLast([=, &context] (ASTNode* node, bool last) {
             node->codeGenCSource(context);
-
-            if (index < this->childCount() - 1) {
-                context.printNewLine();
-            }
+            context.current()->printNewLine();
         });
     }
 }

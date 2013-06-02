@@ -15,14 +15,14 @@ module BuildFunctions
     Rake::sh("#{compiler_for(input)} #{opts} -o '#{output}' -c #{input}")
   end
 
-  def self.executable(inputs, output)
+  def self.executable(inputs, output, libs=nil)
     puts("   Link: #{output}")
     inputs = inputs.join(" ")
-    Rake::sh("clang++ -std=gnu+11 -stdlib=libc++ -o '#{output}' #{inputs}")
+    Rake::sh("clang++ -std=gnu+11 -stdlib=libc++ #{libs} -o '#{output}' #{inputs}")
   end
 
   def self.library(inputs, output)
-    rm_f(output)
+    FileUtils.rm_f(output)
   
     puts("Library: #{output}")
     inputs = inputs.join(" ")

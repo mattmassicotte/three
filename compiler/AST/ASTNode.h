@@ -23,6 +23,7 @@ namespace Language {
         ASTNode* childAtIndex(uint32_t i) const;
         uint32_t childCount() const;
         void     eachChild(std::function<void (ASTNode*, uint32_t)> func);
+        void     eachChildWithLast(std::function<void (ASTNode*, bool)> func);
 
         bool statement() const;
         void setStatement(bool value);

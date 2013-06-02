@@ -4,33 +4,54 @@
 #include <iostream>
 
 namespace Language {
-    CSourceContext::CSourceContext() : _indentationLevel(0) {
+    CSourceContext::CSourceContext() {
+        _headerSource = new CSource();
+        _declarationSource = new CSource();
+        _bodySource = new CSource();
+
+        _currentSource = _bodySource;
     }
 
-    void CSourceContext::print(const char* string) {
-        _stream << string;
+    CSourceContext::~CSourceContext() {
+        delete _headerSource;
+        delete _declarationSource;
+        delete _bodySource;
     }
 
-    void CSourceContext::print(const std::string& string) {
-        _stream << string;
+    CSource* CSourceContext::headers() const {
+        return _headerSource;
     }
 
-    void CSourceContext::printNewLine() {
-        _stream << std::endl;
-        this->printIndent();
+    CSource* CSourceContext::declarations() const {
+        return _declarationSource;
     }
 
-    void CSourceContext::increaseIndentation() {
-        ++_indentationLevel;
-    }
-    
-    void CSourceContext::decreaseIndentation() {
-        assert(_indentationLevel > 0);
-        --_indentationLevel;
+    CSource* CSourceContext::body() const {
+        return _bodySource;
     }
 
-    void CSourceContext::printIndent() {
-        _stream << std::string(_indentationLevel*4, ' ');
+    CSource* CSourceContext::current() const {
+        return _currentSource;
+    }
+
+    void CSourceContext::setCurrent(Section section) {
+        switch (section) {
+            case Section::Declarations:
+                _currentSource = _declarationSource;
+                break;
+            case Section::Body:
+                _currentSource = _bodySource;
+                break;
+            default:
+                assert(0 && "Invalid Section");
+                break;
+        }
+    }
+
+    CSourceContext& CSourceContext::operator <<(const std::string& string) {
+        this->current()->print(string);
+
+        return *this;
     }
 
     std::string CSourceContext::renderToString() {
@@ -39,15 +60,26 @@ namespace Language {
         s << "// Rendered C code" << std::endl;
         s << std::endl;
 
-        for (std::string path : _includes) {
-            s << "#include <" << path << ">" << std::endl;
-        }
+        s << "// Includes" << std::endl;
+        s << _headerSource->renderToString();
+        s << std::endl;
 
-        if (_includes.size() > 0) {
-            s << std::endl;
-        }
+        s << "// Closure Support" << std::endl;
+        s << "typedef void* (*three_closure_function_t)(void*, ...);" << std::endl;
+        s << "typedef struct {" << std::endl;
+        s << "    three_closure_function_t function;" << std::endl;
+        s << "    int   env_size;" << std::endl;
+        s << "    void* env;" << std::endl;
+        s << "} three_closure_t;" << std::endl;
+        s << "#define THREE_MAKE_CLOSURE(func) ((three_closure_t){(three_closure_function_t)func, sizeof(struct func ## _env), (void*)&(func ## _env ## _value)})" << std::endl;
+        s << std::endl;
 
-        s << _stream.str();
+        s << "// Declarations" << std::endl;
+        s << _declarationSource->renderToString();
+        s << std::endl;
+
+        s << "// Definitions" << std::endl;
+        s << _bodySource->renderToString();
 
         return s.str();
     }

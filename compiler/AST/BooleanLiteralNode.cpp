@@ -31,10 +31,6 @@ namespace Language {
     }
 
     void BooleanLiteralNode::codeGenCSource(CSourceContext& context) {
-        if (this->value()) {
-            context.print("true");
-        } else {
-            context.print("false");
-        }
+        context << (this->value() ? "true" : "false");
     }
 }

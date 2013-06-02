@@ -2,14 +2,15 @@
 #include "Function.h"
 
 #include <assert.h>
+#include <iostream>
 
 namespace Language {
     Module* Module::createRootModule() {
         Module* module = new Module();
 
-        module->addDataType("Void", new DataType(DataType::Flavor::Scalar, "Void"));
-        module->addDataType("Int",  new DataType(DataType::Flavor::Scalar, "Int"));
-        module->addDataType("Char", new DataType(DataType::Flavor::Scalar, "Char"));
+        module->addDataType(new DataType(DataType::Flavor::Scalar, "Void"));
+        module->addDataType(new DataType(DataType::Flavor::Scalar, "Int"));
+        module->addDataType(new DataType(DataType::Flavor::Scalar, "Char"));
 
         return module;
     }
@@ -68,12 +69,19 @@ namespace Language {
         return _functions[name];
     }
 
-    void Module::addDataType(const std::string& name, DataType* type) {
+    void Module::addDataType(DataType* type) {
         assert(type != NULL);
-        _dataTypes[name] = type;
+        // TODO: has to check if it already exists
+        _dataTypes[type->name()] = type;
     }
 
     DataType* Module::dataTypeForName(const std::string& name) {
+        DataType* type = _dataTypes[name];
+
+        if (!type) {
+            std::cout << "Module: asked for a type that does not exist '" << name << "'" << std::endl;
+        }
+
         return _dataTypes[name];
     }
 }

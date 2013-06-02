@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TypeReference.h"
+#include "../CodeGen/CSource.h"
 
 #include <functional>
 #include <vector>
@@ -27,12 +28,13 @@ namespace Language {
         void setFlavor(const Flavor& value);
         std::string name() const;
         void setName(const std::string& string);
+        std::string cSourceName() const;
 
         uint32_t childCount() const;
         void addChild(const TypeReference& value);
         void eachChild(std::function<void (const TypeReference&, uint32_t)> func) const;
         
-        bool isFunction() const;
+        bool isCallable() const;
 
         TypeReference returnType() const;
         void          setReturnType(const TypeReference& value);

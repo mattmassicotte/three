@@ -13,14 +13,21 @@ namespace Language {
         assert(t.type() == Token::Type::Identifier);
         parser.next(); // advance past the identifier
 
+        node->_functionType = NULL;
         Function* func = parser.currentModule()->functionForName(t.str());
         if (!func) {
-            std::cout << "Unable to find match for function: " << t.str() << std::endl;
+            Variable* v = parser.currentScope()->variableForName(t.str());
+            
+            if (!v) {
+                std::cout << "Unable to find match for called function: " << t.str() << std::endl;
+            } else {
+                node->_functionType = v->type().referencedType();
+            }
         }
 
         node->setFunctionName(t.str());
 
-        assert(parser.next().str().at(0) == '(');
+        assert(parser.next().type() == Token::Type::PunctuationOpenParen);
 
         // now, we need to parse the arguments, which of which
         // is an expression
@@ -33,7 +40,7 @@ namespace Language {
             }
         }
 
-        assert(parser.next().str().at(0) == ')');
+        assert(parser.next().type() == Token::Type::PunctuationCloseParen);
 
         if (parser.peek().type() == Token::Type::Newline) {
             node->setStatement(true);
@@ -62,21 +69,34 @@ namespace Language {
         return s.str();
     }
 
+    bool FunctionCallNode::isClosure() const {
+        return _functionType && _functionType->flavor() == DataType::Flavor::Closure;
+    }
+
     void FunctionCallNode::codeGenCSource(CSourceContext& context) {
-        context.print(this->functionName());
-        context.print("(");
+        context << this->functionName();
+
+        if (this->isClosure()) {
+            context << ".function(";
+            context << this->functionName() << ".env";
+            if (this->childCount() > 0) {
+                context << ", ";
+            }
+        } else {
+            context << "(";
+        }
 
         this->eachChild([=, &context] (ASTNode* node, uint32_t index) {
             node->codeGenCSource(context);
             if (index < this->childCount() - 1) {
-                context.print(", ");
+                context << ", ";
             }
         });
 
-        context.print(")");
+        context << ")";
 
         if (this->statement()) {
-            context.print(";");
+            context << ";";
         }
     }
 }

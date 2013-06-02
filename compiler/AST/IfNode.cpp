@@ -52,30 +52,30 @@ namespace Language {
     }
 
     void IfNode::codeGenCSource(CSourceContext& context) {
-        context.print("if (");
+        context.current()->print("if (");
 
         this->condition()->codeGenCSource(context);
 
-        context.print(") {");
-        context.increaseIndentation();
-        context.printNewLine();
+        context.current()->print(") {");
+        context.current()->increaseIndentation();
+        context.current()->printNewLine();
 
         this->codeGenCSourceForChildren(context);
 
-        context.decreaseIndentation();
-        context.printNewLine();
+        context.current()->decreaseIndentation();
+        context.current()->printNewLine();
 
         if (this->elseStatement()) {
-            context.print("} else {");
-            context.increaseIndentation();
-            context.printNewLine();
+            context.current()->print("} else {");
+            context.current()->increaseIndentation();
+            context.current()->printNewLine();
 
             this->elseStatement()->codeGenCSourceForChildren(context);
 
-            context.decreaseIndentation();
-            context.printNewLine();
+            context.current()->decreaseIndentation();
+            context.current()->printNewLine();
         }
 
-        context.print("}");
+        context.current()->print("}");
     }
 }

@@ -5,7 +5,7 @@ COMPILER_SOURCES.exclude('compiler/compiler.cpp')
 
 COMPILER_GTEST_CC_FLAGS = '-I. -Igtest/include -DGTEST_HAS_TR1_TUPLE=0'
 
-compiler_objects = []
+object_files = []
 COMPILER_SOURCES.each do |source|
   # define the path
   object_dir  = BuildFunctions::absolute_path(File.dirname(source))
@@ -14,7 +14,7 @@ COMPILER_SOURCES.each do |source|
   # define a dependency on the object path
   directory(object_dir)
 
-  compiler_objects << object_path
+  object_files << object_path
 
   # make sure to clean this object
   CLEAN.include(object_path)
@@ -44,16 +44,29 @@ file "#{BUILD_DIR}/tests/ParserTests.o" => ['tests/ParserTests.cpp', "#{BUILD_DI
   BuildFunctions::compile('tests/ParserTests.cpp', "#{BUILD_DIR}/tests/ParserTests.o", COMPILER_GTEST_CC_FLAGS)
 end
 
-CLOBBER.include("#{BUILD_DIR}/compiler_test")
-object_files = compiler_objects.dup()
-object_files << "#{BUILD_DIR}/gtest/gtest_main.o"
-object_files << "#{BUILD_DIR}/gtest/gtest-all.o"
-object_files << "#{BUILD_DIR}/tests/LexerTests.o"
-object_files << "#{BUILD_DIR}/tests/ParserTests.o"
-file "#{BUILD_DIR}/compiler_test" => object_files do
-  BuildFunctions::executable(object_files, "#{BUILD_DIR}/compiler_test")
+file 'tests/CSourceCodeGenTests.cpp' => ['compiler/CodeGen/CSource.h', 'compiler/Constructs/TypeReference.h', 'compiler/Constructs/DataType.h']
+CLEAN.include("#{BUILD_DIR}/tests/CSourceCodeGenTests.o")
+file "#{BUILD_DIR}/tests/CSourceCodeGenTests.o" => ['tests/CSourceCodeGenTests.cpp', "#{BUILD_DIR}/tests"] do
+  BuildFunctions::compile('tests/CSourceCodeGenTests.cpp', "#{BUILD_DIR}/tests/CSourceCodeGenTests.o", COMPILER_GTEST_CC_FLAGS)
 end
 
+CLOBBER.include("#{BUILD_DIR}/libthree.a")
+file "#{BUILD_DIR}/libthree.a" => object_files do
+  BuildFunctions::library(object_files, "#{BUILD_DIR}/libthree.a")
+end
+
+CLOBBER.include("#{BUILD_DIR}/compiler_test")
+test_object_files = []
+test_object_files << "#{BUILD_DIR}/gtest/gtest_main.o"
+test_object_files << "#{BUILD_DIR}/gtest/gtest-all.o"
+test_object_files << "#{BUILD_DIR}/tests/LexerTests.o"
+test_object_files << "#{BUILD_DIR}/tests/ParserTests.o"
+test_object_files << "#{BUILD_DIR}/tests/CSourceCodeGenTests.o"
+file "#{BUILD_DIR}/compiler_test" => [test_object_files, "#{BUILD_DIR}/libthree.a"].flatten do
+  BuildFunctions::executable(test_object_files, "#{BUILD_DIR}/compiler_test", "'-L#{BUILD_DIR}' -lthree")
+end
+
+desc "Run the compiler library tests"
 task 'compiler:test' => "#{BUILD_DIR}/compiler_test" do
-  sh("#{BUILD_DIR}/compiler_test")
+  sh("#{BUILD_DIR}/compiler_test --gtest_catch_exceptions=0")
 end

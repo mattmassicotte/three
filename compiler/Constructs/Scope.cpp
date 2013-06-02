@@ -1,15 +1,18 @@
 #include "Scope.h"
 
 #include <assert.h>
+#include <sstream>
+#include <iostream>
 
 namespace Language {
     Scope* Scope::createRootScope() {
-        Scope* scope = new Scope();
+        Scope* scope = new Scope("top_level_scope");
 
         return scope;
     }
 
-    Scope::Scope() {
+    Scope::Scope(const std::string& name) : _scopedName(name), _scopeNameCount(1) {
+        _closesVariables = false;
         _parent = NULL;
     }
 
@@ -36,13 +39,70 @@ namespace Language {
         return _parent;
     }
 
+    void Scope::setScopedName(const std::string& name) {
+        _scopedName = name;
+    }
+
+    std::string Scope::makeScopedName(const std::string& string) {
+        std::stringstream s;
+
+        s << _scopedName << "_" << string << "_" << _scopeNameCount;
+        _scopeNameCount++;
+
+        return s.str();
+    }
+
+    void Scope::setClosingScope(bool closed) {
+        _closesVariables = closed;
+    }
+
     void Scope::addVariable(const std::string& name, Variable* var) {
         assert(var != NULL);
         _variables[name] = var;
     }
 
     Variable* Scope::variableForName(const std::string& name) {
-        // TODO: cannot use the [] operator here
-        return _variables[name];
+        Variable* v = _variables[name];
+
+        // if we found it, we're done
+        if (v) {
+            return v;
+        }
+
+        // Variable not defined in this scope.  Check the parent recursively.
+        if (this->parent()) {
+            return this->parent()->variableForName(name);
+        }
+
+        std::cout << "Scope: asked for a variable that does not exist '" << name << "'" << std::endl;
+
+        return NULL;
+    }
+
+    void Scope::setReferencedVariable(const std::string& name) {
+        _closureReferences[name] = this->variableForName(name);
+    }
+
+    bool Scope::referencedVariable(const std::string& name) {
+        return _closureReferences[name] != NULL;
+    }
+
+    bool Scope::closedVariable(const std::string& name) {
+        if (!_closesVariables) {
+            return false;
+        }
+
+        if (this->_variables[name] != NULL) {
+            return false;
+        }
+
+        if (this->variableForName(name) == NULL) {
+            return false;
+        }
+
+        // this variable is closed
+        _closedVariables.push_back(this->variableForName(name));
+
+        return true;
     }
 }
