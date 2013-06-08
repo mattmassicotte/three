@@ -37,8 +37,6 @@ namespace Language {
     }
 
     void StringLiteralNode::codeGenCSource(CSourceContext& context) {
-        context.print("\"");
-        context.print(this->stringValue());
-        context.print("\"");
+        context << "\"" << this->stringValue() << "\"";
     }
 }

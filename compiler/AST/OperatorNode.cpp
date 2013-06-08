@@ -52,19 +52,19 @@ namespace Language {
 
     void OperatorNode::codeGenCSource(CSourceContext& context) {
         if (!this->statement()) {
-            context.print("(");
+            context.current()->print("(");
         }
 
         this->childAtIndex(0)->codeGenCSource(context);
-        context.print(" ");
-        context.print(this->op());
-        context.print(" ");
+        context.current()->print(" ");
+        context.current()->print(this->op());
+        context.current()->print(" ");
         this->childAtIndex(1)->codeGenCSource(context);
 
         if (this->statement()) {
-            context.print(";");
+            context.current()->print(";");
         } else {
-            context.print(")");
+            context.current()->print(")");
         }
     }
 }

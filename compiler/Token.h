@@ -17,6 +17,8 @@ namespace Language {
             Punctuation,
             PunctuationOpenBrace,
             PunctuationCloseBrace,
+            PunctuationOpenParen,
+            PunctuationCloseParen,
             String,
             Annotation,
             Comment,
@@ -26,6 +28,7 @@ namespace Language {
             KeywordIf,
             KeywordElse,
             KeywordImport,
+            KeywordClosure,
             Operator
         } Type;
 

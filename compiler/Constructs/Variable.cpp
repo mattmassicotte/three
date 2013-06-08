@@ -1,4 +1,5 @@
 #include "Variable.h"
+#include "DataType.h"
 
 namespace Language {
     Variable::Variable() {
@@ -21,5 +22,9 @@ namespace Language {
 
     TypeReference Variable::type() const {
         return _type;
+    }
+
+    void Variable::codeGenCSourceForDefinition(CSource* source) {
+        this->type().codeGenCSource(source, this->name());
     }
 }

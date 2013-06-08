@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../CodeGen/CSource.h"
+
 #include <string>
 
 namespace Language {
@@ -20,6 +22,9 @@ namespace Language {
         void setReferencedType(DataType* type);
         uint32_t indirectionDepth() const;
         void setIndirectionDepth(uint32_t depth);
+        void incrementIndirectionDepth();
+
+        void codeGenCSource(CSource* source, const std::string& variableName) const;
 
     private:
         DataType* _type;

@@ -49,6 +49,6 @@ namespace Language {
         // TODO: this is kinda stupid just to convert into a string...
         s << this->value();
 
-        context.print(s.str());
+        context << s.str();
     }
 }

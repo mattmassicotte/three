@@ -21,12 +21,12 @@ namespace Language {
         ASTNode* parseExpression();
 
         TypeReference parseType();
+        TypeReference parseFunctionType(uint32_t depth, std::vector<std::string>* params, std::vector<std::string>* references);
 
         Module*  moduleWithIdentifier(const std::string& name);
         Module*  currentModule() const;
 
     protected:
-        TypeReference parseFunctionType(uint32_t depth);
         ASTNode* parseTopLevelNode();
         ASTNode* parseDefinition();
 

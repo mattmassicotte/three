@@ -15,5 +15,7 @@ namespace Language {
 
     private:
         Variable* _variable;
+        bool      _referenced;
+        bool      _closed;
     };
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CSource.h"
+
 #include <string>
 #include <sstream>
 #include <vector>
@@ -7,23 +9,27 @@
 namespace Language {
     class CSourceContext {
     public:
+        typedef enum {
+            Declarations,
+            Body
+        } Section;
+    public:
         CSourceContext();
+        virtual ~CSourceContext();
 
-        void print(const char* string);
-        void print(const std::string& string);
-        void printNewLine();
+        CSource* headers() const;
+        CSource* declarations() const;
+        CSource* body() const;
+        CSource* current() const;
+        void setCurrent(Section section);
 
-        void increaseIndentation();
-        void decreaseIndentation();
+        CSourceContext& operator <<(const std::string& string);
 
         std::string renderToString();
-
-    protected:
-        void printIndent();
-
     private:
-        std::stringstream        _stream;
-        std::vector<std::string> _includes;
-        uint32_t                 _indentationLevel;
+        CSource* _headerSource;
+        CSource* _declarationSource;
+        CSource* _bodySource;
+        CSource* _currentSource;
     };
 }

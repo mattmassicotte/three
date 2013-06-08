@@ -1,6 +1,7 @@
 #include "Function.h"
 #include "DataType.h"
 
+#include <assert.h>
 #include <iostream>
 #include <sstream>
 
@@ -41,6 +42,7 @@ namespace Language {
     }
 
     void Function::setReturnType(const TypeReference& type) {
+        assert(type.referencedType());
         _returnType = type;
     }
 
@@ -66,5 +68,28 @@ namespace Language {
         for (uint32_t i = 0; i < this->parameterCount(); ++i) {
             func(this->parameterAtIndex(i), lastIndex == i);
         }
+    }
+
+    void Function::codeGenCSource(CSourceContext& context, std::function<void (void)> func) const {
+        this->returnType().codeGenCSource(context.current(), "");
+
+        context << " " << this->name() << "(";
+
+        this->eachParameterWithLast([=, &context] (Variable* var, bool last) {
+            var->type().codeGenCSource(context.current(), var->name());
+            if (!last) {
+                context << ", ";
+            }
+        });
+        
+        if (this->parameterCount() == 0) {
+            context << "void";
+        }
+
+        context.current()->printLineAndIndent(") {");
+
+        func();
+
+        context.current()->outdentAndPrintLine("}");
     }
 }

@@ -2,6 +2,7 @@
 
 #include "TypeReference.h"
 #include "Variable.h"
+#include "../CodeGen/CSourceContext.h"
 
 #include <vector>
 #include <functional>
@@ -22,6 +23,8 @@ namespace Language {
         uint32_t parameterCount() const ;
         Variable* parameterAtIndex(uint32_t index) const;
         void      eachParameterWithLast(std::function<void (Variable*, bool)> func) const;
+
+        void codeGenCSource(CSourceContext& context, std::function<void (void)> func) const;
 
     private:
         std::string            _name;

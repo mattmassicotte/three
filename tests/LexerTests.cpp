@@ -69,7 +69,7 @@ TEST_F(LexerTest, HelloWorldProgram) {
 
     ASSERT_NEXT_TOKEN(KeywordDef,  "def");
     ASSERT_NEXT_TOKEN(Identifier,  "main");
-    ASSERT_NEXT_TOKEN(Punctuation, "(");
+    ASSERT_NEXT_TOKEN(PunctuationOpenParen, "(");
     ASSERT_NEXT_TOKEN(Identifier,  "Int");
     ASSERT_NEXT_TOKEN(Identifier,  "argc");
     ASSERT_NEXT_TOKEN(Punctuation, ",");
@@ -79,12 +79,12 @@ TEST_F(LexerTest, HelloWorldProgram) {
     ASSERT_NEXT_TOKEN(Identifier,  "argv");
     ASSERT_NEXT_TOKEN(Punctuation, ";");
     ASSERT_NEXT_TOKEN(Identifier,  "Int");
-    ASSERT_NEXT_TOKEN(Punctuation, ")");
+    ASSERT_NEXT_TOKEN(PunctuationCloseParen, ")");
     ASSERT_NEXT_TOKEN(Newline,     "");
     ASSERT_NEXT_TOKEN(Identifier,  "printf");
-    ASSERT_NEXT_TOKEN(Punctuation, "(");
+    ASSERT_NEXT_TOKEN(PunctuationOpenParen, "(");
     ASSERT_NEXT_TOKEN(String,      "hello world");
-    ASSERT_NEXT_TOKEN(Punctuation, ")");
+    ASSERT_NEXT_TOKEN(PunctuationCloseParen, ")");
     ASSERT_NEXT_TOKEN(Newline,     "");
     ASSERT_NEXT_TOKEN(KeywordEnd,  "end");
     ASSERT_NEXT_TOKEN(Newline,     "");

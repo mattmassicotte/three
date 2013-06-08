@@ -19,6 +19,7 @@ namespace Language {
         _keywordMap["true"]   = Token::Type::TrueLiteral;
         _keywordMap["false"]  = Token::Type::FalseLiteral;
         _keywordMap["null"]   = Token::Type::NullLiteral;
+        _keywordMap["do"]     = Token::Type::KeywordClosure;
     }
 
     bool Lexer::characterPeek(char& c) {
@@ -58,6 +59,12 @@ namespace Language {
                 break;
             case '}':
                 type = Token::Type::PunctuationCloseBrace;
+                break;
+            case '(':
+                type = Token::Type::PunctuationOpenParen;
+                break;
+            case ')':
+                type = Token::Type::PunctuationCloseParen;
                 break;
             default:
                 type = Token::Type::Punctuation;
