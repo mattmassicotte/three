@@ -19,6 +19,7 @@ namespace Language {
 
         ASTNode* parseStatement();
         ASTNode* parseExpression();
+        bool     parseNewline(bool multipleAllowed=false);
 
         TypeReference parseType();
         TypeReference parseFunctionType(uint32_t depth, std::vector<std::string>* params, std::vector<std::string>* references);

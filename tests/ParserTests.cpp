@@ -194,14 +194,17 @@ TEST_F(ParserTest, ComplexExpression) {
 TEST_F(ParserTest, ClosureInFunction) {
     Language::ASTNode* node;
 
-    // node = this->parse("import C.stdio\n\ndef main(;Int)\nInt x\nInt y\n{Int, Int; Int} closure\nx = 42\ny = 43\nclosure = do (Int a, Int b; Int; x) {\nx = a + b + y\nreturn a + b\n}\n printf(\"x = %d, value = %d\\n\", x, closure(1,2))\nprintf(\"x = %d\\n\", x)\nend\n");
-    node = this->parse("import C.stdio\n\ndef main(;Int)\nInt x\nInt y\n{Int, Int; Int} closure\nx = 42\ny = 43\nclosure = do (Int a, Int b; Int; x) {\nx = 1 + 2 + y\nreturn 1 + 2\n}\n printf(\"x = %d, value = %d\\n\", x, closure(1,2))\nprintf(\"x = %d\\n\", x)\nend\n");
+    node = this->parse("import C.stdio\n\ndef main(;Int)\nInt x\nInt y\n{Int, Int; Int} closure\nx = 42\ny = 43\nclosure = do (Int a, Int b; Int; x) {\nx = a + b + y\nreturn a + b\n}\n printf(\"x = %d, value = %d\\n\", x, closure(1,2))\nprintf(\"x = %d\\n\", x)\nend\n");
+}
 
-    std::cout << node->recursiveStr() << std::endl;
+TEST_F(ParserTest, NewlinesAfterStatements) {
+    Language::ASTNode* node;
 
-    Language::CSourceContext c;
+    node = this->parse("def test()\n\nInt x\n\nx = 1\n\n\nend\n\n\n");
 
-    node->codeGenCSource(c);
+    Language::OperatorNode* opNode = dynamic_cast<Language::OperatorNode*>(node->childAtIndex(0)->childAtIndex(1));
 
-    std::cout << c.renderToString();
+    ASSERT_OPERATOR("=", opNode);
+    ASSERT_EQ("Variable", opNode->childAtIndex(0)->name());
+    ASSERT_INTEGER_LITERAL_NODE(1, opNode->childAtIndex(1));
 }

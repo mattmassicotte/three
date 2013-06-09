@@ -8,7 +8,7 @@ namespace Language {
         ElseNode* node = new ElseNode();
 
         assert(parser.next().type() == Token::Type::KeywordElse);
-        assert(parser.next().type() == Token::Type::Newline);
+        parser.parseNewline(true);
 
         // parse the body
         while (true) {

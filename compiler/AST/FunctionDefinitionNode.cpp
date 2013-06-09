@@ -56,7 +56,7 @@ namespace Language {
 
         // parse the close paren
         assert(parser.next().type() == Token::Type::PunctuationCloseParen);
-        assert(parser.next().type() == Token::Type::Newline);
+        parser.parseNewline(true);
 
         // push in a new scope for the function body
         parser.pushScope(new Scope(node->_function->name()));
@@ -73,7 +73,7 @@ namespace Language {
         parser.popScope();
 
         assert(parser.next().type() == Token::Type::KeywordEnd);
-        assert(parser.next().type() == Token::Type::Newline);
+        parser.parseNewline(true);
 
         node->setStatement(true);
 
