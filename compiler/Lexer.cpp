@@ -20,6 +20,7 @@ namespace Language {
         _keywordMap["false"]  = Token::Type::FalseLiteral;
         _keywordMap["null"]   = Token::Type::NullLiteral;
         _keywordMap["do"]     = Token::Type::KeywordClosure;
+        _keywordMap["struct"] = Token::Type::KeywordStructure;
     }
 
     bool Lexer::characterPeek(char& c) {

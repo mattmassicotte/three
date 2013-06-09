@@ -29,6 +29,7 @@ namespace Language {
             KeywordElse,
             KeywordImport,
             KeywordClosure,
+            KeywordStructure,
             Operator
         } Type;
 

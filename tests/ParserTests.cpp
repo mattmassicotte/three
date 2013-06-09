@@ -254,3 +254,25 @@ TEST_F(ParserTest, NewlinesAfterStatements) {
     ASSERT_VARIABLE_NODE("Int",  0, "x", node->childAtIndex(0));
     ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
 }
+
+TEST_F(ParserTest, StructureDefinitionWithPacking) {
+    Language::ASTNode* node;
+
+    node = this->parse("struct:2 MyStructure\nInt x\nInt y\nend\n");
+
+    Language::StructureNode* structure = dynamic_cast<Language::StructureNode*>(node->childAtIndex(0));
+    ASSERT_EQ("Structure", structure->name());
+    ASSERT_EQ(2, structure->packing());
+    ASSERT_EQ("MyStructure", structure->structureName());
+}
+
+TEST_F(ParserTest, StructureDefinitionWithoutPacking) {
+    Language::ASTNode* node;
+
+    node = this->parse("struct MyStructure\nInt x\nInt y\nend\n");
+
+    Language::StructureNode* structure = dynamic_cast<Language::StructureNode*>(node->childAtIndex(0));
+    ASSERT_EQ("Structure", structure->name());
+    ASSERT_EQ(0, structure->packing());
+    ASSERT_EQ("MyStructure", structure->structureName());
+}
