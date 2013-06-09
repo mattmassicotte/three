@@ -15,3 +15,4 @@
 #include "AST/VariableDeclarationNode.h"
 #include "AST/Types/StructureNode.h"
 #include "AST/Types/EnumerationNode.h"
+#include "AST/Control/SwitchNode.h"

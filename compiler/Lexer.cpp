@@ -22,6 +22,8 @@ namespace Language {
         _keywordMap["do"]     = Token::Type::KeywordClosure;
         _keywordMap["struct"] = Token::Type::KeywordStructure;
         _keywordMap["enum"]   = Token::Type::KeywordEnumeration;
+        _keywordMap["switch"] = Token::Type::KeywordSwitch;
+        _keywordMap["case"]   = Token::Type::KeywordCase;
     }
 
     bool Lexer::characterPeek(char& c) {

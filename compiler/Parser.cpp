@@ -53,6 +53,9 @@ namespace Language {
             case Token::Type::KeywordIf:
                 node = IfNode::parse(*this);
                 break;
+            case Token::Type::KeywordSwitch:
+                node = SwitchNode::parse(*this);
+                break;
             default:
                 break;
         }
@@ -125,6 +128,16 @@ namespace Language {
                 break;
             }
         }
+
+        return true;
+    }
+
+    bool Parser::parseUntilEnd(std::function<void (void)> func) {
+        while (this->peek().type() != Token::Type::KeywordEnd) {
+            func();
+        }
+
+        assert(this->next().type() == Token::Type::KeywordEnd);
 
         return true;
     }

@@ -31,6 +31,8 @@ namespace Language {
             KeywordClosure,
             KeywordStructure,
             KeywordEnumeration,
+            KeywordSwitch,
+            KeywordCase,
             Operator
         } Type;
 
