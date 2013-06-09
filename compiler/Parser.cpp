@@ -76,7 +76,7 @@ namespace Language {
             node = this->parseExpression();
         }
 
-        assert(this->next().type() == Token::Type::Newline);
+        this->parseNewline(true);
         node->setStatement(true);
 
         return node;
@@ -124,6 +124,21 @@ namespace Language {
         assert(node != NULL);
 
         return OperatorNode::parse(*this, Token::MinimumPrecedence, node);
+    }
+
+    bool Parser::parseNewline(bool multipleAllowed) {
+        while (true) {
+            assert(this->next().type() == Token::Type::Newline);
+            if (!multipleAllowed) {
+                break;
+            }
+            
+            if (this->peek().type() != Token::Type::Newline) {
+                break;
+            }
+        }
+
+        return true;
     }
 
     TypeReference Parser::parseType() {

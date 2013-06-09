@@ -21,10 +21,7 @@ namespace Language {
         node->setPath(s.str());
         node->_module = parser.moduleWithIdentifier(s.str());
 
-        assert(parser.next().type() == Token::Type::Newline);
-        while (parser.peek().type() == Token::Type::Newline) {
-            parser.next();
-        }
+        parser.parseNewline(true);
 
         return node;
     }

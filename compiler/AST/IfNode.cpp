@@ -14,7 +14,7 @@ namespace Language {
         // parse the condition
         node->_conditionNode = parser.parseExpression();
 
-        assert(parser.next().type() == Token::Type::Newline);
+        parser.parseNewline();
 
         // and now, parse the body
         while (true) {
