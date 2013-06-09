@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Lexer.h"
-#include "AST/ASTNode.h"
+#include "AST/RootNode.h"
 #include "Constructs/Scope.h"
 #include "Constructs/Module.h"
 #include "Constructs/TypeReference.h"
@@ -15,7 +15,7 @@ namespace Language {
         Parser(Lexer* lexer);
         virtual ~Parser();
 
-        ASTNode* rootASTNode();
+        RootNode* rootASTNode();
 
         ASTNode* parseStatement();
         ASTNode* parseExpression();

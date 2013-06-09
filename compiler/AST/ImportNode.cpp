@@ -46,6 +46,10 @@ namespace Language {
         return _path;
     }
 
+    Module* ImportNode::module() const {
+        return this->_module;
+    }
+
     void ImportNode::codeGenCSource(CSourceContext& context) {
         if (_module) {
             context.headers()->print("#include <");

@@ -14,6 +14,7 @@ namespace Language {
 
         void setPath(const std::string& value);
         std::string path() const;
+        Module* module() const;
 
         void codeGenCSource(CSourceContext& context);
 

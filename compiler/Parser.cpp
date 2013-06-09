@@ -15,7 +15,7 @@ namespace Language {
         // delete _currentScope;
     }
 
-    ASTNode* Parser::rootASTNode() {
+    RootNode* Parser::rootASTNode() {
         RootNode* root;
 
         root = new RootNode();
