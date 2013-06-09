@@ -4,7 +4,7 @@
 #include <assert.h>
 
 namespace Language {
-    VariableDeclarationNode* VariableDeclarationNode::parse(Parser& parser) {
+    VariableDeclarationNode* VariableDeclarationNode::parse(Parser& parser, bool createVariable) {
         VariableDeclarationNode* node = new VariableDeclarationNode();
 
         node->_variable = new Variable();
@@ -14,7 +14,9 @@ namespace Language {
         assert(parser.peek().type() == Token::Type::Identifier);
         node->_variable->setName(parser.next().str());
 
-        parser.currentScope()->addVariable(node->_variable->name(), node->_variable);
+        if (createVariable) {
+            parser.currentScope()->addVariable(node->_variable->name(), node->_variable);
+        }
 
         return node;
     }

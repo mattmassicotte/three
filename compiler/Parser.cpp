@@ -1,17 +1,5 @@
 #include "Parser.h"
-#include "AST/RootNode.h"
-#include "AST/FunctionDefinitionNode.h"
-#include "AST/FunctionCallNode.h"
-#include "AST/StringLiteralNode.h"
-#include "AST/ReturnNode.h"
-#include "AST/IntegerLiteralNode.h"
-#include "AST/IfNode.h"
-#include "AST/BooleanLiteralNode.h"
-#include "AST/ImportNode.h"
-#include "AST/VariableDeclarationNode.h"
-#include "AST/VariableNode.h"
-#include "AST/OperatorNode.h"
-#include "AST/ClosureNode.h"
+#include "AST.h"
 
 #include <assert.h>
 
@@ -288,6 +276,8 @@ namespace Language {
                 return this->parseDefinition();
             case Token::Type::KeywordImport:
                 return ImportNode::parse(*this);
+            case Token::Type::KeywordStructure:
+                return StructureNode::parse(*this);
             case Token::Type::EndOfInput:
                 assert(0 && "parseTopLevelNode invalid state");
                 break;
