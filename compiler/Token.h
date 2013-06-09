@@ -30,6 +30,7 @@ namespace Language {
             KeywordImport,
             KeywordClosure,
             KeywordStructure,
+            KeywordEnumeration,
             Operator
         } Type;
 

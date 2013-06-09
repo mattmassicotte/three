@@ -13,4 +13,5 @@
 #include "AST/OperatorNode.h"
 #include "AST/VariableNode.h"
 #include "AST/VariableDeclarationNode.h"
-#include "AST/StructureNode.h"
+#include "AST/Types/StructureNode.h"
+#include "AST/Types/EnumerationNode.h"

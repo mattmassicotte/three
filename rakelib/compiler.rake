@@ -3,6 +3,7 @@
 COMPILER_SOURCES = FileList['compiler/**/*.cpp']
 COMPILER_SOURCES.exclude('compiler/compiler.cpp')
 
+COMPILER_CC_FLAGS = '-I.'
 COMPILER_GTEST_CC_FLAGS = '-I. -Igtest/include -DGTEST_HAS_TR1_TUPLE=0'
 
 object_files = []
@@ -26,7 +27,7 @@ COMPILER_SOURCES.each do |source|
 
   # and finally, setup the rule to build this object
   file(object_path => dependencies) do
-    BuildFunctions::compile(source, object_path)
+    BuildFunctions::compile(source, object_path, COMPILER_CC_FLAGS)
   end
 end
 

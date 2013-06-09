@@ -278,6 +278,8 @@ namespace Language {
                 return ImportNode::parse(*this);
             case Token::Type::KeywordStructure:
                 return StructureNode::parse(*this);
+            case Token::Type::KeywordEnumeration:
+                return EnumerationNode::parse(*this);
             case Token::Type::EndOfInput:
                 assert(0 && "parseTopLevelNode invalid state");
                 break;

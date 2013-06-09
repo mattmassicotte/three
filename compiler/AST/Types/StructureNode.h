@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ASTNode.h"
+#include "../ASTNode.h"
 
 namespace Language {
     class StructureNode : public ASTNode {

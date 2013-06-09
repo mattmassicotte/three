@@ -1,6 +1,6 @@
 #include "StructureNode.h"
-#include "VariableDeclarationNode.h"
-#include "../Parser.h"
+#include "../VariableDeclarationNode.h"
+#include "../../Parser.h"
 
 #include <assert.h>
 #include <sstream>
