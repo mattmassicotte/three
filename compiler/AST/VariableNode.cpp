@@ -21,6 +21,10 @@ namespace Language {
         return "Variable";
     }
 
+    Variable* VariableNode::variable() const {
+        return this->_variable;
+    }
+
     void VariableNode::codeGenCSource(CSourceContext& context) {
         assert(this->_variable);
 

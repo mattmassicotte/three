@@ -23,6 +23,10 @@ namespace Language {
         return "VariableDeclaration";
     }
 
+    Variable* VariableDeclarationNode::variable() const {
+        return this->_variable;
+    }
+
     void VariableDeclarationNode::codeGenCSource(CSourceContext& context) {
         this->_variable->type().codeGenCSource(context.current(), this->_variable->name());
         context << ";";

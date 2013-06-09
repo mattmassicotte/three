@@ -60,6 +60,10 @@ namespace Language {
         }
     }
 
+    TypeReference DataType::childAtIndex(uint32_t index) const {
+        return _children.at(index);
+    }
+
     bool DataType::isCallable() const {
         return _type == Flavor::Function || _type == Flavor::Closure;
     }

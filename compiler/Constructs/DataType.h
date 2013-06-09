@@ -32,6 +32,7 @@ namespace Language {
 
         uint32_t childCount() const;
         void addChild(const TypeReference& value);
+        TypeReference childAtIndex(uint32_t index) const;
         void eachChild(std::function<void (const TypeReference&, uint32_t)> func) const;
         
         bool isCallable() const;

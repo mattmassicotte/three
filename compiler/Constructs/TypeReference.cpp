@@ -23,6 +23,10 @@ namespace Language {
         _type = type;
     }
 
+    std::string TypeReference::name() const {
+        return this->referencedType()->name();
+    }
+
     uint32_t TypeReference::indirectionDepth() const {
         return _indirection;
     }

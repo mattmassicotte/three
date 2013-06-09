@@ -10,6 +10,7 @@ namespace Language {
 
     public:
         virtual std::string name() const;
+        Variable* variable() const;
 
         void codeGenCSource(CSourceContext& context);
 

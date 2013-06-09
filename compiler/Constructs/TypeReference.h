@@ -20,6 +20,7 @@ namespace Language {
 
         DataType* referencedType() const;
         void setReferencedType(DataType* type);
+        std::string name() const;
         uint32_t indirectionDepth() const;
         void setIndirectionDepth(uint32_t depth);
         void incrementIndirectionDepth();
