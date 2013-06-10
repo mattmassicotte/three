@@ -516,21 +516,21 @@ end:
 <span class="keyword">barrier</span>
 
 b = <span class="keyword">atomic</span>(a += <span class="literal">1</span>)
-b = <span class="keyword">atomic</span>(<span class="keyword">relaxed</span>; a += <span class="literal">1</span>)
+b = <span class="keyword">atomic</span>:<span class="keyword">relaxed</span>(a += <span class="literal">1</span>)
 
-b = <span class="keyword">atomic</span>(<span class="keyword">ordered</span>; a cas b : c )
+b = <span class="keyword">atomic</span>:<span class="keyword">ordered</span>(a <span class="keyword">cas</span> b : c )
 
 
 
 
 <span class="keyword">atomic</span>
-  a = foo()
-  <span class="keyword">atomic</span>:<span class="keyword">strict</span>
-    b = bar()
-    <span class="keyword">abort</span> <span class="keyword">if</span> b > 10
-  <span class="keyword">end</span>
+    a = foo()
+    <span class="keyword">atomic</span>:<span class="keyword">strict</span>
+        b = bar()
+        <span class="keyword">abort</span> <span class="keyword">if</span> b > 10
+    <span class="keyword">end</span>
 <span class="keyword">else</span>
-  <span class="comment">// memory transaction failed</span>
+    <span class="comment">// memory transaction failed</span>
 <span class="keyword">end</span>
                     </code></pre>
                 </td>

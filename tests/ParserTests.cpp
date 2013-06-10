@@ -276,3 +276,33 @@ TEST_F(ParserTest, StructureDefinitionWithoutPacking) {
     ASSERT_EQ(0, structure->packing());
     ASSERT_EQ("MyStructure", structure->structureName());
 }
+
+TEST_F(ParserTest, AtomicBarrierWithoutSpecifier) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nbarrier\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_EQ("Barrier", node->name());
+    ASSERT_EQ("ordered", dynamic_cast<Language::BarrierNode*>(node)->type());
+}
+
+TEST_F(ParserTest, AtomicBarrierWithSpecifier) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nbarrier:unordered\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_EQ("Barrier", node->name());
+    ASSERT_EQ("unordered", dynamic_cast<Language::BarrierNode*>(node)->type());
+}
+
+TEST_F(ParserTest, AtomicExpression) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nInt a\natomic:ordered(a = 1)\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(1);
+
+    ASSERT_EQ("AtomicExpression", node->name());
+    ASSERT_EQ("ordered", dynamic_cast<Language::AtomicExpressionNode*>(node)->type());
+}

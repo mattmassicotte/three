@@ -10,20 +10,22 @@ namespace Language {
         _stream = stream;
         _subtoken = this->advanceSubtoken();
 
-        _keywordMap["import"] = Token::Type::KeywordImport;
-        _keywordMap["def"]    = Token::Type::KeywordDef;
-        _keywordMap["end"]    = Token::Type::KeywordEnd;
-        _keywordMap["return"] = Token::Type::KeywordReturn;
-        _keywordMap["if"]     = Token::Type::KeywordIf;
-        _keywordMap["else"]   = Token::Type::KeywordElse;
-        _keywordMap["true"]   = Token::Type::TrueLiteral;
-        _keywordMap["false"]  = Token::Type::FalseLiteral;
-        _keywordMap["null"]   = Token::Type::NullLiteral;
-        _keywordMap["do"]     = Token::Type::KeywordClosure;
-        _keywordMap["struct"] = Token::Type::KeywordStructure;
-        _keywordMap["enum"]   = Token::Type::KeywordEnumeration;
-        _keywordMap["switch"] = Token::Type::KeywordSwitch;
-        _keywordMap["case"]   = Token::Type::KeywordCase;
+        _keywordMap["import"]  = Token::Type::KeywordImport;
+        _keywordMap["def"]     = Token::Type::KeywordDef;
+        _keywordMap["end"]     = Token::Type::KeywordEnd;
+        _keywordMap["return"]  = Token::Type::KeywordReturn;
+        _keywordMap["if"]      = Token::Type::KeywordIf;
+        _keywordMap["else"]    = Token::Type::KeywordElse;
+        _keywordMap["true"]    = Token::Type::TrueLiteral;
+        _keywordMap["false"]   = Token::Type::FalseLiteral;
+        _keywordMap["null"]    = Token::Type::NullLiteral;
+        _keywordMap["do"]      = Token::Type::KeywordClosure;
+        _keywordMap["struct"]  = Token::Type::KeywordStructure;
+        _keywordMap["enum"]    = Token::Type::KeywordEnumeration;
+        _keywordMap["switch"]  = Token::Type::KeywordSwitch;
+        _keywordMap["case"]    = Token::Type::KeywordCase;
+        _keywordMap["atomic"]  = Token::Type::KeywordAtomic;
+        _keywordMap["barrier"] = Token::Type::KeywordBarrier;
     }
 
     bool Lexer::characterPeek(char& c) {
