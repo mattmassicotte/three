@@ -56,6 +56,12 @@ namespace Language {
             case Token::Type::KeywordSwitch:
                 node = SwitchNode::parse(*this);
                 break;
+            case Token::Type::KeywordAtomic:
+                node = AtomicStatementNode::parse(*this);
+                break;
+            case Token::Type::KeywordBarrier:
+                node = BarrierNode::parse(*this);
+                break;
             default:
                 break;
         }
@@ -106,6 +112,9 @@ namespace Language {
             case Token::Type::TrueLiteral:
             case Token::Type::FalseLiteral:
                 node = BooleanLiteralNode::parse(*this);
+                break;
+            case Token::Type::KeywordAtomic:
+                node = AtomicExpressionNode::parse(*this);
                 break;
             default:
                 std::cout << "Parser: unhandled expression '" << this->next().str() << "'" << std::endl;

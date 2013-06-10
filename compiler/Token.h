@@ -33,6 +33,8 @@ namespace Language {
             KeywordEnumeration,
             KeywordSwitch,
             KeywordCase,
+            KeywordAtomic,
+            KeywordBarrier,
             Operator
         } Type;
 

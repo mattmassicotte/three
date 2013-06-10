@@ -16,3 +16,6 @@
 #include "AST/Types/StructureNode.h"
 #include "AST/Types/EnumerationNode.h"
 #include "AST/Control/SwitchNode.h"
+#include "AST/Atomics/AtomicStatementNode.h"
+#include "AST/Atomics/AtomicExpressionNode.h"
+#include "AST/Atomics/BarrierNode.h"
