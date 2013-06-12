@@ -28,12 +28,23 @@ namespace Language {
 
     OperatorNode* OperatorNode::parseOperator(Parser& parser, ASTNode* leftOperand) {
         OperatorNode* node;
+        std::string   op;
 
         node = new OperatorNode();
-        node->setOp(parser.next().str());
+        
+        while (parser.peek().type() == Token::Type::Operator) {
+            op = op + parser.next().str();
+        }
+
+        node->setOp(op);
 
         node->addChild(leftOperand);
         node->addChild(parser.parseExpression());
+
+        if (node->ternary()) {
+            assert(parser.next().type() == Token::Type::PunctuationColon);
+            node->addChild(parser.parseExpression());
+        }
 
         return node;
     }
@@ -48,6 +59,10 @@ namespace Language {
 
     void OperatorNode::setOp(const std::string& string) {
         _operator = string;
+    }
+
+    bool OperatorNode::ternary() const {
+        return (this->op() == "?") || (this->op() == "cas");
     }
 
     void OperatorNode::codeGenCSource(CSourceContext& context) {

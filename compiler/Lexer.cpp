@@ -26,6 +26,7 @@ namespace Language {
         _keywordMap["case"]    = Token::Type::KeywordCase;
         _keywordMap["atomic"]  = Token::Type::KeywordAtomic;
         _keywordMap["barrier"] = Token::Type::KeywordBarrier;
+        _keywordMap["cas"]     = Token::Type::Operator;
     }
 
     bool Lexer::characterPeek(char& c) {
@@ -71,6 +72,9 @@ namespace Language {
                 break;
             case ')':
                 type = Token::Type::PunctuationCloseParen;
+                break;
+            case ':':
+                type = Token::Type::PunctuationColon;
                 break;
             default:
                 type = Token::Type::Punctuation;
@@ -168,12 +172,13 @@ namespace Language {
                 case '>':
                 case '<':
                 case '.':
+                case '?':
                     if (type != Token::Type::EndOfInput) {
                         return Token(s.str(), type);
                     }
 
                     s << this->characterAdvance();
-                
+
                     return Token(s.str(), Token::Type::Operator);
                 case '{':
                 case '}':

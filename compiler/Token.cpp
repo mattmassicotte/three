@@ -83,7 +83,10 @@ namespace Language {
         if (_string == "-") return 40;
         if (_string == "<") return 30;
         if (_string == ">") return 30;
+        if (_string == "==") return 30;
         if (_string == "=") return 10;
+        if (_string == "?") return 5;
+        if (_string == "cas") return 5;
 
         return Token::NonPrecedence;
     }

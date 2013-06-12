@@ -131,3 +131,11 @@ TEST_F(LexerTest, LookAhead) {
     ASSERT_EQ("yes", this->peek(3).str());
     ASSERT_EQ("hell0", this->peek(1).str());
 }
+
+TEST_F(LexerTest, AssignmentOperator) {
+    this->lex("a = 1");
+
+    ASSERT_NEXT_TOKEN(Identifier,     "a");
+    ASSERT_NEXT_TOKEN(Operator,       "=");
+    ASSERT_NEXT_TOKEN(NumericLiteral, "1");
+}
