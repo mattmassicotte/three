@@ -306,3 +306,36 @@ TEST_F(ParserTest, AtomicExpression) {
     ASSERT_EQ("AtomicExpression", node->name());
     ASSERT_EQ("ordered", dynamic_cast<Language::AtomicExpressionNode*>(node)->type());
 }
+
+TEST_F(ParserTest, TernaryConditionalOperator) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nInt a\na = (a == 0) ? 1 : 2\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(1);
+
+    ASSERT_OPERATOR("=", node);
+    ASSERT_EQ(2, node->childCount());
+    ASSERT_VARIABLE_NODE("Int",  0, "a", node->childAtIndex(0));
+
+    node = node->childAtIndex(1);
+    ASSERT_OPERATOR("?", node);
+    ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
+    ASSERT_INTEGER_LITERAL_NODE(2, node->childAtIndex(2));
+
+    node = node->childAtIndex(0);
+    ASSERT_OPERATOR("==", node);
+    ASSERT_VARIABLE_NODE("Int",  0, "a", node->childAtIndex(0));
+    ASSERT_INTEGER_LITERAL_NODE(0, node->childAtIndex(1));
+}
+
+TEST_F(ParserTest, TernaryCompareAndSwapOperator) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nInt a\na cas 1 : 2\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(1);
+
+    ASSERT_OPERATOR("cas", node);
+    ASSERT_VARIABLE_NODE("Int",  0, "a", node->childAtIndex(0));
+    ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
+    ASSERT_INTEGER_LITERAL_NODE(2, node->childAtIndex(2));
+}

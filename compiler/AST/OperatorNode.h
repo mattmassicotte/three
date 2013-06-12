@@ -15,6 +15,7 @@ namespace Language {
 
         std::string op() const;
         void        setOp(const std::string& string);
+        bool        ternary() const;
 
         void codeGenCSource(CSourceContext& context);
 
