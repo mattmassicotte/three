@@ -18,6 +18,8 @@ namespace Language {
             type = "ordered";
         }
 
+        node->_strict = type == "strict";
+
         if (parser.peek().type() == Token::Type::PunctuationOpenParen) {
             assert(type != "strict");
             return AtomicExpressionNode::parse(parser, type);
@@ -57,7 +59,9 @@ namespace Language {
 
         this->codeGenCSourceForChildren(context);
 
-        context.current()->printLine("three_end_transaction();");
+        context << "three_end_transaction(";
+        context << (this->strict() ? "true" : "false");
+        context.current()->printLine(");");
 
         if (this->_elseNode) {
             context.current()->decreaseIndentation();
