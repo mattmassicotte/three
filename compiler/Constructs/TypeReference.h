@@ -18,6 +18,8 @@ namespace Language {
         TypeReference();
         TypeReference(DataType* referencedType, uint32_t indirection);
 
+        std::string str() const;
+
         DataType* referencedType() const;
         void setReferencedType(DataType* type);
         std::string name() const;
@@ -25,6 +27,7 @@ namespace Language {
         void setIndirectionDepth(uint32_t depth);
         void incrementIndirectionDepth();
 
+        void codeGenCSourceFunctionType(CSource* source, const std::string& variableName) const;
         void codeGenCSource(CSource* source, const std::string& variableName) const;
 
     private:

@@ -39,7 +39,7 @@ namespace Language {
 
         TypeReference returnType() const;
         void          setReturnType(const TypeReference& value);
-        void          eachParameterWithLast(std::function<void (const TypeReference&, bool)> func);
+        void          eachParameterWithLast(std::function<void (const TypeReference&, bool)> func) const;
 
     private:
         Flavor      _type;

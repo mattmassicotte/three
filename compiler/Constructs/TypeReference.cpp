@@ -15,6 +15,15 @@ namespace Language {
     TypeReference::TypeReference(DataType* referencedType, uint32_t indirection) : _type(referencedType), _indirection(indirection) {
     }
 
+    std::string TypeReference::str() const {
+        std::stringstream s;
+
+        s << std::string(this->indirectionDepth(), '*');
+        s << this->referencedType()->str();
+
+        return s.str();
+    }
+
     DataType* TypeReference::referencedType() const {
         return _type;
     }
@@ -39,19 +48,7 @@ namespace Language {
         _indirection++;
     }
 
-    void TypeReference::codeGenCSource(CSource* source, const std::string& variableName) const {
-        if (_type->flavor() != DataType::Flavor::Function) {
-            source->print(_type->cSourceName());
-            source->print(std::string(this->indirectionDepth(), '*'));
-
-            if (variableName.size() > 0) {
-                source->print(" ");
-                source->print(variableName);
-            }
-
-            return;
-        }
-
+    void TypeReference::codeGenCSourceFunctionType(CSource* source, const std::string& variableName) const {
         // return (*varName)(param1, param2);
         _type->returnType().codeGenCSource(source, "");
         source->print(" (");
@@ -80,4 +77,23 @@ namespace Language {
         source->print(")");
     }
 
+    void TypeReference::codeGenCSource(CSource* source, const std::string& variableName) const {
+        // It seems like it would make more sense to do this for both functions and
+        // closures.  However, closures are actually structures, and nearly all of the time
+        // they have to be referenced like regular structure types.  In rare cases,
+        // like invoking their functions, this method should not be used.  But, in pretty much
+        // all other situations, this check is appropriate.
+        if (_type->flavor() == DataType::Flavor::Function) {
+            this->codeGenCSourceFunctionType(source, variableName);
+            return;
+        }
+
+        source->print(_type->cSourceName());
+        source->print(std::string(this->indirectionDepth(), '*'));
+
+        if (variableName.size() > 0) {
+            source->print(" ");
+            source->print(variableName);
+        }
+    }
 }

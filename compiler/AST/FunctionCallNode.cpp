@@ -61,6 +61,10 @@ namespace Language {
         return _functionName;
     }
 
+    TypeReference FunctionCallNode::functionType() const {
+        return TypeReference(_functionType, 1);
+    }
+
     std::string FunctionCallNode::str() const {
         std::stringstream s;
 
@@ -74,16 +78,17 @@ namespace Language {
     }
 
     void FunctionCallNode::codeGenCSource(CSourceContext& context) {
-        context << this->functionName();
-
         if (this->isClosure()) {
-            context << ".function(";
-            context << this->functionName() << ".env";
+            context << "THREE_CALL_CLOSURE(";
+            this->functionType().codeGenCSourceFunctionType(context.current(), "");
+            context << ", ";
+            context << this->functionName();
+
             if (this->childCount() > 0) {
                 context << ", ";
             }
         } else {
-            context << "(";
+            context << this->functionName() << "(";
         }
 
         this->eachChild([=, &context] (ASTNode* node, uint32_t index) {

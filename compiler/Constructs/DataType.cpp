@@ -11,7 +11,37 @@ namespace Language {
     }
 
     std::string DataType::str() const {
-        return this->name();
+        if (this->flavor() == Flavor::Scalar) {
+            return this->name();
+        }
+
+        std::stringstream s;
+
+        assert(this->isCallable());
+
+        if (this->flavor() == Flavor::Closure) {
+            s << "{";
+        } else {
+            s << "(";
+        }
+
+        this->eachParameterWithLast([&] (const TypeReference& type, bool last) {
+            s << type.str();
+            if (!last) {
+                s << ", ";
+            }
+        });
+
+        s << "; ";
+        s << this->returnType().str();
+
+        if (this->flavor() == Flavor::Closure) {
+            s << "}";
+        } else {
+            s << ")";
+        }
+
+        return s.str();
     }
 
     DataType::Flavor DataType::flavor() const {
@@ -81,7 +111,7 @@ namespace Language {
         _returnType = value;
     }
 
-    void DataType::eachParameterWithLast(std::function<void (const TypeReference&, bool)> func) {
+    void DataType::eachParameterWithLast(std::function<void (const TypeReference&, bool)> func) const {
         assert(this->isCallable());
         uint32_t lastIndex = this->childCount() - 1;
 

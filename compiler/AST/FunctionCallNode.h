@@ -11,6 +11,7 @@ namespace Language {
     public:
         virtual std::string name() const;
         std::string str() const;
+        TypeReference functionType() const;
 
         bool isClosure() const;
 
