@@ -27,16 +27,16 @@
             <tr>
                 <td>
                     <pre><code>
-<span class="entity">bool</span>
-<span class="entity">int</span>:32
-<span class="entity">natural</span>:32
-<span class="entity">real</span>:32
-<span class="entity">void</span>
-<span class="entity">natural</span>
+<span class="entity">Bool</span>
+<span class="entity">Int</span>:32
+<span class="entity">Natural</span>:32
+<span class="entity">Real</span>:32
+<span class="entity">Void</span>
+<span class="entity">Natural</span>
 
-  <span class="entity">int</span>
- *<span class="entity">int</span>
-**<span class="entity">int</span>
+  <span class="entity">Int</span>
+ *<span class="entity">Int</span>
+**<span class="entity">Int</span>
                     </code></pre>
                 </td>
                 <td>
@@ -58,12 +58,12 @@
             <tr>
                 <td>
                     <pre><code>
-<span class="entity">char</span>
-<span class="entity">char</span>:<span class="entity">ascii</span>
-<span class="entity">char</span>:<span class="entity">utf8</span>
-<span class="entity">char</span>:<span class="entity">utf16</span>
-<span class="entity">char</span>:<span class="entity">utf32</span>
-<span class="entity">natural</span>:8
+<span class="entity">Char</span>
+<span class="entity">Char</span>:<span class="entity">ascii</span>
+<span class="entity">Char</span>:<span class="entity">utf8</span>
+<span class="entity">Char</span>:<span class="entity">utf16</span>
+<span class="entity">Char</span>:<span class="entity">utf32</span>
+<span class="entity">Natural</span>:8
                     </code></pre>
                 </td>
                 <td>
@@ -85,11 +85,11 @@
 <span class="literal">false</span>
 
 <span class="literal">1234</span>
-<span class="literal">1234</span>:<span class="entity">int</span>:64
-<span class="literal">1234</span>:<span class="entity">natural</span>:64
+<span class="literal">1234</span>:<span class="entity">Int</span>:64
+<span class="literal">1234</span>:<span class="entity">Natural</span>:64
 <span class="literal">-1234</span>
 <span class="literal">1234.0</span>
-<span class="literal">1234.0</span>:<span class="entity">real</span>:32
+<span class="literal">1234.0</span>:<span class="entity">Real</span>:32
 <span class="literal">1.23e-2</span>
 <span class="literal">0x4d2</span>
 <span class="literal">0b010011010010</span>
@@ -140,22 +140,22 @@
             <tr>
                 <td>
                     <pre><code>
-<span class="keyword">def</span> <span class="entity">natural</span>:64 <span class="entity">uint64_t</span>
+<span class="keyword">def</span> <span class="entity">Natural</span>:64 <span class="entity">uint64_t</span>
 
 <span class="keyword">struct</span>:1 <span class="entity">MyStructure</span>
-  <span class="entity">int</span>        value1
-  <span class="entity">int</span>:32     value2
-  <span class="entity">int</span>:64     value3
-  <span class="entity">natural</span>:32 value4
-  <span class="entity">int</span>:5      value5
+  <span class="entity">Int</span>        value1
+  <span class="entity">Int</span>:32     value2
+  <span class="entity">Int</span>:64     value3
+  <span class="entity">Natural</span>:32 value4
+  <span class="entity">Int</span>:5      value5
 <span class="keyword">end</span>
 
 
 
 
 <span class="keyword">union</span> MyUnion
-  <span class="entity">int</span>:32  int_value
-  <span class="entity">real</span>:32 fp_value
+  <span class="entity">Int</span>:32  int_value
+  <span class="entity">Real</span>:32 fp_value
 <span class="keyword">end</span>
 
 <span class="keyword">enum</span> MyEnum
@@ -264,6 +264,7 @@ x <span class="keyword">cas</span> y : z
 <span class="keyword">alignof</span>(x)
 <span class="keyword">offsetof</span>(struct, field)
 <span class="keyword">typeof</span>(x)
+<em>No Equivalent</em>
 -x
 ++x
 x++
@@ -323,12 +324,12 @@ x ? y : z
             <tr>
                 <td>
                     <pre><code>
-<span class="keyword">def</span> foo(*<span class="entity">int</span>:32 x, <span class="entity">int</span>:32 y; <span class="entity">int</span>:32)
+<span class="keyword">def</span> foo(*<span class="entity">Int</span>:32 x, <span class="entity">Int</span>:32 y; <span class="entity">Int</span>:32)
   <span class="keyword">return</span> *x + y
 <span class="keyword">end</span>
 
-<span class="keyword">def</span> bar(*<span class="entity">char</span> fmt, <span class="keyword">vararg</span> ap)
-  <span class="keyword">vararg</span> ap2
+<span class="keyword">def</span> bar(*<span class="entity">Char</span> fmt, <span class="keyword">Vararg</span> ap)
+  <span class="keyword">Vararg</span> ap2
 
   ap2 = ap
 
@@ -369,15 +370,15 @@ x ? y : z
             <tr>
                 <td>
                     <pre><code>
-<span class="entity">int</span>             x
-<span class="entity">int</span>             y
-{<span class="entity">int</span>, <span class="entity">int</span>; <span class="entity">int</span>} closure
+<span class="entity">Int</span>             x
+<span class="entity">Int</span>             y
+{<span class="entity">Int</span>, <span class="entity">Int</span>; <span class="entity">Int</span>} closure
 
 x = 42
 y = 43
 
 <span class="comment">// captures x by reference, y by value</span>
-closure = (<span class="entity">int</span> a, <span class="entity">int</span> b; <span class="entity">int</span>; x) {
+closure = (<span class="entity">Int</span> a, <span class="entity">Int</span> b; <span class="entity">Int</span>; x) {
     x = a + b + y
     
     <span class="keyword">return</span> a + b
@@ -394,9 +395,9 @@ closure = (<span class="entity">int</span> a, <span class="entity">int</span> b;
             <tr>
                 <td>
                     <pre><code>
-*(<span class="entity">int</span>, <span class="entity">int</span>; <span class="entity">int</span>) function_ptr_a
-*(<span class="entity">int</span>, <span class="entity">int</span>)      function_ptr_b
-*{<span class="entity">int</span>, <span class="entity">int</span>; <span class="entity">int</span>} closure_ptr
+*(<span class="entity">Int</span>, <span class="entity">Int</span>; <span class="entity">Int</span>) function_ptr_a
+*(<span class="entity">Int</span>, <span class="entity">Int</span>)      function_ptr_b
+*{<span class="entity">Int</span>, <span class="entity">Int</span>; <span class="entity">Int</span>} closure_ptr
                     </code></pre>
                 </td>
                 <td>
@@ -461,11 +462,11 @@ closure = (<span class="entity">int</span> a, <span class="entity">int</span> b;
   <em>body</em>
 <span class="keyword">end</span>
 
-<span class="keyword">loop</span> (<span class="entity">int</span> i = <span class="literal">0</span>; i &lt; <span class="literal">10</span>; i++)
+<span class="keyword">loop</span> (<span class="entity">Int</span> i = <span class="literal">0</span>; i &lt; <span class="literal">10</span>; i++)
   <em>body</em>
 <span class="keyword">end</span>
 
-<span class="keyword">loop</span> (<span class="entity">int</span> a = <span class="literal">0</span>; a == <span class="literal">0</span>)
+<span class="keyword">loop</span> (<span class="entity">Int</span> a = <span class="literal">0</span>; a == <span class="literal">0</span>)
   <em>body</em>
 <span class="keyword">end</span>
 
@@ -511,8 +512,6 @@ end:
             <tr>
                 <td>
                     <pre><code>
-<span class="entity">int</span>:32 a
-
 <span class="keyword">barrier</span>
 
 b = <span class="keyword">atomic</span>(a += <span class="literal">1</span>)
@@ -536,8 +535,6 @@ b = <span class="keyword">atomic</span>:<span class="keyword">ordered</span>(a <
                 </td>
                 <td>
                     <pre><code>
-<span class="entity">_Atomic</span>(<span class="entity">int</span>) a;
-
 atomic_thread_fence(<span class="directive">memory_order_seq_cst</span>);
 
 b = atomic_fetch_add(&amp;a, <span class="literal">1</span>);
@@ -591,7 +588,7 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
 <span class="annotation">@return</span>  The value of x + the value
          pointed to by y
 <span class="annotation">@check   @pure @success(return == 0)</span>
-<span class="keyword">def</span> foo(<span class="entity">int</span> x, *<span class="entity">int</span> y; <span class="entity">int</span>)
+<span class="keyword">def</span> foo(<span class="entity">Int</span> x, *<span class="entity">Int</span> y; <span class="entity">Int</span>)
                     </code></pre>
                 </td>
                 <td>
@@ -613,14 +610,14 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
 
 <span class="directive">linkage</span>(none)
 <span class="directive">abi</span>(cdecl)
-<span class="keyword">def</span> foo(; <span class="entity">int</span>)
+<span class="keyword">def</span> foo(; <span class="entity">Int</span>)
 
 <span class="keyword">debug</span>
   printf(<span class="string">"debugging statement here\n"</span>)
 <span class="keyword">end</span>
 
 <span class="keyword">namespace</span> Foo
-  <span class="keyword">def</span> bar(; <span class="entity">int</span>)
+  <span class="keyword">def</span> bar(; <span class="entity">Int</span>)
 <span class="keyword">end</span>
                     </code></pre>
                 </td>
