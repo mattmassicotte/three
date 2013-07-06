@@ -64,17 +64,6 @@ namespace Language {
         }
         s << std::endl;
 
-        s << "// Closure Support" << std::endl;
-        s << "typedef void* (*three_closure_function_t)(void*, ...);" << std::endl;
-        s << "typedef struct {" << std::endl;
-        s << "    three_closure_function_t function;" << std::endl;
-        s << "    int   env_size;" << std::endl;
-        s << "    void* env;" << std::endl;
-        s << "} three_closure_t;" << std::endl;
-        s << "#define THREE_MAKE_CLOSURE(func) ((three_closure_t){(three_closure_function_t)func, sizeof(struct func ## _env), (void*)&(func ## _env ## _value)})" << std::endl;
-        s << "#define THREE_CALL_CLOSURE(clos_type, clos, ...) (((clos_type)clos.function)(clos.env, __VA_ARGS__))" << std::endl;
-        s << std::endl;
-
         s << "// Declarations" << std::endl;
         s << _declarationSource->renderToString();
         s << std::endl;

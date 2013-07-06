@@ -144,6 +144,8 @@ namespace Language {
     }
 
     void ClosureNode::codeGenCSource(CSourceContext& context) {
+        context.addHeader("three/runtime/closure.h");
+
         context.setCurrent(CSourceContext::Section::Declarations);
 
         this->codeGenCSourceStructDefinition(context);
