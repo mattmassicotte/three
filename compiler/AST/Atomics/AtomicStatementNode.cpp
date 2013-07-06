@@ -53,13 +53,16 @@ namespace Language {
     }
 
     void AtomicStatementNode::codeGenCSource(CSourceContext& context) {
-        context << "if (three_begin_transaction(";
+        context.addHeader("stdbool.h");
+        context.addHeader("three/runtime/transactional_memory.h");
+
+        context << "if (three_transaction_begin(";
         context << (this->strict() ? "true" : "false");
         context.current()->printLineAndIndent(")) {");
 
         this->codeGenCSourceForChildren(context);
 
-        context << "three_end_transaction(";
+        context << "three_transaction_end(";
         context << (this->strict() ? "true" : "false");
         context.current()->printLine(");");
 

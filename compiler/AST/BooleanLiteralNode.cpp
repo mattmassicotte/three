@@ -31,6 +31,8 @@ namespace Language {
     }
 
     void BooleanLiteralNode::codeGenCSource(CSourceContext& context) {
+        context.addHeader("stdbool.h");
+
         context << (this->value() ? "true" : "false");
     }
 }

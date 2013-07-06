@@ -5,7 +5,6 @@
 
 namespace Language {
     CSourceContext::CSourceContext() {
-        _headerSource = new CSource();
         _declarationSource = new CSource();
         _bodySource = new CSource();
 
@@ -13,13 +12,12 @@ namespace Language {
     }
 
     CSourceContext::~CSourceContext() {
-        delete _headerSource;
         delete _declarationSource;
         delete _bodySource;
     }
 
-    CSource* CSourceContext::headers() const {
-        return _headerSource;
+    void CSourceContext::addHeader(const std::string& header) {
+        _headers.insert(header);
     }
 
     CSource* CSourceContext::declarations() const {
@@ -61,8 +59,9 @@ namespace Language {
         s << std::endl;
 
         s << "// Includes" << std::endl;
-        s << "#include <stdbool.h>" << std::endl;
-        s << _headerSource->renderToString();
+        for (const std::string& header : _headers) {
+            s << "#include <" << header << ">" << std::endl;
+        }
         s << std::endl;
 
         s << "// Closure Support" << std::endl;

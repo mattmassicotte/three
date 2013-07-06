@@ -52,10 +52,7 @@ namespace Language {
 
     void ImportNode::codeGenCSource(CSourceContext& context) {
         if (_module) {
-            context.headers()->print("#include <");
-            context.headers()->print(_module->cIncludePath());
-            context.headers()->print(">");
-            context.headers()->printNewLine();
+            context.addHeader(_module->cIncludePath());
         }
     }
 }

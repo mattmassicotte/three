@@ -4,7 +4,7 @@
 
 #include <string>
 #include <sstream>
-#include <vector>
+#include <set>
 
 namespace Language {
     class CSourceContext {
@@ -17,7 +17,8 @@ namespace Language {
         CSourceContext();
         virtual ~CSourceContext();
 
-        CSource* headers() const;
+        void addHeader(const std::string& header);
+
         CSource* declarations() const;
         CSource* body() const;
         CSource* current() const;
@@ -27,7 +28,8 @@ namespace Language {
 
         std::string renderToString();
     private:
-        CSource* _headerSource;
+        std::set<std::string> _headers;
+
         CSource* _declarationSource;
         CSource* _bodySource;
         CSource* _currentSource;
