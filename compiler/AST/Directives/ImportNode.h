@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ASTNode.h"
-#include "../Constructs/Module.h"
+#include "../ASTNode.h"
+#include "../../Constructs/Module.h"
 
 namespace Language {
     class ImportNode : public ASTNode {
