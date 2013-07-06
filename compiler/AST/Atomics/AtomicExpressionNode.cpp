@@ -1,4 +1,5 @@
 #include "AtomicExpressionNode.h"
+#include "../OperatorNode.h"
 #include "../../Parser.h"
 
 #include <assert.h>
@@ -37,5 +38,37 @@ namespace Language {
     }
 
     void AtomicExpressionNode::codeGenCSource(CSourceContext& context) {
+        context.addHeader("three/runtime/stdatomic.h");
+
+        // we need to inspect the operation inside the expression to figure out
+        // what code we actually need to emit
+
+        assert(this->childCount() == 1);
+
+        OperatorNode* op = dynamic_cast<OperatorNode*>(this->childAtIndex(0));
+
+        if (op->op() == "+=") {
+            context << "atomic_fetch_add_explicit(";
+            context << "&(";
+            op->childAtIndex(0)->codeGenCSource(context);
+            context << "), ";
+            op->childAtIndex(1)->codeGenCSource(context);
+            context << ", ";
+            context << "memory_order_seq_cst";
+            context << ")";
+        } else if (op->op() == "cas") {
+            context << "atomic_compare_exchange_strong_explicit(";
+            context << "&(";
+            op->childAtIndex(0)->codeGenCSource(context);
+            context << "), &(";
+            op->childAtIndex(1)->codeGenCSource(context);
+            context << "), &(";
+            op->childAtIndex(2)->codeGenCSource(context);
+            context << "), ";
+            context << "memory_order_seq_cst";
+            context << ", ";
+            context << "memory_order_seq_cst";
+            context << ")";
+        }
     }
 }

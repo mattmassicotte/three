@@ -39,6 +39,8 @@ namespace Language {
     }
 
     void BarrierNode::codeGenCSource(CSourceContext& context) {
+        context.addHeader("three/runtime/stdatomic.h");
+
         context << "atomic_thread_fence(" << this->c11MemoryOrderString() << ");";
     }
 }
