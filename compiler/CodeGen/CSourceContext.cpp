@@ -61,6 +61,7 @@ namespace Language {
         s << std::endl;
 
         s << "// Includes" << std::endl;
+        s << "#include <stdbool.h>" << std::endl;
         s << _headerSource->renderToString();
         s << std::endl;
 
