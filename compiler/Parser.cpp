@@ -37,6 +37,8 @@ namespace Language {
         // TODO: This really needs to do more exhausive checks for a variable
         // declaration.
 
+        // Checking for tailing ifs is a little tricky here.  Certain things
+        // can have them, certain ones cannot.
         switch (this->peek().type()) {
             case Token::Type::Identifier:
                 if (this->peek(2).type() == Token::Type::Identifier) {
@@ -49,6 +51,7 @@ namespace Language {
                 break;
             case Token::Type::KeywordReturn:
                 node = ReturnNode::parse(*this);
+                node = IfNode::parseTailing(*this, node);
                 break;
             case Token::Type::KeywordIf:
                 node = IfNode::parse(*this);
@@ -64,9 +67,11 @@ namespace Language {
                 break;
             case Token::Type::KeywordAbort:
                 node = AbortStatementNode::parse(*this);
+                node = IfNode::parseTailing(*this, node);
                 break;
             case Token::Type::KeywordBarrier:
                 node = BarrierNode::parse(*this);
+                node = IfNode::parseTailing(*this, node);
                 break;
             default:
                 break;
@@ -77,6 +82,7 @@ namespace Language {
             std::cout << "Parser: falling back to expression statement" << std::endl;
 #endif
             node = this->parseExpression();
+            node = IfNode::parseTailing(*this, node);
         }
 
         this->parseNewline(true);

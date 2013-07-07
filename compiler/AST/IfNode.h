@@ -7,6 +7,7 @@ namespace Language {
     class IfNode : public ASTNode {
     public:
         static IfNode* parse(Parser& parser);
+        static ASTNode* parseTailing(Parser& parser, ASTNode* node);
 
     public:
         IfNode();

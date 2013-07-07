@@ -10,8 +10,13 @@ namespace Language {
         assert(parser.peek().type() == Token::Type::KeywordReturn);
         parser.next();
 
-        if (parser.peek().type() != Token::Type::Newline) {
-            node->addChild(parser.parseExpression());
+        switch (parser.peek().type()) {
+            case Token::Type::Newline:
+            case Token::Type::KeywordIf: // for tailing ifs
+                break;
+            default:
+                node->addChild(parser.parseExpression());
+                break;
         }
 
         node->setStatement(true);

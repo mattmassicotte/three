@@ -180,6 +180,19 @@ TEST_F(ParserTest, SimpleIfWithElseStatement) {
     ASSERT_RETURN_NODE(ifNode->elseStatement()->childAtIndex(0));
 }
 
+TEST_F(ParserTest, TailingIfStatement) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nreturn if false\nend\n");
+
+    Language::IfNode* ifNode = dynamic_cast<Language::IfNode*>(node->childAtIndex(0)->childAtIndex(0));
+
+    ASSERT_EQ("If", ifNode->name());
+    ASSERT_BOOLEAN_LITERAL_NODE(false, ifNode->condition());
+    ASSERT_EQ(1, ifNode->childCount());
+    ASSERT_RETURN_NODE(ifNode->childAtIndex(0));
+}
+
 TEST_F(ParserTest, AssignmentExpression) {
     Language::ASTNode* node;
 

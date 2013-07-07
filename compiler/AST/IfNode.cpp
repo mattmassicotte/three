@@ -36,6 +36,22 @@ namespace Language {
         return node;
     }
 
+    ASTNode* IfNode::parseTailing(Parser& parser, ASTNode* node) {
+        if (parser.peek().type() != Token::Type::KeywordIf) {
+            return node;
+        }
+
+        assert(parser.next().type() == Token::Type::KeywordIf);
+
+        IfNode* ifNode = new IfNode();
+
+        ifNode->addChild(node);
+
+        ifNode->_conditionNode = parser.parseExpression();
+
+        return ifNode;
+    }
+
     IfNode::IfNode() : _elseNode(NULL) {
     }
 
