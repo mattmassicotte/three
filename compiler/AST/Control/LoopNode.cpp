@@ -8,6 +8,13 @@ namespace Language {
         LoopNode* node = new LoopNode();
 
         assert(parser.next().type() == Token::Type::KeywordLoop);
+
+        if (parser.peek().type() == Token::Type::Newline) {
+            node->_condition = NULL;
+        } else {
+            node->_condition = parser.parseExpression();
+        }
+
         parser.parseNewline();
 
         parser.parseUntilEnd([&] () {
@@ -17,12 +24,27 @@ namespace Language {
         return node;
     }
 
+    LoopNode::~LoopNode() {
+        delete _condition;
+    }
+
     std::string LoopNode::name() const {
         return "Loop";
     }
 
+    ASTNode* LoopNode::condition() const {
+        return _condition;
+    }
+
     void LoopNode::codeGenCSource(CSourceContext& context) {
-        context.current()->printLineAndIndent("while (1) {");
+        context << "while (";
+        if (!this->condition()) {
+            context << "1";
+        } else {
+            this->condition()->codeGenCSource(context);
+        }
+
+        context.current()->printLineAndIndent(") {");
 
         this->codeGenCSourceForChildren(context);
 

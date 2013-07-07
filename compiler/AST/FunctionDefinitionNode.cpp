@@ -61,6 +61,11 @@ namespace Language {
         // push in a new scope for the function body
         parser.pushScope(new Scope(node->_function->name()));
 
+        // define new variables for all parameters
+        node->_function->eachParameterWithLast([&] (Variable* v, bool last) {
+            parser.currentScope()->addVariable(v->name(), v);
+        });
+
         // and now, parse the body
         while (true) {
             if (parser.peek().type() == Token::Type::KeywordEnd) {
