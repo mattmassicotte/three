@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AST/Atomics/AbortStatementNode.h"
 #include "AST/Atomics/AtomicStatementNode.h"
 #include "AST/Atomics/AtomicExpressionNode.h"
 #include "AST/Atomics/BarrierNode.h"

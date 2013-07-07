@@ -56,9 +56,7 @@ namespace Language {
 
         this->condition()->codeGenCSource(context);
 
-        context.current()->print(") {");
-        context.current()->increaseIndentation();
-        context.current()->printNewLine();
+        context.current()->printLineAndIndent(") {");
 
         this->codeGenCSourceForChildren(context);
 

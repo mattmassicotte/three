@@ -37,6 +37,7 @@ namespace Language {
             KeywordCase,
             KeywordAtomic,
             KeywordBarrier,
+            KeywordAbort,
             Operator
         } Type;
 

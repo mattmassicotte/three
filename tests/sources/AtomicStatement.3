@@ -5,8 +5,11 @@ def main(Int argc, **Char argv; Int)
     atomic
         a = 42
         atomic:strict
-            b = 43
+            a = 43
             b = 0
+            if b > 0
+                abort
+            end
         end
     else
         b = 1

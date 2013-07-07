@@ -62,6 +62,9 @@ namespace Language {
             case Token::Type::KeywordAtomic:
                 node = AtomicStatementNode::parse(*this);
                 break;
+            case Token::Type::KeywordAbort:
+                node = AbortStatementNode::parse(*this);
+                break;
             case Token::Type::KeywordBarrier:
                 node = BarrierNode::parse(*this);
                 break;

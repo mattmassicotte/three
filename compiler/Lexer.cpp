@@ -27,6 +27,7 @@ namespace Language {
         _keywordMap["case"]    = Token::Type::KeywordCase;
         _keywordMap["atomic"]  = Token::Type::KeywordAtomic;
         _keywordMap["barrier"] = Token::Type::KeywordBarrier;
+        _keywordMap["abort"]   = Token::Type::KeywordAbort;
         _keywordMap["cas"]     = Token::Type::Operator;
     }
 

@@ -52,3 +52,17 @@ bool three_transaction_end(bool strict) {
 
     return mtx_unlock(&_three_transaction_mtx) == thrd_success;
 }
+
+bool three_transaction_abort(void) {
+    fprintf(stderr, "[runtime] aborting transaction\n");
+    fprintf(stderr, "[runtime] aborting transactions not implemented\n");
+
+    return false;
+}
+
+bool three_transaction_in_progress(void) {
+    fprintf(stderr, "[runtime] checking for in-progress transaction\n");
+    fprintf(stderr, "[runtime] checking for in-progress transaction not implemented\n");
+
+    return false;
+}
