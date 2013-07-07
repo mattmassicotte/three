@@ -37,6 +37,8 @@
   <span class="entity">Int</span>
  *<span class="entity">Int</span>
 **<span class="entity">Int</span>
+
+<span class="entity">Int</span>:32:1:4 v
                     </code></pre>
                 </td>
                 <td>
@@ -49,12 +51,14 @@
 <span class="entity">uintptr_t</span>
 
 <span class="entity">int</span>
-<span class="entity">int</span>*
+<span class="entity">int</span>
 <span class="entity">int</span>**
+
+<span class="entity">uint32_t</span> v <span class="directive">__attribute__</span> ((vector_size(16), aligned(1)));
                     </code></pre>
                 </td>
             </tr>
-            <tr><th colspan="2">String Types</th></tr>
+            <tr><th colspan="2">Character and String Types</th></tr>
             <tr>
                 <td>
                     <pre><code>
@@ -333,8 +337,8 @@ x ? y : z
 
   ap2 = ap
 
-  printf(<span class="string">"arg 1 = %d\n"</span>, <span class="keyword">vararg_next</span>(ap))
-  printf(<span class="string">"arg 1 = %d\n"</span>, <span class="keyword">vararg_next</span>(ap))
+  printf(<span class="string">"arg 1 = %d\n"</span>, <span class="keyword">vararg_next</span>:<span class="entity">Int</span>(ap))
+  printf(<span class="string">"arg 1 = %d\n"</span>, <span class="keyword">vararg_next</span>:<span class="entity">Int</span>(ap))
 
   vprintf(<span class="string">"%d %d\n"</span>, ap2)
 <span class="keyword">end</span>
