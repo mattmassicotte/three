@@ -4,6 +4,7 @@
 #include "AST/Atomics/AtomicExpressionNode.h"
 #include "AST/Atomics/BarrierNode.h"
 #include "AST/ClosureNode.h"
+#include "AST/Control/LoopNode.h"
 #include "AST/Control/SwitchNode.h"
 #include "AST/Directives/ImportNode.h"
 #include "AST/FunctionDefinitionNode.h"

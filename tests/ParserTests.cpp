@@ -39,6 +39,11 @@ ASSERT_EQ("Operator", tmp->name()); \
 ASSERT_EQ(op_value, tmp->op()); \
 } while(0)
 
+#define ASSERT_LOOP(node) do { \
+Language::LoopNode* tmp = dynamic_cast<Language::LoopNode*>(node); \
+ASSERT_EQ("Loop", tmp->name()); \
+} while(0)
+
 #define ASSERT_DATA_TYPE(dt_name, obj) do {\
 ASSERT_EQ(dt_name, obj->name()); \
 } while(0)
@@ -338,4 +343,13 @@ TEST_F(ParserTest, TernaryCompareAndSwapOperator) {
     ASSERT_VARIABLE_NODE("Int",  0, "a", node->childAtIndex(0));
     ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
     ASSERT_INTEGER_LITERAL_NODE(2, node->childAtIndex(2));
+}
+
+TEST_F(ParserTest, InfiniteLoop) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nloop\nend\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_LOOP(node);
 }

@@ -53,6 +53,9 @@ namespace Language {
             case Token::Type::KeywordIf:
                 node = IfNode::parse(*this);
                 break;
+            case Token::Type::KeywordLoop:
+                node = LoopNode::parse(*this);
+                break;
             case Token::Type::KeywordSwitch:
                 node = SwitchNode::parse(*this);
                 break;

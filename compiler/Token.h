@@ -28,6 +28,7 @@ namespace Language {
             KeywordReturn,
             KeywordIf,
             KeywordElse,
+            KeywordLoop,
             KeywordImport,
             KeywordClosure,
             KeywordStructure,
