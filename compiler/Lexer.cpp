@@ -173,6 +173,7 @@ namespace Language {
                 case '=':
                 case '>':
                 case '<':
+                case '&':
                 case '.':
                 case '?':
                     if (type != Token::Type::EndOfInput) {
@@ -330,6 +331,39 @@ namespace Language {
         return t;
     }
 
+    Token Lexer::lexOperator() {
+        std::stringstream s;
+
+        s << this->nextSubtoken().str();
+
+        if (this->peekSubtoken().type() != Token::Type::Operator) {
+            return Token(s.str(), Token::Type::Operator);
+        }
+
+        switch (s.str().at(0)) {
+            case '=':
+            case '*':
+            case '+':
+            case '-':
+            case '<':
+            case '>':
+            case '!':
+            case '&':
+            case '|':
+            case '%':
+            case '^':
+                if (this->peekSubtoken().str().at(0) == '=') {
+                    s << this->nextSubtoken().str();
+                }
+
+                return Token(s.str(), Token::Type::Operator);
+            default:
+                break;
+        }
+
+        return Token(s.str(), Token::Type::Operator);
+    }
+
     Token Lexer::nextToken() {
         Token t = this->peekSubtoken();
 
@@ -340,6 +374,8 @@ namespace Language {
                 return this->lexPunctuation();
             case Token::Type::Identifier:
                 return this->lexIdentifier();
+            case Token::Type::Operator:
+                return this->lexOperator();
             case Token::Type::EndOfInput:
             case Token::Type::String:
             default:

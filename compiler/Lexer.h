@@ -30,6 +30,7 @@ namespace Language {
         Token lexForwardSlash();
         Token lexPunctuation();
         Token lexIdentifier();
+        Token lexOperator();
 
         Token nextToken();
 
