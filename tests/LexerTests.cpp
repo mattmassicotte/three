@@ -148,6 +148,14 @@ TEST_F(LexerTest, EqualityOperator) {
     ASSERT_NEXT_TOKEN(NumericLiteral, "1");
 }
 
+TEST_F(LexerTest, CompoundAdditionAssignmntOperator) {
+    this->lex("a += 1");
+
+    ASSERT_NEXT_TOKEN(Identifier,     "a");
+    ASSERT_NEXT_TOKEN(Operator,       "+=");
+    ASSERT_NEXT_TOKEN(NumericLiteral, "1");
+}
+
 TEST_F(LexerTest, AssignmentFollowedByUnaryOperator) {
     this->lex("a = &1");
 

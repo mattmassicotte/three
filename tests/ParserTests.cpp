@@ -325,6 +325,15 @@ TEST_F(ParserTest, AtomicExpression) {
     ASSERT_EQ("ordered", dynamic_cast<Language::AtomicExpressionNode*>(node)->type());
 }
 
+TEST_F(ParserTest, AtomicStatement) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\natomic\nend\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_EQ("AtomicStatement", node->name());
+}
+
 TEST_F(ParserTest, TernaryConditionalOperator) {
     Language::ASTNode* node;
 
@@ -356,6 +365,17 @@ TEST_F(ParserTest, TernaryCompareAndSwapOperator) {
     ASSERT_VARIABLE_NODE("Int",  0, "a", node->childAtIndex(0));
     ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
     ASSERT_INTEGER_LITERAL_NODE(2, node->childAtIndex(2));
+}
+
+TEST_F(ParserTest, CompoundAdditionAssignmentOperator) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nInt a\na += 1\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(1);
+
+    ASSERT_OPERATOR("+=", node);
+    ASSERT_VARIABLE_NODE("Int",  0, "a", node->childAtIndex(0));
+    ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
 }
 
 TEST_F(ParserTest, InfiniteLoop) {
