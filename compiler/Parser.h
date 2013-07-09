@@ -18,6 +18,7 @@ namespace Language {
         RootNode* rootASTNode();
 
         ASTNode* parseStatement();
+        ASTNode* parsePrimary();
         ASTNode* parseExpression();
         bool     parseNewline(bool multipleAllowed=false);
         bool     parseUntilEnd(std::function<void (void)> func);

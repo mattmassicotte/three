@@ -1,5 +1,6 @@
 #include "Parser.h"
 #include "AST.h"
+#include "Constructs/Annotation.h"
 
 #include <assert.h>
 
@@ -73,6 +74,9 @@ namespace Language {
                 node = BarrierNode::parse(*this);
                 node = IfNode::parseTailing(*this, node);
                 break;
+            case Token::Type::Annotation:
+                node = AnnotationNode::parse(*this);
+                break;
             default:
                 break;
         }
@@ -91,6 +95,46 @@ namespace Language {
         return node;
     }
 
+    ASTNode* Parser::parsePrimary() {
+#if DEBUG_PARSING
+        std::cout << "Parser: primary: '" << this->peek().str() << "'" << std::endl;
+#endif
+
+        switch (this->peek().type()) {
+            case Token::Type::PunctuationOpenParen: {
+                this->next();
+                ASTNode* node = this->parseExpression();
+
+                assert(this->next().type() == Token::Type::PunctuationCloseParen);
+                return node;
+            }
+            case Token::Type::Identifier:
+                if (this->peek(2).type() == Token::Type::PunctuationOpenParen) {
+                    return FunctionCallNode::parse(*this);
+                } else {
+                    return VariableNode::parse(*this);
+                }
+                break;
+            case Token::Type::KeywordClosure:
+                return ClosureNode::parse(*this);
+            case Token::Type::String:
+                return StringLiteralNode::parse(*this);
+            case Token::Type::NumericLiteral:
+                return IntegerLiteralNode::parse(*this);
+            case Token::Type::TrueLiteral:
+            case Token::Type::FalseLiteral:
+                return BooleanLiteralNode::parse(*this);
+            case Token::Type::NullLiteral:
+                return NullLiteralNode::parse(*this);
+            case Token::Type::KeywordAtomic:
+                return AtomicExpressionNode::parse(*this);
+            default:
+                break;
+        }
+
+        return NULL;
+    }
+
     ASTNode* Parser::parseExpression() {
         ASTNode* node = NULL;
 
@@ -98,41 +142,16 @@ namespace Language {
         std::cout << "Parser: expression: '" << this->peek().str() << "'" << std::endl;
 #endif
 
-        switch (this->peek().type()) {
-            case Token::Type::PunctuationOpenParen:
-                this->next();
-                node = this->parseExpression();
+        node = this->parsePrimary();
 
-                assert(this->next().type() == Token::Type::PunctuationCloseParen);
-                break;
-            case Token::Type::Identifier:
-                if (this->peek(2).type() == Token::Type::PunctuationOpenParen) {
-                    node = FunctionCallNode::parse(*this);
-                } else {
-                    node = VariableNode::parse(*this);
-                }
-                break;
-            case Token::Type::KeywordClosure:
-                node = ClosureNode::parse(*this);
-                break;
-            case Token::Type::String:
-                node = StringLiteralNode::parse(*this);
-                break;
-            case Token::Type::NumericLiteral:
-                node = IntegerLiteralNode::parse(*this);
-                break;
-            case Token::Type::TrueLiteral:
-            case Token::Type::FalseLiteral:
-                node = BooleanLiteralNode::parse(*this);
-                break;
-            case Token::Type::KeywordAtomic:
-                node = AtomicExpressionNode::parse(*this);
-                break;
-            default:
-                std::cout << "Parser: unhandled expression '" << this->next().str() << "'" << std::endl;
-                break;
+        if (!node) {
+            // perhaps we have a unary operator?
+            node = OperatorNode::parseUnary(*this);
         }
 
+        if (!node) {
+            std::cout << "Parser: unhandled expression '" << this->next().str() << "'" << std::endl;
+        }
         assert(node != NULL);
 
         return OperatorNode::parse(*this, Token::MinimumPrecedence, node);
@@ -303,6 +322,7 @@ namespace Language {
     }
 
     ASTNode* Parser::parseTopLevelNode() {
+        ASTNode* node = NULL;
         // std::cout << "Parser: top level" << std::endl;
         
         switch (this->peek().type()) {
@@ -314,6 +334,10 @@ namespace Language {
                 return StructureNode::parse(*this);
             case Token::Type::KeywordEnumeration:
                 return EnumerationNode::parse(*this);
+            case Token::Type::Annotation:
+                node = AnnotationNode::parse(*this);
+                this->parseNewline();
+                return node;
             case Token::Type::EndOfInput:
                 assert(0 && "parseTopLevelNode invalid state");
                 break;

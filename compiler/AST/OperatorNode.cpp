@@ -26,17 +26,25 @@ namespace Language {
         return leftOperand;
     }
 
-    OperatorNode* OperatorNode::parseOperator(Parser& parser, ASTNode* leftOperand) {
-        OperatorNode* node;
-        std::string   op;
+    ASTNode* OperatorNode::parseUnary(Parser& parser) {
+        OperatorNode* node = NULL;
+        std::string potentialOp = parser.peek().str();
 
-        node = new OperatorNode();
-        
-        while (parser.peek().type() == Token::Type::Operator) {
-            op = op + parser.next().str();
+        if (parser.peek().precedence() > 0) {
+            node = new OperatorNode();
+            node->setOp(parser.next().str());
+            node->addChild(parser.parsePrimary());
         }
 
-        node->setOp(op);
+        return node;
+    }
+
+    OperatorNode* OperatorNode::parseOperator(Parser& parser, ASTNode* leftOperand) {
+        OperatorNode* node;
+
+        node = new OperatorNode();
+
+        node->setOp(parser.next().str());
 
         node->addChild(leftOperand);
         node->addChild(parser.parseExpression());

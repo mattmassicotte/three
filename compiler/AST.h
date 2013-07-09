@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AST/Annotations/AnnotationNode.h"
 #include "AST/Atomics/AbortStatementNode.h"
 #include "AST/Atomics/AtomicStatementNode.h"
 #include "AST/Atomics/AtomicExpressionNode.h"
@@ -13,6 +14,7 @@
 #include "AST/IfNode.h"
 #include "AST/Literals/BooleanLiteralNode.h"
 #include "AST/Literals/IntegerLiteralNode.h"
+#include "AST/Literals/NullLiteralNode.h"
 #include "AST/Literals/StringLiteralNode.h"
 #include "AST/OperatorNode.h"
 #include "AST/ReturnNode.h"

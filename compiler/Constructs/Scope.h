@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Annotation.h"
 #include "Variable.h"
 
 #include <string>
@@ -28,13 +29,18 @@ namespace Language {
         bool referencedVariable(const std::string& name);
         bool closedVariable(const std::string& name);
 
+        std::vector<Annotation*> annotations() const;
+        void addAnnotation(Annotation* annotation);
+        void clearAnnotations();
+
         std::vector<Variable*> _closedVariables; // TODO: this is not right
 
     private:
         std::map<std::string, Variable*> _variables;
         std::map<std::string, Variable*> _closureReferences;
-        bool _closesVariables;
+        std::vector<Annotation*>         _annotations;
 
+        bool        _closesVariables;
         std::string _scopedName;
         uint32_t    _scopeNameCount;
 

@@ -105,4 +105,16 @@ namespace Language {
 
         return true;
     }
+
+    std::vector<Annotation*> Scope::annotations() const {
+        return _annotations;
+    }
+
+    void Scope::addAnnotation(Annotation* annotation) {
+        _annotations.push_back(annotation);
+    }
+
+    void Scope::clearAnnotations() {
+        _annotations.clear();
+    }
 }

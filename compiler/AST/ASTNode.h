@@ -10,6 +10,7 @@
 // forward declaration
 namespace Language {
     class Parser;
+    class Annotation;
 };
 
 namespace Language {
@@ -28,6 +29,9 @@ namespace Language {
         bool statement() const;
         void setStatement(bool value);
 
+        std::vector<Annotation*> annotations() const;
+        void setAnnotations(const std::vector<Annotation*>& annotations);
+
         virtual std::string name() const = 0;
         virtual std::string str() const;
         std::string recursiveStr(uint32_t depth = 0) const;
@@ -36,7 +40,8 @@ namespace Language {
         void codeGenCSourceForChildren(CSourceContext& context);
 
     private:
-        std::vector<ASTNode*> _childNodes;
-        bool                  _statement;
+        std::vector<ASTNode*>    _childNodes;
+        bool                     _statement;
+        std::vector<Annotation*> _annotations;
     };
 }

@@ -6,6 +6,7 @@ namespace Language {
     class OperatorNode : public ASTNode {
     public:
         static ASTNode* parse(Parser& parser, uint32_t precedence, ASTNode* leftOperand);
+        static ASTNode* parseUnary(Parser& parser);
 
     private:
         static OperatorNode* parseOperator(Parser& parser, ASTNode* leftOperand);

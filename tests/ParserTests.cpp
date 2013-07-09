@@ -377,3 +377,42 @@ TEST_F(ParserTest, SingleConditionLoop) {
     ASSERT_LOOP(loop);
     ASSERT_VARIABLE_NODE("Int",  0, "a", loop->condition());
 }
+
+TEST_F(ParserTest, NoReturnAnnotation) {
+    Language::ASTNode* node;
+
+    node = this->parse("@noreturn\ndef test()\nend\n");
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ("Annotation", node->name());
+}
+
+TEST_F(ParserTest, NullLiteral) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test(*Int a)\na = null\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_OPERATOR("=", node);
+    ASSERT_EQ("NullLiteral", node->childAtIndex(1)->name());
+}
+
+TEST_F(ParserTest, DereferenceUnaryOperator) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test(*Int a)\n*a = null\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_OPERATOR("=", node);
+    ASSERT_OPERATOR("*", node->childAtIndex(0));
+}
+
+TEST_F(ParserTest, AddressOfUnaryOperator) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test(*Int a)\na = &a\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_OPERATOR("=", node);
+    ASSERT_OPERATOR("&", node->childAtIndex(1));
+}

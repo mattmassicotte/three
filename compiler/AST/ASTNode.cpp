@@ -1,4 +1,5 @@
 #include "ASTNode.h"
+#include "../Constructs/Annotation.h"
 
 #include <assert.h>
 #include <sstream>
@@ -48,6 +49,14 @@ namespace Language {
 
     void ASTNode::setStatement(bool value) {
         _statement = value;
+    }
+
+    std::vector<Annotation*> ASTNode::annotations() const {
+        return _annotations;
+    }
+
+    void ASTNode::setAnnotations(const std::vector<Annotation*>& annotations) {
+        _annotations = annotations;
     }
 
     std::string ASTNode::str() const {

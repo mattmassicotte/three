@@ -12,6 +12,10 @@ namespace Language {
         node = new FunctionDefinitionNode();
         node->_function = new Function();
 
+        // take (and then clear) current annotations
+        node->setAnnotations(parser.currentScope()->annotations());
+        parser.currentScope()->clearAnnotations();
+
         // parse the function name
         t = parser.next();
         assert(t.type() == Token::Type::Identifier);
@@ -106,6 +110,10 @@ namespace Language {
 
         assert(f);
 
+        for (Annotation* annotation : this->annotations()) {
+            context << annotation->CSourceString() << " ";
+        }
+
         f->returnType().codeGenCSource(context.current(), "");
 
         context.current()->print(" ");
@@ -123,7 +131,9 @@ namespace Language {
             context.current()->print("void");
         }
 
-        context.current()->printLineAndIndent(") {");
+        context.current()->print(") ");
+
+        context.current()->printLineAndIndent("{");
 
         this->codeGenCSourceForChildren(context);
 
