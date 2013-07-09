@@ -76,20 +76,13 @@ namespace Language {
 
         this->codeGenCSourceForChildren(context);
 
-        context.current()->decreaseIndentation();
-        context.current()->printNewLine();
-
         if (this->elseStatement()) {
-            context.current()->print("} else {");
+            context.current()->outdentAndPrintLine("} else {");
             context.current()->increaseIndentation();
-            context.current()->printNewLine();
 
             this->elseStatement()->codeGenCSourceForChildren(context);
-
-            context.current()->decreaseIndentation();
-            context.current()->printNewLine();
         }
 
-        context.current()->print("}");
+        context.current()->outdentAndPrintLine("}");
     }
 }
