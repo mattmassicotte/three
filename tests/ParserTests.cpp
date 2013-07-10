@@ -446,3 +446,13 @@ TEST_F(ParserTest, BinaryIntegerLiteral) {
     ASSERT_OPERATOR("=", node);
     ASSERT_INTEGER_LITERAL_NODE(9, node->childAtIndex(1));
 }
+
+TEST_F(ParserTest, OrAssignmentOperator) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test(Int a)\na ||= 1\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_OPERATOR("||=", node);
+    ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
+}

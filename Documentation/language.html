@@ -316,11 +316,11 @@ x |= y
 x ^= y
 x &lt;&lt;= y
 x &gt;&gt;= y
-if (y) { x = y; }
-if (!x) { x = y; }
+y ? (x = y) : x
+!x ? (x = y) : x
 
 x ? y : z
-if (x == y) { x = z; }
+(x == y) ? (x = z) : x
                     </code></pre>
                 </td>
             </tr>

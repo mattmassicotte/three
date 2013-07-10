@@ -78,11 +78,47 @@ namespace Language {
             context.current()->print("(");
         }
 
-        this->childAtIndex(0)->codeGenCSource(context);
-        context.current()->print(" ");
-        context.current()->print(this->op());
-        context.current()->print(" ");
-        this->childAtIndex(1)->codeGenCSource(context);
+        if (this->op() == "||=") {
+            context << "!";
+            this->childAtIndex(0)->codeGenCSource(context);
+            context << " ? (";
+            this->childAtIndex(0)->codeGenCSource(context);
+            context << " = ";
+            this->childAtIndex(1)->codeGenCSource(context);
+            context << ") : ";
+            this->childAtIndex(0)->codeGenCSource(context);
+        } else if (this->op() == "&&=") {
+            this->childAtIndex(1)->codeGenCSource(context);
+            context << " ? (";
+            this->childAtIndex(0)->codeGenCSource(context);
+            context << " = ";
+            this->childAtIndex(1)->codeGenCSource(context);
+            context << ") : ";
+            this->childAtIndex(0)->codeGenCSource(context);
+        } else if (this->op() == "?") {
+            this->childAtIndex(0)->codeGenCSource(context);
+            context << " ? ";
+            this->childAtIndex(1)->codeGenCSource(context);
+            context << " : ";
+            this->childAtIndex(2)->codeGenCSource(context);
+        } else if (this->op() == "cas") {
+            context << "(";
+            this->childAtIndex(0)->codeGenCSource(context);
+            context << " == ";
+            this->childAtIndex(1)->codeGenCSource(context);
+            context << ") ? (";
+            this->childAtIndex(0)->codeGenCSource(context);
+            context << " = ";
+            this->childAtIndex(2)->codeGenCSource(context);
+            context << ") : ";
+            this->childAtIndex(1)->codeGenCSource(context);
+        } else {
+            this->childAtIndex(0)->codeGenCSource(context);
+            context.current()->print(" ");
+            context.current()->print(this->op());
+            context.current()->print(" ");
+            this->childAtIndex(1)->codeGenCSource(context);
+        }
 
         if (this->statement()) {
             context.current()->print(";");

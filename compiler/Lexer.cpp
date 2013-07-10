@@ -171,6 +171,7 @@ namespace Language {
                 case '+':
                 case '!':
                 case '=':
+                case '|':
                 case '>':
                 case '<':
                 case '&':
@@ -336,29 +337,52 @@ namespace Language {
 
         s << this->nextSubtoken().str();
 
+        // easy case, one char and the next is not an operator
         if (this->peekSubtoken().type() != Token::Type::Operator) {
             return Token(s.str(), Token::Type::Operator);
         }
 
-        switch (s.str().at(0)) {
-            case '=':
-            case '*':
-            case '+':
-            case '-':
-            case '<':
-            case '>':
-            case '!':
-            case '&':
-            case '|':
-            case '%':
-            case '^':
-                if (this->peekSubtoken().str().at(0) == '=') {
-                    s << this->nextSubtoken().str();
-                }
+        // ternary operators do not support compounding
+        if (s.str() == "cas" || s.str() == "?") {
+            return Token(s.str(), Token::Type::Operator);
+        }
 
-                return Token(s.str(), Token::Type::Operator);
-            default:
-                break;
+        // possibly allow a double operator
+        char c = s.str().at(0);
+
+        if (this->peekSubtoken().str().at(0) == c) {
+            switch (c) {
+                case '*':
+                    // these characters cannot be doubled
+                    break;
+                case '+':
+                case '-':
+                    s << this->nextSubtoken().str();
+
+                    // these two do not support any further compounding
+                    return Token(s.str(), Token::Type::Operator);
+                case '=':
+                case '<':
+                case '>':
+                case '&':
+                case '|':
+                case '^':
+                    s << this->nextSubtoken().str();
+                    break;
+                default:
+                    assert(0 && "Logic error lexing operators");
+                    break;
+            }
+        }
+
+        // take care of compound assignment
+        if (this->peekSubtoken().str().at(0) == '=') {
+            s << this->nextSubtoken().str();
+        }
+
+        // and then finally, the deep-equality operator
+        if (c == '=' && this->peekSubtoken().str().at(0) == '=') {
+            s << this->nextSubtoken().str();
         }
 
         return Token(s.str(), Token::Type::Operator);
