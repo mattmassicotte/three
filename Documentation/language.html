@@ -54,7 +54,7 @@
 <span class="entity">int</span>
 <span class="entity">int</span>**
 
-<span class="entity">uint32_t</span> v <span class="directive">__attribute__</span> ((vector_size(16), aligned(1)));
+<span class="entity">uint32_t</span> v <span class="directive">__attribute__</span>((vector_size(16), aligned(1)));
                     </code></pre>
                 </td>
             </tr>
@@ -579,7 +579,7 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
                 </td>
                 <td>
                     <pre><code>
-<span class="entity">void</span> f() <span class="annotation">_Noreturn</span>;
+<span class="entity">void</span> f() <span class="annotation">__attribute__((noreturn))</span>;
 <span class="entity">void</span> f() <span class="annotation">__attribute__((deprecated))</span>;
                     </code></pre>
                 </td>
