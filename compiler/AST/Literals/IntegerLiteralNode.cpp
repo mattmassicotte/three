@@ -21,8 +21,13 @@ namespace Language {
         // might have a zero-encoded string, but check for length, because
         // it could just be zero
         if ((cString[0] == '0') && (string.length() > 1)) {
+            assert(string.length() > 2 && "A prefixed integer must be at least 3 characters");
+
             if (cString[1] == 'x') {
                 return strtol(cString, NULL, 16);
+            } else if (cString[1] == 'b') {
+                // we need to remove the "0b" prefix
+                return strtol(&(cString[2]), NULL, 2);
             }
 
             assert(0 && "Unhandled integer value type");
