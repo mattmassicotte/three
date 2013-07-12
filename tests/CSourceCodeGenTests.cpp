@@ -1,6 +1,5 @@
 #include "compiler/CodeGen/CSource.h"
-#include "compiler/Constructs/TypeReference.h"
-#include "compiler/Constructs/DataType.h"
+#include "compiler/AST.h"
 
 #include <assert.h>
 #include <gtest/gtest.h>
@@ -57,4 +56,24 @@ TEST_F(CSourceCodeGenTest, FunctionReference) {
     ref.codeGenCSource(&source, "");
 
     ASSERT_EQ("int** (*)(int, int*)", source.renderToString());
+}
+
+TEST_F(CSourceCodeGenTest, IfStatementWithSingleVariableCondition) {
+    Language::DataType intType(Language::DataType::Flavor::Scalar, "int");
+
+    Language::Variable* variable = new Language::Variable();
+    variable->setName("a");
+    variable->setType(Language::TypeReference(&intType, 0));
+
+    Language::VariableNode* variableNode = new Language::VariableNode();
+    variableNode->setVariable(variable);
+
+    Language::IfNode* ifNode = new Language::IfNode();
+    ifNode->setCondition(variableNode);
+
+    Language::CSourceContext context;
+
+    ifNode->codeGenCSource(context);
+
+    ASSERT_EQ("if (a) {\n}\n", context.body()->renderToString());
 }

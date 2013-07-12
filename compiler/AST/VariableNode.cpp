@@ -17,12 +17,20 @@ namespace Language {
         return node;
     }
 
+    VariableNode::VariableNode() : _variable(NULL), _referenced(false), _closed(false) {
+    }
+
     std::string VariableNode::name() const {
         return "Variable";
     }
 
     Variable* VariableNode::variable() const {
-        return this->_variable;
+        return _variable;
+    }
+
+    void VariableNode::setVariable(Variable* var) {
+        assert(var);
+        _variable = var;
     }
 
     void VariableNode::codeGenCSource(CSourceContext& context) {

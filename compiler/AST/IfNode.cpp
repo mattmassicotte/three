@@ -47,7 +47,7 @@ namespace Language {
 
         ifNode->addChild(node);
 
-        ifNode->_conditionNode = parser.parseExpression();
+        ifNode->setCondition(parser.parseExpression());
 
         return ifNode;
     }
@@ -61,6 +61,10 @@ namespace Language {
 
     ASTNode* IfNode::condition() const {
         return _conditionNode;
+    }
+
+    void IfNode::setCondition(ASTNode* node) {
+        _conditionNode = node;
     }
 
     ElseNode* IfNode::elseStatement() const {

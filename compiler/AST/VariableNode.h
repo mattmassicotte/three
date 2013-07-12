@@ -9,8 +9,11 @@ namespace Language {
         static VariableNode* parse(Parser& parser);
 
     public:
+        VariableNode();
+
         virtual std::string name() const;
         Variable* variable() const;
+        void setVariable(Variable* var);
 
         void codeGenCSource(CSourceContext& context);
 

@@ -15,6 +15,7 @@ namespace Language {
         virtual std::string name() const;
 
         ASTNode* condition() const;
+        void     setCondition(ASTNode* node);
         ElseNode* elseStatement() const;
 
         void codeGenCSource(CSourceContext& context);
