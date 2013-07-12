@@ -467,3 +467,27 @@ TEST_F(ParserTest, Comment) {
     ASSERT_RETURN_NODE(node->childAtIndex(0));
 }
 
+TEST_F(ParserTest, PointerVariableDefinition) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\n*Char a\nend\n");
+    node = node->childAtIndex(0);
+
+    ASSERT_VARIABLE_DECLERATION("Char",  1, "a", node->childAtIndex(0));
+}
+
+TEST_F(ParserTest, MultiplePointerVariableDefinition) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\n***Char a\nend\n");
+    node = node->childAtIndex(0);
+
+    ASSERT_VARIABLE_DECLERATION("Char",  3, "a", node->childAtIndex(0));
+}
+
+TEST_F(ParserTest, FunctionCallDereference) {
+    Language::ASTNode* node;
+
+    node = this->parse("def foo(;*Int)\nreturn null\nend\ndef test()\n*foo() = 1\nend\n");
+    node = node->childAtIndex(0);
+}

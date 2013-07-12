@@ -20,6 +20,7 @@ namespace Language {
             PunctuationOpenParen,
             PunctuationCloseParen,
             PunctuationColon,
+            PunctuationSemicolon,
             String,
             Annotation,
             Comment,

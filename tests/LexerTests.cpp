@@ -77,7 +77,7 @@ TEST_F(LexerTest, HelloWorldProgram) {
     ASSERT_NEXT_TOKEN(Operator,    "*");
     ASSERT_NEXT_TOKEN(Identifier,  "Char");
     ASSERT_NEXT_TOKEN(Identifier,  "argv");
-    ASSERT_NEXT_TOKEN(Punctuation, ";");
+    ASSERT_NEXT_TOKEN(PunctuationSemicolon,  ";");
     ASSERT_NEXT_TOKEN(Identifier,  "Int");
     ASSERT_NEXT_TOKEN(PunctuationCloseParen, ")");
     ASSERT_NEXT_TOKEN(Newline,     "");
@@ -130,6 +130,12 @@ TEST_F(LexerTest, LookAhead) {
     ASSERT_EQ("no", this->peek(4).str());
     ASSERT_EQ("yes", this->peek(3).str());
     ASSERT_EQ("hell0", this->peek(1).str());
+}
+
+TEST_F(LexerTest, Semicolon) {
+    this->lex(";");
+
+    ASSERT_NEXT_TOKEN(PunctuationSemicolon,  ";");
 }
 
 TEST_F(LexerTest, AssignmentOperator) {

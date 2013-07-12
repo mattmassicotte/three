@@ -78,6 +78,9 @@ namespace Language {
             case ':':
                 type = Token::Type::PunctuationColon;
                 break;
+            case ';':
+                type = Token::Type::PunctuationSemicolon;
+                break;
             default:
                 type = Token::Type::Punctuation;
                 break;

@@ -35,21 +35,9 @@ namespace Language {
         std::cout << "Parser: statement '" << this->peek().str() << "'" << std::endl;
 #endif
 
-        // TODO: This really needs to do more exhausive checks for a variable
-        // declaration.
-
         // Checking for tailing ifs is a little tricky here.  Certain things
         // can have them, certain ones cannot.
         switch (this->peek().type()) {
-            case Token::Type::Identifier:
-                if (this->peek(2).type() == Token::Type::Identifier) {
-                    node = VariableDeclarationNode::parse(*this);
-                }
-                break;
-            case Token::Type::PunctuationOpenBrace:
-                // closure type
-                node = VariableDeclarationNode::parse(*this);
-                break;
             case Token::Type::KeywordReturn:
                 node = ReturnNode::parse(*this);
                 node = IfNode::parseTailing(*this, node);
@@ -79,6 +67,11 @@ namespace Language {
                 break;
             default:
                 break;
+        }
+
+        // Next, check for a possible variable declaration
+        if (!node && this->isAtType()) {
+            node = VariableDeclarationNode::parse(*this);
         }
 
         if (!node) {
@@ -180,6 +173,69 @@ namespace Language {
         assert(this->next().type() == Token::Type::KeywordEnd);
 
         return true;
+    }
+
+    bool Parser::isAtType() {
+        // Possible forms of variable declarations are:
+        // [*]Identifier identifier [= <expression>]
+        // [*]{...closure type..} identifier [= <expression>]
+        // [*](function type) identifier [= <expression>]
+        switch (this->peek().type()) {
+            case Token::Type::Operator:
+            case Token::Type::Identifier:
+            case Token::Type::PunctuationOpenParen:
+            case Token::Type::PunctuationOpenBrace:
+                break;
+            default:
+                // if the character isn't one of those, we definitely do not have a type
+                return false;
+        }
+
+        int peekDepth = 1;
+
+        // We might have a pointer type.  We have to check that, following
+        // the '*'s, we have "Identifier identifier"
+        while (this->peek(peekDepth).str() == "*") {
+            peekDepth += 1;
+        }
+
+        Token::Type closingPuntuation;
+
+        switch (this->peek(peekDepth).type()) {
+            case Token::Type::Identifier:
+                // check if we match the "[*]Identifier identifier" pattern
+                return this->peek(peekDepth+1).type() == Token::Type::Identifier;
+            case Token::Type::PunctuationOpenParen:
+                closingPuntuation = Token::Type::PunctuationCloseParen;
+                break;
+            case Token::Type::PunctuationOpenBrace:
+                closingPuntuation = Token::Type::PunctuationCloseBrace;
+                break;
+            default:
+                return false;
+        }
+
+        // Ok, still need to check for closure and function types
+
+        // "{} Identifier"
+        // "() Identifier"
+        peekDepth += 1;
+
+        if (this->peek(peekDepth).type() == closingPuntuation) {
+            return this->peek(peekDepth+1).type() == Token::Type::Identifier;
+        }
+
+        // "{Identifier...} Identifier"
+        // "{;...} Identifier"
+        switch (this->peek(peekDepth).type()) {
+            case Token::Type::Identifier:
+            case Token::Type::PunctuationSemicolon:
+                return true;
+            default:
+                break;
+        }
+
+        return false;
     }
 
     TypeReference Parser::parseType() {
