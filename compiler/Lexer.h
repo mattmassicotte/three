@@ -27,7 +27,6 @@ namespace Language {
         // lexing functions for more complex tokens
         Token lexNumericLiteral();
         Token lexAnnotation();
-        Token lexForwardSlash();
         Token lexPunctuation();
         Token lexIdentifier();
         Token lexOperator();

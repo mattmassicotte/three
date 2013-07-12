@@ -94,9 +94,9 @@ TEST_F(LexerTest, HelloWorldProgram) {
 TEST_F(LexerTest, Comment) {
     this->lex("abc // some comment\ndf");
 
-    ASSERT_NEXT_TOKEN(Identifier,  "abc");
-    ASSERT_NEXT_TOKEN(Comment,     "// some comment");
-    ASSERT_NEXT_TOKEN(Identifier,  "df");
+    ASSERT_NEXT_TOKEN(Identifier, "abc");
+    ASSERT_NEXT_TOKEN(Newline,    "");
+    ASSERT_NEXT_TOKEN(Identifier, "df");
 }
 
 TEST_F(LexerTest, HexNumericLiteral) {
@@ -178,5 +178,21 @@ TEST_F(LexerTest, AssignmentFollowedByUnaryOperator) {
     ASSERT_NEXT_TOKEN(Identifier,     "a");
     ASSERT_NEXT_TOKEN(Operator,       "=");
     ASSERT_NEXT_TOKEN(Operator,       "&");
+    ASSERT_NEXT_TOKEN(NumericLiteral, "1");
+}
+
+TEST_F(LexerTest, DivideOperator) {
+    this->lex("a / 1");
+
+    ASSERT_NEXT_TOKEN(Identifier,     "a");
+    ASSERT_NEXT_TOKEN(Operator,       "/");
+    ASSERT_NEXT_TOKEN(NumericLiteral, "1");
+}
+
+TEST_F(LexerTest, CompoundDivideAssignOperator) {
+    this->lex("a /= 1");
+
+    ASSERT_NEXT_TOKEN(Identifier,     "a");
+    ASSERT_NEXT_TOKEN(Operator,       "/=");
     ASSERT_NEXT_TOKEN(NumericLiteral, "1");
 }

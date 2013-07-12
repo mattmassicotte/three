@@ -10,13 +10,13 @@ COMPILER_OBJECTS = BuildFunctions::objects_for_sources(COMPILER_SOURCES, COMPILE
 
 directory "#{BUILD_DIR}/tests"
 
-COMPILER_TEST_SOURCES = FileList['tests/**/*.cpp']
-COMPILER_TEST_OBJECTS = BuildFunctions::objects_for_sources(COMPILER_TEST_SOURCES, COMPILER_GTEST_CC_FLAGS)
-
 CLOBBER.include(COMPILER_LIB)
 file COMPILER_LIB => COMPILER_OBJECTS do
   BuildFunctions::library(COMPILER_OBJECTS, COMPILER_LIB)
 end
+
+COMPILER_TEST_SOURCES = FileList['tests/**/*.cpp']
+COMPILER_TEST_OBJECTS = BuildFunctions::objects_for_sources(COMPILER_TEST_SOURCES, COMPILER_GTEST_CC_FLAGS)
 
 CLOBBER.include("#{BUILD_DIR}/compiler_test")
 test_object_files = []

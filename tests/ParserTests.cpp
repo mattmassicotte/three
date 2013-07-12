@@ -456,3 +456,14 @@ TEST_F(ParserTest, OrAssignmentOperator) {
     ASSERT_OPERATOR("||=", node);
     ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
 }
+
+TEST_F(ParserTest, Comment) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\n//Int a = 1\nreturn\nend\n");
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ(1, node->childCount());
+    ASSERT_RETURN_NODE(node->childAtIndex(0));
+}
+

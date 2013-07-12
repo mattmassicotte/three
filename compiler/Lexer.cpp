@@ -116,14 +116,6 @@ namespace Language {
 
                     s << this->characterAdvance();
                     continue;
-                case Token::Type::Comment:
-                    if (c == '\n') {
-                        this->characterAdvance();
-                        return Token(s.str(), type);
-                    }
-
-                    s << this->characterAdvance();
-                    continue;
                 default:
                     break;
             }
@@ -155,17 +147,6 @@ namespace Language {
                     this->characterAdvance(); // skip past the opening quote
                     break;
                 case '/':
-                    if (type != Token::Type::EndOfInput) {
-                        return Token(s.str(), type);
-                    }
-
-                    s << this->characterAdvance();
-
-                    this->characterPeek(c);
-                    if (c == '/') {
-                        type = Token::Type::Comment;
-                    }
-                    break;
                 case '*':
                 case '-':
                 case '+':
@@ -294,30 +275,10 @@ namespace Language {
         return Token(s.str(), Token::Type::Annotation);
     }
 
-    Token Lexer::lexForwardSlash() {
-        std::stringstream s;
-
-        assert(this->peekSubtoken().str().at(0) == '/');
-
-        s << this->nextSubtoken().str();
-
-        if (this->peekSubtoken().str().at(0) != '/') {
-            return Token(s.str(), Token::Type::Punctuation);
-        }
-
-        do {
-            s << this->nextSubtoken().str();
-        } while (this->peekSubtoken().type() != Token::Type::Newline);
-
-        return Token(s.str(), Token::Type::Comment);
-    }
-
     Token Lexer::lexPunctuation() {
         switch (this->peekSubtoken().str().at(0)) {
             case '@':
                 return this->lexAnnotation();
-            case '/':
-                return this->lexForwardSlash();
         }
 
         return this->nextSubtoken();
@@ -347,11 +308,22 @@ namespace Language {
             return Token(s.str(), Token::Type::Operator);
         }
 
-        // possibly allow a double operator
         char c = s.str().at(0);
 
+        // deal with comments
+        if (c == '/' && this->peekSubtoken().str().at(0) == '/') {
+            do {
+                s << this->nextSubtoken().str();
+            } while (this->peekSubtoken().type() != Token::Type::Newline);
+
+            // don't actually return a comment token
+            return this->nextSubtoken();
+        }
+
+        // possibly allow a double operator
         if (this->peekSubtoken().str().at(0) == c) {
             switch (c) {
+                case '/':
                 case '*':
                     // these characters cannot be doubled
                     break;
