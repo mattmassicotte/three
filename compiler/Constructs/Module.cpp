@@ -12,6 +12,14 @@ namespace Language {
         module->addDataType(new DataType(DataType::Flavor::Scalar, "Int"));
         module->addDataType(new DataType(DataType::Flavor::Scalar, "Char"));
 
+        // function type: (Void; Void)
+        DataType* type;
+
+        type = new DataType(DataType::Flavor::Function, "(Void; Void)");
+        type->addChild(TypeReference::ref(module, "Void", 0));
+        type->setReturnType(TypeReference::ref(module, "Void", 0));
+        module->addDataType(type);
+
         return module;
     }
 

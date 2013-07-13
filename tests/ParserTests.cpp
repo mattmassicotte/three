@@ -491,3 +491,25 @@ TEST_F(ParserTest, FunctionCallDereference) {
     node = this->parse("def foo(;*Int)\nreturn null\nend\ndef test()\n*foo() = 1\nend\n");
     node = node->childAtIndex(0);
 }
+
+TEST_F(ParserTest, InlineClosureWithoutTypes) {
+    Language::ASTNode* node;
+
+    node = this->parse("def foo({} c)\nend\ndef test()\nfoo(do {})\nend\n");
+    node = node->childAtIndex(1); // def test
+    node = node->childAtIndex(0); // foo(..)
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ("Closure", node->name());
+}
+
+TEST_F(ParserTest, InlineClosureWithTypes) {
+    Language::ASTNode* node;
+
+    node = this->parse("def foo({Int} c)\nend\ndef test()\nfoo(do (Int x) {})\nend\n");
+    node = node->childAtIndex(1); // def test
+    node = node->childAtIndex(0); // foo(..)
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ("Closure", node->name());
+}

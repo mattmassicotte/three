@@ -16,7 +16,11 @@ namespace Language {
         assert(parser.next().type() == Token::Type::KeywordClosure);
         std::vector<std::string> params;
         std::vector<std::string> references;
-        node->_type = parser.parseFunctionType(0, &params, &references);
+        if (parser.peek().type() == Token::Type::PunctuationOpenParen) {
+            node->_type = parser.parseFunctionType(0, &params, &references);
+        } else {
+            node->_type = TypeReference::ref(parser.currentModule(), "(Void; Void)", 0);
+        }
 
         // Closure can capture two different kinds of variables - references and values.  They
         // are both handled differently.  And, they affect the scoping rules as well.
@@ -48,7 +52,6 @@ namespace Language {
 
         parser.currentModule()->addDataType(environmentType);
 
-        
         // Closures are actually function definitions, so we need
         // to create a function object to hold them.  However, the type
         // of that function is not identical to the closure's declared type.
@@ -59,9 +62,13 @@ namespace Language {
         // the first parameter is the pointer to the closure structure itself
         node->_function->addParameter("self_env", TypeReference(environmentType, 1));
 
-        // create a new parameter to match the signature, and add a matching variable to the current
-        // scope
+        // Create a new parameter to match the signature, and add a matching variable to the current
+        // scope.  Have to be careful with Void types here, since there will not be a matching param.
         node->_type.referencedType()->eachChild([=] (const TypeReference& paramType, uint32_t index) {
+            if (params.size() == 0) {
+                return;
+            }
+
             Variable* v = new Variable();
 
             v->setType(paramType);
@@ -73,7 +80,9 @@ namespace Language {
 
         // With all that done, we are now ready to parse the closure's body
         assert(parser.next().str() == "{");
-        assert(parser.next().type() == Token::Type::Newline);
+        if (parser.peek().type() == Token::Type::Newline) {
+            parser.parseNewline();
+        }
 
         // and now, parse the body
         while (true) {

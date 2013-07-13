@@ -4,10 +4,10 @@
 #include <assert.h>
 
 namespace Language {
-    DataType::DataType(const Flavor& type) : _type(type) {
+    DataType::DataType(const Flavor& type) : _type(type), _children() {
     }
 
-    DataType::DataType(const Flavor& type, const std::string& name) : _type(type), _name(name) {
+    DataType::DataType(const Flavor& type, const std::string& name) : _type(type), _name(name), _children() {
     }
 
     std::string DataType::str() const {
@@ -84,6 +84,7 @@ namespace Language {
 
     void DataType::eachChild(std::function<void (const TypeReference&, uint32_t)> func) const {
         uint32_t index = 0;
+
         for (const TypeReference& child : _children) {
             func(child, index);
             ++index;
