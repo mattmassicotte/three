@@ -16,7 +16,18 @@ file COMPILER_LIB => COMPILER_OBJECTS do
 end
 
 COMPILER_TEST_SOURCES = FileList['tests/**/*.cpp']
-COMPILER_TEST_OBJECTS = BuildFunctions::objects_for_sources(COMPILER_TEST_SOURCES, COMPILER_GTEST_CC_FLAGS)
+# Handle bootstrapping the first rake invocation, when gtest is install installed.  This
+# is messy, because these rake task *definitions* depend on gtest.
+if File.exist?("gtest/gtest.h")
+  # if we have gtest, just do everything normally
+  COMPILER_TEST_OBJECTS = BuildFunctions::objects_for_sources(COMPILER_TEST_SOURCES, COMPILER_GTEST_CC_FLAGS)
+else
+  # if we don't, rely on some much simpler rules
+  COMPILER_TEST_OBJECTS = COMPILER_TEST_SOURCES.ext('o')
+  rule '.o' => '.cpp' do |t|
+    BuildFunctions::compile(t.source, t.name, COMPILER_GTEST_CC_FLAGS)
+  end
+end
 
 CLOBBER.include("#{BUILD_DIR}/compiler_test")
 test_object_files = []
@@ -35,8 +46,8 @@ namespace :compiler do
 
   desc "Install the compiler and frontend"
   task :install => [FRONTEND_EXECUTABLE, COMPILER_LIB, THREE_LIB_DIR, THREE_BIN_DIR] do
-    FileUtils.cp(COMPILER_LIB, File.join(THREE_LIB_DIR, 'libthree_compiler.a'))
-    FileUtils.cp(FRONTEND_EXECUTABLE, File.join(THREE_BIN_DIR, 'three'))
+    BuildFunctions::install(COMPILER_LIB, File.join(THREE_LIB_DIR, 'libthree_compiler.a'))
+    BuildFunctions::install(FRONTEND_EXECUTABLE, File.join(THREE_BIN_DIR, 'three'))
   end
 
   desc "Uninstall the compiler and frontend"

@@ -19,10 +19,10 @@ namespace :runtime do
 
   desc "Install the runtime library and C headers"
   task :install => [RUNTIME_LIB, THREE_LIB_DIR, "#{THREE_INCLUDE_DIR}/runtime"] do
-    FileUtils.cp(RUNTIME_LIB, File.join(THREE_LIB_DIR, 'libthree_runtime.a'))
+    BuildFunctions::install(RUNTIME_LIB, File.join(THREE_LIB_DIR, 'libthree_runtime.a'))
     RUNTIME_HEADERS.each do |header|
       file = File.basename(header)
-      FileUtils.cp(header, "#{THREE_INCLUDE_DIR}/runtime/#{file}")
+      BuildFunctions::install(header, "#{THREE_INCLUDE_DIR}/runtime/#{file}")
     end
   end
 

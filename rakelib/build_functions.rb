@@ -1,6 +1,11 @@
 module BuildFunctions
   extend Rake::DSL
   
+  def self.log(label, action)
+    # make the label bold
+    puts("[\e[1m#{label}\e[0m] #{action}")
+  end
+  
   def self.compiler_for(source_file)
     case File.extname(source_file)
     when '.cpp', '.cc', '.hpp'
@@ -12,21 +17,26 @@ module BuildFunctions
     end
   end
 
+  def self.install(src, dest)
+    self.log("install", dest)
+    FileUtils.cp(src, dest)
+  end
+
   def self.compile(input, output, opts=nil)
-    puts("Compile: #{output}")
+    self.log("compile", output)
     Rake::sh("#{compiler_for(input)} #{opts} -o '#{output}' -c #{input}")
   end
 
   def self.executable(inputs, output, libs=nil)
-    puts("   Link: #{output}")
+    self.log("link", output)
     inputs = inputs.join(" ")
     Rake::sh("clang++ -std=gnu+11 -stdlib=libc++ #{libs} -o '#{output}' #{inputs}")
   end
 
   def self.library(inputs, output)
     FileUtils.rm_f(output)
-  
-    puts("Library: #{output}")
+
+    self.log("library", output)
     inputs = inputs.join(" ")
     Rake::sh("/usr/bin/ar rs '#{output}' #{inputs}")
   end

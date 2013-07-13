@@ -6,9 +6,10 @@ namespace :gtest do
     FileUtils.rm_f('gtest')
     FileUtils.rm_f('gtest-1.6.0.zip')
     FileUtils.rm_f('gtest-1.6.0')
-  
+
+    BuildFunctions.log("download", "gtest-1.6.0")
     sh('curl -o gtest-1.6.0.zip http://googletest.googlecode.com/files/gtest-1.6.0.zip')
-    sh('unzip gtest-1.6.0.zip')
+    sh('unzip -q gtest-1.6.0.zip')
     FileUtils.rm_f('gtest-1.6.0.zip')
     FileUtils.mv('gtest-1.6.0', 'gtest')
   end

@@ -20,10 +20,19 @@ directory BUILD_DIR
 directory THREE_INCLUDE_DIR
 directory THREE_LIB_DIR
 
+desc "Run compiler:test"
 task :default => 'compiler:test'
+
+desc "Build everything"
 task :build => ['compiler:test', 'compiler:frontend', 'runtime:build']
+
+desc "Install the compiler and runtime"
 task :install => ['compiler:install', 'runtime:install']
+
+desc "Uninstall the compiler and runtime"
 task :uninstall => ['compiler:uninstall', 'runtime:uninstall']
+
+desc "Reinstall both the compiler and runtime"
 task :reinstall => :uninstall do
   Rake::task['install']
 end
