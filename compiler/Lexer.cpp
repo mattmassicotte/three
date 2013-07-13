@@ -10,25 +10,39 @@ namespace Language {
         _stream = stream;
         _subtoken = this->advanceSubtoken();
 
-        _keywordMap["import"]  = Token::Type::KeywordImport;
-        _keywordMap["def"]     = Token::Type::KeywordDef;
-        _keywordMap["end"]     = Token::Type::KeywordEnd;
-        _keywordMap["return"]  = Token::Type::KeywordReturn;
-        _keywordMap["if"]      = Token::Type::KeywordIf;
-        _keywordMap["else"]    = Token::Type::KeywordElse;
-        _keywordMap["loop"]    = Token::Type::KeywordLoop;
-        _keywordMap["true"]    = Token::Type::TrueLiteral;
-        _keywordMap["false"]   = Token::Type::FalseLiteral;
-        _keywordMap["null"]    = Token::Type::NullLiteral;
-        _keywordMap["do"]      = Token::Type::KeywordClosure;
-        _keywordMap["struct"]  = Token::Type::KeywordStructure;
-        _keywordMap["enum"]    = Token::Type::KeywordEnumeration;
-        _keywordMap["switch"]  = Token::Type::KeywordSwitch;
-        _keywordMap["case"]    = Token::Type::KeywordCase;
-        _keywordMap["atomic"]  = Token::Type::KeywordAtomic;
-        _keywordMap["barrier"] = Token::Type::KeywordBarrier;
-        _keywordMap["abort"]   = Token::Type::KeywordAbort;
-        _keywordMap["cas"]     = Token::Type::Operator;
+        _keywordMap["import"]    = Token::Type::KeywordImport;
+        _keywordMap["def"]       = Token::Type::KeywordDef;
+        _keywordMap["end"]       = Token::Type::KeywordEnd;
+        _keywordMap["return"]    = Token::Type::KeywordReturn;
+        _keywordMap["if"]        = Token::Type::KeywordIf;
+        _keywordMap["else"]      = Token::Type::KeywordElse;
+        _keywordMap["unless"]    = Token::Type::KeywordUnless;
+        _keywordMap["loop"]      = Token::Type::KeywordLoop;
+        _keywordMap["true"]      = Token::Type::TrueLiteral;
+        _keywordMap["false"]     = Token::Type::FalseLiteral;
+        _keywordMap["null"]      = Token::Type::NullLiteral;
+        _keywordMap["do"]        = Token::Type::KeywordClosure;
+        _keywordMap["struct"]    = Token::Type::KeywordStructure;
+        _keywordMap["enum"]      = Token::Type::KeywordEnumeration;
+        _keywordMap["switch"]    = Token::Type::KeywordSwitch;
+        _keywordMap["case"]      = Token::Type::KeywordCase;
+        _keywordMap["atomic"]    = Token::Type::KeywordAtomic;
+        _keywordMap["barrier"]   = Token::Type::KeywordBarrier;
+        _keywordMap["abort"]     = Token::Type::KeywordAbort;
+        _keywordMap["cas"]       = Token::Type::Operator;
+        _keywordMap["and"]       = Token::Type::Operator;
+        _keywordMap["or"]        = Token::Type::Operator;
+        _keywordMap["sizeof"]    = Token::Type::KeywordSizeof;
+        _keywordMap["alignof"]   = Token::Type::KeywordAlignof;
+        _keywordMap["typeof"]    = Token::Type::KeywordTypeof;
+        _keywordMap["offsetof"]  = Token::Type::KeywordOffsetof;
+        _keywordMap["Vararg"]    = Token::Type::KeywordVararg;
+        _keywordMap["nextarg"]   = Token::Type::KeywordVarargNext;
+        _keywordMap["linkage"]   = Token::Type::KeywordLinkage;
+        _keywordMap["abi"]       = Token::Type::KeywordAbi;
+        _keywordMap["debug"]     = Token::Type::KeywordDebug;
+        _keywordMap["version"]   = Token::Type::KeywordVersion;
+        _keywordMap["namespace"] = Token::Type::KeywordNamespace;
     }
 
     bool Lexer::characterPeek(char& c) {
@@ -159,7 +173,10 @@ namespace Language {
                 case '>':
                 case '<':
                 case '&':
+                case '%':
+                case '^':
                 case '.':
+                case '~':
                 case '?':
                     if (type != Token::Type::EndOfInput) {
                         return Token(s.str(), type);
@@ -355,9 +372,20 @@ namespace Language {
             s << this->nextSubtoken().str();
         }
 
-        // and then finally, the deep-equality operator
-        if (c == '=' && this->peekSubtoken().str().at(0) == '=') {
-            s << this->nextSubtoken().str();
+        // the deep-equality and comparison operators
+        switch (this->peekSubtoken().str().at(0)) {
+            case '=':
+                if (s.str() == "==") {
+                    s << this->nextSubtoken().str();
+                }
+                break;
+            case '>':
+                if (s.str() == "<=") {
+                    s << this->nextSubtoken().str();
+                }
+                break;
+            default:
+                break;
         }
 
         return Token(s.str(), Token::Type::Operator);
