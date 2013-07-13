@@ -21,9 +21,9 @@ C is an awesome and unparalleled language.  But, it can get a little messy at ti
 Three uses a custom build system written with [Rake](http://rake.rubyforge.org/).  In addition to rake, you also need a version of clang installed that supports C++11.
 
 To build and install:
+
     $ git clone git@github.com:mattmassicotte/three.git
     $ cd three
-    $ rake
     $ rake install
 
 ####Contributing
