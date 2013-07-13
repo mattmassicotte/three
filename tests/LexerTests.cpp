@@ -138,20 +138,128 @@ TEST_F(LexerTest, Semicolon) {
     ASSERT_NEXT_TOKEN(PunctuationSemicolon,  ";");
 }
 
-TEST_F(LexerTest, AssignmentOperator) {
-    this->lex("a = 1");
+TEST_F(LexerTest, UnaryStarOperator) {
+    this->lex("*a");
 
+    ASSERT_NEXT_TOKEN(Operator,       "*");
     ASSERT_NEXT_TOKEN(Identifier,     "a");
-    ASSERT_NEXT_TOKEN(Operator,       "=");
-    ASSERT_NEXT_TOKEN(NumericLiteral, "1");
+}
+
+TEST_F(LexerTest, UnaryAndOperator) {
+    this->lex("&a");
+
+    ASSERT_NEXT_TOKEN(Operator,       "&");
+    ASSERT_NEXT_TOKEN(Identifier,     "a");
+}
+
+TEST_F(LexerTest, AlignofOperator) {
+    this->lex("alignof(a)");
+
+    ASSERT_NEXT_TOKEN(KeywordAlignof,       "alignof");
+    ASSERT_NEXT_TOKEN(PunctuationOpenParen, "(");
+    ASSERT_NEXT_TOKEN(Identifier,           "a");
+    ASSERT_NEXT_TOKEN(PunctuationCloseParen, ")");
+}
+
+TEST_F(LexerTest, OffsetofOperator) {
+    this->lex("offsetof(a)");
+
+    ASSERT_NEXT_TOKEN(KeywordOffsetof,      "offsetof");
+    ASSERT_NEXT_TOKEN(PunctuationOpenParen, "(");
+    ASSERT_NEXT_TOKEN(Identifier,           "a");
+    ASSERT_NEXT_TOKEN(PunctuationCloseParen, ")");
+}
+
+TEST_F(LexerTest, TypeofOperator) {
+    this->lex("typeof(a)");
+
+    ASSERT_NEXT_TOKEN(KeywordTypeof,        "typeof");
+    ASSERT_NEXT_TOKEN(PunctuationOpenParen, "(");
+    ASSERT_NEXT_TOKEN(Identifier,           "a");
+    ASSERT_NEXT_TOKEN(PunctuationCloseParen, ")");
+}
+
+TEST_F(LexerTest, UnaryMinusOperator) {
+    this->lex("-a");
+
+    ASSERT_NEXT_TOKEN(Operator,             "-");
+    ASSERT_NEXT_TOKEN(Identifier,           "a");
+}
+
+TEST_F(LexerTest, PreincrementOperator) {
+    this->lex("++a");
+
+    ASSERT_NEXT_TOKEN(Operator,   "++");
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+}
+
+TEST_F(LexerTest, PostincrementOperator) {
+    this->lex("a++");
+
+    ASSERT_NEXT_TOKEN(Identifier,   "a");
+    ASSERT_NEXT_TOKEN(Operator, "++");
+}
+
+TEST_F(LexerTest, PredecrementOperator) {
+    this->lex("--a");
+
+    ASSERT_NEXT_TOKEN(Operator,   "--");
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+}
+
+TEST_F(LexerTest, PostdecrementOperator) {
+    this->lex("a--");
+
+    ASSERT_NEXT_TOKEN(Identifier,   "a");
+    ASSERT_NEXT_TOKEN(Operator, "--");
+}
+
+TEST_F(LexerTest, BinaryAdditionOperator) {
+    this->lex("a + b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "+");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, BinarySubtractionOperator) {
+    this->lex("a - b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "-");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, BinaryDivisionOperator) {
+    this->lex("a / b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "/");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, BinaryModulusOperator) {
+    this->lex("a % b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "%");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, BinaryMultiplicationOperator) {
+    this->lex("a * b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "*");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
 }
 
 TEST_F(LexerTest, EqualityOperator) {
-    this->lex("a == 1");
+    this->lex("a == b");
 
-    ASSERT_NEXT_TOKEN(Identifier,     "a");
-    ASSERT_NEXT_TOKEN(Operator,       "==");
-    ASSERT_NEXT_TOKEN(NumericLiteral, "1");
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "==");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
 }
 
 TEST_F(LexerTest, DeepEqualityOperator) {
@@ -162,20 +270,294 @@ TEST_F(LexerTest, DeepEqualityOperator) {
     ASSERT_NEXT_TOKEN(NumericLiteral, "1");
 }
 
+TEST_F(LexerTest, ComparisonOperator) {
+    this->lex("a <=> b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "<=>");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, InequalityOperator) {
+    this->lex("a != b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "!=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+// TEST_F(LexerTest, SingleInequalityOperator) {
+//     this->lex("a ≠ b");
+// 
+//     ASSERT_NEXT_TOKEN(Identifier, "a");
+//     ASSERT_NEXT_TOKEN(Operator,   "≠");
+//     ASSERT_NEXT_TOKEN(Identifier, "b");
+// }
+
+TEST_F(LexerTest, GreaterThanOperator) {
+    this->lex("a > b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   ">");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, LessThanOperator) {
+    this->lex("a < b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "<");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, GreaterThanOrEqualOperator) {
+    this->lex("a >= b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   ">=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+// TEST_F(LexerTest, SingleGreaterThanOrEqualOperator) {
+//     this->lex("a ≥ b");
+// 
+//     ASSERT_NEXT_TOKEN(Identifier, "a");
+//     ASSERT_NEXT_TOKEN(Operator,   "≥");
+//     ASSERT_NEXT_TOKEN(Identifier, "b");
+// }
+
+TEST_F(LexerTest, LessThanOrEqualOperator) {
+    this->lex("a <= b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "<=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+// TEST_F(LexerTest, SingleLessThanOrEqualOperator) {
+//     this->lex("a ≤ b");
+// 
+//     ASSERT_NEXT_TOKEN(Identifier, "a");
+//     ASSERT_NEXT_TOKEN(Operator,   "≤");
+//     ASSERT_NEXT_TOKEN(Identifier, "b");
+// }
+
+TEST_F(LexerTest, BooleanAndOperator) {
+    this->lex("a && b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "&&");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, CompositionAndOperator) {
+    this->lex("a and b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "and");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, BooleanOrOperator) {
+    this->lex("a || b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "||");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, CompositionOrOperator) {
+    this->lex("a or b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "or");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, BooleanXorOperator) {
+    this->lex("a ^^ b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "^^");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, BooleanNotOperator) {
+    this->lex("!a");
+
+    ASSERT_NEXT_TOKEN(Operator,   "!");
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+}
+
+TEST_F(LexerTest, BitwiseNotOperator) {
+    this->lex("~a");
+
+    ASSERT_NEXT_TOKEN(Operator,   "~");
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+}
+
+TEST_F(LexerTest, BitwiseAndOperator) {
+    this->lex("a & b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "&");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, BitwiseOrOperator) {
+    this->lex("a | b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "|");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, BitwiseXorOperator) {
+    this->lex("a ^ b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "^");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, BitwiseLeftShiftOperator) {
+    this->lex("a << b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "<<");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, BitwiseRightShiftOperator) {
+    this->lex("a >> b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   ">>");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, AssignmentOperator) {
+    this->lex("a = b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
 TEST_F(LexerTest, CompoundAdditionAssignmntOperator) {
-    this->lex("a += 1");
+    this->lex("a += b");
 
     ASSERT_NEXT_TOKEN(Identifier,     "a");
     ASSERT_NEXT_TOKEN(Operator,       "+=");
-    ASSERT_NEXT_TOKEN(NumericLiteral, "1");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
 }
 
-TEST_F(LexerTest, CompoundOrAssignmntOperator) {
-    this->lex("a ||= 1");
+TEST_F(LexerTest, CompoundSubtractionsAssignmntOperator) {
+    this->lex("a -= b");
 
     ASSERT_NEXT_TOKEN(Identifier,     "a");
-    ASSERT_NEXT_TOKEN(Operator,       "||=");
-    ASSERT_NEXT_TOKEN(NumericLiteral, "1");
+    ASSERT_NEXT_TOKEN(Operator,       "-=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, CompoundMultiplicationAssignmntOperator) {
+    this->lex("a *= b");
+
+    ASSERT_NEXT_TOKEN(Identifier,     "a");
+    ASSERT_NEXT_TOKEN(Operator,       "*=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, CompoundDivideAssignOperator) {
+    this->lex("a /= b");
+
+    ASSERT_NEXT_TOKEN(Identifier,     "a");
+    ASSERT_NEXT_TOKEN(Operator,       "/=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, CompoundModulusAssignOperator) {
+    this->lex("a %= b");
+
+    ASSERT_NEXT_TOKEN(Identifier,     "a");
+    ASSERT_NEXT_TOKEN(Operator,       "%=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, CompoundBitwiseAndAssignOperator) {
+    this->lex("a &= b");
+
+    ASSERT_NEXT_TOKEN(Identifier,     "a");
+    ASSERT_NEXT_TOKEN(Operator,       "&=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, CompoundBitwiseOrAssignOperator) {
+    this->lex("a |= b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "|=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, CompoundBitwiseXorAssignOperator) {
+    this->lex("a ^= b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "^=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, CompoundLeftShiftAssignOperator) {
+    this->lex("a <<= b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "<<=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, CompoundRightShiftAssignOperator) {
+    this->lex("a >>= b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   ">>=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, CompoundAndAssignOperator) {
+    this->lex("a &&= b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "&&=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, CompoundOrAssignOperator) {
+    this->lex("a ||= b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "||=");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, TernaryConditionalOperator) {
+    this->lex("a ? b : c");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "?");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+    ASSERT_NEXT_TOKEN(PunctuationColon, ":");
+    ASSERT_NEXT_TOKEN(Identifier, "c");
+}
+
+TEST_F(LexerTest, TernaryCompareAndSwapOperator) {
+    this->lex("a cas b : c");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "cas");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+    ASSERT_NEXT_TOKEN(PunctuationColon, ":");
+    ASSERT_NEXT_TOKEN(Identifier, "c");
 }
 
 TEST_F(LexerTest, AssignmentFollowedByUnaryOperator) {
@@ -187,18 +569,83 @@ TEST_F(LexerTest, AssignmentFollowedByUnaryOperator) {
     ASSERT_NEXT_TOKEN(NumericLiteral, "1");
 }
 
-TEST_F(LexerTest, DivideOperator) {
-    this->lex("a / 1");
+TEST_F(LexerTest, VarargType) {
+    this->lex("Vararg ap");
 
-    ASSERT_NEXT_TOKEN(Identifier,     "a");
-    ASSERT_NEXT_TOKEN(Operator,       "/");
-    ASSERT_NEXT_TOKEN(NumericLiteral, "1");
+    ASSERT_NEXT_TOKEN(KeywordVararg, "Vararg");
+    ASSERT_NEXT_TOKEN(Identifier,    "ap");
 }
 
-TEST_F(LexerTest, CompoundDivideAssignOperator) {
-    this->lex("a /= 1");
+TEST_F(LexerTest, VarargNext) {
+    this->lex("nextarg:Int");
 
-    ASSERT_NEXT_TOKEN(Identifier,     "a");
-    ASSERT_NEXT_TOKEN(Operator,       "/=");
-    ASSERT_NEXT_TOKEN(NumericLiteral, "1");
+    ASSERT_NEXT_TOKEN(KeywordVarargNext, "nextarg");
+    ASSERT_NEXT_TOKEN(PunctuationColon,  ":");
+    ASSERT_NEXT_TOKEN(Identifier,        "Int");
+}
+
+TEST_F(LexerTest, IfKeyword) {
+    this->lex("if a");
+
+    ASSERT_NEXT_TOKEN(KeywordIf, "if");
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+}
+
+TEST_F(LexerTest, UnlessKeyword) {
+    this->lex("a unless b");
+
+    ASSERT_NEXT_TOKEN(Identifier,    "a");
+    ASSERT_NEXT_TOKEN(KeywordUnless, "unless");
+    ASSERT_NEXT_TOKEN(Identifier,    "b");
+}
+
+TEST_F(LexerTest, SwitchAndCaseKeywords) {
+    this->lex("switch a\ncase b\nend");
+
+    ASSERT_NEXT_TOKEN(KeywordSwitch, "switch");
+    ASSERT_NEXT_TOKEN(Identifier,    "a");
+    ASSERT_NEXT_TOKEN(Newline,       "");
+    ASSERT_NEXT_TOKEN(KeywordCase,   "case");
+    ASSERT_NEXT_TOKEN(Identifier,    "b");
+    ASSERT_NEXT_TOKEN(Newline,       "");
+    ASSERT_NEXT_TOKEN(KeywordEnd,    "end");
+}
+
+TEST_F(LexerTest, LinkageKeyword) {
+    this->lex("linkage(none)");
+
+    ASSERT_NEXT_TOKEN(KeywordLinkage,        "linkage");
+    ASSERT_NEXT_TOKEN(PunctuationOpenParen,  "(");
+    ASSERT_NEXT_TOKEN(Identifier,            "none");
+    ASSERT_NEXT_TOKEN(PunctuationCloseParen, ")");
+}
+
+TEST_F(LexerTest, AbiKeyword) {
+    this->lex("abi(cdecls)");
+
+    ASSERT_NEXT_TOKEN(KeywordAbi,            "abi");
+    ASSERT_NEXT_TOKEN(PunctuationOpenParen,  "(");
+    ASSERT_NEXT_TOKEN(Identifier,            "cdecls");
+    ASSERT_NEXT_TOKEN(PunctuationCloseParen, ")");
+}
+
+TEST_F(LexerTest, DebugKeyword) {
+    this->lex("debug\n");
+
+    ASSERT_NEXT_TOKEN(KeywordDebug, "debug");
+    ASSERT_NEXT_TOKEN(Newline,      "");
+}
+
+TEST_F(LexerTest, VersionKeyword) {
+    this->lex("version something");
+
+    ASSERT_NEXT_TOKEN(KeywordVersion, "version");
+    ASSERT_NEXT_TOKEN(Identifier,     "something");
+}
+
+TEST_F(LexerTest, NamespaceKeyword) {
+    this->lex("namespace Foo");
+
+    ASSERT_NEXT_TOKEN(KeywordNamespace, "namespace");
+    ASSERT_NEXT_TOKEN(Identifier,       "Foo");
 }

@@ -29,6 +29,7 @@ namespace Language {
             KeywordReturn,
             KeywordIf,
             KeywordElse,
+            KeywordUnless,
             KeywordLoop,
             KeywordImport,
             KeywordClosure,
@@ -39,6 +40,17 @@ namespace Language {
             KeywordAtomic,
             KeywordBarrier,
             KeywordAbort,
+            KeywordSizeof,
+            KeywordAlignof,
+            KeywordTypeof,
+            KeywordOffsetof,
+            KeywordVararg,
+            KeywordVarargNext,
+            KeywordLinkage,
+            KeywordAbi,
+            KeywordDebug,
+            KeywordVersion,
+            KeywordNamespace,
             Operator
         } Type;
 

@@ -219,6 +219,8 @@ x % y
 x * y
 
 x == y
+x === y
+x &lt;=&gt; y
 x != y
 x ≠ y
 x &gt; y
@@ -232,9 +234,7 @@ x and y
 x || y
 x or y
 x ^^ y
-x xor y
 !x
-not x
 
 ~x
 x &amp; y
@@ -243,6 +243,7 @@ x ^ y
 x &lt;&lt; y
 x &gt;&gt; y
 
+x = y
 x += y
 x -= y
 x *= y
@@ -282,6 +283,8 @@ x % y
 x * y
 
 x == y
+<em>No Equivalent</em>
+<em>No Equivalent</em>
 x != y
 x != y
 x &gt; y
@@ -291,12 +294,10 @@ x &gt;= y
 x &lt;= y
 x &lt;= y
 x &amp;&amp; y
-x &amp;&amp; y
+<em>No Equivalent</em>
 x || y
-x || y
+<em>No Equivalent</em>
 (x &amp;&amp; !y) || (!x &amp;&amp; y)
-(x &amp;&amp; !y) || (!x &amp;&amp; y)
-!x
 !x
 
 ~x
@@ -306,6 +307,7 @@ x ^ y
 x &lt;&lt; y
 x &gt;&gt; y
 
+x = y
 x += y
 x -= y
 x *= y
@@ -337,8 +339,8 @@ x ? y : z
 
   ap2 = ap
 
-  printf(<span class="string">"arg 1 = %d\n"</span>, <span class="keyword">vararg_next</span>:<span class="entity">Int</span>(ap))
-  printf(<span class="string">"arg 1 = %d\n"</span>, <span class="keyword">vararg_next</span>:<span class="entity">Int</span>(ap))
+  printf(<span class="string">"arg 1 = %d\n"</span>, <span class="keyword">nextarg</span>:<span class="entity">Int</span>(ap))
+  printf(<span class="string">"arg 1 = %d\n"</span>, <span class="keyword">nextarg</span>:<span class="entity">Int</span>(ap))
 
   vprintf(<span class="string">"%d %d\n"</span>, ap2)
 <span class="keyword">end</span>
@@ -426,6 +428,10 @@ a = <span class="literal">0</span> <span class="keyword">if</span> <span class="
 
 
 
+a = <span class="literal">0</span> <span class="keyword">unless</span> <span class="literal">true</span>
+
+
+
 <span class="keyword">switch</span> value
 <span class="keyword">case</span> <span class="literal">1</span>
   <em>body</em>
@@ -440,13 +446,17 @@ a = <span class="literal">0</span> <span class="keyword">if</span> <span class="
                 </td>
                 <td>
                     <pre><code>
-<span class="keyword">if</span> <span class="literal">true</span> {
+<span class="keyword">if</span> (<span class="literal">true</span>) {
     <em>body</em>
 } <span class="keyword">else</span> {
     <em>body</em>
 }
 
-<span class="keyword">if</span> <span class="literal">true</span> {
+<span class="keyword">if</span> (<span class="literal">true</span>) {
+    a = <span class="literal">0</span>
+}
+
+<span class="keyword">if</span> (!<span class="literal">true</span>) {
     a = <span class="literal">0</span>
 }
 
@@ -618,15 +628,21 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
                     <pre><code>
 <span class="directive">import</span> stdlib
 <span class="literal">ABC</span> = <span class="literal">132.0</span>
-<em>No Equivalent</em>
 
 <span class="directive">linkage</span>(none)
 <span class="directive">abi</span>(cdecl)
 <span class="keyword">def</span> foo(; <span class="entity">Int</span>)
 
-<span class="keyword">debug</span>
+<span class="directive">version</span> architecture
+<span class="directive">case</span> x86
+  <em>body</em>
+<span class="directive">case</span> arm
+  <em>body</em>
+<span class="directive">end</span>
+
+<span class="directive">debug</span>
   printf(<span class="string">"debugging statement here\n"</span>)
-<span class="keyword">end</span>
+<span class="directive">end</span>
 
 <span class="keyword">namespace</span> Foo
   <span class="keyword">def</span> bar(; <span class="entity">Int</span>)
@@ -636,12 +652,18 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
                 <td>
                     <pre><code>
 <span class="directive">#include &lt;stdlib.h&gt;</span>
-<span class="directive">#define</span> ABC 123.0
-<span class="directive">#pragma once</span>
+<span class="keyword">static const</span> <span class="entity">float</span> ABC = <span class="literal">123.0</span>;
 
 
 
 <span class="keyword">static</span> <span class="entity">int</span> foo(<span class="entity">void</span>);
+
+<span class="directive">#if architecture == x86</span>
+    <em>body</em>
+<span class="directive">#elif architecture == arm</span>
+    <em>body</em>
+<span class="directive">#endif</span>
+
 
 <span class="directive">#if DEBUG</span>
     printf(<span class="string">"debugging statement here\n"</span>);
