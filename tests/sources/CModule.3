@@ -1,0 +1,30 @@
+module C.stdio
+public
+    def printf(@distinct * @const Char format, Varargs; Int)
+end
+
+module C.time
+public
+    def:type time_t Integer
+end
+
+module C.threads
+    import C.time
+
+    linkage("pthread")
+    include("pthread.h")
+
+public
+    def:type thrd_t *Void
+
+    struct xtime
+        time_t     sec
+        Integer:64 nsec
+    end
+
+    def:type thrd_start_t (Void*; Int)
+
+public
+    def thrd_sleep(* @const xtime time)
+    def thrd_create(*thrd_t thr, thrd_start_t func, *Void arg; Int);
+end

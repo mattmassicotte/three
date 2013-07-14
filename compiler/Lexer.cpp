@@ -43,6 +43,7 @@ namespace Language {
         _keywordMap["debug"]     = Token::Type::KeywordDebug;
         _keywordMap["version"]   = Token::Type::KeywordVersion;
         _keywordMap["namespace"] = Token::Type::KeywordNamespace;
+        _keywordMap["module"]    = Token::Type::KeywordModule;
     }
 
     bool Lexer::characterPeek(char& c) {

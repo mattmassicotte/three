@@ -33,6 +33,7 @@ namespace Language {
         void setAnnotations(const std::vector<Annotation*>& annotations);
 
         virtual std::string name() const = 0;
+        std::string nodeName() const;
         virtual std::string str() const;
         std::string recursiveStr(uint32_t depth = 0) const;
 

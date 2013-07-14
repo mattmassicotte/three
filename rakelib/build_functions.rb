@@ -56,7 +56,9 @@ module BuildFunctions
     File.absolute_path(File.join(BUILD_DIR, input))
   end
   
-  def self.objects_for_sources(filelist, flags=nil)
+  def self.objects_for_sources(filelist, opts={})
+    opts[:find_deps] = true if opts[:find_deps].nil?
+    
     object_files = []
     filelist.each do |source|
       # define the path
@@ -72,13 +74,12 @@ module BuildFunctions
       CLEAN.include(object_path)
 
       # setup object file dependencies
-      dependencies = BuildFunctions::get_dependencies(source, flags)
-      dependencies << __FILE__
-      dependencies << object_dir
+      dependencies = [__FILE__, object_dir]
+      dependencies.concat(BuildFunctions::get_dependencies(source, opts[:flags])) if opts[:find_deps]
 
       # and finally, setup the rule to build this object
       file(object_path => dependencies) do
-        BuildFunctions::compile(source, object_path, flags)
+        BuildFunctions::compile(source, object_path, opts[:flags])
       end
     end
     

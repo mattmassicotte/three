@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ASTNode.h"
-#include "../../Constructs/Module.h"
+#include "../../Constructs/TranslationUnit.h"
 
 namespace Language {
     class ImportNode : public ASTNode {
@@ -14,12 +14,12 @@ namespace Language {
 
         void setPath(const std::string& value);
         std::string path() const;
-        Module* module() const;
+        Three::Module* module() const;
 
         void codeGenCSource(CSourceContext& context);
 
     private:
-        std::string _path;
-        Module*     _module;
+        std::string    _path;
+        Three::Module* _module;
     };
 }

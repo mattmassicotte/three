@@ -51,6 +51,7 @@ namespace Language {
             KeywordDebug,
             KeywordVersion,
             KeywordNamespace,
+            KeywordModule,
             Operator
         } Type;
 

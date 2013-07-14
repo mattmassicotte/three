@@ -2,11 +2,12 @@
 
 COMPILER_CC_FLAGS = '-I.'
 COMPILER_GTEST_CC_FLAGS = '-I. -Igtest/include -DGTEST_HAS_TR1_TUPLE=0'
+GTEST_HEADER = 'gtest/include/gtest/gtest.h'
 
 COMPILER_SOURCES = FileList['compiler/**/*.cpp']
 COMPILER_SOURCES.exclude('compiler/compiler.cpp')
 
-COMPILER_OBJECTS = BuildFunctions::objects_for_sources(COMPILER_SOURCES, COMPILER_CC_FLAGS)
+COMPILER_OBJECTS = BuildFunctions::objects_for_sources(COMPILER_SOURCES, :flags => COMPILER_CC_FLAGS)
 
 directory "#{BUILD_DIR}/tests"
 
@@ -18,16 +19,9 @@ end
 COMPILER_TEST_SOURCES = FileList['tests/**/*.cpp']
 # Handle bootstrapping the first rake invocation, when gtest is install installed.  This
 # is messy, because these rake task *definitions* depend on gtest.
-if File.exist?("gtest/gtest.h")
-  # if we have gtest, just do everything normally
-  COMPILER_TEST_OBJECTS = BuildFunctions::objects_for_sources(COMPILER_TEST_SOURCES, COMPILER_GTEST_CC_FLAGS)
-else
-  # if we don't, rely on some much simpler rules
-  COMPILER_TEST_OBJECTS = COMPILER_TEST_SOURCES.ext('o')
-  rule '.o' => '.cpp' do |t|
-    BuildFunctions::compile(t.source, t.name, COMPILER_GTEST_CC_FLAGS)
-  end
-end
+find_deps = File.exist?(File.join(File.dirname(__FILE__), "../#{GTEST_HEADER}"))
+opts = {:flags => COMPILER_GTEST_CC_FLAGS, :find_deps => find_deps}
+COMPILER_TEST_OBJECTS = BuildFunctions::objects_for_sources(COMPILER_TEST_SOURCES, opts)
 
 CLOBBER.include("#{BUILD_DIR}/compiler_test")
 test_object_files = []

@@ -8,18 +8,13 @@ namespace Language {
     ImportNode* ImportNode::parse(Parser& parser) {
         ImportNode* node = new ImportNode();
 
-        assert(parser.peek().type() == Token::Type::KeywordImport);
-        parser.next();
+        assert(parser.next().type() == Token::Type::KeywordImport);
 
-        std::stringstream s;
+        node->setPath(parser.parseQualifiedName());
+        assert(node->_path.length() > 0);
 
-        // TODO: this is infinite if end of input is reached
-        while (parser.peek().type() != Token::Type::Newline) {
-            s << parser.next().str();
-        }
-
-        node->setPath(s.str());
-        node->_module = parser.moduleWithIdentifier(s.str());
+        // TODO: not exactly right.  This might not be the current translation unit
+        node->_module = parser.currentModule()->importModule(node->path(), std::vector<std::string>());
 
         parser.parseNewline(true);
 
@@ -46,13 +41,13 @@ namespace Language {
         return _path;
     }
 
-    Module* ImportNode::module() const {
+    Three::Module* ImportNode::module() const {
         return this->_module;
     }
 
     void ImportNode::codeGenCSource(CSourceContext& context) {
-        if (_module) {
-            context.addHeader(_module->cIncludePath());
-        }
+        _module->eachCIncludePath([&] (const std::string& path) {
+            context.addHeader(path);
+        });
     }
 }

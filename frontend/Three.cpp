@@ -72,6 +72,8 @@ Language::RootNode* createRootNodeFromFile(const std::string& path) {
     Language::Lexer lexer(&inputFile);
     Language::Parser parser(&lexer);
 
+    parser.setContext(Three::ParsingContext::translationUnitContext());
+
     return parser.rootASTNode();
 }
 

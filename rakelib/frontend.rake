@@ -3,7 +3,7 @@
 FRONTEND_CC_FLAGS = '-I.'
 
 FRONTEND_SOURCES = FileList['frontend/**/*.cpp']
-FRONTEND_OBJECTS = BuildFunctions::objects_for_sources(FRONTEND_SOURCES, FRONTEND_CC_FLAGS)
+FRONTEND_OBJECTS = BuildFunctions::objects_for_sources(FRONTEND_SOURCES, :flags => FRONTEND_CC_FLAGS)
 
 CLOBBER.include(FRONTEND_EXECUTABLE)
 file FRONTEND_EXECUTABLE => [FRONTEND_OBJECTS, "#{BUILD_DIR}/libthree_compiler.a"].flatten do
