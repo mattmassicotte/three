@@ -59,6 +59,10 @@ namespace Language {
         _annotations = annotations;
     }
 
+    std::string ASTNode::nodeName() const {
+        return this->name();
+    }
+
     std::string ASTNode::str() const {
         return this->name();
     }

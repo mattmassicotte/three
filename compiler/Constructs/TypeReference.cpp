@@ -1,11 +1,11 @@
 #include "TypeReference.h"
-#include "Module.h"
+#include "TranslationUnit.h"
 #include "DataType.h"
 
 #include <assert.h>
 
 namespace Language {
-    TypeReference TypeReference::ref(Module* module, const std::string& name, uint32_t indirection) {
+    TypeReference TypeReference::ref(Three::Module* module, const std::string& name, uint32_t indirection) {
         return TypeReference(module->dataTypeForName(name), indirection);
     }
 

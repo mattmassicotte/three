@@ -8,8 +8,6 @@
 
 namespace Language {
     Parser::Parser(Lexer* lexer) : _lexer(lexer) {
-        _currentScope = Scope::createRootScope();
-        _rootModule = Module::createRootModule();
     }
 
     Parser::~Parser() {
@@ -165,14 +163,60 @@ namespace Language {
         return true;
     }
 
-    bool Parser::parseUntilEnd(std::function<void (void)> func) {
-        while (this->peek().type() != Token::Type::KeywordEnd) {
-            func();
+    bool Parser::parseUntil(bool advanceOnStop, std::function<bool (const Token& token)> func) {
+        do {
+            Token t = this->peek();
+
+            if (t.type() == Token::Type::EndOfInput) {
+                return false;
+            }
+
+            if (func(t)) {
+                break;
+            }
+
+            // TODO: this is an infinite loop if func does not call next at least once.
+        } while (1);
+
+        if (advanceOnStop) {
+            this->next();
         }
 
-        assert(this->next().type() == Token::Type::KeywordEnd);
-
         return true;
+    }
+
+    bool Parser::parseUntilEnd(std::function<void (void)> func) {
+        return this->parseUntil(true, [&] (const Token& token) {
+            if (token.type() != Token::Type::KeywordEnd) {
+                func();
+                return false;
+            }
+
+            return true;
+        });
+    }
+
+    std::string Parser::parseQualifiedName() {
+        std::stringstream s;
+
+        this->parseUntil(false, [&] (const Token& token) {
+            switch (token.type()) {
+                case Token::Type::Identifier:
+                    s << this->next().str();
+                    break;
+                case Token::Type::Operator:
+                    if (token.str() == ".") {
+                        s << this->next().str();
+                    }
+                    break;
+                default:
+                    return true;
+            }
+
+            return false;
+        });
+
+        return s.str();
     }
 
     bool Parser::isAtType() {
@@ -185,6 +229,7 @@ namespace Language {
             case Token::Type::Identifier:
             case Token::Type::PunctuationOpenParen:
             case Token::Type::PunctuationOpenBrace:
+            case Token::Type::Annotation:
                 break;
             default:
                 // if the character isn't one of those, we definitely do not have a type
@@ -193,10 +238,21 @@ namespace Language {
 
         int peekDepth = 1;
 
-        // We might have a pointer type.  We have to check that, following
-        // the '*'s, we have "Identifier identifier"
-        while (this->peek(peekDepth).str() == "*") {
-            peekDepth += 1;
+        // We might have a pointer type, and we also could have annotations intermixed.
+        // Following the '*'s and annotations, we should have "Identifier identifier"
+        while (1) {
+            Token t = this->peek(peekDepth);
+
+            
+            if (t.str() == "*") {
+                peekDepth += 1;
+                continue;
+            } else if (t.type() == Token::Type::Annotation) {
+                peekDepth += 1;
+                continue;
+            }
+
+            break; // finish the loop
         }
 
         Token::Type closingPuntuation;
@@ -246,15 +302,33 @@ namespace Language {
         std::cout << "Parser: type: '" << this->peek().str() << "'" << std::endl;
 #endif
 
-        // parse '*', if they are there
-        while (this->nextIf("*")) {
-            depth++;
+        // parse '*' and annotations, if they are there
+        while (1) {
+            if (this->peek().str() == "*") {
+                this->next();
+                depth++;
+                continue;
+            }
+
+            if (this->peek().type() == Token::Type::Annotation) {
+                this->next();
+                continue;
+            }
+
+            break;
         }
+
+        std::string typeName;
 
         // parse the type
         switch (this->peek().type()) {
             case Token::Type::Identifier:
-                dataType = this->currentModule()->dataTypeForName(this->next().str());
+                typeName = this->next().str();
+                dataType = this->currentModule()->dataTypeForName(typeName);
+                if (!dataType) {
+                    std::cout << "[Parser] Unable to look type '" << typeName << "'" << std::endl;
+                    assert(0 && "Unable to lookup type");
+                }
                 break;
             case Token::Type::PunctuationOpenBrace:
                 return this->parseFunctionType(depth, NULL, NULL);
@@ -362,28 +436,68 @@ namespace Language {
         return TypeReference(type, depth);
     }
 
-    Module* Parser::moduleWithIdentifier(const std::string& name) {
-        Module* module = _module[name];
+    Function* Parser::parseFunctionSignature() {
+        Function* function = new Function();
 
-        if (!module) {
-            module = Module::createModule(_rootModule, name, std::vector<std::string>());
-            _rootModule->addChild(module);
+        // parse the function name
+        assert(this->peek().type() == Token::Type::Identifier);
+
+        function->setName(this->next().str());
+
+        // move past the opening '('
+        assert(this->next().type() == Token::Type::PunctuationOpenParen);
+
+        // at each point we could have:
+        // - a ';'
+        // - a Type + identifier, followed by a ';'
+        // - a Type + identifier, followed by a ','
+        // - a ')'
+        while (true) {
+            Token t = this->peek();
+
+            if (t.str().at(0) == ';' || t.type() == Token::Type::PunctuationCloseParen) {
+                break;
+            }
+
+            TypeReference type = this->parseType();
+
+            assert(this->peek().type() == Token::Type::Identifier);
+            function->addParameter(this->next().str(), type);
+
+            // a ',' means another paramter was specified
+            if (this->nextIf(",")) {
+                continue;
+            }
+
+            break;
         }
 
-        return module;
-    }
+        // now, check for the return type
+        if (this->peek().type() == Token::Type::PunctuationSemicolon && this->peek(2).type() != Token::Type::PunctuationCloseParen) {
+            // move past the ';'
+            assert(this->next().type() == Token::Type::PunctuationSemicolon);
 
-    Module* Parser::currentModule() const {
-        return _rootModule;
+            function->setReturnType(this->parseType());
+        } else {
+            function->setReturnType(TypeReference::ref(this->currentModule(), "Void", 0));
+        }
+
+        // parse the close paren
+        assert(this->next().type() == Token::Type::PunctuationCloseParen);
+
+        return function;
     }
 
     ASTNode* Parser::parseTopLevelNode() {
         ASTNode* node = NULL;
-        // std::cout << "Parser: top level" << std::endl;
+
+#if DEBUG_PARSING
+        std::cout << "Parser: top level" << std::endl;
+#endif
         
         switch (this->peek().type()) {
             case Token::Type::KeywordDef:
-                return this->parseDefinition();
+                return Three::DefinitionNode::parse(*this, false);
             case Token::Type::KeywordImport:
                 return ImportNode::parse(*this);
             case Token::Type::KeywordStructure:
@@ -394,6 +508,8 @@ namespace Language {
                 node = AnnotationNode::parse(*this);
                 this->parseNewline();
                 return node;
+            case Token::Type::KeywordModule:
+                return Three::ModuleNode::parse(*this);
             case Token::Type::EndOfInput:
                 assert(0 && "parseTopLevelNode invalid state");
                 break;
@@ -403,23 +519,6 @@ namespace Language {
         }
 
         return NULL;
-    }
-
-    ASTNode* Parser::parseDefinition() {
-        // std::cout << "Parser: definition" << std::endl;
-
-        // the kinds of definitions we have are:
-        // - a function body
-        // - a function prototype
-        // - a type
-
-        assert(this->next().type() == Token::Type::KeywordDef); // skip over the "def"
-
-        if (this->peek(2).str() == "(") {
-            return FunctionDefinitionNode::parse(*this);
-        }
-
-        return new RootNode();
     }
 
     Token Parser::peek(unsigned int distance) {
@@ -434,25 +533,31 @@ namespace Language {
         return _lexer->nextIf(value);
     }
 
-    Scope* Parser::currentScope() const {
-        assert(_currentScope);
+    Three::ParsingContext* Parser::context() const {
+        return _context;
+    }
 
-        return _currentScope;
+    void Parser::setContext(Three::ParsingContext* context) {
+        _context = context;
+    }
+
+    TranslationUnit* Parser::currentTranslationUnit() const {
+        return _context->translationUnit();
+    }
+
+    Three::Module* Parser::currentModule() const {
+        return _context->currentModule();
+    }
+
+    Scope* Parser::currentScope() const {
+        return _context->currentScope();
     }
 
     void Parser::pushScope(Scope* scope) {
-        assert(scope);
-
-        scope->setParent(this->currentScope());
-        _currentScope = scope;
+        _context->pushScope(scope);
     }
 
     void Parser::popScope() {
-        Scope* old = this->currentScope();
-
-        _currentScope = old->parent();
-        assert(_currentScope);
-
-        delete old;
+        _context->popScope();
     }
 }

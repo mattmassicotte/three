@@ -44,7 +44,7 @@ namespace Language {
     private:
         Flavor      _type;
         std::string _name;
-        
+
         TypeReference              _returnType;
         std::vector<TypeReference> _children;
     };

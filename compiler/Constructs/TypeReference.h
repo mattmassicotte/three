@@ -6,13 +6,16 @@
 
 namespace Language {
     class DataType;
+}
+
+namespace Three {
     class Module;
 }
 
 namespace Language {
     class TypeReference {
     public:
-        static TypeReference ref(Module* module, const std::string& name, uint32_t indirection);
+        static TypeReference ref(Three::Module* module, const std::string& name, uint32_t indirection);
 
     public:
         TypeReference();

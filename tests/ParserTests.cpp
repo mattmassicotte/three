@@ -1,112 +1,6 @@
-#include "compiler/Parser.h"
-#include "compiler/AST.h"
+#include "ParserTestBase.h"
 
-#include <assert.h>
-#include <gtest/gtest.h>
-
-#define ASSERT_IMPORT(path_value, node) do {\
-Language::ImportNode* tmp = dynamic_cast<Language::ImportNode*>(node); \
-ASSERT_EQ("Import", tmp->name()); \
-ASSERT_EQ(path_value, tmp->path()); \
-} while(0)
-
-#define ASSERT_STRING_LITERAL_NODE(str_value, node) do {\
-Language::StringLiteralNode* tmp = dynamic_cast<Language::StringLiteralNode*>(node); \
-ASSERT_EQ("StringLiteral", tmp->name()); \
-ASSERT_EQ(str_value, tmp->stringValue()); \
-} while(0)
-
-#define ASSERT_INTEGER_LITERAL_NODE(num_value, node) do {\
-Language::IntegerLiteralNode* tmp = dynamic_cast<Language::IntegerLiteralNode*>(node); \
-ASSERT_EQ("IntegerLiteral", tmp->name()); \
-ASSERT_EQ(num_value, tmp->value()); \
-} while(0)
-
-#define ASSERT_BOOLEAN_LITERAL_NODE(bool_value, node) do { \
-Language::BooleanLiteralNode* tmp = dynamic_cast<Language::BooleanLiteralNode*>(node); \
-ASSERT_EQ("BooleanLiteral", tmp->name()); \
-ASSERT_EQ(bool_value, tmp->value()); \
-} while(0)
-
-#define ASSERT_RETURN_NODE(node) do {\
-Language::ReturnNode* tmp = dynamic_cast<Language::ReturnNode*>(node); \
-ASSERT_EQ("Return", tmp->name()); \
-} while(0)
-
-#define ASSERT_OPERATOR(op_value, node) do { \
-Language::OperatorNode* tmp = dynamic_cast<Language::OperatorNode*>(node); \
-ASSERT_EQ("Operator", tmp->name()); \
-ASSERT_EQ(op_value, tmp->op()); \
-} while(0)
-
-#define ASSERT_LOOP(node) do { \
-Language::LoopNode* tmp = dynamic_cast<Language::LoopNode*>(node); \
-ASSERT_EQ("Loop", tmp->name()); \
-} while(0)
-
-#define ASSERT_DATA_TYPE(dt_name, obj) do {\
-ASSERT_EQ(dt_name, obj->name()); \
-} while(0)
-
-#define ASSERT_VARIABLE(var_type, var_indirection, var_name, obj) do { \
-Language::Variable* tmp = obj; \
-ASSERT_DATA_TYPE(var_type, tmp->type().referencedType()); \
-ASSERT_EQ(var_indirection, tmp->type().indirectionDepth()); \
-ASSERT_EQ(var_name, tmp->name()); \
-} while(0)
-
-#define ASSERT_VARIABLE_NODE(var_type, var_indirection, var_name, obj) do {\
-Language::VariableNode* tmp = dynamic_cast<Language::VariableNode*>(obj); \
-ASSERT_EQ("Variable", tmp->name()); \
-ASSERT_DATA_TYPE(var_type, tmp->variable()->type().referencedType()); \
-ASSERT_EQ(var_indirection, tmp->variable()->type().indirectionDepth()); \
-ASSERT_EQ(var_name, tmp->variable()->name()); \
-} while(0)
-
-#define ASSERT_VARIABLE_DECLERATION(var_type, var_indirection, var_name, obj) do {\
-Language::VariableDeclarationNode* tmp = dynamic_cast<Language::VariableDeclarationNode*>(obj); \
-ASSERT_EQ("VariableDeclaration", tmp->name()); \
-ASSERT_DATA_TYPE(var_type, tmp->variable()->type().referencedType()); \
-ASSERT_EQ(var_indirection, tmp->variable()->type().indirectionDepth()); \
-ASSERT_EQ(var_name, tmp->variable()->name()); \
-} while(0)
-
-class ParserTest : public testing::Test {
-protected:
-    virtual void SetUp() {
-        _stream = NULL;
-        _lexer  = NULL;
-        _parser = NULL;
-    }
-
-    virtual void TearDown() {
-        delete _parser;
-        delete _lexer;
-        delete _stream;
-    }
-
-    Language::ASTNode* parse(const char* input) {
-        std::string inputString(input);
-
-        assert(!_stream);
-        _stream = new std::istringstream(inputString);
-
-        assert(!_lexer);
-        _lexer = new Language::Lexer(_stream);
-
-        assert(!_parser);
-        _parser = new Language::Parser(_lexer);
-
-        return _parser->rootASTNode();
-    }
-
-    Language::ASTNode* parseString() {
-        return _parser->rootASTNode();
-    }
-
-    std::istringstream* _stream;
-    Language::Lexer*    _lexer;
-    Language::Parser*   _parser;
+class ParserTest : public ParserTestBase {
 };
 
 TEST_F(ParserTest, SimpleHelloWorldProgram) {
@@ -278,10 +172,7 @@ TEST_F(ParserTest, StructureDefinitionWithPacking) {
 
     node = this->parse("struct:2 MyStructure\nInt x\nInt y\nend\n");
 
-    Language::StructureNode* structure = dynamic_cast<Language::StructureNode*>(node->childAtIndex(0));
-    ASSERT_EQ("Structure", structure->name());
-    ASSERT_EQ(2, structure->packing());
-    ASSERT_EQ("MyStructure", structure->structureName());
+    ASSERT_STRUCT("MyStructure", 2, node->childAtIndex(0));
 }
 
 TEST_F(ParserTest, StructureDefinitionWithoutPacking) {
@@ -289,10 +180,19 @@ TEST_F(ParserTest, StructureDefinitionWithoutPacking) {
 
     node = this->parse("struct MyStructure\nInt x\nInt y\nend\n");
 
-    Language::StructureNode* structure = dynamic_cast<Language::StructureNode*>(node->childAtIndex(0));
-    ASSERT_EQ("Structure", structure->name());
-    ASSERT_EQ(0, structure->packing());
-    ASSERT_EQ("MyStructure", structure->structureName());
+    ASSERT_STRUCT("MyStructure", 0, node->childAtIndex(0));
+}
+
+TEST_F(ParserTest, StructureDefinitionUsedAsType) {
+    Language::ASTNode* node;
+
+    node = this->parse("struct MyStructure\nInt x\nend\ndef foo()\nMyStructure a\nend\n");
+
+    ASSERT_STRUCT("MyStructure", 0, node->childAtIndex(0));
+
+    node = node->childAtIndex(1);
+
+    ASSERT_VARIABLE_DECLERATION("MyStructure",  0, "a", node->childAtIndex(0));
 }
 
 TEST_F(ParserTest, AtomicBarrierWithoutSpecifier) {

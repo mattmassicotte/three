@@ -6,60 +6,15 @@
 
 namespace Language {
     FunctionDefinitionNode* FunctionDefinitionNode::parse(Parser& parser) {
-        FunctionDefinitionNode* node;
-        Token t;
-
-        node = new FunctionDefinitionNode();
-        node->_function = new Function();
+        FunctionDefinitionNode* node = new FunctionDefinitionNode();
 
         // take (and then clear) current annotations
         node->setAnnotations(parser.currentScope()->annotations());
         parser.currentScope()->clearAnnotations();
 
-        // parse the function name
-        t = parser.next();
-        assert(t.type() == Token::Type::Identifier);
+        node->_function = parser.parseFunctionSignature();
+        assert(node->_function);
 
-        node->_function->setName(t.str());
-
-        // move past the opening '('
-        assert(parser.next().type() == Token::Type::PunctuationOpenParen);
-
-        // at each point we could have:
-        // - a ';'
-        // - a Type + identifier, followed by a ';'
-        // - a Type + identifier, followed by a ','
-        // - a ')'
-        while (true) {
-            Token t = parser.peek();
-
-            if (t.str().at(0) == ';' || t.type() == Token::Type::PunctuationCloseParen) {
-                break;
-            }
-
-            TypeReference type = parser.parseType();
-
-            node->_function->addParameter(parser.next().str(), type);
-
-            // a ',' means another paramter was specified
-            if (parser.peek().str().at(0) == ',') {
-                parser.next();
-                continue;
-            }
-        }
-
-        // now, check for the return type
-        if (parser.peek().str().at(0) == ';' && parser.peek(2).type() != Token::Type::PunctuationCloseParen) {
-            // move past the ';'
-            assert(parser.next().str().at(0) == ';');
-
-            node->_function->setReturnType(parser.parseType());
-        } else {
-            node->_function->setReturnType(TypeReference::ref(parser.currentModule(), "Void", 0));
-        }
-
-        // parse the close paren
-        assert(parser.next().type() == Token::Type::PunctuationCloseParen);
         parser.parseNewline(true);
 
         // push in a new scope for the function body
@@ -73,21 +28,12 @@ namespace Language {
             parser.currentScope()->addVariable(v->name(), v);
         });
 
-        // and now, parse the body
-        while (true) {
-            if (parser.peek().type() == Token::Type::KeywordEnd) {
-                break;
-            }
-
+        parser.parseUntilEnd([&] () {
             node->addChild(parser.parseStatement());
-        }
+        });
 
         parser.popScope();
-
-        assert(parser.next().type() == Token::Type::KeywordEnd);
         parser.parseNewline(true);
-
-        node->setStatement(true);
 
         return node;
     }

@@ -23,13 +23,20 @@ namespace Language {
         node->_name = parser.next().str();
         parser.parseNewline(true);
 
-        while (parser.peek().type() != Token::Type::KeywordEnd) {
+        // We need to define our type here, in case it is used recursively
+        DataType* type = new DataType(DataType::Flavor::Structure, node->_name);
+        parser.currentModule()->addDataType(type);
+
+        parser.parseUntilEnd([&] () {
             node->addChild(VariableDeclarationNode::parse(parser));
             parser.parseNewline(true);
-        }
+        });
 
-        assert(parser.next().type() == Token::Type::KeywordEnd);
         parser.parseNewline(true);
+
+        // here, we need to iterate through the elements of the structure, and fill in
+        // the actual members
+        // TODO
 
         return node;
     }
