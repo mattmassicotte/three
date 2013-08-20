@@ -1,6 +1,7 @@
 #include "transactional_memory.h"
 #include "cpu.h"
 #include "c11/threads.h"
+#include "intel_tsx.h"
 
 #include <assert.h>
 #include <stdio.h>
