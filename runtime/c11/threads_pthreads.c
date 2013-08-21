@@ -1,6 +1,7 @@
 #include "threads.h"
 
 #include <assert.h>
+#include <errno.h>
 #include <stdint.h>
 
 // threads
@@ -107,7 +108,14 @@ int mtx_timedlock(mtx_t *mtx, const xtime *xt) {
 }
 
 int mtx_trylock(mtx_t *mtx) {
-    assert(0 && "mtx_trylock unimplemented");
+    switch (pthread_mutex_trylock(mtx)) {
+        case 0:
+            return thrd_success;
+        case EBUSY:
+            return thrd_busy;
+        default:
+            return thrd_error;
+    }
 }
 
 int mtx_unlock(mtx_t *mtx) {
