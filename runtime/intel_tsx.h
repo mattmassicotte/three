@@ -27,9 +27,7 @@ static THREE_ATTR_INLINE_ALWAYS void _xend(void) {
     __asm__ volatile(".byte 0x0f, 0x01, 0xd5" ::: "memory");
 }
 
-static THREE_ATTR_INLINE_ALWAYS void _xabort(const unsigned int status) {
-    __asm__ volatile(".byte 0xc6, 0xf8, %P0" :: "i" (status) : "memory");
-}
+#define _xabort(status) __asm__ volatile(".byte 0xc6,0xf8,%P0" :: "i" (status) : "memory")
 
 static THREE_ATTR_INLINE_ALWAYS unsigned char _xtest(void) {
     unsigned char out;
