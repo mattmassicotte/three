@@ -15,24 +15,24 @@
 
 #define _XABORT_CODE(x)     (((x) >> 24) & 0xff)
 
-static THREE_ATTR_INLINE_ALWAYS int _xbegin(void) {
-    int ret = _XBEGIN_STARTED;
+static THREE_ATTR_INLINE_ALWAYS unsigned int _xbegin(void) {
+    unsigned int ret = _XBEGIN_STARTED;
 
-    __asm__ volatile(".byte 0xc7, 0xf8 ; .long 0" : "+a" (ret) :: "memory");
+    __asm__ volatile (".byte 0xc7, 0xf8; .long 0" : "+a" (ret) :: "memory");
 
     return ret;
 }
 
 static THREE_ATTR_INLINE_ALWAYS void _xend(void) {
-    __asm__ volatile(".byte 0x0f, 0x01, 0xd5" ::: "memory");
+    __asm__ volatile (".byte 0x0f, 0x01, 0xd5" ::: "memory");
 }
 
-#define _xabort(status) __asm__ volatile(".byte 0xc6,0xf8,%P0" :: "i" (status) : "memory")
+#define _xabort(status) __asm__ volatile (".byte 0xc6, 0xf8, %P0" :: "i" (status) : "memory")
 
 static THREE_ATTR_INLINE_ALWAYS unsigned char _xtest(void) {
     unsigned char out;
 
-    __asm__ volatile(".byte 0x0f, 0x01, 0xd6 ; setnz %0" : "=r" (out) :: "memory");
+    __asm__ volatile (".byte 0x0f, 0x01, 0xd6; setnz %0" : "=r" (out) :: "memory");
 
     return out;
 }
