@@ -486,17 +486,21 @@ a = <span class="literal">0</span> <span class="keyword">unless</span> <span cla
   <em>body</em>
 <span class="keyword">end</span>
 
-<span class="keyword">loop</span> (<span class="entity">Int</span> i = <span class="literal">0</span>; i &lt; <span class="literal">10</span>; i++)
+<span class="keyword">loop</span>:<span class="keyword">after</span> !done
   <em>body</em>
 <span class="keyword">end</span>
 
-<span class="keyword">loop</span> (<span class="entity">Int</span> a = <span class="literal">0</span>; a == <span class="literal">0</span>)
+<span class="keyword">for</span> (<span class="entity">Int</span> i = <span class="literal">0</span>; i &lt; <span class="literal">10</span>; i++)
   <em>body</em>
 <span class="keyword">end</span>
 
-<span class="keyword">loop</span>:outer
+<span class="keyword">for</span> (<span class="entity">Int</span> i <span class="keyword">in</span> <span class="literal">a</span>:<span class="literal">b</span>)
+  <em>body</em>
+<span class="keyword">end</span>
+
+<span class="keyword">loop</span>
   <span class="keyword">loop</span>
-    <span class="keyword">break</span> outer
+    <span class="keyword">break</span>:2
     <span class="keyword">continue</span>
   <span class="keyword">end</span>
 <span class="keyword">end</span>
@@ -504,7 +508,7 @@ a = <span class="literal">0</span> <span class="keyword">unless</span> <span cla
                 </td>
                 <td>
                     <pre><code>
-<span class="keyword">while</span> (<span class="literal">1</span>) {
+<span class="keyword">for</span> (;;) {
     <em>body</em>
 }
 
@@ -512,17 +516,20 @@ a = <span class="literal">0</span> <span class="keyword">unless</span> <span cla
     <em>body</em>
 }
 
-<span class="keyword">for</span> (<span class="entity">int</span> i = <span class="literal">0</span>; i &lt; <span class="literal">10</span>; ++i) {
+<span class="keyword">do</span> {
+    <em>body</em>
+} <span class="keyword">while</span> (!done);
+
+<span class="keyword">for</span> (<span class="entity">int</span> i = <span class="literal">0</span>; i &lt; <span class="literal">10</span>; i++) {
     <em>body</em>
 }
 
-<span class="entity">int</span> a = <span class="literal">0</span>;
-<span class="keyword">do</span> {
+<span class="keyword">for</span> (<span class="entity">int</span> i = a; (i &lt; b) &amp;&amp; (a &lt; b); ++i) {
     <em>body</em>
-} <span class="keyword">while</span> (a == <span class="literal">0</span>)
+}
 
-<span class="keyword">while</span> (<span class="literal">1</span>) {
-    <span class="keyword">while</span> (<span class="literal">1</span>) {
+<span class="keyword">for</span> (;;) {
+    <span class="keyword">for</span> (;;) {
         <span class="keyword">goto</span> end;
         <span class="keyword">continue</span>;
     }
