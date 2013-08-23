@@ -278,26 +278,6 @@ TEST_F(ParserTest, CompoundAdditionAssignmentOperator) {
     ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
 }
 
-TEST_F(ParserTest, InfiniteLoop) {
-    Language::ASTNode* node;
-
-    node = this->parse("def test()\nloop\nend\nend\n");
-    node = node->childAtIndex(0)->childAtIndex(0);
-
-    ASSERT_LOOP(node);
-}
-
-TEST_F(ParserTest, SingleConditionLoop) {
-    Language::ASTNode* node;
-
-    node = this->parse("def test(Int a)\nloop a\nend\nend\n");
-    node = node->childAtIndex(0)->childAtIndex(0);
-
-    Language::LoopNode* loop = dynamic_cast<Language::LoopNode*>(node);
-    ASSERT_LOOP(loop);
-    ASSERT_VARIABLE_NODE("Int",  0, "a", loop->condition());
-}
-
 TEST_F(ParserTest, NoReturnAnnotation) {
     Language::ASTNode* node;
 

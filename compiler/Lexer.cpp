@@ -18,6 +18,9 @@ namespace Language {
         _keywordMap["else"]      = Token::Type::KeywordElse;
         _keywordMap["unless"]    = Token::Type::KeywordUnless;
         _keywordMap["loop"]      = Token::Type::KeywordLoop;
+        _keywordMap["for"]       = Token::Type::KeywordFor;
+        _keywordMap["continue"]  = Token::Type::KeywordContinue;
+        _keywordMap["break"]     = Token::Type::KeywordBreak;
         _keywordMap["true"]      = Token::Type::TrueLiteral;
         _keywordMap["false"]     = Token::Type::FalseLiteral;
         _keywordMap["null"]      = Token::Type::NullLiteral;

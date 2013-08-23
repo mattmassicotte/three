@@ -611,6 +611,40 @@ TEST_F(LexerTest, SwitchAndCaseKeywords) {
     ASSERT_NEXT_TOKEN(KeywordEnd,    "end");
 }
 
+TEST_F(LexerTest, LoopKeywords) {
+    this->lex("loop a\nbreak\ncontinue\nend");
+
+    ASSERT_NEXT_TOKEN(KeywordLoop,     "loop");
+    ASSERT_NEXT_TOKEN(Identifier,      "a");
+    ASSERT_NEXT_TOKEN(Newline,         "");
+    ASSERT_NEXT_TOKEN(KeywordBreak,    "break");
+    ASSERT_NEXT_TOKEN(Newline,         "");
+    ASSERT_NEXT_TOKEN(KeywordContinue, "continue");
+    ASSERT_NEXT_TOKEN(Newline,         "");
+    ASSERT_NEXT_TOKEN(KeywordEnd,      "end");
+}
+
+TEST_F(LexerTest, ForKeywords) {
+    this->lex("for (Int a = 0; a < 5; a++)\nend");
+
+    ASSERT_NEXT_TOKEN(KeywordFor,     "for");
+    ASSERT_NEXT_TOKEN(PunctuationOpenParen,  "(");
+    ASSERT_NEXT_TOKEN(Identifier,      "Int");
+    ASSERT_NEXT_TOKEN(Identifier,      "a");
+    ASSERT_NEXT_TOKEN(Operator,       "=");
+    ASSERT_NEXT_TOKEN(NumericLiteral,       "0");
+    ASSERT_NEXT_TOKEN(PunctuationSemicolon,       ";");
+    ASSERT_NEXT_TOKEN(Identifier,      "a");
+    ASSERT_NEXT_TOKEN(Operator,      "<");
+    ASSERT_NEXT_TOKEN(NumericLiteral,       "5");
+    ASSERT_NEXT_TOKEN(PunctuationSemicolon,       ";");
+    ASSERT_NEXT_TOKEN(Identifier,      "a");
+    ASSERT_NEXT_TOKEN(Operator,       "++");
+    ASSERT_NEXT_TOKEN(PunctuationCloseParen,  ")");
+    ASSERT_NEXT_TOKEN(Newline,         "");
+    ASSERT_NEXT_TOKEN(KeywordEnd,      "end");
+}
+
 TEST_F(LexerTest, LinkageKeyword) {
     this->lex("linkage(none)");
 

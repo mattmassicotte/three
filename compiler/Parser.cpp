@@ -46,6 +46,15 @@ namespace Language {
             case Token::Type::KeywordLoop:
                 node = LoopNode::parse(*this);
                 break;
+            case Token::Type::KeywordFor:
+                node = Three::ForNode::parse(*this);
+                break;
+            case Token::Type::KeywordBreak:
+                node = Three::BreakNode::parse(*this);
+                break;
+            case Token::Type::KeywordContinue:
+                node = Three::ContinueNode::parse(*this);
+                break;
             case Token::Type::KeywordSwitch:
                 node = SwitchNode::parse(*this);
                 break;
