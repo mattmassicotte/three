@@ -18,7 +18,19 @@ namespace Language {
             parser.currentScope()->addVariable(node->_variable->name(), node->_variable);
         }
 
+        if (parser.nextIf("=")) {
+            node->_initializerExpression = parser.parseExpression();
+        } else {
+            node->_initializerExpression = NULL;
+        }
+
         return node;
+    }
+
+    VariableDeclarationNode::~VariableDeclarationNode() {
+        if (_initializerExpression) {
+            delete _initializerExpression;
+        }
     }
 
     std::string VariableDeclarationNode::name() const {
@@ -29,8 +41,18 @@ namespace Language {
         return this->_variable;
     }
 
+    ASTNode* VariableDeclarationNode::initializerExpression() const {
+        return _initializerExpression;
+    }
+
     void VariableDeclarationNode::codeGenCSource(CSourceContext& context) {
         this->_variable->type().codeGenCSource(context.current(), this->_variable->name());
+
+        if (this->initializerExpression()) {
+            context << " = ";
+            this->initializerExpression()->codeGenCSource(context);
+        }
+
         context << ";";
     }
 }

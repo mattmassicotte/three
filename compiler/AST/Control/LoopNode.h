@@ -12,10 +12,15 @@ namespace Language {
         virtual std::string name() const;
 
         ASTNode* condition() const;
+        bool evaluateConditionAtEnd() const;
 
         void codeGenCSource(CSourceContext& context);
 
-    public:
+    private:
+        void codeGenCWhile(CSourceContext& context);
+
+    private:
         ASTNode* _condition;
+        bool _evaluateConditionAtEnd;
     };
 }
