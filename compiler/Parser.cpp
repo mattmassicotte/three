@@ -517,8 +517,14 @@ namespace Language {
                 node = AnnotationNode::parse(*this);
                 this->parseNewline();
                 return node;
+            case Token::Type::KeywordLinkage:
+                return Three::LinkageNode::parse(*this);
+            case Token::Type::KeywordInclude:
+                return Three::IncludeNode::parse(*this);
             case Token::Type::KeywordModule:
                 return Three::ModuleNode::parse(*this);
+            case Token::Type::KeywordPublic:
+                return Three::VisibilityNode::parse(*this);
             case Token::Type::EndOfInput:
                 assert(0 && "parseTopLevelNode invalid state");
                 break;

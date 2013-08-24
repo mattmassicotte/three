@@ -42,6 +42,8 @@ namespace Language {
         _keywordMap["Vararg"]    = Token::Type::KeywordVararg;
         _keywordMap["nextarg"]   = Token::Type::KeywordVarargNext;
         _keywordMap["linkage"]   = Token::Type::KeywordLinkage;
+        _keywordMap["include"]   = Token::Type::KeywordInclude;
+        _keywordMap["public"]    = Token::Type::KeywordPublic;
         _keywordMap["abi"]       = Token::Type::KeywordAbi;
         _keywordMap["debug"]     = Token::Type::KeywordDebug;
         _keywordMap["version"]   = Token::Type::KeywordVersion;

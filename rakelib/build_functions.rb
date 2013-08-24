@@ -19,7 +19,7 @@ module BuildFunctions
 
   def self.install(src, dest)
     self.log("install", dest)
-    FileUtils.cp(src, dest)
+    FileUtils.cp_r(src, dest)
   end
 
   def self.compile(input, output, opts=nil)

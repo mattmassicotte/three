@@ -13,14 +13,11 @@ namespace Three {
         if (parser.nextIf(":")) {
             if (parser.nextIf("type")) {
                 return TypeDefinitionNode::parse(parser);
+            } else if (parser.nextIf("func")) {
+                return FunctionDeclarationNode::parse(parser);
             }
 
             assert(0 && "Unrecognized def qualifier");
-        }
-
-        // change the meaning of "def" keyword
-        if (inModule) {
-            return FunctionDeclarationNode::parse(parser);
         }
 
         return FunctionDefinitionNode::parse(parser);

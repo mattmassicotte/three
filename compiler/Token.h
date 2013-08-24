@@ -50,6 +50,8 @@ namespace Language {
             KeywordVararg,
             KeywordVarargNext,
             KeywordLinkage,
+            KeywordInclude,
+            KeywordPublic,
             KeywordAbi,
             KeywordDebug,
             KeywordVersion,

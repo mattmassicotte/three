@@ -16,6 +16,9 @@ namespace Three {
 
         parser.parseNewline(true);
 
+        // define the function in the current module
+        parser.currentModule()->addFunction(node->_function->name(), node->_function);
+
         return node;
     }
 

@@ -144,7 +144,9 @@
             <tr>
                 <td>
                     <pre><code>
-<span class="keyword">def</span> <span class="entity">Natural</span>:64 <span class="entity">uint64_t</span>
+<span class="keyword">def</span>:func foo(*<span class="entity">Int</span>:32 x, <span class="entity">Int</span>:32 y; <span class="entity">Int</span>:32)
+
+<span class="keyword">def</span>:type <span class="entity">MyType</span> <span class="entity">Natural</span>:64
 
 <span class="keyword">struct</span>:1 <span class="entity">MyStructure</span>
   <span class="entity">Int</span>        value1
@@ -170,7 +172,9 @@
                 </td>
                 <td>
                     <pre><code>
-<span class="keyword">typedef</span> <span class="entity">unsigned long long</span> <span class="entity">uint64_t</span>
+<span class="entity">int32_t</span> foo(<span class="entity">int32_t</span>* x, <span class="entity">int32_t</span> y);
+
+<span class="keyword">typedef</span> <span class="entity">uint64_t</span> <span class="entity">MyType</span>
 
 <span class="directive">#pragma pack(push)</span>
 <span class="directive">#pragma pack(1)</span>
@@ -583,11 +587,14 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
             <tr>
                 <td>
                     <pre><code>
-<span class="keyword">def</span> f() <span class="annotation">@noreturn</span>
-<span class="keyword">def</span> f() <span class="annotation">@available("MyModule", 1.0, 2.0, 2.1)</span>
+<span class="annotation">@noreturn</span>
+<span class="keyword">def</span>:func f()
+
+<span class="annotation">@available("MyModule", 1.0, 2.0, 2.1)</span>
+<span class="keyword">def</span>:func g()
 
 <span class="annotation">@common(x > 0)</span>
-<span class="keyword">if</span> x > 0
+<span class="keyword">if</span> x > <span class="literal">0</span>
   <span class="annotation">@optimize(speed)</span>
   <em>body</em>
 <span class="keyword">else</span>
@@ -599,7 +606,17 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
                 <td>
                     <pre><code>
 <span class="entity">void</span> f() <span class="annotation">__attribute__((noreturn))</span>;
-<span class="entity">void</span> f() <span class="annotation">__attribute__((deprecated))</span>;
+
+
+<span class="entity">void</span> g() <span class="annotation">__attribute__((deprecated))</span>;
+
+
+
+<span class="keyword">if</span> (__builtin_expect(x > <span class="literal">0</span>, <span class="literal">1</span>)) {
+    <em>body</em>
+} <span class="keyword">else</span> {
+    <em>body</em>
+}
                     </code></pre>
                 </td>
             </tr>
@@ -619,7 +636,7 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
 <span class="annotation">@return</span>  The value of x + the value
          pointed to by y
 <span class="annotation">@check   @pure @success(return == 0)</span>
-<span class="keyword">def</span> foo(<span class="entity">Int</span> x, *<span class="entity">Int</span> y; <span class="entity">Int</span>)
+<span class="keyword">def</span>:func foo(<span class="entity">Int</span> x, *<span class="entity">Int</span> y; <span class="entity">Int</span>)
                     </code></pre>
                 </td>
                 <td>
@@ -640,7 +657,7 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
 
 <span class="directive">linkage</span>(none)
 <span class="directive">abi</span>(cdecl)
-<span class="keyword">def</span> foo(; <span class="entity">Int</span>)
+<span class="keyword">def</span>:func foo(; <span class="entity">Int</span>)
 
 <span class="directive">version</span> architecture
 <span class="directive">case</span> x86
@@ -654,7 +671,7 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
 <span class="directive">end</span>
 
 <span class="keyword">namespace</span> Foo
-  <span class="keyword">def</span> bar(; <span class="entity">Int</span>)
+  <span class="keyword">def</span>:func bar(; <span class="entity">Int</span>)
 <span class="keyword">end</span>
                     </code></pre>
                 </td>

@@ -19,7 +19,8 @@ namespace Three {
         } Visibility;
 
     public:
-        static Module* loadModule(Module* rootModule, const std::string& name, const std::vector<std::string>& searchPaths);
+        static Module* loadModule(Module* rootModule, std::string name, std::vector<std::string> searchPaths);
+        static Module* loadModuleAtPath(const std::string& path);
 
     public:
         Module();
