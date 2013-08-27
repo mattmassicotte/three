@@ -1,13 +1,45 @@
 #include "Module.h"
+#include "../Parser.h"
 
 #include <assert.h>
+#include <fstream>
 #include <iostream>
 
 namespace Three {
-    Module* Module::loadModule(Module* rootModule, const std::string& name, const std::vector<std::string>& searchPaths) {
-        std::cout << "Loading Module: '" << name << "'" << std::endl;
+    Module* Module::loadModule(Module* rootModule, std::string name, std::vector<std::string> searchPaths) {
+        // add the default search location
+        searchPaths.push_back("/usr/local/include/three/modules");
+
+        // transform '.' -> '/'
+        std::replace(name.begin(), name.end(), '.', '/');
+        name += ".3"; // tack on our extension
+
+        for (const std::string& s : searchPaths) {
+            std::string fullPath = s + '/' + name;
+            Module* m;
+
+            m = Module::loadModuleAtPath(fullPath);
+            if (m) {
+                return m;
+            }
+        }
 
         return new Module();
+    }
+
+    Module* Module::loadModuleAtPath(const std::string& path) {
+        std::cout << "Loading Module at: '" << path << "'" << std::endl;
+
+        std::ifstream inputFile(path);
+
+        Language::Lexer lexer(&inputFile);
+        Language::Parser parser(&lexer);
+
+        parser.setContext(Three::ParsingContext::translationUnitContext());
+
+        RootNode* node = parser.rootASTNode();
+
+        return parser.currentModule();
     }
 
     Module::Module() : _parentModule(NULL) {
