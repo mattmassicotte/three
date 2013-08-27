@@ -18,7 +18,7 @@ enum
   mtx_recursive = 2
 end
 
-def:type thrd_start_t (Void*; Int)
+def:type thrd_start_t (*Void; Int)
 
 def:func thrd_sleep(* @const xtime time)
 def:func thrd_create(*thrd_t thr, thrd_start_t func, *Void arg; Int)
