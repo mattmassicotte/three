@@ -21,7 +21,7 @@ namespace Language {
 
         assert(parser.peek().type() == Token::Type::Identifier);
         node->_name = parser.next().str();
-        parser.parseNewline(true);
+        parser.parseNewline();
 
         // We need to define our type here, in case it is used recursively
         DataType* type = new DataType(DataType::Flavor::Structure, node->_name);
@@ -29,10 +29,10 @@ namespace Language {
 
         parser.parseUntilEnd([&] () {
             node->addChild(VariableDeclarationNode::parse(parser));
-            parser.parseNewline(true);
+            parser.parseNewline();
         });
 
-        parser.parseNewline(true);
+        parser.parseNewline();
 
         // here, we need to iterate through the elements of the structure, and fill in
         // the actual members

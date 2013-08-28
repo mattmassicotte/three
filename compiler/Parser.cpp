@@ -89,7 +89,7 @@ namespace Language {
             node = IfNode::parseTailing(*this, node);
         }
 
-        this->parseNewline(true);
+        this->parseNewline();
         node->setStatement(true);
 
         return node;
