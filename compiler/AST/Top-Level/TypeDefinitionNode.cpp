@@ -14,7 +14,9 @@ namespace Three {
         node->_sourceType = parser.parseType();
 
         parser.parseNewline();
-        // TODO: need to alias the type in the current translation unit
+
+        // TODO: This isn't quite right.  The new type needs to include information about the reference level.
+        parser.currentModule()->addDataType(node->_destTypeName, node->_sourceType.referencedType());
 
         return node;
     }
