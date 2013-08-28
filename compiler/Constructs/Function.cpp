@@ -50,6 +50,18 @@ namespace Language {
         return _returnType;
     }
 
+    DataType* Function::createType() const {
+        DataType* type = new DataType(Language::DataType::Flavor::Function, this->name());;
+
+        type->setReturnType(this->returnType());
+
+        this->eachParameterWithLast([&] (Variable* v, bool last) {
+            type->addChild(v->type());
+        });
+
+        return type;
+    }
+
     uint32_t Function::parameterCount() const {
         return _parameters.size();
     }

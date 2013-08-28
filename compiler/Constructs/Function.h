@@ -18,6 +18,7 @@ namespace Language {
         std::string name() const;
         void setReturnType(const TypeReference& type);
         TypeReference returnType() const;
+        DataType* createType() const;
 
         void addParameter(const std::string& name, const TypeReference& type);
         uint32_t parameterCount() const ;

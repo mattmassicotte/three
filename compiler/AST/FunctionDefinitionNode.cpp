@@ -1,5 +1,6 @@
 #include "FunctionDefinitionNode.h"
 #include "../Parser.h"
+#include "../Constructs/Variable.h"
 
 #include <assert.h>
 #include <sstream>
@@ -17,11 +18,21 @@ namespace Language {
 
         parser.parseNewline(true);
 
-        // push in a new scope for the function body
-        parser.pushScope(new Scope(node->_function->name()));
-
         // define the function in the current module
         parser.currentModule()->addFunction(node->_function->name(), node->_function);
+
+        // define a variable for the function, so it can be referred to
+        Variable* var = new Variable();
+        var->setName(node->_function->name());
+
+        // TODO: this createType usage is a leak
+        var->setType(TypeReference(node->_function->createType(), 1));
+
+        parser.currentScope()->addVariable(node->_function->name(), var);
+
+        // push in a new scope for the function body
+        parser.pushScope(new Scope(node->_function->name()));
+        
 
         // define new variables for all parameters
         node->_function->eachParameterWithLast([&] (Variable* v, bool last) {
