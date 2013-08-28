@@ -77,3 +77,25 @@ TEST_F(CSourceCodeGenTest, IfStatementWithSingleVariableCondition) {
 
     ASSERT_EQ("if (a) {\n}\n", context.body()->renderToString());
 }
+
+TEST_F(CSourceCodeGenTest, AddressOfOperator) {
+    Language::DataType intType(Language::DataType::Flavor::Scalar, "int");
+
+    Language::Variable* variable = new Language::Variable();
+    variable->setName("a");
+    variable->setType(Language::TypeReference(&intType, 0));
+
+    Language::VariableNode* variableNode = new Language::VariableNode();
+    variableNode->setVariable(variable);
+
+    Language::OperatorNode* opNode = new Language::OperatorNode();
+    opNode->setOp("&");
+    opNode->setStatement(false);
+    opNode->addChild(variableNode);
+
+    Language::CSourceContext context;
+
+    opNode->codeGenCSource(context);
+
+    ASSERT_EQ("(&a)", context.body()->renderToString());
+}
