@@ -13,6 +13,15 @@ TEST_F(ParserTest_Modules, ImportLinkageAndInclude) {
     ASSERT_INCLUDE("pthread.h", node->childAtIndex(2));
 }
 
+TEST_F(ParserTest_Modules, IncludeFollowedByNewlines) {
+    ASTNode* node = this->parse("include(\"pthread.h\")\n\n\ndef:type my_int Int\n");
+
+    ASSERT_EQ(2, node->childCount());
+
+    ASSERT_INCLUDE("pthread.h", node->childAtIndex(0));
+    ASSERT_EQ("TypeDefinition", node->childAtIndex(1)->nodeName());
+}
+
 TEST_F(ParserTest_Modules, ModuleWithPublicType) {
     ASTNode* node = this->parse("public\ndef:type time_t Int\n");
 

@@ -16,7 +16,7 @@ namespace Language {
         node->_function = parser.parseFunctionSignature();
         assert(node->_function);
 
-        parser.parseNewline(true);
+        parser.parseNewline();
 
         // define the function in the current module
         parser.currentModule()->addFunction(node->_function->name(), node->_function);
@@ -44,7 +44,7 @@ namespace Language {
         });
 
         parser.popScope();
-        parser.parseNewline(true);
+        parser.parseNewline();
 
         return node;
     }

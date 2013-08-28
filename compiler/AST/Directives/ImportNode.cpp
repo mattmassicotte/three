@@ -16,7 +16,7 @@ namespace Language {
         // TODO: not exactly right.  This might not be the current translation unit
         node->_module = parser.currentModule()->importModule(node->path(), std::vector<std::string>());
 
-        parser.parseNewline(true);
+        parser.parseNewline();
 
         return node;
     }

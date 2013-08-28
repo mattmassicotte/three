@@ -22,7 +22,7 @@ namespace Language {
         ASTNode* parseStatement();
         ASTNode* parsePrimary();
         ASTNode* parseExpression();
-        bool     parseNewline(bool multipleAllowed=false);
+        bool     parseNewline(bool multipleAllowed=true);
         bool     parseUntil(bool advanceOnStop, std::function<bool (const Token& token)> func);
         bool     parseUntilEnd(std::function<void (void)> func);
         std::string parseQualifiedName();

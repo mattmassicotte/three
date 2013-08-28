@@ -11,16 +11,16 @@ namespace Language {
 
         assert(parser.peek().type() == Token::Type::Identifier);
         node->_name = parser.next().str();
-        parser.parseNewline(true);
+        parser.parseNewline();
 
         while (parser.peek().type() != Token::Type::KeywordEnd) {
             assert(parser.peek().type() == Token::Type::Identifier);
             node->_identifiers.push_back(parser.next().str());
-            parser.parseNewline(true);
+            parser.parseNewline();
         }
 
         assert(parser.next().type() == Token::Type::KeywordEnd);
-        parser.parseNewline(true);
+        parser.parseNewline();
 
         return node;
     }
