@@ -112,6 +112,9 @@ namespace Language {
             this->childAtIndex(2)->codeGenCSource(context);
             context << ") : ";
             this->childAtIndex(1)->codeGenCSource(context);
+        } else if ((this->op() == "&" || this->op() == "*") && this->childCount() == 1) {
+            context.current()->print(this->op());
+            this->childAtIndex(0)->codeGenCSource(context);
         } else {
             this->childAtIndex(0)->codeGenCSource(context);
             context.current()->print(" ");

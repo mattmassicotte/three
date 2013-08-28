@@ -297,26 +297,6 @@ TEST_F(ParserTest, NullLiteral) {
     ASSERT_EQ("NullLiteral", node->childAtIndex(1)->name());
 }
 
-TEST_F(ParserTest, DereferenceUnaryOperator) {
-    Language::ASTNode* node;
-
-    node = this->parse("def test(*Int a)\n*a = null\nend\n");
-    node = node->childAtIndex(0)->childAtIndex(0);
-
-    ASSERT_OPERATOR("=", node);
-    ASSERT_OPERATOR("*", node->childAtIndex(0));
-}
-
-TEST_F(ParserTest, AddressOfUnaryOperator) {
-    Language::ASTNode* node;
-
-    node = this->parse("def test(*Int a)\na = &a\nend\n");
-    node = node->childAtIndex(0)->childAtIndex(0);
-
-    ASSERT_OPERATOR("=", node);
-    ASSERT_OPERATOR("&", node->childAtIndex(1));
-}
-
 TEST_F(ParserTest, BinaryIntegerLiteral) {
     Language::ASTNode* node;
 

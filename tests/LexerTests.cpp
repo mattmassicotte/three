@@ -145,7 +145,7 @@ TEST_F(LexerTest, UnaryStarOperator) {
     ASSERT_NEXT_TOKEN(Identifier,     "a");
 }
 
-TEST_F(LexerTest, UnaryAndOperator) {
+TEST_F(LexerTest, UnaryAddressOfOperator) {
     this->lex("&a");
 
     ASSERT_NEXT_TOKEN(Operator,       "&");
