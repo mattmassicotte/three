@@ -7,11 +7,6 @@ def:type thrd_t *Void
 def:type mtx_t  *Void
 def:type once_flag *Void
 
-struct xtime
-  time_t sec
-  Int:64 nsec
-end
-
 enum
   mtx_plain     = 0
   mtx_timed     = 1
@@ -20,7 +15,7 @@ end
 
 def:type thrd_start_t (*Void; Int)
 
-def:func thrd_sleep(* @const xtime time)
+def:func thrd_sleep(* @const timespec time_point, *timespec remaining, Int)
 def:func thrd_create(*thrd_t thr, thrd_start_t func, *Void arg; Int)
 
 def:func mtx_init(*mtx_t mtx, Int type; Int)

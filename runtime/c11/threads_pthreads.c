@@ -46,15 +46,10 @@ int thrd_join(thrd_t thr, int *res) {
     return thrd_success;
 }
 
-void thrd_sleep(const xtime *xt) {
-    struct timespec req;
-    
-    assert(xt);
-    
-    req.tv_sec = xt->sec;
-    req.tv_nsec = xt->nsec;
-    
-    nanosleep(&req, NULL);
+void thrd_sleep(const struct timespec* restrict time_point, struct timespec* remaining) {
+    assert(time_point);
+
+    nanosleep(time_point, remaining);
 }
 
 void thrd_yield(void) {
@@ -103,7 +98,7 @@ int mtx_lock(mtx_t *mtx) {
     return thrd_success;
 }
 
-int mtx_timedlock(mtx_t *mtx, const xtime *xt) {
+int mtx_timedlock(mtx_t *mtx, const struct timespec* restrict time_point) {
     assert(0 && "mtx_timedlock unimplemented");
 }
 
@@ -169,7 +164,7 @@ int cnd_signal(cnd_t *cond) {
     return thrd_success;
 }
 
-int cnd_timedwait(cnd_t *cond, mtx_t *mtx, const xtime *xt) {
+int cnd_timedwait(cnd_t *cond, mtx_t *mtx, const struct timespec* restrict time_point) {
     assert(0 && "cnd_timedwait unimplemented");
 }
 
