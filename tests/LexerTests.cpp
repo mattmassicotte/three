@@ -569,6 +569,22 @@ TEST_F(LexerTest, AssignmentFollowedByUnaryOperator) {
     ASSERT_NEXT_TOKEN(NumericLiteral, "1");
 }
 
+TEST_F(LexerTest, DotOperator) {
+    this->lex("a.b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   ".");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
+TEST_F(LexerTest, ArrowOperator) {
+    this->lex("a->b");
+
+    ASSERT_NEXT_TOKEN(Identifier, "a");
+    ASSERT_NEXT_TOKEN(Operator,   "->");
+    ASSERT_NEXT_TOKEN(Identifier, "b");
+}
+
 TEST_F(LexerTest, VarargType) {
     this->lex("Vararg ap");
 

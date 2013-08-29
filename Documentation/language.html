@@ -165,9 +165,14 @@
 <span class="keyword">end</span>
 
 <span class="keyword">enum</span> MyEnum
-  Value1 = 0
+  Value1 = <span class="literal">0</span>
   Value2
 <span class="keyword">end</span>
+
+*MyStructure s
+
+s->value1 = <span class="literal">5</span>
+(*s).value1 = <span class="literal">5</span>
                     </code></pre>
                 </td>
                 <td>
@@ -193,9 +198,14 @@
 } <span class="entity">MyUnion</span>;
 
 <span class="keyword">typedef enum</span> {
-    Value1 = 0,
+    Value1 = <span class="literal">0</span>,
     Value2
 } <span class="entity">MyEnum</span>;
+
+*MyStructure s
+
+s->value1 = <span class="literal">5</span>;
+(*s).value1 = <span class="literal">5</span>;
                     </code></pre>
                 </td>
             </tr>

@@ -1,5 +1,6 @@
 #include "OperatorNode.h"
-#include "../Parser.h"
+#include "../../Parser.h"
+#include "MemberAccessNode.h"
 
 #include <assert.h>
 
@@ -39,12 +40,28 @@ namespace Language {
         return node;
     }
 
-    OperatorNode* OperatorNode::parseOperator(Parser& parser, ASTNode* leftOperand) {
+    ASTNode* OperatorNode::parseOperator(Parser& parser, ASTNode* leftOperand) {
+        assert(parser.peek().type() == Token::Type::Operator);
+
+        std::string op = parser.next().str();
+
         OperatorNode* node;
+
+        // Handle member access nodes specially
+        if (op == "." || op == "->") {
+            assert(parser.peek().type() == Token::Type::Identifier);
+
+            std::string memberName = parser.next().str();
+            node = new Three::MemberAccessNode(memberName, op == "->");
+            node->addChild(leftOperand);
+
+            // This is a little complex.  We need to continue parsing the line.
+            return OperatorNode::parse(parser, Token::MinimumPrecedence, node);
+        }
 
         node = new OperatorNode();
 
-        node->setOp(parser.next().str());
+        node->setOp(op);
 
         node->addChild(leftOperand);
         node->addChild(parser.parseExpression());

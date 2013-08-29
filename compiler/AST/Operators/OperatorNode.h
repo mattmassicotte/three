@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ASTNode.h"
+#include "../ASTNode.h"
 
 namespace Language {
     class OperatorNode : public ASTNode {
@@ -9,7 +9,7 @@ namespace Language {
         static ASTNode* parseUnary(Parser& parser);
 
     private:
-        static OperatorNode* parseOperator(Parser& parser, ASTNode* leftOperand);
+        static ASTNode* parseOperator(Parser& parser, ASTNode* leftOperand);
 
     public:
         virtual std::string name() const;
@@ -18,7 +18,7 @@ namespace Language {
         void        setOp(const std::string& string);
         bool        ternary() const;
 
-        void codeGenCSource(CSourceContext& context);
+        virtual void codeGenCSource(CSourceContext& context);
 
     private:
         std::string _operator;
