@@ -346,6 +346,13 @@ namespace Language {
             return this->nextSubtoken();
         }
 
+        // the arrow operator
+        if (c == '-' && this->peekSubtoken().str().at(0) == '>') {
+            s << this->nextSubtoken().str();
+
+            return Token(s.str(), Token::Type::Operator);
+        }
+
         // possibly allow a double operator
         if (this->peekSubtoken().str().at(0) == c) {
             switch (c) {

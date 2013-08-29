@@ -27,8 +27,9 @@ namespace Language {
         DataType* type = new DataType(DataType::Flavor::Structure, node->_name);
         parser.currentModule()->addDataType(type);
 
+        // parse the members, but be sure not to create scoped variables for them
         parser.parseUntilEnd([&] () {
-            node->addChild(VariableDeclarationNode::parse(parser));
+            node->addChild(VariableDeclarationNode::parse(parser, false));
             parser.parseNewline();
         });
 

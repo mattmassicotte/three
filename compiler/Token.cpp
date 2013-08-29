@@ -91,6 +91,8 @@ namespace Language {
         if (_string == "=") return 10;
         if (_string == "?") return 5;
         if (_string == "cas") return 5;
+        if (_string == ".") return 4;
+        if (_string == "->") return 4;
 
         return Token::NonPrecedence;
     }

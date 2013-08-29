@@ -11,7 +11,7 @@ namespace Language {
     }
 
     std::string DataType::str() const {
-        if (this->flavor() == Flavor::Scalar) {
+        if (!this->isCallable()) {
             return this->name();
         }
 

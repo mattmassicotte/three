@@ -1,5 +1,5 @@
 #include "AtomicExpressionNode.h"
-#include "../OperatorNode.h"
+#include "../Operators/OperatorNode.h"
 #include "../../Parser.h"
 
 #include <assert.h>
