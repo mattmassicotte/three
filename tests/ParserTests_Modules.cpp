@@ -53,3 +53,19 @@ TEST_F(ParserTest_Modules, FunctionDeclarationUsingDefinedStruct) {
     ASSERT_STRUCT("MyStruct", 0, node->childAtIndex(0));
     ASSERT_EQ("FunctionDeclaration", node->childAtIndex(1)->nodeName());
 }
+
+TEST_F(ParserTest_Modules, DefTypeForFunction) {
+    ASTNode* node = this->parse("def:type func_t (*Void; Int)\n");
+
+    ASSERT_EQ(1, node->childCount());
+
+    ASSERT_EQ("TypeDefinition", node->childAtIndex(0)->nodeName());
+}
+
+TEST_F(ParserTest_Modules, DefFuncWithEmptyFunctionAsParameter) {
+    ASTNode* node = this->parse("def:func takes_func(() func)\n");
+
+    ASSERT_EQ(1, node->childCount());
+
+    ASSERT_EQ("FunctionDeclaration", node->childAtIndex(0)->nodeName());
+}

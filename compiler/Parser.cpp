@@ -340,6 +340,7 @@ namespace Language {
                 }
                 break;
             case Token::Type::PunctuationOpenBrace:
+            case Token::Type::PunctuationOpenParen:
                 return this->parseFunctionType(depth, NULL, NULL);
                 break;
             default:
