@@ -231,6 +231,7 @@ namespace Language {
     bool Parser::isAtType() {
         // Possible forms of variable declarations are:
         // [*]Identifier identifier [= <expression>]
+        // [*]Identifier:<number> identifier [= <expression>]
         // [*]{...closure type..} identifier [= <expression>]
         // [*](function type) identifier [= <expression>]
         switch (this->peek().type()) {
@@ -269,7 +270,20 @@ namespace Language {
         switch (this->peek(peekDepth).type()) {
             case Token::Type::Identifier:
                 // check if we match the "[*]Identifier identifier" pattern
-                return this->peek(peekDepth+1).type() == Token::Type::Identifier;
+                if (this->peek(peekDepth+1).type() == Token::Type::Identifier) {
+                    return true;
+                }
+
+                // check if we match the "[*]Identifier:<number> identifier" pattern
+                if (this->peek(peekDepth+1).type() != Token::Type::PunctuationColon) {
+                    return false;
+                }
+
+                if (this->peek(peekDepth+2).type() != Token::Type::NumericLiteral) {
+                    return false;
+                }
+
+                return this->peek(peekDepth+3).type() == Token::Type::Identifier;
             case Token::Type::PunctuationOpenParen:
                 closingPuntuation = Token::Type::PunctuationCloseParen;
                 break;
@@ -333,11 +347,19 @@ namespace Language {
         switch (this->peek().type()) {
             case Token::Type::Identifier:
                 typeName = this->next().str();
+
+                // parse the specialization
+                if (this->peek().type() == Token::Type::PunctuationColon) {
+                    typeName += this->next().str();
+                    typeName += this->next().str();
+                }
+
                 dataType = this->currentModule()->dataTypeForName(typeName);
                 if (!dataType) {
                     std::cout << "[Parser] Unable to look type '" << typeName << "'" << std::endl;
                     assert(0 && "Unable to lookup type");
                 }
+
                 break;
             case Token::Type::PunctuationOpenBrace:
             case Token::Type::PunctuationOpenParen:

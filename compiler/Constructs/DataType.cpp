@@ -65,6 +65,8 @@ namespace Language {
             return "three_closure_t";
         } else if (this->name() == "Int") {
             return "int";
+        } else if (this->name() == "Int:64") {
+            return "int64_t";
         } else if (this->name() == "Char") {
             return "char";
         } else if (this->name() == "Void") {
