@@ -1,7 +1,13 @@
 #include "Annotation.h"
 
+#include <assert.h>
+
 namespace Language {
     Annotation::~Annotation() {
+    }
+
+    void Annotation::applyToDataType(DataType* dataType) {
+        assert(0 && "Annotation cannot be applied to DataType");
     }
 
     std::string NoReturnAnnotation::CSourceString() const {
@@ -26,5 +32,19 @@ namespace Language {
 
     std::string CommonAnnotation::CSourceString() const {
         return "";
+    }
+
+    CSourceAnnotation::CSourceAnnotation(CSourceAnnotation::Type aType) : type(aType) {
+    } 
+
+    std::string CSourceAnnotation::CSourceString() const {
+        return "";
+    }
+
+    void CSourceAnnotation::applyToDataType(DataType* dataType) {
+        // TODO: this needs to select on the type
+        assert(dataType->flavor() == DataType::Flavor::Structure);
+
+        dataType->setCSourcePrependStructKeyword(true);
     }
 }

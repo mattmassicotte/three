@@ -15,14 +15,15 @@ namespace Language {
         if (name == "@noreturn") {
             node->_annotation = new NoReturnAnnotation();
         } else if (name == "@inline") {
+            
             assert(parser.next().type() == Token::Type::PunctuationOpenParen);
 
-            name = parser.next().str();
-            if (name == "always") {
+            std::string value = parser.next().str();
+            if (value == "always") {
                 node->_annotation = new InlineAnnotation(InlineAnnotation::Type::Always);
-            } else if (name == "never") {
+            } else if (value == "never") {
                 node->_annotation = new InlineAnnotation(InlineAnnotation::Type::Never);
-            } else if (name == "allowed"){
+            } else if (value == "allowed"){
                 node->_annotation = new InlineAnnotation(InlineAnnotation::Type::Allowed);
             } else {
                 assert(0 && "Unrecognized @inline annotation type");
@@ -37,9 +38,22 @@ namespace Language {
             node->addChild(parser.parseExpression());
 
             assert(parser.next().type() == Token::Type::PunctuationCloseParen);
+        } else if (name == "@c") {
+            assert(parser.next().type() == Token::Type::PunctuationOpenParen);
+
+            std::string value = parser.next().str();
+            if (value == "notypedef") {
+                node->_annotation = new CSourceAnnotation(CSourceAnnotation::Type::NoTypedef);
+            } else {
+                assert(0 && "Unrecognized @c annotation type");
+            }
+
+            assert(parser.next().type() == Token::Type::PunctuationCloseParen);
         } else {
             assert(0 && "Unrecognized annotation");
         }
+
+        node->_annotation->annotationName = name;
 
         parser.currentScope()->addAnnotation(node->annotation());
 

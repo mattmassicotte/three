@@ -8,8 +8,14 @@ struct UnpackedStructure
   Int y
 end
 
+@c(notypedef)
+struct a_struct
+  Int x
+end
+
 def main(Int argc, **Char argv; Int)
   UnpackedStructure s
+  a_struct abc
 
   s.x = 0
   s.y = 1

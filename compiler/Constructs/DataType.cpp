@@ -73,7 +73,18 @@ namespace Language {
             return "void";
         }
 
+        if (this->cSourcePrependStructKeyword()) {
+            return "struct " + this->name();
+        }
+
         return this->name();
+    }
+
+    bool DataType::cSourcePrependStructKeyword() const {
+        return _prependStructKeyword;
+    }
+    void DataType::setCSourcePrependStructKeyword(bool prepend) {
+        _prependStructKeyword = prepend;
     }
 
     uint32_t DataType::childCount() const {
