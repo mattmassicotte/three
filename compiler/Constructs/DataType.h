@@ -29,6 +29,8 @@ namespace Language {
         std::string name() const;
         void setName(const std::string& string);
         std::string cSourceName() const;
+        bool cSourcePrependStructKeyword() const;
+        void setCSourcePrependStructKeyword(bool prepend);
 
         uint32_t childCount() const;
         void addChild(const TypeReference& value);
@@ -44,6 +46,7 @@ namespace Language {
     private:
         Flavor      _type;
         std::string _name;
+        bool _prependStructKeyword;
 
         TypeReference              _returnType;
         std::vector<TypeReference> _children;

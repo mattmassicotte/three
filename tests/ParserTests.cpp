@@ -278,15 +278,6 @@ TEST_F(ParserTest, CompoundAdditionAssignmentOperator) {
     ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
 }
 
-TEST_F(ParserTest, NoReturnAnnotation) {
-    Language::ASTNode* node;
-
-    node = this->parse("@noreturn\ndef test()\nend\n");
-    node = node->childAtIndex(0);
-
-    ASSERT_EQ("Annotation", node->name());
-}
-
 TEST_F(ParserTest, NullLiteral) {
     Language::ASTNode* node;
 

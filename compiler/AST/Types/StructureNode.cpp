@@ -25,6 +25,12 @@ namespace Language {
 
         // We need to define our type here, in case it is used recursively
         DataType* type = new DataType(DataType::Flavor::Structure, node->_name);
+
+        for (Annotation* annotation : parser.currentScope()->annotations()) {
+            annotation->applyToDataType(type);
+        }
+        parser.currentScope()->clearAnnotations();
+
         parser.currentModule()->addDataType(type);
 
         // parse the members, but be sure not to create scoped variables for them
