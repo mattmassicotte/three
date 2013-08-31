@@ -8,18 +8,26 @@ namespace Language {
         EnumerationNode* node = new EnumerationNode();
 
         assert(parser.next().type() == Token::Type::KeywordEnumeration);
-
         assert(parser.peek().type() == Token::Type::Identifier);
+
         node->_name = parser.next().str();
+
         parser.parseNewline();
 
-        while (parser.peek().type() != Token::Type::KeywordEnd) {
+        parser.parseUntilEnd([&] () {
             assert(parser.peek().type() == Token::Type::Identifier);
-            node->_identifiers.push_back(parser.next().str());
-            parser.parseNewline();
-        }
 
-        assert(parser.next().type() == Token::Type::KeywordEnd);
+            std::string identifier = parser.next().str();
+
+            if (parser.nextIf("=")) {
+                ASTNode* expression = parser.parseExpression();
+            }
+
+            parser.parseNewline();
+
+            // TODO: the constant needs to actually be defined here
+        });
+
         parser.parseNewline();
 
         return node;
