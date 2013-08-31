@@ -88,6 +88,18 @@ bool createCSource(Language::RootNode* node, const std::string& path) {
     return true;
 }
 
+bool compileCSource(Language::RootNode* node, const std::string& cSourcePath) {
+    std::stringstream s;
+
+    s << "clang -std=c11";
+    s << " -o three_binary";
+    s << " -lthree_runtime";
+    s << " -I/usr/local/include/three/runtime";
+    s << " " << cSourcePath;
+
+    return system(s.str().c_str()) == 0;
+}
+
 int main(int argc, char** argv) {
     build_options_t options;
 
@@ -112,6 +124,7 @@ int main(int argc, char** argv) {
     }
 
     createCSource(node, options.outputFile);
+    compileCSource(node, options.outputFile);
 
     return 0;
 }
