@@ -47,6 +47,7 @@ namespace Language {
 
     void ImportNode::codeGenCSource(CSourceContext& context) {
         _module->eachCIncludePath([&] (const std::string& path) {
+            std::cout << "Header: " << path << std::endl;
             context.addHeader(path);
         });
     }

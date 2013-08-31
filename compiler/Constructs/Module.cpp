@@ -63,9 +63,17 @@ namespace Three {
         _cIncludePaths.push_back(value);
     }
 
-    void Module::eachCIncludePath(std::function<void (const std::string&)> func) {
+    void Module::eachCIncludePath(std::function<void (const std::string&)> func) const {
+        if (_parentModule) {
+            _parentModule->eachCIncludePath(func);
+        }
+
         for (const std::string& path : _cIncludePaths) {
             func(path);
+        }
+
+        for (const Module* m : _importedModules) {
+            m->eachCIncludePath(func);
         }
     }
 

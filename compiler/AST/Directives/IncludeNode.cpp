@@ -9,12 +9,14 @@ namespace Three {
 
         assert(parser.next().str() == "include");
         assert(parser.next().type() == Token::Type::PunctuationOpenParen);
-        
+
         assert(parser.peek().type() == Token::Type::String);
         node->_headerName = parser.next().str();
 
         assert(parser.next().type() == Token::Type::PunctuationCloseParen);
         parser.parseNewline();
+
+        parser.currentModule()->addCIncludePath(node->_headerName);
 
         return node;
     }
