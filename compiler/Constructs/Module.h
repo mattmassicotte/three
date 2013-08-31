@@ -30,7 +30,7 @@ namespace Three {
         void setParent(Module* module);
 
         void addCIncludePath(const std::string& value);
-        void eachCIncludePath(std::function<void (const std::string&)> func);
+        void eachCIncludePath(std::function<void (const std::string&)> func) const;
         void addLibraryDependency(const std::string& name);
 
         Module* importModule(const std::string& name, const std::vector<std::string>& searchPaths);

@@ -1,6 +1,6 @@
 #include "ModuleNode.h"
-#include "IncludeNode.h"
-#include "LinkageNode.h"
+#include "../Directives/IncludeNode.h"
+#include "../Directives/LinkageNode.h"
 #include "VisibilityNode.h"
 #include "DefinitionNode.h"
 #include "../Directives/ImportNode.h"
