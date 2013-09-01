@@ -15,8 +15,11 @@ namespace Three {
 
         parser.parseNewline();
 
-        // TODO: This isn't quite right.  The new type needs to include information about the reference level.
-        parser.currentModule()->addDataType(node->_destTypeName, node->_sourceType.referencedType());
+        // TODO: This isn't quite right.  The new type needs to include information about the reference level.  It 
+        // also doesn't tie the new type to the original
+        DataType* type = new DataType(DataType::Flavor::Scalar, node->_destTypeName);
+
+        parser.currentModule()->addDataType(type);
 
         return node;
     }
