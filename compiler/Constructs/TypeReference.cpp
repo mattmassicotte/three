@@ -48,6 +48,14 @@ namespace Language {
         _indirection++;
     }
 
+    bool TypeReference::isArray() const {
+        return _arrayDimensions.size() > 0;
+    }
+
+    std::vector<uint32_t> TypeReference::arrayDimensions() const {
+        return _arrayDimensions;
+    }
+
     void TypeReference::codeGenCSourceFunctionType(CSource* source, const std::string& variableName) const {
         // return (*varName)(param1, param2);
         _type->returnType().codeGenCSource(source, "");

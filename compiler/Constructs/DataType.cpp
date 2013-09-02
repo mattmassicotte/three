@@ -65,6 +65,10 @@ namespace Language {
             return "three_closure_t";
         } else if (this->name() == "Int") {
             return "int";
+        } else if (this->name() == "Natural") {
+            return "unsigned int";
+        } else if (this->name() == "Natural:32") {
+            return "uint32_t";
         } else if (this->name() == "Int:64") {
             return "int64_t";
         } else if (this->name() == "Char") {

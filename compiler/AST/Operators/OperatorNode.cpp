@@ -1,6 +1,7 @@
 #include "OperatorNode.h"
 #include "../../Parser.h"
 #include "MemberAccessNode.h"
+#include "IndexerNode.h"
 
 #include <assert.h>
 
@@ -47,6 +48,8 @@ namespace Language {
 
         OperatorNode* node;
 
+        // These first two are a little complex.  We need to continue parsing the line.
+        
         // Handle member access nodes specially
         if (op == "." || op == "->") {
             assert(parser.peek().type() == Token::Type::Identifier);
@@ -55,7 +58,18 @@ namespace Language {
             node = new Three::MemberAccessNode(memberName, op == "->");
             node->addChild(leftOperand);
 
-            // This is a little complex.  We need to continue parsing the line.
+            return OperatorNode::parse(parser, Token::MinimumPrecedence, node);
+        }
+
+        // construct and parse the indexer operator
+        if (op == "[") {
+            node = new Three::IndexerNode();
+
+            node->addChild(leftOperand);
+            node->addChild(parser.parseExpression());
+
+            assert(parser.next().type() == Token::Type::PunctuationCloseBracket);
+
             return OperatorNode::parse(parser, Token::MinimumPrecedence, node);
         }
 

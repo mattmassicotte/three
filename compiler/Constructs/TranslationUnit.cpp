@@ -25,6 +25,8 @@ namespace Language {
         module->addDataType(new DataType(DataType::Flavor::Scalar, "Void"));
         module->addDataType(new DataType(DataType::Flavor::Scalar, "Int"));
         module->addDataType(new DataType(DataType::Flavor::Scalar, "Int:64"));
+        module->addDataType(new DataType(DataType::Flavor::Scalar, "Natural"));
+        module->addDataType(new DataType(DataType::Flavor::Scalar, "Natural:32"));
         module->addDataType(new DataType(DataType::Flavor::Scalar, "Char"));
 
         // function type: (Void; Void)

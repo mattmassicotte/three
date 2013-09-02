@@ -56,3 +56,18 @@ TEST_F(ParserTest_Operators, IndirectMemberAccessOperator) {
     ASSERT_TRUE(memberAccess->indirect());
     ASSERT_VARIABLE_NODE("MyStruct",  1, "value", memberAccess->childAtIndex(0));
 }
+
+TEST_F(ParserTest_Operators, IndexerOperator) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test(Int x)\nx[5] = 0\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_OPERATOR("=", node);
+    ASSERT_INTEGER_LITERAL_NODE(0, node->childAtIndex(1));
+
+    Three::IndexerNode* indexer = dynamic_cast<Three::IndexerNode*>(node->childAtIndex(0));
+    ASSERT_EQ("Indexer", indexer->nodeName());
+    ASSERT_VARIABLE_NODE("Int", 0, "x", indexer->childAtIndex(0));
+    ASSERT_INTEGER_LITERAL_NODE(5, indexer->childAtIndex(1));
+}
