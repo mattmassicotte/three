@@ -3,6 +3,7 @@
 #include "../CodeGen/CSource.h"
 
 #include <string>
+#include <vector>
 
 namespace Language {
     class DataType;
@@ -29,6 +30,8 @@ namespace Language {
         uint32_t indirectionDepth() const;
         void setIndirectionDepth(uint32_t depth);
         void incrementIndirectionDepth();
+        bool isArray() const;
+        std::vector<uint32_t> arrayDimensions() const;
 
         void codeGenCSourceFunctionType(CSource* source, const std::string& variableName) const;
         void codeGenCSource(CSource* source, const std::string& variableName) const;
@@ -36,5 +39,7 @@ namespace Language {
     private:
         DataType* _type;
         uint32_t  _indirection;
+
+        std::vector<uint32_t> _arrayDimensions;
     };
 }

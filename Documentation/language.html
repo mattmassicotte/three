@@ -209,6 +209,31 @@ s->value1 = <span class="literal">5</span>;
                     </code></pre>
                 </td>
             </tr>
+            <tr><th colspan="2">Arrays</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+[<span class="literal">3</span>]<span class="entity">Int</span> x = {<span class="literal">1</span>, <span class="literal">2</span>, <span class="literal">3</span>}
+<em>No Equivalent</em>
+[<span class="literal">3</span>]*<span class="entity">Int</span>
+*[<span class="literal">3</span>]<span class="entity">Int</span>
+
+x[<span class="literal">0</span>] = <span class="literal">1</span>
+<em>No Equivalent</em>
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<span class="entity">int</span> x[<span class="literal">3</span>] = {<span class="literal">1</span>, <span class="literal">2</span>, <span class="literal">3</span>};
+<span class="entity">int</span> x[];
+<span class="entity">int</span>* x[<span class="literal">3</span>];   <span class="comment">// array of int pointers</span>
+<span class="entity">int</span> (*x)[<span class="literal">3</span>]; <span class="comment">// pointer to array of ints</span>
+
+x[<span class="literal">0</span>] = <span class="literal">1</span>;
+<span class="literal">0</span>[x] = <span class="literal">1</span>;
+                    </code></pre>
+                </td>
+            </tr>
             <tr><th colspan="2">Operators</th></tr>
             <tr>
                 <td>
@@ -611,6 +636,10 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
   <span class="annotation">@optimize(size)</span>
   <em>body</em>
 <span class="keyword">end</span>
+
+<span class="annotation">@param @read(>= 5)</span> non-null array of at
+                   least 5 elements
+<span class="keyword">def</span>:func foo(*<span class="entity">Int</span> someArray)
                     </code></pre>
                 </td>
                 <td>
@@ -627,6 +656,12 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
 } <span class="keyword">else</span> {
     <em>body</em>
 }
+
+
+
+
+
+<span class="entity">void</span> foo(<span class="entity">int</span> someArray[<span class="keyword">static</span> <span class="literal">5</span>]);
                     </code></pre>
                 </td>
             </tr>

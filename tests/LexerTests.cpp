@@ -138,6 +138,24 @@ TEST_F(LexerTest, Semicolon) {
     ASSERT_NEXT_TOKEN(PunctuationSemicolon,  ";");
 }
 
+TEST_F(LexerTest, SquareBracketsBeforeIdentifier) {
+    this->lex("[5]Int");
+
+    ASSERT_NEXT_TOKEN(Operator,                "[");
+    ASSERT_NEXT_TOKEN(NumericLiteral,          "5");
+    ASSERT_NEXT_TOKEN(PunctuationCloseBracket, "]");
+    ASSERT_NEXT_TOKEN(Identifier,              "Int");
+}
+
+TEST_F(LexerTest, SquareBracketsAfterIdentifier) {
+    this->lex("x[5]");
+
+    ASSERT_NEXT_TOKEN(Identifier,              "x");
+    ASSERT_NEXT_TOKEN(Operator,                "[");
+    ASSERT_NEXT_TOKEN(NumericLiteral,          "5");
+    ASSERT_NEXT_TOKEN(PunctuationCloseBracket, "]");
+}
+
 TEST_F(LexerTest, UnaryStarOperator) {
     this->lex("*a");
 

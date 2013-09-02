@@ -95,6 +95,9 @@ namespace Language {
             case ')':
                 type = Token::Type::PunctuationCloseParen;
                 break;
+            case ']':
+                type = Token::Type::PunctuationCloseBracket;
+                break;
             case ':':
                 type = Token::Type::PunctuationColon;
                 break;
@@ -182,6 +185,7 @@ namespace Language {
                 case '%':
                 case '^':
                 case '.':
+                case '[':
                 case '~':
                 case '?':
                     if (type != Token::Type::EndOfInput) {
@@ -200,6 +204,7 @@ namespace Language {
                 case '\'':
                 case ';':
                 case ',':
+                case ']':
                 case '\\':
                     if (type != Token::Type::EndOfInput) {
                         return Token(s.str(), type);

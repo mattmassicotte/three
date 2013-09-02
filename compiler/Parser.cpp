@@ -89,6 +89,10 @@ namespace Language {
             node = IfNode::parseTailing(*this, node);
         }
 
+#if DEBUG_PARSING
+            std::cout << "Parser: statement complete '"  << this->peek().str() << "'" << std::endl;
+#endif
+
         this->parseNewline();
         node->setStatement(true);
 
@@ -230,10 +234,12 @@ namespace Language {
 
     bool Parser::isAtType() {
         // Possible forms of variable declarations are:
-        // [*]Identifier identifier [= <expression>]
-        // [*]Identifier:<number> identifier [= <expression>]
-        // [*]{...closure type..} identifier [= <expression>]
-        // [*](function type) identifier [= <expression>]
+        // Identifier identifier = <expression>
+        // Identifier:<number> identifier = <expression>
+        // {...closure type..} identifier = <expression>
+        // (function type) identifier = <expression>
+        //
+        // and each of these can be preceended by arbitrary pointers, arrays, and annotations
         switch (this->peek().type()) {
             case Token::Type::Operator:
             case Token::Type::Identifier:
@@ -248,17 +254,29 @@ namespace Language {
 
         int peekDepth = 1;
 
-        // We might have a pointer type, and we also could have annotations intermixed.
-        // Following the '*'s and annotations, we should have "Identifier identifier"
+        // Pointers, arrays, annotations could be intermixed.
         while (1) {
             Token t = this->peek(peekDepth);
 
-            
             if (t.str() == "*") {
                 peekDepth += 1;
                 continue;
             } else if (t.type() == Token::Type::Annotation) {
                 peekDepth += 1;
+                continue;
+            } else if (t.str() == "[") {
+                peekDepth += 1;
+
+                if (this->peek(peekDepth).type() != Token::Type::NumericLiteral) {
+                    return false;
+                }
+                peekDepth += 1;
+
+                if (this->peek(peekDepth).type() != Token::Type::PunctuationCloseBracket) {
+                    return false;
+                }
+                peekDepth += 1;
+
                 continue;
             }
 
@@ -269,12 +287,12 @@ namespace Language {
 
         switch (this->peek(peekDepth).type()) {
             case Token::Type::Identifier:
-                // check if we match the "[*]Identifier identifier" pattern
+                // check if we match the "*Identifier identifier" pattern
                 if (this->peek(peekDepth+1).type() == Token::Type::Identifier) {
                     return true;
                 }
 
-                // check if we match the "[*]Identifier:<number> identifier" pattern
+                // check if we match the "*Identifier:<number> identifier" pattern
                 if (this->peek(peekDepth+1).type() != Token::Type::PunctuationColon) {
                     return false;
                 }

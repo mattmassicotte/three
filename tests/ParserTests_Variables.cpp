@@ -31,5 +31,17 @@ TEST_F(ParserTest_Variables, VariableDeclarationWithInitializer) {
 
     ASSERT_VARIABLE_DECLERATION("Int", 0, "x", varNode);
     ASSERT_INTEGER_LITERAL_NODE(0, varNode->initializerExpression());
-    
 }
+
+// TEST_F(ParserTest_Variables, ArrayDeclaration) {
+//     Language::ASTNode* node;
+// 
+//     node = this->parse("def test()\n[3]Int x\nend\n");
+//     node = node->childAtIndex(0);
+// 
+//     VariableDeclarationNode* varNode = dynamic_cast<VariableDeclarationNode*>(node->childAtIndex(0));
+// 
+//     ASSERT_VARIABLE_DECLERATION("Int", 0, "x", varNode);
+//     ASSERT_TRUE(varNode->variable()->type().isArray());
+//     ASSERT_EQ(5, varNode->variable()->type().arrayDimensions().at(0));
+// }
