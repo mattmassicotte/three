@@ -49,6 +49,8 @@ namespace Language {
     }
 
     void IntegerLiteralNode::codeGenCSource(CSourceContext& context) {
+        context.addHeader("stdint.h");
+
         std::stringstream s;
 
         // TODO: this is kinda stupid just to convert into a string...

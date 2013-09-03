@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include "annotations.h"
 
 #include <assert.h>
 

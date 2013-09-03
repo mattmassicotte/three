@@ -16,7 +16,6 @@ static once_flag _three_transactions_once_flag = ONCE_FLAG_INIT;
 
 static bool _three_transaction_supported = false;
 static mtx_t _three_transaction_mtx;
-static atomic_int _three_mtx_counter = ATOMIC_VAR_INIT(0);
 
 static bool three_transaction_lock(void);
 static bool three_transaction_unlock(void);
@@ -39,7 +38,7 @@ static bool three_transaction_unlock(void) {
 bool three_transaction_begin(bool strict) {
     call_once(&_three_transactions_once_flag, three_transaction_initialize);
 
-    fprintf(stderr, "[runtime] beginning %s transaction\n", strict ? "strict" : "loose");
+    // fprintf(stderr, "[runtime] beginning %s transaction\n", strict ? "strict" : "loose");
 
     // this is an easy case
     if (!_three_transaction_supported) {
@@ -58,7 +57,7 @@ bool three_transaction_begin(bool strict) {
             return true;
         }
 
-        fprintf(stderr, "[runtime] strict transaction xbegin: %x\n", status);
+        // fprintf(stderr, "[runtime] strict transaction xbegin: %x\n", status);
 
         if (status & _XABORT_EXPLICIT) {
             // called xabort
@@ -67,14 +66,14 @@ bool three_transaction_begin(bool strict) {
 
         if (status & _XABORT_RETRY) {
             // if xbegin reports that a retry might work, let's give that a shot
-            fprintf(stderr, "[runtime] strict transaction retry\n");
+            // fprintf(stderr, "[runtime] strict transaction retry\n");
             continue;
         } else if (CHECK_XABORT_EXPLICIT_CODE(status, THREE_TRANSACTION_ABORT_NEEDS_LOCK)) {
             break;
         }
     }
 
-    fprintf(stderr, "[runtime] strict transaction locking\n");
+    // fprintf(stderr, "[runtime] strict transaction locking\n");
     return three_transaction_lock();
 }
 
@@ -85,7 +84,7 @@ bool three_transaction_end(bool strict) {
             return false;
         }
 
-        fprintf(stderr, "[runtime] ending loose transaction\n");
+        // fprintf(stderr, "[runtime] ending loose transaction\n");
         return three_transaction_unlock();
     }
 
@@ -94,7 +93,7 @@ bool three_transaction_end(bool strict) {
         return true;
     }
 
-    fprintf(stderr, "[runtime] strict transaction unlocking\n");
+    // fprintf(stderr, "[runtime] strict transaction unlocking\n");
     return three_transaction_unlock();
 }
 
