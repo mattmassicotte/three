@@ -71,3 +71,14 @@ TEST_F(ParserTest_Operators, IndexerOperator) {
     ASSERT_VARIABLE_NODE("Int", 0, "x", indexer->childAtIndex(0));
     ASSERT_INTEGER_LITERAL_NODE(5, indexer->childAtIndex(1));
 }
+
+TEST_F(ParserTest_Operators, NotEqualOperator) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test(Int x)\nx != 0\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_OPERATOR("!=", node);
+    ASSERT_VARIABLE_NODE("Int", 0, "x", node->childAtIndex(0));
+    ASSERT_INTEGER_LITERAL_NODE(0, node->childAtIndex(1));
+}
