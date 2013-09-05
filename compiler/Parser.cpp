@@ -425,10 +425,14 @@ namespace Language {
 
             type->addChild(this->parseType());
 
-            // we might have a parameter (not for a function type)
-            if (this->peek().type() == Token::Type::Identifier) {
-                assert(params);
+            // We might have a parameter label.  If the caller cares, we need to enforce that a label is present.
+            if (params) {
+                assert(this->peek().type() == Token::Type::Identifier);
                 params->push_back(this->next().str());
+            } else {
+                if (this->peek().type() == Token::Type::Identifier) {
+                    this->next();
+                }
             }
 
             // a ',' means another paramter was specified
