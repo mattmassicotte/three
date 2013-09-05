@@ -2,6 +2,7 @@
 #include "TypeDefinitionNode.h"
 #include "FunctionDeclarationNode.h"
 #include "../FunctionDefinitionNode.h"
+#include "ValueDefinitionNode.h"
 #include "../../Parser.h"
 
 #include <assert.h>
@@ -15,6 +16,8 @@ namespace Three {
                 return TypeDefinitionNode::parse(parser);
             } else if (parser.nextIf("func")) {
                 return FunctionDeclarationNode::parse(parser);
+            } else if (parser.nextIf("value")) {
+                return ValueDefinitionNode::parse(parser);
             }
 
             assert(0 && "Unrecognized def qualifier");

@@ -69,3 +69,11 @@ TEST_F(ParserTest_Modules, DefFuncWithEmptyFunctionAsParameter) {
 
     ASSERT_EQ("FunctionDeclaration", node->childAtIndex(0)->nodeName());
 }
+
+TEST_F(ParserTest_Modules, DefValueWithoutValue) {
+    ASTNode* node = this->parse("def:value abc\n");
+
+    ASSERT_EQ(1, node->childCount());
+
+    ASSERT_EQ("ValueDefinition", node->childAtIndex(0)->nodeName());
+}

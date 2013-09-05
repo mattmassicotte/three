@@ -7,7 +7,9 @@ def:type thrd_t *Void
 def:type mtx_t  *Void
 def:type once_flag *Void
 
-enum mtx_type_t
+def:value ONCE_FLAG_INIT
+
+enum c_threads_mtx_type_t
   mtx_plain     = 0
   mtx_timed     = 1
   mtx_recursive = 2
