@@ -3,6 +3,14 @@
 class ParserTest_Variables : public ParserTestBase {
 };
 
+TEST_F(ParserTest_Variables, TopLevelVariableDeclaration) {
+    Language::ASTNode* node;
+
+    node = this->parse("Int x\n");
+
+    ASSERT_VARIABLE_DECLERATION("Int", 0, "x", node->childAtIndex(0));
+}
+
 TEST_F(ParserTest_Variables, VariableDeclaration) {
     Language::ASTNode* node;
 
