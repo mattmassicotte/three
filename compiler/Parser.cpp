@@ -578,10 +578,15 @@ namespace Language {
                 assert(0 && "parseTopLevelNode invalid state");
                 break;
             default:
-                std::cout << "Parser: unhandled top-level token '" << this->next().str() << "'" << std::endl;
-                assert(0);
                 break;
         }
+
+        if (this->isAtType()) {
+            return VariableDeclarationNode::parse(*this);
+        }
+
+        std::cout << "Parser: unhandled top-level token '" << this->next().str() << "'" << std::endl;
+        assert(0);
 
         return NULL;
     }
