@@ -28,6 +28,7 @@
 #include "AST/RootNode.h"
 #include "AST/Top-Level/DefinitionNode.h"
 #include "AST/Top-Level/FunctionDeclarationNode.h"
+#include "AST/Top-Level/NamespaceNode.h"
 #include "AST/Top-Level/ModuleNode.h"
 #include "AST/Top-Level/TypeDefinitionNode.h"
 #include "AST/Top-Level/VisibilityNode.h"

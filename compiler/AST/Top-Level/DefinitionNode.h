@@ -13,6 +13,7 @@ namespace Three {
     public:
         DefinitionNode();
 
+        void setVisibility(TranslationUnit::Visibility visibility);
         TranslationUnit::Visibility visibility() const;
 
     private:

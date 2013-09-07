@@ -44,6 +44,7 @@ namespace Language {
         _keywordMap["linkage"]   = Token::Type::KeywordLinkage;
         _keywordMap["include"]   = Token::Type::KeywordInclude;
         _keywordMap["public"]    = Token::Type::KeywordPublic;
+        _keywordMap["private"]   = Token::Type::KeywordPrivate;
         _keywordMap["abi"]       = Token::Type::KeywordAbi;
         _keywordMap["debug"]     = Token::Type::KeywordDebug;
         _keywordMap["version"]   = Token::Type::KeywordVersion;

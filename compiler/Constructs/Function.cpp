@@ -41,6 +41,14 @@ namespace Language {
         return _name;
     }
 
+    void Function::setNamespace(const std::string& ns) {
+        _namespace = ns;
+    }
+
+    std::string Function::namespacePrefix() const {
+        return _namespace;
+    }
+
     void Function::setReturnType(const TypeReference& type) {
         assert(type.referencedType());
         _returnType = type;

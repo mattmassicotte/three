@@ -8,6 +8,7 @@ namespace Three {
 
         context->_currentScope = Scope::createRootScope();
         context->_translationUnit = TranslationUnit::createTranslationUnit();
+        context->_visibility = TranslationUnit::Visibility::External;
 
         return context;
     }
@@ -68,5 +69,21 @@ namespace Three {
         assert(_currentScope);
 
         delete old;
+    }
+
+    void ParsingContext::setNamespace(const std::string& ns) {
+        _namespace = ns;
+    }
+
+    std::string ParsingContext::namespacePrefix() const {
+        return _namespace;
+    }
+
+    void ParsingContext::setVisibility(TranslationUnit::Visibility visibility) {
+        _visibility = visibility;
+    }
+
+    TranslationUnit::Visibility ParsingContext::visibility() const {
+        return _visibility;
     }
 }

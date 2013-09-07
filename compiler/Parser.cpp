@@ -497,6 +497,7 @@ namespace Language {
         assert(this->peek().type() == Token::Type::Identifier);
 
         function->setName(this->next().str());
+        function->setNamespace(this->context()->namespacePrefix());
 
         // move past the opening '('
         assert(this->next().type() == Token::Type::PunctuationOpenParen);
@@ -569,13 +570,17 @@ namespace Language {
             case Token::Type::KeywordModule:
                 return Three::ModuleNode::parse(*this);
             case Token::Type::KeywordPublic:
+            case Token::Type::KeywordPrivate:
                 return Three::VisibilityNode::parse(*this);
+            case Token::Type::KeywordNamespace:
+                return Three::NamespaceNode::parse(*this);
             case Token::Type::EndOfInput:
                 assert(0 && "parseTopLevelNode invalid state");
                 break;
             default:
-                this->next();
-                return new RootNode();
+                std::cout << "Parser: unhandled top-level token '" << this->next().str() << "'" << std::endl;
+                assert(0);
+                break;
         }
 
         return NULL;

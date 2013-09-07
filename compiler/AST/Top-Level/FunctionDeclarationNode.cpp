@@ -11,6 +11,8 @@ namespace Three {
         node->setAnnotations(parser.currentScope()->annotations());
         parser.currentScope()->clearAnnotations();
 
+        node->setVisibility(parser.context()->visibility());
+
         node->_function = parser.parseFunctionSignature();
         assert(node->_function);
 

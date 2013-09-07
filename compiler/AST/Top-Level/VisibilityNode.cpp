@@ -7,10 +7,21 @@ namespace Three {
     VisibilityNode* VisibilityNode::parse(Parser& parser) {
         VisibilityNode* node = new VisibilityNode();
 
-        assert(parser.next().str() == "public");
-        parser.parseNewline();
+        switch (parser.peek().type()) {
+            case Token::Type::KeywordPublic:
+                node->_type = Language::TranslationUnit::Visibility::External;
+                break;
+            case Token::Type::KeywordPrivate:
+                node->_type = Language::TranslationUnit::Visibility::None;
+                break;
+            default:
+                assert(0 && "Unexpected value in VisibilityNode::parse");
+                break;
+        }
 
-        node->_type = Language::TranslationUnit::Visibility::External;
+        parser.next();
+        parser.parseNewline();
+        parser.context()->setVisibility(node->type());
 
         return node;
     }

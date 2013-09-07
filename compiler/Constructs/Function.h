@@ -16,6 +16,8 @@ namespace Language {
 
         void setName(const std::string& value);
         std::string name() const;
+        void setNamespace(const std::string& ns);
+        std::string namespacePrefix() const;
         void setReturnType(const TypeReference& type);
         TypeReference returnType() const;
         DataType* createType() const;
@@ -29,6 +31,7 @@ namespace Language {
 
     private:
         std::string            _name;
+        std::string            _namespace;
         TypeReference          _returnType;
         std::vector<Variable*> _parameters;
     };

@@ -96,6 +96,7 @@ bool compileCSource(Language::RootNode* node, const std::string& cSourcePath) {
     s << " -L/usr/local/lib";
     s << " -lthree_runtime";
     s << " -I/usr/local/include";
+    s << " -I/usr/local/include/three/runtime";
     s << " " << cSourcePath;
 
     return system(s.str().c_str()) == 0;

@@ -31,9 +31,7 @@ namespace Language {
         TypeReference parseType();
         TypeReference parseFunctionType(uint32_t depth, std::vector<std::string>* params, std::vector<std::string>* references);
         Function*     parseFunctionSignature();
-
-    protected:
-        ASTNode* parseTopLevelNode();
+        ASTNode*      parseTopLevelNode();
 
     public:
         Token peek(unsigned int distance=1);

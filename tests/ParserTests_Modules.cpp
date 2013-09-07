@@ -45,6 +45,19 @@ TEST_F(ParserTest_Modules, FunctionDeclarationUsingDefinedType) {
     ASSERT_EQ("FunctionDeclaration", node->childAtIndex(1)->nodeName());
 }
 
+TEST_F(ParserTest_Modules, PrivateFunctionDeclaration) {
+    ASTNode* node = this->parse("private\ndef:func foo()\n");
+
+    ASSERT_EQ(2, node->childCount());
+
+    ASSERT_EQ("Visibility", node->childAtIndex(0)->nodeName());
+
+    Three::FunctionDeclarationNode* funcDef = dynamic_cast<Three::FunctionDeclarationNode*>(node->childAtIndex(1));
+
+    ASSERT_EQ("FunctionDeclaration", funcDef->nodeName());
+    ASSERT_EQ(TranslationUnit::Visibility::None, funcDef->visibility());
+}
+
 TEST_F(ParserTest_Modules, FunctionDeclarationUsingDefinedStruct) {
     ASTNode* node = this->parse("struct MyStruct\nInt element\nend\ndef:func foo(MyStruct a)\n");
 
@@ -76,4 +89,19 @@ TEST_F(ParserTest_Modules, DefValueWithoutValue) {
     ASSERT_EQ(1, node->childCount());
 
     ASSERT_EQ("ValueDefinition", node->childAtIndex(0)->nodeName());
+}
+
+TEST_F(ParserTest_Modules, NamespaceBlock) {
+    ASTNode* node = this->parse("namespace Something\ndef:func foo()\n");
+
+    ASSERT_EQ(2, node->childCount());
+
+    Three::NamespaceNode* nsNode = dynamic_cast<Three::NamespaceNode*>(node->childAtIndex(0));
+
+    ASSERT_EQ("Namespace", nsNode->nodeName());
+    ASSERT_EQ("Something", nsNode->namespaceName());
+
+    Three::FunctionDeclarationNode* defNode = dynamic_cast<Three::FunctionDeclarationNode*>(node->childAtIndex(1));
+    ASSERT_EQ("foo", defNode->function()->name());
+    ASSERT_EQ("Something", defNode->function()->namespacePrefix());
 }

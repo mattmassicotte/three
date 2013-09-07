@@ -53,6 +53,7 @@ namespace Language {
             KeywordLinkage,
             KeywordInclude,
             KeywordPublic,
+            KeywordPrivate,
             KeywordAbi,
             KeywordDebug,
             KeywordVersion,
