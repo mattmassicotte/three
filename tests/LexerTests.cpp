@@ -170,6 +170,15 @@ TEST_F(LexerTest, UnaryAddressOfOperator) {
     ASSERT_NEXT_TOKEN(Identifier,     "a");
 }
 
+TEST_F(LexerTest, SizeofOperator) {
+    this->lex("sizeof(a)");
+
+    ASSERT_NEXT_TOKEN(KeywordSizeof,        "sizeof");
+    ASSERT_NEXT_TOKEN(PunctuationOpenParen, "(");
+    ASSERT_NEXT_TOKEN(Identifier,           "a");
+    ASSERT_NEXT_TOKEN(PunctuationCloseParen, ")");
+}
+
 TEST_F(LexerTest, AlignofOperator) {
     this->lex("alignof(a)");
 
