@@ -25,6 +25,16 @@ TEST_F(ParserTest_Operators, AddressOfUnaryOperator) {
     ASSERT_EQ(1, node->childAtIndex(1)->childCount());
 }
 
+TEST_F(ParserTest_Operators, SizeofOperator) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test(Int x)\nx = sizeof(Int)\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_OPERATOR("=", node);
+    ASSERT_EQ("MetaFunction", node->childAtIndex(1)->nodeName());
+}
+
 TEST_F(ParserTest_Operators, MemberAccessOperator) {
     Language::ASTNode* node;
 

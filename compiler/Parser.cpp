@@ -134,6 +134,8 @@ namespace Language {
                 return NullLiteralNode::parse(*this);
             case Token::Type::KeywordAtomic:
                 return AtomicExpressionNode::parse(*this);
+            case Token::Type::KeywordSizeof:
+                return Three::SizeofNode::parse(*this);
             default:
                 break;
         }
@@ -158,6 +160,7 @@ namespace Language {
         if (!node) {
             std::cout << "Parser: unhandled expression '" << this->next().str() << "'" << std::endl;
         }
+
         assert(node != NULL);
 
         return OperatorNode::parse(*this, Token::MinimumPrecedence, node);
