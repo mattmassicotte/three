@@ -34,5 +34,6 @@
 #include "AST/Top-Level/VisibilityNode.h"
 #include "AST/Types/EnumerationNode.h"
 #include "AST/Types/StructureNode.h"
+#include "AST/ValueNode.h"
 #include "AST/VariableDeclarationNode.h"
 #include "AST/VariableNode.h"

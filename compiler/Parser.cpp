@@ -115,6 +115,8 @@ namespace Language {
             case Token::Type::Identifier:
                 if (this->peek(2).type() == Token::Type::PunctuationOpenParen) {
                     return FunctionCallNode::parse(*this);
+                } else if (this->currentModule()->definesConstant(this->peek().str())) {
+                    return new Three::ValueNode(this->next().str());
                 } else {
                     return VariableNode::parse(*this);
                 }
@@ -582,7 +584,10 @@ namespace Language {
         }
 
         if (this->isAtType()) {
-            return VariableDeclarationNode::parse(*this);
+            node = VariableDeclarationNode::parse(*this);
+            this->parseNewline();
+
+            return node;
         }
 
         std::cout << "Parser: unhandled top-level token '" << this->next().str() << "'" << std::endl;

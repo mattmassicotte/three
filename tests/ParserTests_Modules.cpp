@@ -91,6 +91,17 @@ TEST_F(ParserTest_Modules, DefValueWithoutValue) {
     ASSERT_EQ("ValueDefinition", node->childAtIndex(0)->nodeName());
 }
 
+TEST_F(ParserTest_Modules, DefValueUsedForVariableInitialization) {
+    ASTNode* node = this->parse("def:value abc\nInt x = abc\n");
+
+    ASSERT_EQ("ValueDefinition", node->childAtIndex(0)->nodeName());
+
+    Language::VariableDeclarationNode* varNode = dynamic_cast<Language::VariableDeclarationNode*>(node->childAtIndex(1));
+
+    ASSERT_VARIABLE_DECLERATION("Int", 0, "x", varNode);
+    ASSERT_EQ("Value", varNode->initializerExpression()->nodeName());
+}
+
 TEST_F(ParserTest_Modules, NamespaceBlock) {
     ASTNode* node = this->parse("namespace Something\ndef:func foo()\n");
 
