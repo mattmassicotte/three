@@ -13,6 +13,8 @@ namespace Three {
 
         parser.parseNewline();
 
+        parser.currentModule()->addConstant(node->_definedName, node->_definedName);
+
         return node;
     }
 

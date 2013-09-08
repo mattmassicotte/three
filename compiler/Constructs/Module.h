@@ -44,6 +44,10 @@ namespace Three {
         void aliasDataType(const std::string& name, DataType* type);
         DataType* dataTypeForName(const std::string& name);
 
+        void addConstant(const std::string& name, const std::string& value);
+        std::string constantForName(const std::string& name);
+        bool definesConstant(const std::string& name);
+
     private:
         std::vector<Module*> _importedModules;
         Module* _parentModule;
@@ -54,5 +58,6 @@ namespace Three {
         std::map<std::string, DataType*> _dataTypes;
         std::map<std::string, DataType*> _dataTypeAliases;
         std::map<std::string, Function*> _functions;
+        std::map<std::string, std::string> _constants;
     };
 }

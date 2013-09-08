@@ -11,6 +11,15 @@ TEST_F(ParserTest_Variables, TopLevelVariableDeclaration) {
     ASSERT_VARIABLE_DECLERATION("Int", 0, "x", node->childAtIndex(0));
 }
 
+TEST_F(ParserTest_Variables, NewLinesAroundTopLevelVariableDeclarations) {
+    Language::ASTNode* node;
+
+    node = this->parse("Int x\n\nInt y\n");
+
+    ASSERT_VARIABLE_DECLERATION("Int", 0, "x", node->childAtIndex(0));
+    ASSERT_VARIABLE_DECLERATION("Int", 0, "y", node->childAtIndex(1));
+}
+
 TEST_F(ParserTest_Variables, VariableDeclaration) {
     Language::ASTNode* node;
 

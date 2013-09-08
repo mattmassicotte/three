@@ -170,8 +170,6 @@ namespace Three {
             }
         }
 
-        // std::cout << "checking data type: " << name << " for " << this << std::endl;
-
         // not found, so check our own types
         type = _dataTypes[name];
         if (type) {
@@ -184,5 +182,34 @@ namespace Three {
         }
 
         return NULL;
+    }
+
+    void Module::addConstant(const std::string& name, const std::string& value) {
+        assert(name.length() > 0 && "Name should not be blank");
+        assert(!this->definesConstant(name) && "Contant cannot be re-defined");
+
+        _constants[name] = value;
+    }
+
+    std::string Module::constantForName(const std::string& name) {
+        for (Module* m : _importedModules) {
+            std::string constant = m->constantForName(name);
+
+            if (constant.length() > 0) {
+                return constant;
+            }
+        }
+
+        return _constants[name];
+    }
+
+    bool Module::definesConstant(const std::string& name) {
+        for (Module* m : _importedModules) {
+            if (m->definesConstant(name)) {
+                return true;
+            }
+        }
+
+        return _constants.find(name) != _constants.end();
     }
 }
