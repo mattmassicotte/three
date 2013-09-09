@@ -70,33 +70,22 @@ namespace Language {
 
         assert(f);
 
+        context.setCurrent(CSourceContext::Section::Declarations);
+
         for (Annotation* annotation : this->annotations()) {
             context << annotation->CSourceString() << " ";
         }
 
-        f->returnType().codeGenCSource(context.current(), "");
+        f->codeGenCSource(context, NULL);
 
-        context.current()->print(" ");
-        context.current()->print(f->name());
-        context.current()->print("(");
+        context.setCurrent(CSourceContext::Section::Body);
 
-        f->eachParameterWithLast([=, &context] (Variable* var, bool last) {
-            var->type().codeGenCSource(context.current(), var->name());
-            if (!last) {
-                context.current()->print(", ");
-            }
-        });
-        
-        if (f->parameterCount() == 0) {
-            context.current()->print("void");
+        for (Annotation* annotation : this->annotations()) {
+            context << annotation->CSourceString() << " ";
         }
 
-        context.current()->print(") ");
-
-        context.current()->printLineAndIndent("{");
-
-        this->codeGenCSourceForChildren(context);
-
-        context.current()->outdentAndPrintLine("}");
+        f->codeGenCSource(context, [&] () {
+            this->codeGenCSourceForChildren(context);
+        });
     }
 }

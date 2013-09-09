@@ -106,6 +106,11 @@ namespace Language {
             context << "void";
         }
 
+        if (!func) {
+            context.current()->printLine(");");
+            return;
+        }
+
         context.current()->printLineAndIndent(") {");
 
         func();
