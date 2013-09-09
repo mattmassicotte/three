@@ -20,8 +20,9 @@ namespace Language {
         RootNode* rootASTNode();
 
         ASTNode* parseStatement();
-        ASTNode* parsePrimary();
-        ASTNode* parseExpression();
+        ASTNode* parsePrimaryExpression();
+        ASTNode* parseSecondaryExpression();
+        ASTNode* parseExpression(uint32_t precedence=Token::MinimumPrecedence);
         bool     parseNewline(bool multipleAllowed=true);
         bool     parseUntil(bool advanceOnStop, std::function<bool (const Token& token)> func);
         bool     parseUntilEnd(std::function<void (void)> func);

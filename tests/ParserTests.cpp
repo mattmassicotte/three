@@ -87,41 +87,6 @@ TEST_F(ParserTest, TailingIfStatement) {
     ASSERT_RETURN_NODE(ifNode->childAtIndex(0));
 }
 
-TEST_F(ParserTest, AssignmentExpression) {
-    Language::ASTNode* node;
-
-    node = this->parse("def test()\nInt x\nx = 42\nend\n");
-
-    Language::OperatorNode* opNode = dynamic_cast<Language::OperatorNode*>(node->childAtIndex(0)->childAtIndex(1));
-
-    ASSERT_OPERATOR("=", opNode);
-    ASSERT_VARIABLE_NODE("Int",  0, "x", opNode->childAtIndex(0));
-    ASSERT_INTEGER_LITERAL_NODE(42, opNode->childAtIndex(1));
-}
-
-TEST_F(ParserTest, ComplexExpression) {
-    Language::ASTNode* node;
-
-    node = this->parse("def test()\nInt x\nx = 42 * (5 + 1)\nend\n");
-    node = node->childAtIndex(0);
-
-    ASSERT_VARIABLE_DECLERATION("Int", 0, "x", node->childAtIndex(0));
-
-    Language::OperatorNode* opNode = dynamic_cast<Language::OperatorNode*>(node->childAtIndex(1));
-
-    ASSERT_OPERATOR("=", opNode);
-    ASSERT_VARIABLE_NODE("Int",  0, "x", opNode->childAtIndex(0));
-
-    opNode = dynamic_cast<Language::OperatorNode*>(opNode->childAtIndex(1));
-    ASSERT_OPERATOR("*", opNode);
-    ASSERT_INTEGER_LITERAL_NODE(42, opNode->childAtIndex(0));
-
-    opNode = dynamic_cast<Language::OperatorNode*>(opNode->childAtIndex(1));
-    ASSERT_OPERATOR("+", opNode);
-    ASSERT_INTEGER_LITERAL_NODE(5, opNode->childAtIndex(0));
-    ASSERT_INTEGER_LITERAL_NODE(1, opNode->childAtIndex(1));
-}
-
 TEST_F(ParserTest, ClosureInFunction) {
     Language::ASTNode* node;
 
@@ -232,50 +197,6 @@ TEST_F(ParserTest, AtomicStatement) {
     node = node->childAtIndex(0)->childAtIndex(0);
 
     ASSERT_EQ("AtomicStatement", node->name());
-}
-
-TEST_F(ParserTest, TernaryConditionalOperator) {
-    Language::ASTNode* node;
-
-    node = this->parse("def test()\nInt a\na = (a == 0) ? 1 : 2\nend\n");
-    node = node->childAtIndex(0)->childAtIndex(1);
-
-    ASSERT_OPERATOR("=", node);
-    ASSERT_EQ(2, node->childCount());
-    ASSERT_VARIABLE_NODE("Int",  0, "a", node->childAtIndex(0));
-
-    node = node->childAtIndex(1);
-    ASSERT_OPERATOR("?", node);
-    ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
-    ASSERT_INTEGER_LITERAL_NODE(2, node->childAtIndex(2));
-
-    node = node->childAtIndex(0);
-    ASSERT_OPERATOR("==", node);
-    ASSERT_VARIABLE_NODE("Int",  0, "a", node->childAtIndex(0));
-    ASSERT_INTEGER_LITERAL_NODE(0, node->childAtIndex(1));
-}
-
-TEST_F(ParserTest, TernaryCompareAndSwapOperator) {
-    Language::ASTNode* node;
-
-    node = this->parse("def test()\nInt a\na cas 1 : 2\nend\n");
-    node = node->childAtIndex(0)->childAtIndex(1);
-
-    ASSERT_OPERATOR("cas", node);
-    ASSERT_VARIABLE_NODE("Int",  0, "a", node->childAtIndex(0));
-    ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
-    ASSERT_INTEGER_LITERAL_NODE(2, node->childAtIndex(2));
-}
-
-TEST_F(ParserTest, CompoundAdditionAssignmentOperator) {
-    Language::ASTNode* node;
-
-    node = this->parse("def test()\nInt a\na += 1\nend\n");
-    node = node->childAtIndex(0)->childAtIndex(1);
-
-    ASSERT_OPERATOR("+=", node);
-    ASSERT_VARIABLE_NODE("Int",  0, "a", node->childAtIndex(0));
-    ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
 }
 
 TEST_F(ParserTest, NullLiteral) {

@@ -99,19 +99,64 @@ namespace Language {
         return node;
     }
 
-    ASTNode* Parser::parsePrimary() {
+    ASTNode* Parser::parsePrimaryExpression() {
+        ASTNode* node = this->parseSecondaryExpression();
+
+        // we now need to check for a tailing operator:
+        // []
+        // ->
+        // .
+
+        if (this->peek().type() != Token::Type::Operator) {
+            return node;
+        }
+
+        std::string op = this->peek().str();
+
+        if (op == "." || op == "->") {
+            this->next();
+            assert(this->peek().type() == Token::Type::Identifier);
+
+            std::string memberName = this->next().str();
+            OperatorNode* opNode = new Three::MemberAccessNode(memberName, op == "->");
+            opNode->addChild(node);
+
+            return opNode;
+        }
+
+        // construct and parse the indexer operator
+        if (op == "[") {
+            this->next();
+
+            OperatorNode* opNode = new Three::IndexerNode();
+
+            opNode->addChild(node);
+            opNode->addChild(this->parseExpression());
+
+            assert(this->next().type() == Token::Type::PunctuationCloseBracket);
+
+            return opNode;
+        }
+
+        return node;
+    }
+    
+    ASTNode* Parser::parseSecondaryExpression() {
+        ASTNode* node = NULL;
+
 #if DEBUG_PARSING
-        std::cout << "Parser: primary: '" << this->peek().str() << "'" << std::endl;
+        std::cout << "Parser: parseSecondaryExpression: '" << this->peek().str() << "'" << std::endl;
 #endif
 
-        switch (this->peek().type()) {
-            case Token::Type::PunctuationOpenParen: {
-                this->next();
-                ASTNode* node = this->parseExpression();
+        // try a unary operator first
+        if (this->peek().isUnaryOperator()) {
+#if DEBUG_PARSING
+            std::cout << "Parser: unary in parseSecondaryExpression: '" << this->peek().str() << "'" << std::endl;
+#endif
+            return OperatorNode::parseUnary(*this);
+        }
 
-                assert(this->next().type() == Token::Type::PunctuationCloseParen);
-                return node;
-            }
+        switch (this->peek().type()) {
             case Token::Type::Identifier:
                 if (this->peek(2).type() == Token::Type::PunctuationOpenParen) {
                     return FunctionCallNode::parse(*this);
@@ -127,6 +172,13 @@ namespace Language {
                 return StringLiteralNode::parse(*this);
             case Token::Type::NumericLiteral:
                 return IntegerLiteralNode::parse(*this);
+            case Token::Type::PunctuationOpenParen: {
+                this->next();
+                ASTNode* node = this->parseExpression();
+
+                assert(this->next().type() == Token::Type::PunctuationCloseParen);
+                return node;
+            }
             case Token::Type::TrueLiteral:
             case Token::Type::FalseLiteral:
                 return BooleanLiteralNode::parse(*this);
@@ -143,27 +195,49 @@ namespace Language {
         return NULL;
     }
 
-    ASTNode* Parser::parseExpression() {
-        ASTNode* node = NULL;
+    ASTNode* Parser::parseExpression(uint32_t precedence) {
+        // Parsing expressions is very complex, and depends on correctly setting
+        // the precedence and associativity of operator tokens.
+        // The algorithm used is called Precedence Climbing.
+        assert(precedence > Token::NonPrecedence);
 
 #if DEBUG_PARSING
-        std::cout << "Parser: expression: '" << this->peek().str() << "'" << std::endl;
+        std::cout << "Parser: parseExpression (" << precedence << ")" << std::endl;
 #endif
 
-        node = this->parsePrimary();
+        ASTNode* left = this->parsePrimaryExpression();
 
-        if (!node) {
-            // perhaps we have a unary operator?
-            node = OperatorNode::parseUnary(*this);
+        while (true) {
+            Token t = this->peek();
+
+            // if we've gotten to the end of a statement, or do not have an operator
+            if (t.isStatementEnding() || t.type() != Token::Type::Operator) {
+                break;
+            }
+
+            // ok we have a binary operator token
+            uint32_t nextPrecedence = t.precedence();
+            assert(nextPrecedence != Token::NonPrecedence);
+
+            if (nextPrecedence < precedence) {
+#if DEBUG_PARSING
+                std::cout << "Parser: parseExpression lower " << t.str() << " (" << nextPrecedence << ")" << std::endl;
+#endif
+                break;
+            }
+
+            if (t.isLeftAssociative()) {
+                nextPrecedence = nextPrecedence + 1;
+            }
+
+#if DEBUG_PARSING
+            std::cout << "Parser: parseExpression " << t.str() << " : " << nextPrecedence << " compare " << precedence << std::endl;
+#endif
+
+            left = OperatorNode::parse(*this, left, nextPrecedence);
         }
 
-        if (!node) {
-            std::cout << "Parser: unhandled expression '" << this->next().str() << "'" << std::endl;
-        }
-
-        assert(node != NULL);
-
-        return OperatorNode::parse(*this, Token::MinimumPrecedence, node);
+        return left;
     }
 
     bool Parser::parseNewline(bool multipleAllowed) {

@@ -75,6 +75,9 @@ namespace Language {
 
         bool isBinaryLiteralSubtoken() const;
         bool isHexLiteralSubtoken() const;
+        bool isUnaryOperator() const;
+        bool isTernaryOperator() const;
+        bool isLeftAssociative() const;
 
         std::string str() const;
         Type type() const;
