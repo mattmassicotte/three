@@ -17,6 +17,10 @@ module BuildFunctions
     end
   end
 
+  def self.optimal_parallelism
+    `sysctl -An "machdep.cpu.thread_count"`.chomp.to_i
+  end
+
   def self.install(src, dest)
     self.log("install", dest)
     FileUtils.cp_r(src, dest)
