@@ -39,5 +39,10 @@ namespace :llvm do
   end
 end
 
-file "/usr/local/include/clang-c/Index.h" => 'llvm:build'
-file "/usr/local/lib/libclang.a" => 'llvm:build'
+file "/usr/local/include/clang-c/Index.h" do
+  Rake::task['llvm:build']
+end
+
+file "/usr/local/lib/libclang.a" do
+  Rake::task['llvm:build']
+end

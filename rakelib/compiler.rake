@@ -29,7 +29,7 @@ test_object_files << "#{BUILD_DIR}/gtest/gtest_main.o"
 test_object_files << "#{BUILD_DIR}/gtest/gtest-all.o"
 test_object_files << COMPILER_TEST_OBJECTS
 file "#{BUILD_DIR}/compiler_test" => [test_object_files, COMPILER_LIB].flatten do
-  BuildFunctions::executable(test_object_files, "#{BUILD_DIR}/compiler_test", "'-L#{BUILD_DIR}' -lthree_compiler")
+  BuildFunctions::executable(test_object_files, "#{BUILD_DIR}/compiler_test", "'-L#{BUILD_DIR}' -L/usr/local/lib -lthree_compiler -lclang")
 end
 
 namespace :compiler do
