@@ -6,7 +6,13 @@
 
 namespace Language {
     TypeReference TypeReference::ref(Three::Module* module, const std::string& name, uint32_t indirection) {
-        return TypeReference(module->dataTypeForName(name), indirection);
+        assert(module);
+
+        DataType* type = module->dataTypeForName(name);
+
+        assert(type);
+
+        return TypeReference(type, indirection);
     }
 
     TypeReference::TypeReference() : _type(NULL), _indirection(0) {

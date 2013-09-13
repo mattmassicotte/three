@@ -16,10 +16,14 @@ namespace Language {
 
         void setName(const std::string& value);
         std::string name() const;
+        std::string fullyQualifiedName() const;
         void setNamespace(const std::string& ns);
         std::string namespacePrefix() const;
         void setReturnType(const TypeReference& type);
         TypeReference returnType() const;
+        void setPseudoMethodType(const TypeReference& type);
+        TypeReference pseudoMethodType() const;
+        bool isPseudoMethod() const;
         DataType* createType() const;
 
         void addParameter(const std::string& name, const TypeReference& type);
@@ -33,6 +37,7 @@ namespace Language {
         std::string            _name;
         std::string            _namespace;
         TypeReference          _returnType;
+        TypeReference          _pseudoMethodType;
         std::vector<Variable*> _parameters;
     };
 }

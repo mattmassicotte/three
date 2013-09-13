@@ -41,6 +41,26 @@ namespace Language {
         return _name;
     }
 
+    std::string Function::fullyQualifiedName() const {
+        std::stringstream s;
+
+        if (_namespace.length() > 0) {
+            std::string ns = this->namespacePrefix();
+
+            std::replace(ns.begin(), ns.end(), '.', '_');
+
+            s << ns << "_3_";
+        }
+
+        if (this->isPseudoMethod()) {
+            s << this->pseudoMethodType().name() << "_3_";
+        }
+
+        s << this->name();
+
+        return s.str();
+    }
+
     void Function::setNamespace(const std::string& ns) {
         _namespace = ns;
     }
@@ -56,6 +76,18 @@ namespace Language {
 
     TypeReference Function::returnType() const {
         return _returnType;
+    }
+
+    void Function::setPseudoMethodType(const TypeReference& type) {
+        _pseudoMethodType = type;
+    }
+
+    TypeReference Function::pseudoMethodType() const {
+        return _pseudoMethodType;
+    }
+
+    bool Function::isPseudoMethod() const {
+        return _pseudoMethodType.referencedType() != NULL;
     }
 
     DataType* Function::createType() const {
@@ -93,7 +125,7 @@ namespace Language {
     void Function::codeGenCSource(CSourceContext& context, std::function<void (void)> func) const {
         this->returnType().codeGenCSource(context.current(), "");
 
-        context << " " << this->name() << "(";
+        context << " " << this->fullyQualifiedName() << "(";
 
         this->eachParameterWithLast([=, &context] (Variable* var, bool last) {
             var->type().codeGenCSource(context.current(), var->name());

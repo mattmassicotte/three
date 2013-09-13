@@ -9,6 +9,8 @@ namespace Language {
         _bodySource = new CSource();
 
         _currentSource = _bodySource;
+
+        this->addHeader("three/runtime/closure.h");
     }
 
     CSourceContext::~CSourceContext() {
