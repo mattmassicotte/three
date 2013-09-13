@@ -15,7 +15,9 @@ namespace Language {
 
         node->_functionType = NULL;
         Function* func = parser.currentModule()->functionForName(t.str());
-        if (!func) {
+        if (func) {
+            node->setFunctionName(func->fullyQualifiedName());
+        } else {
             Variable* v = parser.currentScope()->variableForName(t.str());
             
             if (!v) {
@@ -23,9 +25,9 @@ namespace Language {
             } else {
                 node->_functionType = v->type().referencedType();
             }
-        }
 
-        node->setFunctionName(t.str());
+            node->setFunctionName(t.str());
+        }
 
         assert(parser.next().type() == Token::Type::PunctuationOpenParen);
 

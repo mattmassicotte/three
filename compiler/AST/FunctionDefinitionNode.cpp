@@ -23,7 +23,10 @@ namespace Language {
 
         // define a variable for the function, so it can be referred to
         Variable* var = new Variable();
-        var->setName(node->_function->name());
+
+        // use the fullyQualifiedName here, so when it is codegen'ed, we get the
+        // right symbol
+        var->setName(node->_function->fullyQualifiedName());
 
         // TODO: this createType usage is a leak
         var->setType(TypeReference(node->_function->createType(), 1));

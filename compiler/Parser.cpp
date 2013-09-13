@@ -498,11 +498,27 @@ namespace Language {
     Function* Parser::parseFunctionSignature() {
         Function* function = new Function();
 
-        // parse the function name
-        assert(this->peek().type() == Token::Type::Identifier);
-
-        function->setName(this->next().str());
         function->setNamespace(this->context()->namespacePrefix());
+
+        // parse the function name
+        // name(...)
+        // Type.name(...)
+
+        if (this->peek(2).str() == ".") {
+            assert(this->peek().type() == Token::Type::Identifier);
+
+            TypeReference type = TypeReference::ref(this->currentModule(), this->next().str(), 0);
+
+            function->setPseudoMethodType(type);
+
+            type.setIndirectionDepth(1); // turn this into a pointer
+            function->addParameter("self", type);
+
+            assert(this->next().str() == ".");
+        }
+
+        assert(this->peek().type() == Token::Type::Identifier);
+        function->setName(this->next().str());
 
         // move past the opening '('
         assert(this->next().type() == Token::Type::PunctuationOpenParen);
