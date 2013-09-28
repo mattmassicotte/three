@@ -1,5 +1,6 @@
 #include "IncludeNode.h"
 #include "../../Parser.h"
+#include "../../CSourceIndexer.h"
 
 #include <assert.h>
 
@@ -8,15 +9,19 @@ namespace Three {
         IncludeNode* node = new IncludeNode();
 
         assert(parser.next().str() == "include");
-        assert(parser.next().type() == Token::Type::PunctuationOpenParen);
 
         assert(parser.peek().type() == Token::Type::String);
         node->_headerName = parser.next().str();
 
-        assert(parser.next().type() == Token::Type::PunctuationCloseParen);
         parser.parseNewline();
 
         parser.currentModule()->addCIncludePath(node->_headerName);
+
+        CSourceIndexer index;
+
+        index.indexFileAtPath(node->_headerName);
+
+        parser.currentModule()->addModule(node->_headerName, index.module());
 
         return node;
     }
@@ -30,5 +35,6 @@ namespace Three {
     }
 
     void IncludeNode::codeGenCSource(CSourceContext& context) {
+        context.addHeader(this->_headerName);
     }
 }

@@ -7,7 +7,7 @@ FRONTEND_OBJECTS = BuildFunctions::objects_for_sources(FRONTEND_SOURCES, :flags 
 
 CLOBBER.include(FRONTEND_EXECUTABLE)
 file FRONTEND_EXECUTABLE => [FRONTEND_OBJECTS, "#{BUILD_DIR}/libthree_compiler.a"].flatten do
-  BuildFunctions::executable(FRONTEND_OBJECTS, FRONTEND_EXECUTABLE, "'-L#{BUILD_DIR}' -lthree_compiler")
+  BuildFunctions::executable(FRONTEND_OBJECTS, FRONTEND_EXECUTABLE, "'-L#{BUILD_DIR}' -lthree_compiler '-L/usr/local/lib' -lclang")
 end
 
 namespace :compiler do

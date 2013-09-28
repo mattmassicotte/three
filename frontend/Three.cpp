@@ -1,4 +1,5 @@
 #include "../compiler/Parser.h"
+#include "../compiler/CSourceIndexer.h"
 
 #include <getopt.h>
 #include <iostream>
@@ -88,15 +89,25 @@ bool createCSource(Language::RootNode* node, const std::string& path) {
     return true;
 }
 
+std::vector<std::string> defaultCIncludePaths(void) {
+    std::vector<std::string> paths = *Three::CSourceIndexer::defaultCIncludePaths();
+
+    paths.push_back("/usr/local/include/three/runtime");
+
+    return paths;
+}
+
 bool compileCSource(Language::RootNode* node, const std::string& cSourcePath) {
     std::stringstream s;
 
     s << "clang -std=c11";
     s << " -o three_binary";
     s << " -L/usr/local/lib";
-    s << " -lthree_runtime";
-    s << " -I/usr/local/include";
-    s << " -I/usr/local/include/three/runtime";
+
+    for (const std::string& string : defaultCIncludePaths()) {
+        s << " '-I" << string << "'";
+    }
+
     s << " " << cSourcePath;
 
     return system(s.str().c_str()) == 0;
