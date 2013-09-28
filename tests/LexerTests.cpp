@@ -698,12 +698,10 @@ TEST_F(LexerTest, LinkageKeyword) {
 }
 
 TEST_F(LexerTest, IncludeKeyword) {
-    this->lex("include(\"something\")");
+    this->lex("include \"something\"");
 
     ASSERT_NEXT_TOKEN(KeywordInclude,        "include");
-    ASSERT_NEXT_TOKEN(PunctuationOpenParen,  "(");
     ASSERT_NEXT_TOKEN(String,                "something");
-    ASSERT_NEXT_TOKEN(PunctuationCloseParen, ")");
 }
 
 TEST_F(LexerTest, AbiKeyword) {

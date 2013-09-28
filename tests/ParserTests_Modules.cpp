@@ -4,17 +4,17 @@ class ParserTest_Modules : public ParserTestBase {
 };
 
 TEST_F(ParserTest_Modules, ImportLinkageAndInclude) {
-    ASTNode* node = this->parse("import C.time\nlinkage(\"pthread\")\ninclude(\"pthread.h\")\n");
+    ASTNode* node = this->parse("include \"time.h\"\nlinkage(\"pthread\")\ninclude \"pthread.h\"\n");
 
     ASSERT_EQ(3, node->childCount());
 
-    ASSERT_IMPORT("C.time", node->childAtIndex(0));
+    ASSERT_INCLUDE("time.h", node->childAtIndex(0));
     ASSERT_LINKAGE("pthread", node->childAtIndex(1));
     ASSERT_INCLUDE("pthread.h", node->childAtIndex(2));
 }
 
 TEST_F(ParserTest_Modules, IncludeFollowedByNewlines) {
-    ASTNode* node = this->parse("include(\"pthread.h\")\n\n\ndef:type my_int Int\n");
+    ASTNode* node = this->parse("include \"pthread.h\"\n\n\ndef:type my_int Int\n");
 
     ASSERT_EQ(2, node->childCount());
 

@@ -6,18 +6,18 @@ class ParserTest : public ParserTestBase {
 TEST_F(ParserTest, SimpleHelloWorldProgram) {
     Language::ASTNode* node;
 
-    node = this->parse("import C.stdio\n\ndef main(Int argc, **Char argv; Int)\n    printf(\"hello world\")\n    return 0\nend\n");
+    node = this->parse("include \"stdio.h\"\n\ndef main(Int argc, **Char argv; Int)\n    printf(\"hello world\")\n    return 0\nend\n");
 
     ASSERT_EQ("Root", node->name());
     ASSERT_EQ(2, node->childCount());
 
-    // import statement
-    ASSERT_IMPORT("C.stdio", node->childAtIndex(0));
+    // include statement
+    ASSERT_INCLUDE("stdio.h", node->childAtIndex(0));
 
     // function definition
     Language::FunctionDefinitionNode* defNode;
 
-    defNode = (Language::FunctionDefinitionNode *)node->childAtIndex(1);
+    defNode = dynamic_cast<Language::FunctionDefinitionNode*>(node->childAtIndex(1));
 
     ASSERT_EQ("FunctionDefinition", defNode->name());
     ASSERT_EQ(2, defNode->childCount());
@@ -30,7 +30,7 @@ TEST_F(ParserTest, SimpleHelloWorldProgram) {
 
     Language::FunctionCallNode* callNode;
 
-    callNode = (Language::FunctionCallNode *)defNode->childAtIndex(0);
+    callNode = dynamic_cast<Language::FunctionCallNode*>(defNode->childAtIndex(0));
 
     ASSERT_EQ("FunctionCall", callNode->name());
     ASSERT_EQ("printf", callNode->functionName());
@@ -125,10 +125,10 @@ TEST_F(ParserTest, ComplexExpression) {
 TEST_F(ParserTest, ClosureInFunction) {
     Language::ASTNode* node;
 
-    node = this->parse("import C.stdio\n\ndef main(;Int)\nInt x\nInt y\n{Int, Int; Int} closure\nx = 42\ny = 43\nclosure = do (Int a, Int b; Int; x) {\nx = a + b + y\nreturn a + b\n}\n printf(\"x = %d, value = %d\\n\", x, closure(1,2))\nprintf(\"x = %d\\n\", x)\nend\n");
+    node = this->parse("include \"stdio.h\"\n\ndef main(;Int)\nInt x\nInt y\n{Int, Int; Int} closure\nx = 42\ny = 43\nclosure = do (Int a, Int b; Int; x) {\nx = a + b + y\nreturn a + b\n}\n printf(\"x = %d, value = %d\\n\", x, closure(1,2))\nprintf(\"x = %d\\n\", x)\nend\n");
 
-    // import statement
-    ASSERT_IMPORT("C.stdio", node->childAtIndex(0));
+    // include statement
+    ASSERT_INCLUDE("stdio.h", node->childAtIndex(0));
 
     node = node->childAtIndex(1);
 

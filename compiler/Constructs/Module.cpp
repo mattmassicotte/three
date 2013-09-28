@@ -90,7 +90,7 @@ namespace Three {
             return m;
         }
 
-        _importedModules.push_back(m);
+        this->addModule(name, m);
 
         return m;
     }
