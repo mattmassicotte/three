@@ -37,6 +37,20 @@ namespace Three {
         return _includePaths;
     }
 
+    std::vector<std::string> CSourceIndexer::defaultCCompilerArguments() {
+        std::vector<std::string> arguments;
+
+        for (const std::string& path : *CSourceIndexer::defaultCIncludePaths()) {
+            std::string includeString;
+
+            includeString = "-I" + path;
+
+            arguments.push_back(includeString);
+        }
+
+        return arguments;
+    }
+
     std::string CSourceIndexer::resolveCHeaderPath(const std::string& partialPath) {
         for (const std::string& path : *CSourceIndexer::defaultCIncludePaths()) {
             std::string fullPath = path + "/" + partialPath;
@@ -78,18 +92,29 @@ namespace Three {
 
         std::string fullPath = CSourceIndexer::resolveCHeaderPath(path);
 
+        std::vector<std::string> arguments = CSourceIndexer::defaultCCompilerArguments();
+        unsigned argCount = arguments.size();
+        
+        const char** args = (const char**)malloc(argCount * sizeof(char*));
+
+        for (int i = 0; i < argCount; ++i) {
+            args[i] = arguments.at(i).c_str();
+        }
+
         int result = clang_indexSourceFile(action,
                                            this,
                                            &callbacks,
                                            sizeof(IndexerCallbacks),
                                            CXIndexOpt_SuppressRedundantRefs,
                                            fullPath.c_str(),
-                                           NULL,
-                                           0,
+                                           args,
+                                           argCount,
                                            NULL,
                                            0,
                                            NULL,
                                            0);
+
+        free(args);
 
         clang_IndexAction_dispose(action);
         clang_disposeIndex(index);
@@ -109,6 +134,14 @@ namespace Three {
 
         _module->addFunction(name, fn);
     }
+
+    void CSourceIndexer::addType(const std::string& name) {
+        Language::DataType* type;
+
+        type = new Language::DataType(Language::DataType::Flavor::Scalar, name);
+
+        _module->addDataType(type);
+    }
 }
 
 static int abortQuery(CXClientData clientData, void* reserved) {
@@ -116,6 +149,15 @@ static int abortQuery(CXClientData clientData, void* reserved) {
 }
 
 static void diagnostic(CXClientData clientData, CXDiagnosticSet diagnosticSet, void* reserved) {
+    unsigned diagnosticCount = clang_getNumDiagnosticsInSet(diagnosticSet);
+
+    for (unsigned i = 0; i < diagnosticCount; ++i) {
+        CXDiagnostic diagnostic = clang_getDiagnosticInSet(diagnosticSet, i);
+
+        CXString string = clang_formatDiagnostic(diagnostic, clang_defaultDiagnosticDisplayOptions());
+
+        std::cout << "C parse error: " << clang_getCString(string) << std::endl;
+    }
 }
 
 static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declInfo) {
@@ -128,6 +170,7 @@ static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declI
 
     switch(declInfo->entityInfo->kind) {
         case CXIdxEntity_Typedef:
+            index->addType(name);
             break;
         case CXIdxEntity_Function:
             index->addFunction(name);

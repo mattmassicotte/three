@@ -5,4 +5,5 @@
 *.a
 gtest
 llvm-*.src
+*.tmproj
 build
