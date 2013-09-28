@@ -1,6 +1,7 @@
 // C11 threads.h
 
-#pragma once
+#ifndef __THREADS_H
+#define __THREADS_H
 
 // platform determination
 #if defined(__unix__) || defined(__unix) || defined(__APPLE__)
@@ -42,7 +43,7 @@ enum {
 };
 
 __BEGIN_DECLS
-    
+
 // threads
 int    thrd_create(thrd_t *thr, thrd_start_t func, void *arg);
 thrd_t thrd_current(void);
@@ -79,3 +80,5 @@ void *tss_get(tss_t key);
 int   tss_set(tss_t key, void *val);
 
 __END_DECLS
+
+#endif //__THREADS_H

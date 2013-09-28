@@ -1,3 +1,5 @@
+// C11 stdatomic.h
+
 #ifndef __STDATOMIC_H
 #define __STDATOMIC_H
 
@@ -108,4 +110,4 @@ typedef struct atomic_flag { atomic_bool _Value; } atomic_flag;
 #define atomic_flag_clear_explicit(obj, order)        atomic_store(&(obj)->_Value, 0, order)
 #define atomic_flag_clear(obj)                        atomic_flag_clear_explicit(obj, memory_order_seq_cst)
 
-#endif /* __STDATOMIC_H */
+#endif // __STDATOMIC_H

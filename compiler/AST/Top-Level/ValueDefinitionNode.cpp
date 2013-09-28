@@ -27,6 +27,6 @@ namespace Three {
     }
 
     void ValueDefinitionNode::codeGenCSource(CSourceContext& context) {
-        context.current()->print(this->definedName());
+        // context.current()->print(this->definedName());
     }
 }

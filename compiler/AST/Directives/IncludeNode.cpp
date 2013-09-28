@@ -19,7 +19,10 @@ namespace Three {
 
         CSourceIndexer index;
 
-        index.indexFileAtPath(node->_headerName);
+        if (!index.indexFileAtPath(node->_headerName)) {
+            std::cout << "Unable to index c header '" << node->_headerName << "'" << std::endl;
+            assert(0);
+        }
 
         parser.currentModule()->addModule(node->_headerName, index.module());
 
