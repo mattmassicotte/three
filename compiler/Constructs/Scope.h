@@ -23,6 +23,9 @@ namespace Language {
         std::string makeScopedName(const std::string& string);
         void setClosingScope(bool closed);
 
+        void setNamespace(const std::string& ns);
+        std::string namespacePrefix() const;
+
         Variable* variableForName(const std::string& name);
         void addVariable(const std::string& name, Variable* var);
         void setReferencedVariable(const std::string& name);
@@ -43,6 +46,7 @@ namespace Language {
         bool        _closesVariables;
         std::string _scopedName;
         uint32_t    _scopeNameCount;
+        std::string _namespace;
 
         Scope* _parent;
     };

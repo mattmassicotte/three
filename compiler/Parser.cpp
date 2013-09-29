@@ -575,7 +575,7 @@ namespace Language {
     Function* Parser::parseFunctionSignature() {
         Function* function = new Function();
 
-        function->setNamespace(this->context()->namespacePrefix());
+        function->setNamespace(this->currentScope()->namespacePrefix());
 
         // parse the function name
         // name(...)

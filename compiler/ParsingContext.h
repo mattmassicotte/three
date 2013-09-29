@@ -29,9 +29,6 @@ namespace Three {
         void   pushScope(Scope* scope);
         void   popScope();
 
-        void setNamespace(const std::string& ns);
-        std::string namespacePrefix() const;
-
         void setVisibility(TranslationUnit::Visibility visibility);
         TranslationUnit::Visibility visibility() const;
 
@@ -39,7 +36,6 @@ namespace Three {
         TranslationUnit* _translationUnit;
         Scope*           _currentScope;
         Module*          _module;
-        std::string      _namespace;
         TranslationUnit::Visibility _visibility;
     };
 }

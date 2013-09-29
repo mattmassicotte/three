@@ -15,10 +15,13 @@ namespace Language {
         return TypeReference(type, indirection);
     }
 
-    TypeReference::TypeReference() : _type(NULL), _indirection(0) {
+    TypeReference::TypeReference() : _type(NULL), _indirection(0), _prependsStructKeyword(false) {
     }
 
     TypeReference::TypeReference(DataType* referencedType, uint32_t indirection) : _type(referencedType), _indirection(indirection) {
+        // We have to store this in case the type changes the value.  This is a little bit of a 
+        // hack to address self-referential struct definition codegen for C.
+        _prependsStructKeyword = _type->cSourcePrependStructKeyword();
     }
 
     std::string TypeReference::str() const {
@@ -63,6 +66,8 @@ namespace Language {
     }
 
     void TypeReference::codeGenCSourceFunctionType(CSource* source, const std::string& variableName) const {
+        assert(!_prependsStructKeyword);
+
         // return (*varName)(param1, param2);
         _type->returnType().codeGenCSource(source, "");
         source->print(" (");
@@ -100,6 +105,10 @@ namespace Language {
         if (_type->flavor() == DataType::Flavor::Function) {
             this->codeGenCSourceFunctionType(source, variableName);
             return;
+        }
+
+        if (_prependsStructKeyword) {
+            source->print("struct ");
         }
 
         source->print(_type->cSourceName());

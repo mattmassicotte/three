@@ -71,14 +71,6 @@ namespace Three {
         delete old;
     }
 
-    void ParsingContext::setNamespace(const std::string& ns) {
-        _namespace = ns;
-    }
-
-    std::string ParsingContext::namespacePrefix() const {
-        return _namespace;
-    }
-
     void ParsingContext::setVisibility(TranslationUnit::Visibility visibility) {
         _visibility = visibility;
     }

@@ -80,6 +80,7 @@ namespace Three {
         this->startExpression()->codeGenCSource(context);
 
         // TODO: its incorrect to not include a semi-colon here. But!  VariableDeclarations already do that.
+        context << " ";
 
         this->condition()->codeGenCSource(context);
         context << "; ";

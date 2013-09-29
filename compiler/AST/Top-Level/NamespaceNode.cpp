@@ -13,12 +13,15 @@ namespace Three {
         assert(node->_name.length() > 0);
 
         parser.parseNewline();
-        parser.context()->setNamespace(node->_name);
+
+        parser.pushScope(new Scope(node->_name));
+        parser.currentScope()->setNamespace(node->_name);
 
         parser.parseUntilEnd([&] () {
             node->addChild(parser.parseTopLevelNode());
         });
 
+        parser.popScope();
         parser.parseNewline();
 
         return node;
@@ -33,5 +36,6 @@ namespace Three {
     }
 
     void NamespaceNode::codeGenCSource(CSourceContext& context) {
+        this->codeGenCSourceForChildren(context);
     }
 }

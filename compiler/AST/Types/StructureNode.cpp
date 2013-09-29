@@ -23,8 +23,12 @@ namespace Language {
         node->_name = parser.next().str();
         parser.parseNewline();
 
-        // We need to define our type here, in case it is used recursively
+        // Here's an interesting problem.  If the struct refers to itself in the 
+        // definition, it has to be already defined.  Additionally, in C, that's
+        // not possible without referencing a specially-named version.
         DataType* type = new DataType(DataType::Flavor::Structure, node->_name);
+
+        type->setCSourcePrependStructKeyword(true);
 
         for (Annotation* annotation : parser.currentScope()->annotations()) {
             annotation->applyToDataType(type);
@@ -41,9 +45,10 @@ namespace Language {
 
         parser.parseNewline();
 
-        // here, we need to iterate through the elements of the structure, and fill in
-        // the actual members
-        // TODO
+        // now that we are done, there's no possibility of self-references so we can
+        // get rid of the "struct" keyword on the type
+        
+        type->setCSourcePrependStructKeyword(false);
 
         return node;
     }
@@ -87,7 +92,7 @@ namespace Language {
 
         this->renderCSourcePackingStart(context);
 
-        context.current()->printLineAndIndent("typedef struct {");
+        context.current()->printLineAndIndent("typedef struct _" + this->structureName() + " {");
 
         this->codeGenCSourceForChildren(context);
 

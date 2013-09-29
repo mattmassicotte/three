@@ -126,4 +126,7 @@ TEST_F(ParserTest_Modules, DefinitionAfterNamespace) {
 
     ASSERT_EQ("Namespace", node->childAtIndex(0)->nodeName());
     ASSERT_EQ("FunctionDefinition", node->childAtIndex(1)->nodeName());
+
+    Language::FunctionDefinitionNode* defNode = dynamic_cast<Language::FunctionDefinitionNode*>(node->childAtIndex(1));
+    ASSERT_EQ("foo", defNode->function()->fullyQualifiedName());
 }

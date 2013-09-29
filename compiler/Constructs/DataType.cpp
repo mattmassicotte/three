@@ -4,10 +4,10 @@
 #include <assert.h>
 
 namespace Language {
-    DataType::DataType(const Flavor& type) : _type(type), _children() {
+    DataType::DataType(const Flavor& type) : _type(type), _children(), _prependStructKeyword(false) {
     }
 
-    DataType::DataType(const Flavor& type, const std::string& name) : _type(type), _name(name), _children() {
+    DataType::DataType(const Flavor& type, const std::string& name) : _type(type), _name(name), _children(), _prependStructKeyword(false) {
     }
 
     std::string DataType::str() const {
@@ -75,10 +75,6 @@ namespace Language {
             return "char";
         } else if (this->name() == "Void") {
             return "void";
-        }
-
-        if (this->cSourcePrependStructKeyword()) {
-            return "struct " + this->name();
         }
 
         return this->name();

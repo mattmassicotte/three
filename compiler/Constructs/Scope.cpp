@@ -56,6 +56,14 @@ namespace Language {
         _closesVariables = closed;
     }
 
+    void Scope::setNamespace(const std::string& ns) {
+        _namespace = ns;
+    }
+
+    std::string Scope::namespacePrefix() const {
+        return _namespace;
+    }
+
     void Scope::addVariable(const std::string& name, Variable* var) {
         assert(var != NULL);
         _variables[name] = var;

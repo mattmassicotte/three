@@ -32,6 +32,8 @@ namespace Language {
         void incrementIndirectionDepth();
         bool isArray() const;
         std::vector<uint32_t> arrayDimensions() const;
+        void setCSourcePrependStructKeyword(bool prepend);
+        bool cSourcePrependStructKeyword() const;
 
         void codeGenCSourceFunctionType(CSource* source, const std::string& variableName) const;
         void codeGenCSource(CSource* source, const std::string& variableName) const;
@@ -39,6 +41,7 @@ namespace Language {
     private:
         DataType* _type;
         uint32_t  _indirection;
+        bool _prependsStructKeyword;
 
         std::vector<uint32_t> _arrayDimensions;
     };

@@ -135,10 +135,14 @@ namespace Three {
         _module->addFunction(name, fn);
     }
 
-    void CSourceIndexer::addType(const std::string& name) {
+    void CSourceIndexer::addType(const std::string& name, Language::DataType::Flavor flavor) {
         Language::DataType* type;
 
-        type = new Language::DataType(Language::DataType::Flavor::Scalar, name);
+        type = new Language::DataType(flavor, name);
+
+        if (flavor == Language::DataType::Flavor::Structure) {
+            type->setCSourcePrependStructKeyword(true);
+        }
 
         _module->addDataType(type);
     }
@@ -170,7 +174,7 @@ static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declI
 
     switch(declInfo->entityInfo->kind) {
         case CXIdxEntity_Typedef:
-            index->addType(name);
+            index->addType(name, Language::DataType::Flavor::Scalar);
             break;
         case CXIdxEntity_Function:
             index->addFunction(name);
@@ -180,6 +184,9 @@ static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declI
         case CXIdxEntity_Enum:
             break;
         case CXIdxEntity_Struct:
+            if (name.length() > 0) {
+                index->addType(name, Language::DataType::Flavor::Structure);
+            }
             break;
         case CXIdxEntity_Union:
             break;

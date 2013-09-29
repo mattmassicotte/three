@@ -35,7 +35,6 @@ namespace Language {
 
         // push in a new scope for the function body
         parser.pushScope(new Scope(node->_function->name()));
-        
 
         // define new variables for all parameters
         node->_function->eachParameterWithLast([&] (Variable* v, bool last) {
