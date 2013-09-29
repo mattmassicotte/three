@@ -103,6 +103,7 @@ bool compileCSource(Language::RootNode* node, const std::string& cSourcePath) {
     s << "clang -std=c11";
     s << " -o three_binary";
     s << " -L/usr/local/lib";
+    s << " -lthree_runtime";
 
     for (const std::string& string : defaultCIncludePaths()) {
         s << " '-I" << string << "'";

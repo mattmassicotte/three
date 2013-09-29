@@ -20,6 +20,9 @@ namespace Language {
         root = new RootNode();
 
         while (!this->peek().isEnd()) {
+#if DEBUG_PARSING
+            std::cout << "Parser: root '" << this->peek().str() << "'" << std::endl;
+#endif
             root->addChild(this->parseTopLevelNode());
         }
 
@@ -642,7 +645,7 @@ namespace Language {
         ASTNode* node = NULL;
 
 #if DEBUG_PARSING
-        std::cout << "Parser: top level" << std::endl;
+        std::cout << "Parser: top level '" << this->peek().str() << "'" << std::endl;
 #endif
         
         switch (this->peek().type()) {

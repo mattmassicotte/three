@@ -103,16 +103,27 @@ TEST_F(ParserTest_Modules, DefValueUsedForVariableInitialization) {
 }
 
 TEST_F(ParserTest_Modules, NamespaceBlock) {
-    ASTNode* node = this->parse("namespace Something\ndef:func foo()\n");
+    ASTNode* node = this->parse("namespace Something\ndef:func foo()\nend\n");
 
-    ASSERT_EQ(2, node->childCount());
+    ASSERT_EQ(1, node->childCount());
 
     Three::NamespaceNode* nsNode = dynamic_cast<Three::NamespaceNode*>(node->childAtIndex(0));
 
     ASSERT_EQ("Namespace", nsNode->nodeName());
     ASSERT_EQ("Something", nsNode->namespaceName());
 
-    Three::FunctionDeclarationNode* defNode = dynamic_cast<Three::FunctionDeclarationNode*>(node->childAtIndex(1));
+    Three::FunctionDeclarationNode* defNode = dynamic_cast<Three::FunctionDeclarationNode*>(nsNode->childAtIndex(0));
     ASSERT_EQ("foo", defNode->function()->name());
     ASSERT_EQ("Something", defNode->function()->namespacePrefix());
+}
+
+TEST_F(ParserTest_Modules, DefinitionAfterNamespace) {
+    ASTNode* node = this->parse("namespace Something\nend\ndef foo()\nend\n");
+
+    std::cout << node->recursiveStr() << std::endl;
+
+    ASSERT_EQ(2, node->childCount());
+
+    ASSERT_EQ("Namespace", node->childAtIndex(0)->nodeName());
+    ASSERT_EQ("FunctionDefinition", node->childAtIndex(1)->nodeName());
 }
