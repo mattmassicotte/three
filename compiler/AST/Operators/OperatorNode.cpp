@@ -6,90 +6,44 @@
 #include <assert.h>
 
 namespace Language {
-    ASTNode* OperatorNode::parse(Parser& parser, uint32_t precedence, ASTNode* leftOperand) {
-        assert(leftOperand != NULL);
-        assert(precedence > Token::NonPrecedence);
+    ASTNode* OperatorNode::parse(Parser& parser, ASTNode* left, uint32_t precedence) {
+        OperatorNode* node = new OperatorNode();
 
-        while (true) {
-            Token t = parser.peek();
+        assert(parser.peek().type() == Token::Type::Operator); // move past the current operator
+        node->setOp(parser.next().str());
 
-            // if we've gotten to the end of a statement, we have nothing left to do here
-            if (t.isStatementEnding()) {
-                return leftOperand;
-            }
+        node->addChild(left);
+        node->addChild(parser.parseExpression(precedence));
 
-            if (t.precedence() < precedence) {
-                return leftOperand;
-            }
+        if (node->op() == "?" || node->op() == "cas") {
+            assert(parser.next().type() == Token::Type::PunctuationColon);
 
-            return OperatorNode::parseOperator(parser, leftOperand);
-        }
-
-        return leftOperand;
-    }
-
-    ASTNode* OperatorNode::parseUnary(Parser& parser) {
-        OperatorNode* node = NULL;
-        std::string potentialOp = parser.peek().str();
-
-        if (parser.peek().precedence() > 0) {
-            node = new OperatorNode();
-            node->setOp(parser.next().str());
-            node->addChild(parser.parsePrimary());
+            node->addChild(parser.parseExpression(precedence));
         }
 
         return node;
     }
 
-    ASTNode* OperatorNode::parseOperator(Parser& parser, ASTNode* leftOperand) {
-        assert(parser.peek().type() == Token::Type::Operator);
+    ASTNode* OperatorNode::parseUnary(Parser& parser) {
+        assert(parser.peek().isUnaryOperator());
 
-        std::string op = parser.next().str();
+        OperatorNode* node = new OperatorNode();
+        node->setOp(parser.next().str());
 
-        OperatorNode* node;
+        // unary operators can only have secondary expressions
+        // as arguments (identifiers, unary operators)
 
-        // These first two are a little complex.  We need to continue parsing the line.
-        
-        // Handle member access nodes specially
-        if (op == "." || op == "->") {
-            assert(parser.peek().type() == Token::Type::Identifier);
-
-            std::string memberName = parser.next().str();
-            node = new Three::MemberAccessNode(memberName, op == "->");
-            node->addChild(leftOperand);
-
-            return OperatorNode::parse(parser, Token::MinimumPrecedence, node);
-        }
-
-        // construct and parse the indexer operator
-        if (op == "[") {
-            node = new Three::IndexerNode();
-
-            node->addChild(leftOperand);
-            node->addChild(parser.parseExpression());
-
-            assert(parser.next().type() == Token::Type::PunctuationCloseBracket);
-
-            return OperatorNode::parse(parser, Token::MinimumPrecedence, node);
-        }
-
-        node = new OperatorNode();
-
-        node->setOp(op);
-
-        node->addChild(leftOperand);
-        node->addChild(parser.parseExpression());
-
-        if (node->ternary()) {
-            assert(parser.next().type() == Token::Type::PunctuationColon);
-            node->addChild(parser.parseExpression());
-        }
+        node->addChild(parser.parsePrimaryExpression());
 
         return node;
     }
 
     std::string OperatorNode::name() const {
         return "Operator";
+    }
+
+    std::string OperatorNode::str() const {
+        return "Operator: " + this->op();
     }
 
     std::string OperatorNode::op() const {

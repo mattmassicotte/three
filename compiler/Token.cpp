@@ -67,6 +67,48 @@ namespace Language {
         return true;
     }
 
+    bool Token::isUnaryOperator() const {
+        if (this->type() != Operator) {
+            return false;
+        }
+
+        if (_string.length() != 1) {
+            return false;
+        }
+
+        switch (_string.at(0)) {
+            case '*':
+            case '&':
+            case '-':
+                return true;
+        }
+
+        return false;
+    }
+
+    bool Token::isTernaryOperator() const {
+        if (this->type() != Operator) {
+            return false;
+        }
+
+        return _string == "?" || _string == "cas";
+    }
+
+    bool Token::isLeftAssociative() const {
+        if (_string == "+") return true;
+        if (_string == "*") return true;
+        if (_string == "-") return true;
+        if (_string == "<") return true;
+        if (_string == "<=") return true;
+        if (_string == ">") return true;
+        if (_string == ">=") return true;
+        
+        if (_string == "==") return true;
+        if (_string == "!=") return true;
+
+        return false;
+    }
+
     std::string Token::str() const {
         return _string;
     }
@@ -76,25 +118,48 @@ namespace Language {
     }
 
     uint32_t Token::precedence() const {
-        if (_string == "*") return 50;
-        if (_string == "&") return 50;
-        if (_string == "%") return 50;
-        if (_string == "/") return 50;
-        if (_string == "+") return 40;
-        if (_string == "-") return 40;
-        if (_string == "<") return 30;
-        if (_string == ">") return 30;
-        if (_string == "==") return 30;
-        if (_string == "+=") return 30;
-        if (_string == "||=") return 30;
-        if (_string == "&&=") return 30;
-        if (_string == "!=") return 30;
-        if (_string == "=") return 10;
-        if (_string == "?") return 5;
-        if (_string == "cas") return 5;
-        if (_string == ".") return 4;
-        if (_string == "->") return 4;
-        if (_string == "[") return 4;
+        if (_string == "[") return 16;
+        if (_string == "++") return 16; // suffix
+        if (_string == "--") return 16; // suffix
+        if (_string == ".") return 16;
+        if (_string == "->") return 16;
+        
+        if (_string == "*") return 15;
+        if (_string == "%") return 15;
+        if (_string == "/") return 15;
+        
+        if (_string == "+") return 14;
+        if (_string == "-") return 14;
+        
+        if (_string == "<<") return 13;
+        if (_string == ">>") return 13;
+        
+        if (_string == "<") return 12;
+        if (_string == "<=") return 12;
+        if (_string == ">") return 12;
+        if (_string == ">=") return 12;
+        
+        if (_string == "==") return 11;
+        if (_string == "!=") return 11;
+        
+        if (_string == "&") return 10;
+        
+        if (_string == "|") return 9;
+        
+        if (_string == "&&") return 8;
+        
+        if (_string == "||") return 7;
+        
+        if (_string == "?") return 6;
+        if (_string == "cas") return 6;
+        
+        if (_string == "=") return 5;
+        if (_string == "+=") return 5;
+        if (_string == "-=") return 5;
+        if (_string == "*=") return 5;
+        if (_string == "/=") return 5;
+        if (_string == "||=") return 5;
+        if (_string == "&&=") return 5;
 
         return Token::NonPrecedence;
     }

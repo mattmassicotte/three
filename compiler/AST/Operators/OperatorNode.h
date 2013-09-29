@@ -5,7 +5,7 @@
 namespace Language {
     class OperatorNode : public ASTNode {
     public:
-        static ASTNode* parse(Parser& parser, uint32_t precedence, ASTNode* leftOperand);
+        static ASTNode* parse(Parser& parser, ASTNode* left, uint32_t precedence);
         static ASTNode* parseUnary(Parser& parser);
 
     private:
@@ -13,6 +13,8 @@ namespace Language {
 
     public:
         virtual std::string name() const;
+
+        virtual std::string str() const;
 
         std::string op() const;
         void        setOp(const std::string& string);
