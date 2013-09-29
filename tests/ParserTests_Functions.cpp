@@ -3,6 +3,25 @@
 class ParserTest_Functions : public ParserTestBase {
 };
 
+TEST_F(ParserTest_Functions, EmptyFunction) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nend\n");
+
+    ASSERT_EQ("FunctionDefinition", node->childAtIndex(0)->nodeName());
+}
+
+TEST_F(ParserTest_Functions, BackToBackEmptyFunctions) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nend\ndef test2()\nend\n");
+
+    ASSERT_EQ(2, node->childCount());
+
+    ASSERT_EQ("FunctionDefinition", node->childAtIndex(0)->nodeName());
+    ASSERT_EQ("FunctionDefinition", node->childAtIndex(1)->nodeName());
+}
+
 TEST_F(ParserTest_Functions, ClosureInFunctionSignature) {
     Language::ASTNode* node;
 

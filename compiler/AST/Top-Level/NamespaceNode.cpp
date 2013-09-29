@@ -15,6 +15,12 @@ namespace Three {
         parser.parseNewline();
         parser.context()->setNamespace(node->_name);
 
+        parser.parseUntilEnd([&] () {
+            node->addChild(parser.parseTopLevelNode());
+        });
+
+        parser.parseNewline();
+
         return node;
     }
 
