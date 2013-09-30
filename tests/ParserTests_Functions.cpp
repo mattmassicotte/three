@@ -53,3 +53,15 @@ TEST_F(ParserTest_Functions, MethodDefinition) {
     ASSERT_VARIABLE("Int", 1, "self", defNode->function()->parameterAtIndex(0));
     ASSERT_DATA_TYPE("Void", defNode->function()->returnType().referencedType());
 }
+
+TEST_F(ParserTest_Functions, MethodInvocation) {
+    Language::ASTNode* node;
+
+    node = this->parse("def Int.test(Int b)\nend\n def invoke(*Int a)\n a.test(5)\nend\n");
+    ASSERT_EQ(2, node->childCount());
+
+    // grab a reference to the method invocation
+    node = node->childAtIndex(1)->childAtIndex(0);
+
+    std::cout << node->recursiveStr() << std::endl;
+}

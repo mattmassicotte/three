@@ -6,7 +6,9 @@
 namespace Language {
     class FunctionCallNode : public ASTNode {
     public:
-        static FunctionCallNode* parse(Parser& parser);
+        static FunctionCallNode* parse(Parser& parser, const std::string& functionName, ASTNode* firstArgument);
+        static FunctionCallNode* parseFunction(Parser& parser);
+        static FunctionCallNode* parseMethod(Parser& parser, ASTNode* target);
 
     public:
         virtual std::string name() const;

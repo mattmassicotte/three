@@ -105,43 +105,8 @@ namespace Language {
     ASTNode* Parser::parsePrimaryExpression() {
         ASTNode* node = this->parseSecondaryExpression();
 
-        // we now need to check for a tailing operator:
-        // []
-        // ->
-        // .
-
-        if (this->peek().type() != Token::Type::Operator) {
-            return node;
-        }
-
-        std::string op = this->peek().str();
-
-        if (op == "." || op == "->") {
-            this->next();
-            assert(this->peek().type() == Token::Type::Identifier);
-
-            std::string memberName = this->next().str();
-            OperatorNode* opNode = new Three::MemberAccessNode(memberName, op == "->");
-            opNode->addChild(node);
-
-            return opNode;
-        }
-
-        // construct and parse the indexer operator
-        if (op == "[") {
-            this->next();
-
-            OperatorNode* opNode = new Three::IndexerNode();
-
-            opNode->addChild(node);
-            opNode->addChild(this->parseExpression());
-
-            assert(this->next().type() == Token::Type::PunctuationCloseBracket);
-
-            return opNode;
-        }
-
-        return node;
+        // we now need to check for a tailing operator
+        return OperatorNode::parseTailing(*this, node);
     }
     
     ASTNode* Parser::parseSecondaryExpression() {
@@ -162,7 +127,7 @@ namespace Language {
         switch (this->peek().type()) {
             case Token::Type::Identifier:
                 if (this->peek(2).type() == Token::Type::PunctuationOpenParen) {
-                    return FunctionCallNode::parse(*this);
+                    return FunctionCallNode::parseFunction(*this);
                 } else if (this->currentModule()->definesConstant(this->peek().str())) {
                     return new Three::ValueNode(this->next().str());
                 } else {

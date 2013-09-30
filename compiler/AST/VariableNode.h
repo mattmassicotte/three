@@ -11,6 +11,8 @@ namespace Language {
     public:
         VariableNode();
 
+        virtual TypeReference nodeType() const;
+
         virtual std::string name() const;
         Variable* variable() const;
         void setVariable(Variable* var);

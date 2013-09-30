@@ -1,8 +1,24 @@
 #include "MemberAccessNode.h"
+#include "../../Parser.h"
+
+#include <assert.h>
 
 namespace Three {
-    MemberAccessNode::MemberAccessNode(const std::string& name, bool indirect) :
-        _memberName(name), _indirect(indirect) {
+    MemberAccessNode* MemberAccessNode::parse(Parser& parser, ASTNode* operand) {
+        MemberAccessNode* node = new Three::MemberAccessNode();
+
+        std::string op = parser.next().str();
+
+        // must be a valid op, plus identifier
+        assert(op == "->" || op == ".");
+        assert(parser.peek().type() == Token::Type::Identifier);
+
+        node->_memberName = parser.next().str();
+        node->_indirect = op == "->";
+
+        node->addChild(operand);
+
+        return node;
     }
 
     std::string MemberAccessNode::name() const {

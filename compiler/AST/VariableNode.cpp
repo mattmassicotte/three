@@ -20,6 +20,10 @@ namespace Language {
     VariableNode::VariableNode() : _variable(NULL), _referenced(false), _closed(false) {
     }
 
+    TypeReference VariableNode::nodeType() const {
+        return this->variable()->type();
+    }
+
     std::string VariableNode::name() const {
         return "Variable";
     }

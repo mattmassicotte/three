@@ -51,6 +51,10 @@ namespace Language {
         _statement = value;
     }
 
+    TypeReference ASTNode::nodeType() const {
+        return TypeReference();
+    }
+
     std::vector<Annotation*> ASTNode::annotations() const {
         return _annotations;
     }
