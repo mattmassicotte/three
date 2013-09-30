@@ -13,18 +13,26 @@ namespace Three {
 
         node->_evaluateConditionAtEnd = false;
 
-        if (parser.isAtType()) {
+        bool foundVariable = parser.isAtType();
+        if (foundVariable) {
             node->_startExpression = VariableDeclarationNode::parse(parser);
+            node->_startExpression->setStatement(false);
         } else {
             node->_startExpression = parser.parseExpression();
         }
 
         if (parser.nextIf("in")) {
-            node->_inExpression = parser.parseExpression();
             node->_condition = NULL;
             node->_loopExpression = NULL;
+
+            assert(foundVariable && "A ranged for loop must define a local variable");
+
+            node->_rangeStartExpression = parser.parseExpression();
+            assert(parser.next().type() == Token::Type::PunctuationColon);
+            node->_rangeEndExpression = parser.parseExpression();
         } else {
-            node->_inExpression = NULL;
+            node->_rangeStartExpression = NULL;
+            node->_rangeEndExpression = NULL;
             assert(parser.next().type() == Token::Type::PunctuationSemicolon);
             node->_condition = parser.parseExpression();
             assert(parser.next().type() == Token::Type::PunctuationSemicolon);
@@ -71,23 +79,82 @@ namespace Three {
         return _loopExpression;
     }
 
+    ASTNode* ForNode::rangeStartExpression() const {
+        return _rangeStartExpression;
+    }
+
+    ASTNode* ForNode::rangeEndExpression() const {
+        return _rangeEndExpression;
+    }
+
+    Language::Variable* ForNode::rangeLoopVariable() const {
+        return dynamic_cast<Language::VariableDeclarationNode*>(this->startExpression())->variable();
+    }
+
     bool ForNode::evaluateConditionAtEnd() const {
         return _evaluateConditionAtEnd;
     }
 
-    void ForNode::codeGenCSource(CSourceContext& context) {
-        context << "for (";
+    void ForNode::codeGenCSourceStartExpression(CSourceContext& context) const {
         this->startExpression()->codeGenCSource(context);
 
-        // TODO: its incorrect to not include a semi-colon here. But!  VariableDeclarations already do that.
-        context << " ";
+        if (_rangeStartExpression) {
+            context << " = ";
+            this->rangeStartExpression()->codeGenCSource(context);
+        }
+    }
 
-        this->condition()->codeGenCSource(context);
+    void ForNode::codeGenCSourceCondition(CSourceContext& context) const {
+        if (this->condition()) {
+            this->condition()->codeGenCSource(context);
+            return;
+        }
+
+        assert(_rangeStartExpression && _rangeEndExpression);
+
+        context << "(";
+        context << this->rangeLoopVariable()->name();
+        context << " < ";
+
+        this->rangeEndExpression()->codeGenCSource(context);
+
+        context << ") && (";
+
+        this->rangeStartExpression()->codeGenCSource(context);
+
+        context << " < ";
+
+        this->rangeEndExpression()->codeGenCSource(context);
+
+        context << ")";
+    }
+
+    void ForNode::codeGenCSourceLoopExpression(CSourceContext& context) const {
+        if (this->loopExpression()) {
+            this->loopExpression()->codeGenCSource(context);
+            return;
+        }
+
+        assert(_rangeStartExpression && _rangeEndExpression);
+
+        context << "++" << this->rangeLoopVariable()->name();
+    }
+
+    void ForNode::codeGenCSource(CSourceContext& context) {
+        context << "for (";
+        
+        this->codeGenCSourceStartExpression(context);
         context << "; ";
-        this->loopExpression()->codeGenCSource(context);
+
+        this->codeGenCSourceCondition(context);
+        context << "; ";
+
+        this->codeGenCSourceLoopExpression(context);
 
         context.current()->printLineAndIndent(") {");
+
         this->codeGenCSourceForChildren(context);
+
         context.current()->outdentAndPrintLine("}");
     }
 }

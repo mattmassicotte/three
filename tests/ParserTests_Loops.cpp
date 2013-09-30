@@ -49,6 +49,19 @@ TEST_F(ParserTest_Loops, ForStatement) {
     ASSERT_OPERATOR("+=", loop->loopExpression());
 }
 
+TEST_F(ParserTest_Loops, ForRangeStatement) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\nfor (Int i in 0:10)\nend\nend\n");
+    node = node->childAtIndex(0);
+
+    Three::ForNode* loop = dynamic_cast<Three::ForNode*>(node->childAtIndex(0));
+    ASSERT_EQ("For", loop->nodeName());
+    ASSERT_VARIABLE_DECLERATION("Int", 0, "i", loop->startExpression());
+    ASSERT_INTEGER_LITERAL_NODE(0, loop->rangeStartExpression());
+    ASSERT_INTEGER_LITERAL_NODE(10, loop->rangeEndExpression());
+}
+
 TEST_F(ParserTest_Loops, BreakStatement) {
     Language::ASTNode* node;
 

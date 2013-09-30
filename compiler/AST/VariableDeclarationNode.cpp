@@ -24,6 +24,10 @@ namespace Language {
             node->_initializerExpression = NULL;
         }
 
+        // TODO: this isn't quite right.  These aren't always statements.  So far,
+        // one place where they are not are in for loop start expressions
+        node->setStatement(true);
+
         return node;
     }
 
@@ -53,6 +57,8 @@ namespace Language {
             this->initializerExpression()->codeGenCSource(context);
         }
 
-        context << ";";
+        if (this->statement()) {
+            context << ";";
+        }
     }
 }
