@@ -126,14 +126,7 @@ namespace Language {
 
         switch (this->peek().type()) {
             case Token::Type::Identifier:
-                if (this->peek(2).type() == Token::Type::PunctuationOpenParen) {
-                    return FunctionCallNode::parseFunction(*this);
-                } else if (this->currentModule()->definesConstant(this->peek().str())) {
-                    return new Three::ValueNode(this->next().str());
-                } else {
-                    return VariableNode::parse(*this);
-                }
-                break;
+                return this->parseSecondaryIdentifier();
             case Token::Type::KeywordClosure:
                 return ClosureNode::parse(*this);
             case Token::Type::String:
@@ -208,6 +201,22 @@ namespace Language {
         return left;
     }
 
+    ASTNode* Parser::parseSecondaryIdentifier() {
+        // possible function call, variable, or constant
+
+        std::string identifier = this->parseQualifiedIdentifier();
+
+        if (this->peek().type() == Token::Type::PunctuationOpenParen) {
+            return FunctionCallNode::parse(*this, identifier, NULL);
+        }
+
+        if (this->currentModule()->definesConstant(identifier)) {
+            return new Three::ValueNode(identifier);
+        }
+
+        return VariableNode::parse(*this, identifier);
+    }
+
     bool Parser::parseNewline(bool multipleAllowed) {
         while (true) {
             assert(this->next().type() == Token::Type::Newline);
@@ -256,33 +265,36 @@ namespace Language {
         });
     }
 
-    std::string Parser::parseQualifiedName() {
+    std::string Parser::parseQualifiedIdentifier() {
         std::stringstream s;
 
-        this->parseUntil(false, [&] (const Token& token) {
-            switch (token.type()) {
-                case Token::Type::Identifier:
-                    s << this->next().str();
-                    break;
-                case Token::Type::Operator:
-                    if (token.str() == ".") {
-                        s << this->next().str();
-                    }
-                    break;
-                default:
-                    return true;
+        // Identifier::Identifier...
+
+        // we must have at least one identifier
+        assert(this->peek().type() == Token::Type::Identifier);
+        s << this->next().str();
+
+        while (true) {
+            // if we hit a scope operator, keep going
+            if (this->peek().type() != Token::Type::OperatorScope) {
+                break;
             }
 
-            return false;
-        });
+            this->next();
+            assert(this->peek().type() == Token::Type::Identifier);
+
+            // this is a bit of hack to get namespaces work in a way that is
+            // identifier-compatible with C
+            s << "_3_" << this->next().str();
+        }
 
         return s.str();
     }
 
     bool Parser::isAtType() {
         // Possible forms of variable declarations are:
-        // Identifier identifier = <expression>
-        // Identifier:<number> identifier = <expression>
+        // QualifiedIdentifier identifier = <expression>
+        // QualifiedIdentifier:<number> identifier = <expression>
         // {...closure type..} identifier = <expression>
         // (function type) identifier = <expression>
         //
@@ -328,6 +340,21 @@ namespace Language {
             }
 
             break; // finish the loop
+        }
+
+        // check if we match:
+        // - "QualifiedIdentifier identifier"
+        // - "QualifiedIdentifier:<number> identifier"
+        while (true) {
+            if (this->peek(peekDepth).type() != Token::Type::Identifier) {
+                break;
+            }
+
+            if (this->peek(peekDepth+1).type() != Token::Type::OperatorScope) {
+                break;
+            }
+
+            peekDepth += 2;
         }
 
         Token::Type closingPuntuation;
@@ -407,11 +434,12 @@ namespace Language {
         }
 
         std::string typeName;
+        std::string namespacedName;
 
         // parse the type
         switch (this->peek().type()) {
             case Token::Type::Identifier:
-                typeName = this->next().str();
+                typeName = this->parseQualifiedIdentifier();
 
                 // parse the specialization
                 if (this->peek().type() == Token::Type::PunctuationColon) {
@@ -419,10 +447,15 @@ namespace Language {
                     typeName += this->next().str();
                 }
 
+                namespacedName = this->currentScope()->fullNamespace() + "_3_" + typeName;
+
                 dataType = this->currentModule()->dataTypeForName(typeName);
                 if (!dataType) {
-                    std::cout << "[Parser] Unable to look type '" << typeName << "'" << std::endl;
-                    assert(0 && "Unable to lookup type");
+                    dataType = this->currentModule()->dataTypeForName(namespacedName);
+                }
+
+                if (!dataType) {
+                    std::cout << "[Parser] Unable to up look type '" << typeName << "' or '" << namespacedName << "'" << std::endl;
                 }
 
                 break;
@@ -435,7 +468,7 @@ namespace Language {
                 break;
         }
 
-        assert(dataType);
+        assert(dataType && "Unable to create type");
 
         return TypeReference(dataType, depth);
     }
@@ -540,7 +573,10 @@ namespace Language {
     Function* Parser::parseFunctionSignature() {
         Function* function = new Function();
 
-        function->setNamespace(this->currentScope()->namespacePrefix());
+        // TODO: there is some funny-business going on with the function namespace here.
+        // The problem is types are namespaced too.  So if we have a method definition,
+        // the current namespace gets tacked on twice, once for the function and again for the
+        // type.
 
         // parse the function name
         // name(...)
@@ -549,7 +585,15 @@ namespace Language {
         if (this->peek(2).str() == ".") {
             assert(this->peek().type() == Token::Type::Identifier);
 
-            TypeReference type = TypeReference::ref(this->currentModule(), this->next().str(), 0);
+            std::string typeName = this->next().str();
+
+            if (this->currentScope()->fullNamespace().length() > 0) {
+                typeName = this->currentScope()->fullNamespace() + "_3_" + typeName;
+            } else {
+                function->setNamespace(this->currentScope()->fullNamespace());
+            }
+
+            TypeReference type = TypeReference::ref(this->currentModule(), typeName, 0);
 
             function->setPseudoMethodType(type);
 
@@ -557,6 +601,8 @@ namespace Language {
             function->addParameter("self", type);
 
             assert(this->next().str() == ".");
+        } else {
+            function->setNamespace(this->currentScope()->fullNamespace());
         }
 
         assert(this->peek().type() == Token::Type::Identifier);
@@ -659,6 +705,20 @@ namespace Language {
 
     Token Parser::peek(unsigned int distance) {
         return _lexer->peek(distance);
+    }
+
+    void Parser::peekUntil(unsigned int* distance, std::function<bool (const Token& token)> func) {
+        assert(distance);
+
+        bool keepGoing = true;
+
+        while (keepGoing) {
+            keepGoing = func(this->peek(*distance));
+
+            if (keepGoing) {
+                *distance += 1;
+            }
+        }
     }
 
     Token Parser::next() {

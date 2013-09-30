@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../ASTNode.h"
+#include "../../Constructs/DataType.h"
 
 namespace Language {
     class StructureNode : public ASTNode {
@@ -21,6 +22,6 @@ namespace Language {
 
     private:
         uint32_t _packing;
-        std::string _name;
+        DataType* _type;
     };
 }

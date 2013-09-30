@@ -25,6 +25,7 @@ namespace Language {
 
         void setNamespace(const std::string& ns);
         std::string namespacePrefix() const;
+        std::string fullNamespace() const;
 
         Variable* variableForName(const std::string& name);
         void addVariable(const std::string& name, Variable* var);

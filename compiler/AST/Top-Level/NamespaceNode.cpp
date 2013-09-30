@@ -9,7 +9,7 @@ namespace Three {
 
         assert(parser.next().type() == Token::Type::KeywordNamespace);
 
-        node->_name = parser.parseQualifiedName();
+        node->_name = parser.parseQualifiedIdentifier();
         assert(node->_name.length() > 0);
 
         parser.parseNewline();

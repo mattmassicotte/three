@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Entity.h"
 #include "TypeReference.h"
 #include "Variable.h"
 #include "../CodeGen/CSourceContext.h"
@@ -8,17 +9,14 @@
 #include <functional>
 
 namespace Language {
-    class Function {
+    class Function : public Three::Entity {
     public:
         virtual ~Function();
 
         virtual std::string str() const;
 
-        void setName(const std::string& value);
-        std::string name() const;
         std::string fullyQualifiedName() const;
-        void setNamespace(const std::string& ns);
-        std::string namespacePrefix() const;
+
         void setReturnType(const TypeReference& type);
         TypeReference returnType() const;
         void setPseudoMethodType(const TypeReference& type);
@@ -34,8 +32,6 @@ namespace Language {
         void codeGenCSource(CSourceContext& context, std::function<void (void)> func) const;
 
     private:
-        std::string            _name;
-        std::string            _namespace;
         TypeReference          _returnType;
         TypeReference          _pseudoMethodType;
         std::vector<Variable*> _parameters;

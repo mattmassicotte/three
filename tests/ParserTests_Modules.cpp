@@ -120,13 +120,63 @@ TEST_F(ParserTest_Modules, NamespaceBlock) {
 TEST_F(ParserTest_Modules, DefinitionAfterNamespace) {
     ASTNode* node = this->parse("namespace Something\nend\ndef foo()\nend\n");
 
-    std::cout << node->recursiveStr() << std::endl;
-
     ASSERT_EQ(2, node->childCount());
 
     ASSERT_EQ("Namespace", node->childAtIndex(0)->nodeName());
-    ASSERT_EQ("FunctionDefinition", node->childAtIndex(1)->nodeName());
 
-    Language::FunctionDefinitionNode* defNode = dynamic_cast<Language::FunctionDefinitionNode*>(node->childAtIndex(1));
-    ASSERT_EQ("foo", defNode->function()->fullyQualifiedName());
+    ASSERT_FUNCTION_DEFINITION("foo", node->childAtIndex(1));
 }
+
+TEST_F(ParserTest_Modules, NamespacedStruct) {
+    Language::ASTNode* node;
+
+    node = this->parse("namespace Foo\nstruct Bar\nInt x\nend\ndef in()\n Bar x\nend\nend\n\n\ndef out()\nFoo::Bar y\nend\n");
+
+    ASSERT_EQ(2, node->childCount());
+    ASSERT_EQ(2, node->childAtIndex(0)->childCount());
+
+    ASTNode* defNode = node->childAtIndex(0)->childAtIndex(1);
+    ASSERT_FUNCTION_DEFINITION("Foo_3_in", defNode);
+    ASSERT_VARIABLE_DECLERATION("Foo_3_Bar", 0, "x", defNode->childAtIndex(0));
+
+    defNode = node->childAtIndex(1);
+    ASSERT_FUNCTION_DEFINITION("out", defNode);
+    ASSERT_VARIABLE_DECLERATION("Foo_3_Bar", 0, "y", defNode->childAtIndex(0));
+}
+
+TEST_F(ParserTest_Modules, NestedNamespaceRecursiveStruct) {
+    Language::ASTNode* node;
+
+    node = this->parse("namespace Foo\nnamespace Bar\nstruct MyStruct\n*MyStruct item\nend\nend\nend\n");
+
+    // TODO: fill this in
+}
+    
+TEST_F(ParserTest_Modules, NamespacedStructUsedInMethod) {
+    Language::ASTNode* node;
+
+    node = this->parse("namespace Foo\nstruct Bar\nInt x\nend\ndef Bar.in()\nend\nend\n");
+    node = node->childAtIndex(0);
+
+    ASSERT_FUNCTION_DEFINITION("Foo_3_Bar_3_in", node->childAtIndex(1));
+}
+
+TEST_F(ParserTest_Modules, NamespacedFunctionUsedInFunction) {
+    Language::ASTNode* node;
+
+    node = this->parse("namespace Foo\ndef in()\nend\nend\n\ndef out()\nFoo::in()\nend\n");
+    node = node->childAtIndex(1);
+
+    ASSERT_FUNCTION_DEFINITION("out", node);
+    ASSERT_FUNCTION_CALL("Foo_3_in", node->childAtIndex(0));
+}
+TEST_F(ParserTest_Modules, NestedNamespacedFunctionUsedInFunction) {
+    Language::ASTNode* node;
+
+    node = this->parse("namespace Foo\nnamespace Bar\ndef in()\nend\nend\nend\n\ndef out()\nFoo::Bar::in()\nend\n");
+    node = node->childAtIndex(1);
+
+    ASSERT_FUNCTION_DEFINITION("out", node);
+    ASSERT_FUNCTION_CALL("Foo_3_Bar_3_in", node->childAtIndex(0));
+}
+

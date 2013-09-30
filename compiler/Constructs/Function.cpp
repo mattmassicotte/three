@@ -15,7 +15,7 @@ namespace Language {
     std::string Function::str() const {
         std::stringstream s;
 
-        s << this->name();
+        s << this->fullyQualifiedName();
 
         s << "(";
 
@@ -33,18 +33,10 @@ namespace Language {
         return s.str();
     }
 
-    void Function::setName(const std::string& value) {
-        _name = value;
-    }
-
-    std::string Function::name() const {
-        return _name;
-    }
-
     std::string Function::fullyQualifiedName() const {
         std::stringstream s;
 
-        if (_namespace.length() > 0) {
+        if (this->isNamespaced()) {
             std::string ns = this->namespacePrefix();
 
             std::replace(ns.begin(), ns.end(), '.', '_');
@@ -59,14 +51,6 @@ namespace Language {
         s << this->name();
 
         return s.str();
-    }
-
-    void Function::setNamespace(const std::string& ns) {
-        _namespace = ns;
-    }
-
-    std::string Function::namespacePrefix() const {
-        return _namespace;
     }
 
     void Function::setReturnType(const TypeReference& type) {

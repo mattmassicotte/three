@@ -4,15 +4,14 @@
 #include <assert.h>
 
 namespace Language {
-    VariableNode* VariableNode::parse(Parser& parser) {
+    VariableNode* VariableNode::parse(Parser& parser, const std::string& identifier) {
         VariableNode* node = new VariableNode();
 
-        assert(parser.peek().type() == Token::Type::Identifier);
-
         // TODO: a VariableReference type could help simply this significantly
-        node->_variable   = parser.currentScope()->variableForName(parser.next().str());
-        node->_referenced = parser.currentScope()->referencedVariable(node->_variable->name());
-        node->_closed     = parser.currentScope()->closedVariable(node->_variable->name());
+        // TODO: this is not really a parse...
+        node->_variable   = parser.currentScope()->variableForName(identifier);
+        node->_referenced = parser.currentScope()->referencedVariable(identifier);
+        node->_closed     = parser.currentScope()->closedVariable(identifier);
 
         return node;
     }

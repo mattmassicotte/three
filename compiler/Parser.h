@@ -23,10 +23,11 @@ namespace Language {
         ASTNode* parsePrimaryExpression();
         ASTNode* parseSecondaryExpression();
         ASTNode* parseExpression(uint32_t precedence=Token::MinimumPrecedence);
+        ASTNode* parseSecondaryIdentifier();
         bool     parseNewline(bool multipleAllowed=true);
         bool     parseUntil(bool advanceOnStop, std::function<bool (const Token& token)> func);
         bool     parseUntilEnd(std::function<void (void)> func);
-        std::string parseQualifiedName();
+        std::string parseQualifiedIdentifier();
 
         bool isAtType();
         TypeReference parseType();
@@ -36,6 +37,7 @@ namespace Language {
 
     public:
         Token peek(unsigned int distance=1);
+        void  peekUntil(unsigned int* distance, std::function<bool (const Token& token)> func);
         Token next();
         bool  nextIf(const std::string& value);
 

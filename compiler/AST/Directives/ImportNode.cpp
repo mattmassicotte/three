@@ -10,7 +10,7 @@ namespace Language {
 
         assert(parser.next().type() == Token::Type::KeywordImport);
 
-        node->setPath(parser.parseQualifiedName());
+        node->setPath(parser.parseQualifiedIdentifier());
         assert(node->_path.length() > 0);
 
         // TODO: not exactly right.  This might not be the current translation unit

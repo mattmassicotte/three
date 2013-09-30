@@ -10,7 +10,7 @@ namespace Language {
 
         DataType* type = module->dataTypeForName(name);
 
-        assert(type);
+        assert(type && "Type cannot be null");
 
         return TypeReference(type, indirection);
     }
@@ -42,7 +42,7 @@ namespace Language {
     }
 
     std::string TypeReference::name() const {
-        return this->referencedType()->name();
+        return this->referencedType()->fullyQualifiedName();
     }
 
     uint32_t TypeReference::indirectionDepth() const {

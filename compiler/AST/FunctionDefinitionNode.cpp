@@ -19,7 +19,7 @@ namespace Language {
         parser.parseNewline();
 
         // define the function in the current module
-        parser.currentModule()->addFunction(node->_function->name(), node->_function);
+        parser.currentModule()->addFunction(node->_function->fullyQualifiedName(), node->_function);
 
         // define a variable for the function, so it can be referred to
         Variable* var = new Variable();
@@ -31,10 +31,10 @@ namespace Language {
         // TODO: this createType usage is a leak
         var->setType(TypeReference(node->_function->createType(), 1));
 
-        parser.currentScope()->addVariable(node->_function->name(), var);
+        parser.currentScope()->addVariable(node->_function->fullyQualifiedName(), var);
 
         // push in a new scope for the function body
-        parser.pushScope(new Scope(node->_function->name()));
+        parser.pushScope(new Scope(node->_function->fullyQualifiedName()));
 
         // define new variables for all parameters
         node->_function->eachParameterWithLast([&] (Variable* v, bool last) {

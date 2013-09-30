@@ -20,13 +20,17 @@ namespace Language {
         }
 
         assert(parser.peek().type() == Token::Type::Identifier);
-        node->_name = parser.next().str();
-        parser.parseNewline();
 
         // Here's an interesting problem.  If the struct refers to itself in the 
         // definition, it has to be already defined.  Additionally, in C, that's
         // not possible without referencing a specially-named version.
-        DataType* type = new DataType(DataType::Flavor::Structure, node->_name);
+        DataType* type = new DataType(DataType::Flavor::Structure, parser.next().str());
+
+        node->_type = type;
+
+        parser.parseNewline();
+
+        type->setNamespace(parser.currentScope()->fullNamespace());
 
         type->setCSourcePrependStructKeyword(true);
 
@@ -62,7 +66,7 @@ namespace Language {
     }
 
     std::string StructureNode::structureName() const {
-        return _name;
+        return _type->fullyQualifiedName();
     }
 
     void StructureNode::renderCSourcePackingStart(CSourceContext& context) {

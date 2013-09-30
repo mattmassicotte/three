@@ -7,12 +7,13 @@ namespace Language {
     DataType::DataType(const Flavor& type) : _type(type), _children(), _prependStructKeyword(false) {
     }
 
-    DataType::DataType(const Flavor& type, const std::string& name) : _type(type), _name(name), _children(), _prependStructKeyword(false) {
+    DataType::DataType(const Flavor& type, const std::string& name) : _type(type), _children(), _prependStructKeyword(false) {
+        this->setName(name);
     }
 
     std::string DataType::str() const {
         if (!this->isCallable()) {
-            return this->name();
+            return this->fullyQualifiedName();
         }
 
         std::stringstream s;
@@ -52,12 +53,12 @@ namespace Language {
         _type = value;
     }
 
-    std::string DataType::name() const {
-        return _name;
-    }
+    std::string DataType::fullyQualifiedName() const {
+        if (this->isNamespaced()) {
+            return this->namespacePrefix() + "_3_" + this->name();
+        }
 
-    void DataType::setName(const std::string& string) {
-        _name = string;
+        return this->name();
     }
 
     std::string DataType::cSourceName() const {
@@ -77,7 +78,7 @@ namespace Language {
             return "void";
         }
 
-        return this->name();
+        return this->fullyQualifiedName();
     }
 
     bool DataType::cSourcePrependStructKeyword() const {

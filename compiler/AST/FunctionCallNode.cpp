@@ -19,9 +19,10 @@ namespace Language {
             
             if (!v) {
                 std::cout << "Unable to find match for called function: " << functionName << std::endl;
-            } else {
-                node->_functionType = v->type().referencedType();
             }
+
+            assert(v && "Must find a function or variable match for a function call");
+            node->_functionType = v->type().referencedType();
 
             node->setFunctionName(functionName);
         }
@@ -49,12 +50,6 @@ namespace Language {
         }
 
         return node;
-    }
-
-    FunctionCallNode* FunctionCallNode::parseFunction(Parser& parser) {
-        assert(parser.peek().type() == Token::Type::Identifier);
-
-        return FunctionCallNode::parse(parser, parser.next().str(), NULL);
     }
 
     FunctionCallNode* FunctionCallNode::parseMethod(Parser& parser, ASTNode* target) {

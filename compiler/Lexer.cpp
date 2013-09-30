@@ -99,9 +99,6 @@ namespace Language {
             case ']':
                 type = Token::Type::PunctuationCloseBracket;
                 break;
-            case ':':
-                type = Token::Type::PunctuationColon;
-                break;
             case ';':
                 type = Token::Type::PunctuationSemicolon;
                 break;
@@ -196,11 +193,11 @@ namespace Language {
                     s << this->characterAdvance();
 
                     return Token(s.str(), Token::Type::Operator);
+                case ':':
                 case '{':
                 case '}':
                 case '(':
                 case ')':
-                case ':':
                 case '@':
                 case '\'':
                 case ';':
@@ -311,6 +308,15 @@ namespace Language {
         switch (this->peekSubtoken().str().at(0)) {
             case '@':
                 return this->lexAnnotation();
+            case ':':
+                this->nextSubtoken();
+
+                if (this->peekSubtoken().str() == ":") {
+                    this->nextSubtoken();
+                    return Token("::", Token::Type::OperatorScope);
+                }
+
+                return Token(":", Token::Type::PunctuationColon);
         }
 
         return this->nextSubtoken();

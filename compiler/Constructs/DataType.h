@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Entity.h"
 #include "TypeReference.h"
 #include "../CodeGen/CSource.h"
 
@@ -8,7 +9,7 @@
 #include <sstream>
 
 namespace Language {
-    class DataType {
+    class DataType : public Three::Entity {
     public:
         typedef enum {
             Undefined,
@@ -26,8 +27,7 @@ namespace Language {
 
         Flavor flavor() const;
         void setFlavor(const Flavor& value);
-        std::string name() const;
-        void setName(const std::string& string);
+        std::string fullyQualifiedName() const;
         std::string cSourceName() const;
         bool cSourcePrependStructKeyword() const;
         void setCSourcePrependStructKeyword(bool prepend);
@@ -44,8 +44,7 @@ namespace Language {
         void          eachParameterWithLast(std::function<void (const TypeReference&, bool)> func) const;
 
     private:
-        Flavor      _type;
-        std::string _name;
+        Flavor _type;
         bool _prependStructKeyword;
 
         TypeReference              _returnType;
