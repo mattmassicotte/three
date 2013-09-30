@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../CodeGen/CSourceContext.h"
+#include "../Constructs/TypeReference.h"
 
 #include <sstream>
 #include <string>
@@ -28,6 +29,7 @@ namespace Language {
 
         bool statement() const;
         void setStatement(bool value);
+        virtual TypeReference nodeType() const;
 
         std::vector<Annotation*> annotations() const;
         void setAnnotations(const std::vector<Annotation*>& annotations);

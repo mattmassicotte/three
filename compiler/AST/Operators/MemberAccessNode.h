@@ -7,8 +7,9 @@ using namespace Language;
 namespace Three {
     class MemberAccessNode : public OperatorNode {
     public:
-        MemberAccessNode(const std::string& name, bool indirect);
-
+        static MemberAccessNode* parse(Parser& parser, ASTNode* operand);
+        
+    public:
         virtual std::string name() const;
 
         std::string memberName() const;

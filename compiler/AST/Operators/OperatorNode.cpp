@@ -1,7 +1,8 @@
 #include "OperatorNode.h"
-#include "../../Parser.h"
 #include "MemberAccessNode.h"
 #include "IndexerNode.h"
+#include "../FunctionCallNode.h"
+#include "../../Parser.h"
 
 #include <assert.h>
 
@@ -36,6 +37,35 @@ namespace Language {
         node->addChild(parser.parsePrimaryExpression());
 
         return node;
+    }
+
+    ASTNode* OperatorNode::parseTailing(Parser& parser, ASTNode* leftNode) {
+        if (parser.peek().type() != Token::Type::Operator) {
+            return leftNode;
+        }
+
+        std::string op = parser.peek().str();
+
+        // construct and parse the indexer operator
+        if (op == "[") {
+            return Three::IndexerNode::parse(parser, leftNode);
+        }
+
+        // check for a method invocation
+        if (op == ".") {
+            if (leftNode->nodeType().indirectionDepth() == 1) {
+                parser.next();
+                return FunctionCallNode::parseMethod(parser, leftNode);
+            }
+        }
+
+        
+        // member access operators
+        if (op == "->" || op == ".") {
+            return Three::MemberAccessNode::parse(parser, leftNode);
+        }
+
+        return leftNode;
     }
 
     std::string OperatorNode::name() const {

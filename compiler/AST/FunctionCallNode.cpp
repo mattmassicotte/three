@@ -5,35 +5,35 @@
 #include <sstream>
 
 namespace Language {
-    FunctionCallNode* FunctionCallNode::parse(Parser& parser) {
+    FunctionCallNode* FunctionCallNode::parse(Parser& parser, const std::string& functionName, ASTNode* firstArgument) {
         FunctionCallNode* node = new FunctionCallNode();
-        Token t;
 
-        t = parser.peek();
-        assert(t.type() == Token::Type::Identifier);
-        parser.next(); // advance past the identifier
+        assert(functionName.length() > 0);
 
         node->_functionType = NULL;
-        Function* func = parser.currentModule()->functionForName(t.str());
+        Function* func = parser.currentModule()->functionForName(functionName);
         if (func) {
             node->setFunctionName(func->fullyQualifiedName());
         } else {
-            Variable* v = parser.currentScope()->variableForName(t.str());
+            Variable* v = parser.currentScope()->variableForName(functionName);
             
             if (!v) {
-                std::cout << "Unable to find match for called function: " << t.str() << std::endl;
+                std::cout << "Unable to find match for called function: " << functionName << std::endl;
             } else {
                 node->_functionType = v->type().referencedType();
             }
 
-            node->setFunctionName(t.str());
+            node->setFunctionName(functionName);
         }
 
         assert(parser.next().type() == Token::Type::PunctuationOpenParen);
 
+        if (firstArgument) {
+            node->addChild(firstArgument);
+        }
+
         // now, we need to parse the arguments, which of which
         // is an expression
-
         while (parser.peek().str().at(0) != ')') {
             node->addChild(parser.parseExpression());
 
@@ -49,6 +49,20 @@ namespace Language {
         }
 
         return node;
+    }
+
+    FunctionCallNode* FunctionCallNode::parseFunction(Parser& parser) {
+        assert(parser.peek().type() == Token::Type::Identifier);
+
+        return FunctionCallNode::parse(parser, parser.next().str(), NULL);
+    }
+
+    FunctionCallNode* FunctionCallNode::parseMethod(Parser& parser, ASTNode* target) {
+        assert(parser.peek().type() == Token::Type::Identifier);
+
+        std::string functionName = target->nodeType().name() + "_3_" + parser.next().str();
+
+        return FunctionCallNode::parse(parser, functionName, target);
     }
 
     std::string FunctionCallNode::name() const {
