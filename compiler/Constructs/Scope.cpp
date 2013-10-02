@@ -64,6 +64,26 @@ namespace Language {
         return _namespace;
     }
 
+    std::string Scope::fullNamespace() const {
+        std::string ns;
+
+        if (this->parent()) {
+            ns = this->parent()->fullNamespace();
+
+            if (ns.length() == 0) {
+                return _namespace;
+            }
+
+            if (_namespace.length() == 0) {
+                return ns;
+            }
+
+            return ns + "_3_" + _namespace;
+        }
+
+        return _namespace;
+    }
+
     void Scope::addVariable(const std::string& name, Variable* var) {
         assert(var != NULL);
         _variables[name] = var;

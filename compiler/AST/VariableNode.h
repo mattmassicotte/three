@@ -6,7 +6,7 @@
 namespace Language {
     class VariableNode : public ASTNode {
     public:
-        static VariableNode* parse(Parser& parser);
+        static VariableNode* parse(Parser& parser, const std::string& identifier);
 
     public:
         VariableNode();

@@ -156,6 +156,14 @@ TEST_F(LexerTest, SquareBracketsAfterIdentifier) {
     ASSERT_NEXT_TOKEN(PunctuationCloseBracket, "]");
 }
 
+TEST_F(LexerTest, ScopeOperator) {
+    this->lex("a::b");
+
+    ASSERT_NEXT_TOKEN(Identifier,    "a");
+    ASSERT_NEXT_TOKEN(OperatorScope, "::");
+    ASSERT_NEXT_TOKEN(Identifier,    "b");
+}
+
 TEST_F(LexerTest, UnaryStarOperator) {
     this->lex("*a");
 

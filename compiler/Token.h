@@ -59,7 +59,8 @@ namespace Language {
             KeywordVersion,
             KeywordNamespace,
             KeywordModule,
-            Operator
+            Operator,
+            OperatorScope
         } Type;
 
         const static uint32_t NonPrecedence     = 0;

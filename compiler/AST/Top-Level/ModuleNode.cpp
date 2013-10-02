@@ -15,7 +15,7 @@ namespace Three {
 
         assert(parser.next().type() == Language::Token::Type::KeywordModule);
 
-        node->_name = parser.parseQualifiedName();
+        node->_name = parser.parseQualifiedIdentifier();
         assert(node->_name.length() > 0);
 
         node->_module = new Module();

@@ -28,22 +28,18 @@ TEST_F(ParserTest, SimpleHelloWorldProgram) {
     // TODO: fix this
     // ASSERT_DATA_TYPE("Int",  0, defNode->function()->returnType());
 
-    Language::FunctionCallNode* callNode;
+    node = defNode->childAtIndex(0);
+    ASSERT_FUNCTION_CALL("printf", node);
+    ASSERT_EQ(1, node->childCount());
 
-    callNode = dynamic_cast<Language::FunctionCallNode*>(defNode->childAtIndex(0));
-
-    ASSERT_EQ("FunctionCall", callNode->name());
-    ASSERT_EQ("printf", callNode->functionName());
-    ASSERT_EQ(1, callNode->childCount());
-
-    ASSERT_STRING_LITERAL_NODE("hello world", callNode->childAtIndex(0));
+    ASSERT_STRING_LITERAL_NODE("hello world", node->childAtIndex(0));
 
     // return statement
-    Language::ReturnNode* returnNode = dynamic_cast<Language::ReturnNode*>(defNode->childAtIndex(1));
+    node = defNode->childAtIndex(1);
 
-    ASSERT_RETURN_NODE(returnNode);
-    ASSERT_EQ(1, returnNode->childCount());
-    ASSERT_INTEGER_LITERAL_NODE(0, returnNode->childAtIndex(0));
+    ASSERT_RETURN_NODE(node);
+    ASSERT_EQ(1, node->childCount());
+    ASSERT_INTEGER_LITERAL_NODE(0, node->childAtIndex(0));
 }
 
 TEST_F(ParserTest, SimpleIfWithNoElseStatement) {

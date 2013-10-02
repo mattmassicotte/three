@@ -106,6 +106,9 @@ namespace Three {
     void Module::addFunction(const std::string& name, Function* func) {
         assert(func != NULL && "Function should not be null");
         assert((this->functionForName(name) == NULL) && "Function should not already exist");
+
+        // std::cout << "Defined function: " << name << " for " << this << std::endl;
+
         _functions[name] = func;
     }
 
@@ -136,12 +139,12 @@ namespace Three {
         assert(type != NULL && "DataType should not be null");
         assert((this->dataTypeForName(name) == NULL) && "DataType should not already exist");
 
-        // std::cout << "Defined data type: " << name << " for " << this << std::endl;
+        //std::cout << "Defined data type: " << name << " for " << this << std::endl;
         _dataTypes[name] = type;
     }
 
     void Module::addDataType(DataType* type) {
-        this->addDataType(type->name(), type);
+        this->addDataType(type->fullyQualifiedName(), type);
     }
 
     void Module::aliasDataType(const std::string& name, DataType* type) {

@@ -46,7 +46,7 @@ ASSERT_EQ("Loop", tmp->name()); \
 } while(0)
 
 #define ASSERT_DATA_TYPE(dt_name, obj) do {\
-ASSERT_EQ(dt_name, obj->name()); \
+ASSERT_EQ(dt_name, obj->fullyQualifiedName()); \
 } while(0)
 
 #define ASSERT_VARIABLE(var_type, var_indirection, var_name, obj) do { \
@@ -95,4 +95,18 @@ Language::StructureNode* tmp = dynamic_cast<Language::StructureNode*>(obj); \
 ASSERT_EQ("Structure", tmp->nodeName()); \
 ASSERT_EQ(struct_name, tmp->structureName()); \
 ASSERT_EQ(struct_packing, tmp->packing()); \
+} while(0)
+
+#define ASSERT_FUNCTION_DEFINITION(name, obj) do { \
+Language::FunctionDefinitionNode* tmp = dynamic_cast<Language::FunctionDefinitionNode*>(obj); \
+ASSERT_TRUE(tmp != NULL); \
+ASSERT_EQ("FunctionDefinition", tmp->nodeName()); \
+ASSERT_EQ(name, tmp->function()->fullyQualifiedName()); \
+} while(0)
+
+#define ASSERT_FUNCTION_CALL(name, obj) do { \
+Language::FunctionCallNode* tmp = dynamic_cast<Language::FunctionCallNode*>(obj); \
+ASSERT_TRUE(tmp != NULL); \
+ASSERT_EQ("FunctionCall", tmp->nodeName()); \
+ASSERT_EQ(name, tmp->functionName()); \
 } while(0)

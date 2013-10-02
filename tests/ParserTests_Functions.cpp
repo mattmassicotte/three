@@ -8,7 +8,7 @@ TEST_F(ParserTest_Functions, EmptyFunction) {
 
     node = this->parse("def test()\nend\n");
 
-    ASSERT_EQ("FunctionDefinition", node->childAtIndex(0)->nodeName());
+    ASSERT_FUNCTION_DEFINITION("test", node->childAtIndex(0));
 }
 
 TEST_F(ParserTest_Functions, BackToBackEmptyFunctions) {
@@ -18,8 +18,8 @@ TEST_F(ParserTest_Functions, BackToBackEmptyFunctions) {
 
     ASSERT_EQ(2, node->childCount());
 
-    ASSERT_EQ("FunctionDefinition", node->childAtIndex(0)->nodeName());
-    ASSERT_EQ("FunctionDefinition", node->childAtIndex(1)->nodeName());
+    ASSERT_FUNCTION_DEFINITION("test", node->childAtIndex(0));
+    ASSERT_FUNCTION_DEFINITION("test2", node->childAtIndex(1));
 }
 
 TEST_F(ParserTest_Functions, ClosureInFunctionSignature) {
@@ -27,6 +27,9 @@ TEST_F(ParserTest_Functions, ClosureInFunctionSignature) {
 
     node = this->parse("def test({Int} closure)\nclosure(1)\nend\n");
     node = node->childAtIndex(0);
+
+    ASSERT_FUNCTION_DEFINITION("test", node);
+    // TODO
 }
 
 TEST_F(ParserTest_Functions, ClosureWithLabelledParameterInFunctionSignature) {
@@ -34,6 +37,9 @@ TEST_F(ParserTest_Functions, ClosureWithLabelledParameterInFunctionSignature) {
 
     node = this->parse("def test({Int value} closure)\nclosure(1)\nend\n");
     node = node->childAtIndex(0);
+
+    ASSERT_FUNCTION_DEFINITION("test", node);
+    // TODO
 }
 
 TEST_F(ParserTest_Functions, MethodDefinition) {
@@ -43,12 +49,11 @@ TEST_F(ParserTest_Functions, MethodDefinition) {
 
     Language::FunctionDefinitionNode* defNode = dynamic_cast<Language::FunctionDefinitionNode*>(node->childAtIndex(0));
 
-    ASSERT_EQ("FunctionDefinition", defNode->nodeName());
+    ASSERT_FUNCTION_DEFINITION("Int_3_test", defNode);
     ASSERT_EQ(0, defNode->childCount());
     ASSERT_EQ("test", defNode->function()->name());
     ASSERT_TRUE(defNode->function()->isPseudoMethod());
     ASSERT_DATA_TYPE("Int", defNode->function()->pseudoMethodType().referencedType());
-    ASSERT_EQ("Int_3_test", defNode->function()->fullyQualifiedName());
 
     ASSERT_VARIABLE("Int", 1, "self", defNode->function()->parameterAtIndex(0));
     ASSERT_DATA_TYPE("Void", defNode->function()->returnType().referencedType());
@@ -61,7 +66,13 @@ TEST_F(ParserTest_Functions, MethodInvocation) {
     ASSERT_EQ(2, node->childCount());
 
     // grab a reference to the method invocation
-    node = node->childAtIndex(1)->childAtIndex(0);
+    Language::FunctionCallNode* callNode;
 
-    std::cout << node->recursiveStr() << std::endl;
+    callNode = dynamic_cast<Language::FunctionCallNode*>(node->childAtIndex(1)->childAtIndex(0));
+
+    ASSERT_EQ("FunctionCall", callNode->name());
+    ASSERT_EQ("Int_3_test", callNode->functionName());
+    ASSERT_EQ(2, callNode->childCount());
+    ASSERT_VARIABLE_NODE("Int",  1, "a", callNode->childAtIndex(0));
+    ASSERT_INTEGER_LITERAL_NODE(5, callNode->childAtIndex(1));
 }
