@@ -96,7 +96,7 @@ namespace Language {
 
         this->renderCSourcePackingStart(context);
 
-        context.current()->printLineAndIndent("typedef struct _" + this->structureName() + " {");
+        context.current()->printLineAndIndent("typedef struct " + this->structureName() + " {");
 
         this->codeGenCSourceForChildren(context);
 
