@@ -17,5 +17,6 @@ namespace Three {
     }
 
     void BreakNode::codeGenCSource(CSourceContext& context) {
+        context.current()->printLine("break;");
     }
 }
