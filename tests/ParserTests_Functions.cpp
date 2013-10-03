@@ -76,3 +76,17 @@ TEST_F(ParserTest_Functions, MethodInvocation) {
     ASSERT_VARIABLE_NODE("Int",  1, "a", callNode->childAtIndex(0));
     ASSERT_INTEGER_LITERAL_NODE(5, callNode->childAtIndex(1));
 }
+
+TEST_F(ParserTest_Functions, SelfInMethodDefinition) {
+    Language::ASTNode* node;
+
+    node = this->parse("def Int.test()\n*self + 1\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_OPERATOR("+", node);
+    ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
+
+    node = node->childAtIndex(0);
+    ASSERT_OPERATOR("*", node);
+    ASSERT_VARIABLE_NODE("Int",  1, "self", node->childAtIndex(0));
+}
