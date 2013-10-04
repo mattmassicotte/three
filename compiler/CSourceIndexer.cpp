@@ -7,6 +7,8 @@
 
 static int abortQuery(CXClientData clientData, void* reserved);
 static void diagnostic(CXClientData clientData, CXDiagnosticSet diagnosticSet, void* reserved);
+static CXIdxClientFile includedFile(CXClientData clientData, const CXIdxIncludedFileInfo* includedFileInfo);
+                                    
 static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declInfo);
 
 static std::string executeCommand(const char* cmd);
@@ -82,7 +84,7 @@ namespace Three {
         callbacks.abortQuery = abortQuery;
         callbacks.diagnostic = diagnostic;
         callbacks.enteredMainFile = NULL;
-        callbacks.ppIncludedFile = NULL;
+        callbacks.ppIncludedFile = includedFile;
         callbacks.importedASTFile = NULL;
         callbacks.startedTranslationUnit = NULL;
         callbacks.indexDeclaration = indexDeclaration;
@@ -138,6 +140,20 @@ namespace Three {
     void CSourceIndexer::addType(const std::string& name, Language::DataType::Flavor flavor) {
         Language::DataType* type;
 
+        // first, check to see if we've already defined a type with this name
+        type = _module->dataTypeForName(name);
+        if (type) {
+            // now, if this type is just the struct version of a scalar, we can ignore it safely
+            // If we are now defining a new type with a struct prefix, then we can just remove
+            // the existing type
+            if (!type->cSourcePrependStructKeyword() && flavor == Language::DataType::Flavor::Structure) {
+                return;
+            }
+
+            assert(0 && "Redefintion of type during indexing");
+        }
+
+        // everything is good to define a new type
         type = new Language::DataType(flavor, name);
 
         if (flavor == Language::DataType::Flavor::Structure) {
@@ -162,6 +178,14 @@ static void diagnostic(CXClientData clientData, CXDiagnosticSet diagnosticSet, v
 
         std::cout << "C parse error: " << clang_getCString(string) << std::endl;
     }
+}
+
+static CXIdxClientFile includedFile(CXClientData clientData, const CXIdxIncludedFileInfo* includedFileInfo) {
+    CXFile file = includedFileInfo->file;
+
+    //std::cout << "Indexing include '" << clang_getCString(clang_getFileName(file)) << "'" << std::endl;
+
+    return nullptr;
 }
 
 static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declInfo) {

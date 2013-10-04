@@ -43,6 +43,7 @@ namespace Three {
         void addDataType(DataType* type);
         void aliasDataType(const std::string& name, DataType* type);
         DataType* dataTypeForName(const std::string& name);
+        void removeDataTypeForName(const std::string& name);
 
         void addConstant(const std::string& name, const std::string& value);
         std::string constantForName(const std::string& name);

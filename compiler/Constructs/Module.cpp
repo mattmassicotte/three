@@ -187,6 +187,22 @@ namespace Three {
         return NULL;
     }
 
+    void Module::removeDataTypeForName(const std::string& name) {
+        DataType* type;
+
+        type = _dataTypeAliases[name];
+        if (type) {
+            _dataTypeAliases[name] = nullptr;
+            delete type;
+        }
+
+        type = _dataTypes[name];
+        if (type) {
+            _dataTypes[name] = nullptr;
+            delete type;
+        }
+    }
+
     void Module::addConstant(const std::string& name, const std::string& value) {
         assert(name.length() > 0 && "Name should not be blank");
         assert(!this->definesConstant(name) && "Contant cannot be re-defined");
