@@ -72,11 +72,21 @@ namespace Language {
     }
 
     void IfNode::codeGenCSource(CSourceContext& context) {
-        context.current()->print("if (");
+        context.current()->print("if ");
+
+        // TODO: this is a messy hack to avoid duplicating parenthesis around
+        // operators
+        if (this->condition()->nodeName() != "Operator") {
+            context.current()->print("(");
+        }
 
         this->condition()->codeGenCSource(context);
 
-        context.current()->printLineAndIndent(") {");
+        if (this->condition()->nodeName() != "Operator") {
+            context.current()->print(")");
+        }
+
+        context.current()->printLineAndIndent(" {");
 
         this->codeGenCSourceForChildren(context);
 
