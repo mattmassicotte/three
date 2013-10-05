@@ -22,6 +22,8 @@ namespace Language {
         void setScopedName(const std::string& name);
         std::string makeScopedName(const std::string& string);
         void setClosingScope(bool closed);
+        void setTransactional(bool value);
+        bool transactional() const;
 
         void setNamespace(const std::string& ns);
         std::string namespacePrefix() const;
@@ -44,6 +46,7 @@ namespace Language {
         std::map<std::string, Variable*> _closureReferences;
         std::vector<Annotation*>         _annotations;
 
+        bool        _transactional;
         bool        _closesVariables;
         std::string _scopedName;
         uint32_t    _scopeNameCount;

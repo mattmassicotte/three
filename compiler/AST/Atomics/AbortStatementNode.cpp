@@ -21,6 +21,6 @@ namespace Language {
     void AbortStatementNode::codeGenCSource(CSourceContext& context) {
         context.addHeader("three/runtime/transactional_memory.h");
 
-        context << "three_transaction_abort();";
+        context << "three_transaction_abort(NULL);";
     }
 }

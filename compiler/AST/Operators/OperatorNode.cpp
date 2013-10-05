@@ -1,6 +1,7 @@
 #include "OperatorNode.h"
 #include "MemberAccessNode.h"
 #include "IndexerNode.h"
+#include "FunctionCallOperatorNode.h"
 #include "../FunctionCallNode.h"
 #include "../../Parser.h"
 
@@ -40,10 +41,30 @@ namespace Language {
     }
 
     ASTNode* OperatorNode::parseTailing(Parser& parser, ASTNode* leftNode) {
-        if (parser.peek().type() != Token::Type::Operator) {
-            return leftNode;
+        // possible tailing operators are:
+        // .
+        // ->
+        // (
+        // [
+
+        while (true) {
+            std::string op = parser.peek().str();
+
+            assert(leftNode);
+
+            if (op == "." || op == "->" || op == "[") {
+                leftNode = OperatorNode::parseSingleTailing(parser, leftNode);
+            } else if (op == "(") {
+                leftNode = Three::FunctionCallOperatorNode::parse(parser, leftNode);
+            } else {
+                break;
+            }
         }
 
+        return leftNode;
+    }
+
+    ASTNode* OperatorNode::parseSingleTailing(Parser& parser, ASTNode* leftNode) {
         std::string op = parser.peek().str();
 
         // construct and parse the indexer operator
@@ -59,12 +80,12 @@ namespace Language {
             }
         }
 
-        
         // member access operators
         if (op == "->" || op == ".") {
             return Three::MemberAccessNode::parse(parser, leftNode);
         }
 
+        assert(0 && "Parsing a tailing operator failed");
         return leftNode;
     }
 

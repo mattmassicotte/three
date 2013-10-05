@@ -11,5 +11,8 @@ namespace Language {
         virtual std::string name() const;
 
         void codeGenCSource(CSourceContext& context);
+
+    private:
+        bool _endsTransaction;
     };
 }

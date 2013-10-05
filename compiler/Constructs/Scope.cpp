@@ -12,6 +12,7 @@ namespace Language {
     }
 
     Scope::Scope(const std::string& name) : _scopedName(name), _scopeNameCount(1) {
+        _transactional = false;
         _closesVariables = false;
         _parent = NULL;
     }
@@ -54,6 +55,14 @@ namespace Language {
 
     void Scope::setClosingScope(bool closed) {
         _closesVariables = closed;
+    }
+
+    void Scope::setTransactional(bool value) {
+        _transactional = value;
+    }
+
+    bool Scope::transactional() const {
+        return _transactional;
     }
 
     void Scope::setNamespace(const std::string& ns) {

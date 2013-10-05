@@ -62,7 +62,7 @@ namespace Language {
                 node = SwitchNode::parse(*this);
                 break;
             case Token::Type::KeywordAtomic:
-                node = AtomicStatementNode::parse(*this);
+                node = Three::AtomicNode::parse(*this);
                 break;
             case Token::Type::KeywordAbort:
                 node = AbortStatementNode::parse(*this);
@@ -105,7 +105,7 @@ namespace Language {
     ASTNode* Parser::parsePrimaryExpression() {
         ASTNode* node = this->parseSecondaryExpression();
 
-        // we now need to check for a tailing operator
+        // We now need to check for a tailing operator
         return OperatorNode::parseTailing(*this, node);
     }
     
@@ -202,6 +202,9 @@ namespace Language {
     }
 
     ASTNode* Parser::parseSecondaryIdentifier() {
+#if DEBUG_PARSING
+        std::cout << "Parser: parseSecondaryIdentifier: '" << this->peek().str() << "'" << std::endl;
+#endif
         // possible function call, variable, or constant
 
         std::string identifier = this->parseQualifiedIdentifier();
@@ -219,7 +222,13 @@ namespace Language {
 
     bool Parser::parseNewline(bool multipleAllowed) {
         while (true) {
-            assert(this->next().type() == Token::Type::Newline);
+            if (this->peek().type() != Token::Type::Newline) {
+                std::cout << "[Parser] expecting newline, found '" << this->peek().str() << "'" << std::endl;
+                assert(0 && "Failed to parse expected newline");
+            }
+
+            this->next();
+
             if (!multipleAllowed) {
                 break;
             }

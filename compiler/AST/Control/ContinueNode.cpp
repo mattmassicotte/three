@@ -17,5 +17,6 @@ namespace Three {
     }
 
     void ContinueNode::codeGenCSource(CSourceContext& context) {
+        context.current()->printLine("continue;");
     }
 }

@@ -11,12 +11,6 @@ namespace Language {
     public:
         virtual std::string name() const;
 
-        bool strict() const;
-
         void codeGenCSource(CSourceContext& context);
-
-    private:
-        bool _strict;
-        ElseNode* _elseNode;
     };
 }
