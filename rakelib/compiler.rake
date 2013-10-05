@@ -39,7 +39,7 @@ namespace :compiler do
   end
 
   desc "Install the compiler and frontend"
-  task :install => [FRONTEND_EXECUTABLE, COMPILER_LIB, THREE_LIB_DIR, THREE_BIN_DIR] do
+  task :install => [FRONTEND_EXECUTABLE, COMPILER_LIB, THREE_LIB_DIR, THREE_BIN_DIR, :test] do
     BuildFunctions::install(COMPILER_LIB, File.join(THREE_LIB_DIR, 'libthree_compiler.a'))
     BuildFunctions::install(FRONTEND_EXECUTABLE, File.join(THREE_BIN_DIR, 'three'))
   end

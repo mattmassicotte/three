@@ -2,6 +2,7 @@ RUNTIME_CC_FLAGS = '-I.'
 
 RUNTIME_SOURCES = FileList['runtime/**/*.c']
 RUNTIME_HEADERS = FileList['runtime/**/*.h']
+RUNTIME_HEADERS.exclude('runtime/cpu.h', 'runtime/intel_tsx.h')
 
 RUNTIME_OBJECTS = BuildFunctions::objects_for_sources(RUNTIME_SOURCES)
 
@@ -26,15 +27,11 @@ namespace :runtime do
       file = File.basename(header)
       BuildFunctions::install(header, File.join(RUNTIME_DIR, file))
     end
-
-    FileUtils.rm_rf("#{THREE_INCLUDE_DIR}/modules")
-    BuildFunctions::install('modules', "#{THREE_INCLUDE_DIR}/modules")
   end
 
   desc "Uninstall the runtime library and C headers"
   task :uninstall do
-    FileUtils.rm_rf("#{THREE_INCLUDE_DIR}/modules")
-    FileUtils.rm_rf("#{THREE_INCLUDE_DIR}/runtime")
+    FileUtils.rm_rf(THREE_INCLUDE_DIR)
     FileUtils.rm_f(File.join(THREE_LIB_DIR, 'libthree_runtime.a'))
   end
 end
