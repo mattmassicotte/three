@@ -47,7 +47,7 @@ namespace Language {
         DataType* environmentType = new DataType(DataType::Flavor::Structure, "struct " + node->_environmentName);
 
         for (Variable* v : node->_referencedVariables) {
-            environmentType->addChild(v->type());
+            environmentType->addChild(v->type(), v->name());
         }
 
         parser.currentModule()->addDataType(environmentType);
@@ -64,7 +64,7 @@ namespace Language {
 
         // Create a new parameter to match the signature, and add a matching variable to the current
         // scope.  Have to be careful with Void types here, since there will not be a matching param.
-        node->_type.referencedType()->eachChild([=] (const TypeReference& paramType, uint32_t index) {
+        node->_type.referencedType()->eachChild([=] (const TypeReference& paramType, const std::string& name, uint32_t index) {
             if (params.size() == 0) {
                 return;
             }
@@ -72,6 +72,7 @@ namespace Language {
             Variable* v = new Variable();
 
             v->setType(paramType);
+            // TODO: I think this can be set to "name"
             v->setName(params.at(index));
 
             node->_function->addParameter(v->name(), v->type());

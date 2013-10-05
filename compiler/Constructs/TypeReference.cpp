@@ -86,7 +86,7 @@ namespace Language {
         }
 
         // parameters
-        _type->eachParameterWithLast([=] (const TypeReference& param, bool last) {
+        _type->eachParameterWithLast([=] (const TypeReference& param, const std::string& name, bool last) {
             param.codeGenCSource(source, "");
             if (!last) {
                 source->print(", ");

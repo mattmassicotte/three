@@ -21,6 +21,14 @@ namespace Three {
         return node;
     }
 
+    TypeReference MemberAccessNode::nodeType() const {
+        // This is tricky.  We need to look up the type we reference, and then
+        // get the type of the member itself.
+        TypeReference type = this->childAtIndex(0)->nodeType();
+
+        return type.referencedType()->childForName(this->memberName());
+    }
+
     std::string MemberAccessNode::name() const {
         return "MemberAccess";
     }

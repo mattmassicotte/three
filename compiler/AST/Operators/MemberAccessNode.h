@@ -10,6 +10,8 @@ namespace Three {
         static MemberAccessNode* parse(Parser& parser, ASTNode* operand);
         
     public:
+        virtual TypeReference nodeType() const;
+
         virtual std::string name() const;
 
         std::string memberName() const;

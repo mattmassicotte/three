@@ -4,10 +4,10 @@
 #include <assert.h>
 
 namespace Language {
-    DataType::DataType(const Flavor& type) : _type(type), _children(), _prependStructKeyword(false) {
+    DataType::DataType(const Flavor& type) : _type(type), _prependStructKeyword(false) {
     }
 
-    DataType::DataType(const Flavor& type, const std::string& name) : _type(type), _children(), _prependStructKeyword(false) {
+    DataType::DataType(const Flavor& type, const std::string& name) : _type(type), _prependStructKeyword(false) {
         this->setName(name);
     }
 
@@ -26,8 +26,8 @@ namespace Language {
             s << "(";
         }
 
-        this->eachParameterWithLast([&] (const TypeReference& type, bool last) {
-            s << type.str();
+        this->eachParameterWithLast([&] (const TypeReference& type, const std::string& name, bool last) {
+            s << type.str() << " " << name;
             if (!last) {
                 s << ", ";
             }
@@ -92,21 +92,35 @@ namespace Language {
         return _children.size();
     }
 
-    void DataType::addChild(const TypeReference& value) {
+    void DataType::addChild(const TypeReference& value, const std::string& name) {
         _children.push_back(value);
+        _childNames.push_back(name);
     }
 
-    void DataType::eachChild(std::function<void (const TypeReference&, uint32_t)> func) const {
-        uint32_t index = 0;
+    void DataType::eachChild(std::function<void (const TypeReference&, const std::string&, uint32_t)> func) const {
+        assert(_children.size() == _childNames.size());
 
-        for (const TypeReference& child : _children) {
-            func(child, index);
-            ++index;
+        for (uint32_t i = 0; i < _children.size(); ++i) {
+            func(_children[i], _childNames[i], i);
         }
     }
 
     TypeReference DataType::childAtIndex(uint32_t index) const {
         return _children.at(index);
+    }
+
+    TypeReference DataType::childForName(const std::string& name) const {
+        assert(_children.size() == _childNames.size());
+
+        for (uint32_t i = 0; i < _children.size(); ++i) {
+            if (_childNames[i] == name) {
+                return _children[i];
+            }
+        }
+
+        assert(0 && "Child name not found for DataType");
+
+        return TypeReference();
     }
 
     bool DataType::isCallable() const {
@@ -126,12 +140,12 @@ namespace Language {
         _returnType = value;
     }
 
-    void DataType::eachParameterWithLast(std::function<void (const TypeReference&, bool)> func) const {
+    void DataType::eachParameterWithLast(std::function<void (const TypeReference&, const std::string&, bool)> func) const {
         assert(this->isCallable());
         uint32_t lastIndex = this->childCount() - 1;
 
-        this->eachChild([=] (const TypeReference& child, uint32_t index) {
-            func(child, index == lastIndex);
+        this->eachChild([=] (const TypeReference& child, const std::string& name, uint32_t index) {
+            func(child, name, index == lastIndex);
         });
     }
 }

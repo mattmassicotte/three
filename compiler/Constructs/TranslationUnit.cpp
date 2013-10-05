@@ -33,7 +33,7 @@ namespace Language {
         DataType* type;
 
         type = new DataType(DataType::Flavor::Function, "(Void; Void)");
-        type->addChild(TypeReference::ref(module, "Void", 0));
+        type->addChild(TypeReference::ref(module, "Void", 0), "arg");
         type->setReturnType(TypeReference::ref(module, "Void", 0));
         module->addDataType(type);
 

@@ -80,7 +80,7 @@ namespace Language {
         type->setReturnType(this->returnType());
 
         this->eachParameterWithLast([&] (Variable* v, bool last) {
-            type->addChild(v->type());
+            type->addChild(v->type(), v->name());
         });
 
         return type;
