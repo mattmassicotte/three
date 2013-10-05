@@ -30,9 +30,8 @@ void three_transaction_initialize(void) {
 }
 
 static bool three_transaction_lock(void) {
-    atomic_fetch_add(&_three_transaction_mtx_count, 1);
-
     if (mtx_lock(&_three_transaction_mtx) == thrd_success) {
+        atomic_fetch_add(&_three_transaction_mtx_count, 1);
 
         return true;
     }
@@ -41,13 +40,9 @@ static bool three_transaction_lock(void) {
 }
 
 static bool three_transaction_unlock(void) {
-    if (mtx_unlock(&_three_transaction_mtx) == thrd_success) {
-        assert(atomic_fetch_sub(&_three_transaction_mtx_count, 1) >= 0);
+    assert(atomic_fetch_sub(&_three_transaction_mtx_count, 1) >= 0);
 
-        return true;
-    }
-
-    return false;
+    return mtx_unlock(&_three_transaction_mtx) == thrd_success;
 }
 
 bool three_transaction_begin(three_transaction_t* tx) {
