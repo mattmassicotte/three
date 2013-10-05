@@ -74,6 +74,8 @@ namespace Language {
             return "int64_t";
         } else if (this->name() == "Char") {
             return "char";
+        } else if (this->name() == "Bool") {
+            return "bool";
         } else if (this->name() == "Void") {
             return "void";
         }

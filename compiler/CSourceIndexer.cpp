@@ -7,6 +7,7 @@
 
 static int abortQuery(CXClientData clientData, void* reserved);
 static void diagnostic(CXClientData clientData, CXDiagnosticSet diagnosticSet, void* reserved);
+static CXIdxClientFile enteredMainFile(CXClientData client_data, CXFile mainFile, void *reserved);
 static CXIdxClientFile includedFile(CXClientData clientData, const CXIdxIncludedFileInfo* includedFileInfo);
                                     
 static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declInfo);
@@ -83,7 +84,7 @@ namespace Three {
 
         callbacks.abortQuery = abortQuery;
         callbacks.diagnostic = diagnostic;
-        callbacks.enteredMainFile = NULL;
+        callbacks.enteredMainFile = enteredMainFile;
         callbacks.ppIncludedFile = includedFile;
         callbacks.importedASTFile = NULL;
         callbacks.startedTranslationUnit = NULL;
@@ -150,7 +151,9 @@ namespace Three {
                 return;
             }
 
-            assert(0 && "Redefintion of type during indexing");
+            _module->removeDataTypeForName(name);
+            std::cout << "[Indexer] Redefining type '" << name << "' " << flavor << std::endl;
+            //assert(0 && "Redefintion of type during indexing");
         }
 
         // everything is good to define a new type
@@ -161,6 +164,11 @@ namespace Three {
         }
 
         _module->addDataType(type);
+    }
+
+    void CSourceIndexer::addVariable(const std::string& name) {
+        // TODO: this is wack
+        _module->addConstant(name, name);
     }
 }
 
@@ -180,10 +188,16 @@ static void diagnostic(CXClientData clientData, CXDiagnosticSet diagnosticSet, v
     }
 }
 
+static CXIdxClientFile enteredMainFile(CXClientData client_data, CXFile mainFile, void *reserved) {
+    // std::cout << "Indexing main " << std::endl;
+
+    return nullptr;
+}
+
 static CXIdxClientFile includedFile(CXClientData clientData, const CXIdxIncludedFileInfo* includedFileInfo) {
     CXFile file = includedFileInfo->file;
 
-    //std::cout << "Indexing include '" << clang_getCString(clang_getFileName(file)) << "'" << std::endl;
+    // std::cout << "Indexing include '" << clang_getCString(clang_getFileName(file)) << "'" << std::endl;
 
     return nullptr;
 }
@@ -204,6 +218,7 @@ static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declI
             index->addFunction(name);
             break;
         case CXIdxEntity_Variable:
+            index->addVariable(name);
             break;
         case CXIdxEntity_Enum:
             break;

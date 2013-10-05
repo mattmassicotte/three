@@ -20,6 +20,7 @@ namespace Language {
         }
 
         node->setStatement(true);
+        node->_endsTransaction = parser.currentScope()->transactional();
 
         return node;
     }
@@ -29,6 +30,10 @@ namespace Language {
     }
 
     void ReturnNode::codeGenCSource(CSourceContext& context) {
+        if (this->_endsTransaction) {
+            context.current()->printLine("three_transaction_end(NULL);");
+        }
+
         context << "return";
 
         assert(this->childCount() < 2);

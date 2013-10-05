@@ -20,6 +20,7 @@ namespace Three {
         bool indexFileAtPath(const std::string& path);
         void addFunction(const std::string& name);
         void addType(const std::string& name, Language::DataType::Flavor flavor);
+        void addVariable(const std::string& name);
 
         Module* module() const;
 

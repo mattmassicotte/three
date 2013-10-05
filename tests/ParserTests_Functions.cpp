@@ -90,3 +90,11 @@ TEST_F(ParserTest_Functions, SelfInMethodDefinition) {
     ASSERT_OPERATOR("*", node);
     ASSERT_VARIABLE_NODE("Int",  1, "self", node->childAtIndex(0));
 }
+
+TEST_F(ParserTest_Functions, InvokeVariableAsFunction) {
+    Language::ASTNode* node;
+
+    node = this->parse("def test()\n(Int) func\n func(1)\nend\n");
+
+    // TODO: fill this in
+}

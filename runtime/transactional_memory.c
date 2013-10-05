@@ -1,6 +1,7 @@
 #include "transactional_memory.h"
 #include "cpu.h"
 #include "c11/threads.h"
+#include "c11/stdatomic.h"
 #include "intel_tsx.h"
 
 #include <assert.h>
@@ -16,6 +17,7 @@ static once_flag _three_transactions_once_flag = ONCE_FLAG_INIT;
 
 static bool _three_transaction_supported = false;
 static mtx_t _three_transaction_mtx;
+static atomic_uint _three_transaction_mtx_count = 0;
 
 static bool three_transaction_lock(void);
 static bool three_transaction_unlock(void);
@@ -28,30 +30,40 @@ void three_transaction_initialize(void) {
 }
 
 static bool three_transaction_lock(void) {
-    return mtx_lock(&_three_transaction_mtx) == thrd_success;
+    atomic_fetch_add(&_three_transaction_mtx_count, 1);
+
+    if (mtx_lock(&_three_transaction_mtx) == thrd_success) {
+
+        return true;
+    }
+
+    return false;
 }
 
 static bool three_transaction_unlock(void) {
-    return mtx_unlock(&_three_transaction_mtx) == thrd_success;
+    if (mtx_unlock(&_three_transaction_mtx) == thrd_success) {
+        assert(atomic_fetch_sub(&_three_transaction_mtx_count, 1) >= 0);
+
+        return true;
+    }
+
+    return false;
 }
 
-bool three_transaction_begin(bool strict) {
+bool three_transaction_begin(three_transaction_t* tx) {
     call_once(&_three_transactions_once_flag, three_transaction_initialize);
-
-    // fprintf(stderr, "[runtime] beginning %s transaction\n", strict ? "strict" : "loose");
 
     // this is an easy case
     if (!_three_transaction_supported) {
-        if (strict) {
-            fprintf(stderr, "[runtime] strict transactions not supported by this CPU\n");
-            return false;
-        }
-
         return three_transaction_lock();
     }
 
     for (int tries = 0; tries < THREE_TRANSACTION_ATTEMPTS; ++tries) {
         unsigned int status = _xbegin();
+
+        if (atomic_load(&_three_transaction_mtx_count) > 0) {
+            _xabort(THREE_TRANSACTION_ABORT_NEEDS_LOCK);
+        }
 
         if (status == _XBEGIN_STARTED) {
             return true;
@@ -61,6 +73,10 @@ bool three_transaction_begin(bool strict) {
 
         if (status & _XABORT_EXPLICIT) {
             // called xabort
+            if (CHECK_XABORT_EXPLICIT_CODE(status, THREE_TRANSACTION_ABORT_NEEDS_LOCK)) {
+                break;
+            }
+
             return false;
         }
 
@@ -68,22 +84,17 @@ bool three_transaction_begin(bool strict) {
             // if xbegin reports that a retry might work, let's give that a shot
             // fprintf(stderr, "[runtime] strict transaction retry\n");
             continue;
-        } else if (CHECK_XABORT_EXPLICIT_CODE(status, THREE_TRANSACTION_ABORT_NEEDS_LOCK)) {
-            break;
         }
+
+        break;
     }
 
-    // fprintf(stderr, "[runtime] strict transaction locking\n");
+    // fprintf(stderr, "[runtime] transaction fallback locking\n");
     return three_transaction_lock();
 }
 
-bool three_transaction_end(bool strict) {
+bool three_transaction_end(three_transaction_t* tx) {
     if (!_three_transaction_supported) {
-        if (strict) {
-            fprintf(stderr, "[runtime] strict transactions not supported by this CPU\n");
-            return false;
-        }
-
         // fprintf(stderr, "[runtime] ending loose transaction\n");
         return three_transaction_unlock();
     }
@@ -93,11 +104,11 @@ bool three_transaction_end(bool strict) {
         return true;
     }
 
-    // fprintf(stderr, "[runtime] strict transaction unlocking\n");
+//    fprintf(stderr, "[runtime] transaction fallback unlocking\n");
     return three_transaction_unlock();
 }
 
-bool three_transaction_abort(void) {
+bool three_transaction_abort(three_transaction_t* tx) {
     if (!_three_transaction_supported) {
         fprintf(stderr, "[runtime] aborting transactions not supported by this CPU\n");
 

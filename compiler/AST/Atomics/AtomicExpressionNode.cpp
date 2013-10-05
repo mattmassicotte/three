@@ -21,6 +21,16 @@ namespace Language {
         return node;
     }
 
+    std::string AtomicExpressionNode::c11AtomicFunctionForOperator(const std::string& op) {
+        if (op == "+=") {
+            return "atomic_fetch_add_explicit";
+        } else if (op == "-=") {
+            return "atomic_fetch_sub_explicit";
+        }
+
+        return "";
+    }
+
     std::string AtomicExpressionNode::name() const {
         return "AtomicExpression";
     }
@@ -34,8 +44,10 @@ namespace Language {
 
         OperatorNode* op = dynamic_cast<OperatorNode*>(this->childAtIndex(0));
 
-        if (op->op() == "+=") {
-            context << "atomic_fetch_add_explicit(";
+        std::string functionName = AtomicExpressionNode::c11AtomicFunctionForOperator(op->op());
+
+        if (functionName != "") {
+            context << functionName << "(";
             context << "(_Atomic(";
             op->nodeType().codeGenCSource(context.current(), "");
             context << ")*)";
@@ -60,13 +72,16 @@ namespace Language {
             op->childAtIndex(1)->codeGenCSource(context);
         } else if (op->op() == "cas") {
             context << "atomic_compare_exchange_strong_explicit(";
-            context << "&(";
+            context << "(_Atomic(";
+            op->nodeType().codeGenCSource(context.current(), "");
+            context << ")*)";
+            context << "&";
             op->childAtIndex(0)->codeGenCSource(context);
-            context << "), &(";
+            context << ", &(";
             op->childAtIndex(1)->codeGenCSource(context);
-            context << "), &(";
-            op->childAtIndex(2)->codeGenCSource(context);
             context << "), ";
+            op->childAtIndex(2)->codeGenCSource(context);
+            context << ", ";
             context << this->c11MemoryOrderString();
             context << ", ";
             context << this->c11MemoryOrderString();

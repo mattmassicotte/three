@@ -8,6 +8,7 @@ namespace Language {
         static ASTNode* parse(Parser& parser, ASTNode* left, uint32_t precedence);
         static ASTNode* parseUnary(Parser& parser);
         static ASTNode* parseTailing(Parser& parser, ASTNode* leftNode);
+        static ASTNode* parseSingleTailing(Parser& parser, ASTNode* leftNode);
 
     private:
         static ASTNode* parseOperator(Parser& parser, ASTNode* leftOperand);

@@ -23,3 +23,19 @@ TEST_F(ParserTest_CompoundTypes, TypeOfUnaryAddressOfMemberAccess) {
     ASSERT_DATA_TYPE("Int", node->nodeType().referencedType());
     ASSERT_EQ(0, node->nodeType().indirectionDepth());
 }
+
+TEST_F(ParserTest_CompoundTypes, NestedStruct) {
+    Language::ASTNode* node;
+
+    node = this->parse("struct A\nInt in\nend\nstruct B\nA out\nend\ndef test(B b)\nb.out.in = 5\nend\n");
+
+    std::cout << node->recursiveStr() << std::endl;
+}
+
+TEST_F(ParserTest_CompoundTypes, InvokeFunctionPointerMember) {
+    Language::ASTNode* node;
+
+    node = this->parse("struct MyStruct\n*(*Void arg; *Void) fn_ptr\nend\ndef test()\nMyStruct s\ns.fn_ptr(null)\nend\n");
+
+    std::cout << node->recursiveStr() << std::endl;
+}

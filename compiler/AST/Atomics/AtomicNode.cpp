@@ -1,12 +1,28 @@
 #include "AtomicNode.h"
 #include "../../Parser.h"
+#include "AtomicExpressionNode.h"
+#include "AtomicStatementNode.h"
 
 #include <assert.h>
 
 namespace Three {
     ASTNode* AtomicNode::parse(Parser& parser) {
-        // TODO: this should take over for the special-casing doing in AtomicStatement
-        return nullptr;
+        assert(parser.peek().type() == Token::Type::KeywordAtomic);
+
+        // we need to check for an atomic statement
+        // case #1 "atomic (...)"
+        if (parser.peek(2).type() == Token::Type::PunctuationOpenParen) {
+            return AtomicExpressionNode::parse(parser);
+        }
+
+        // case #1 "atomic:ordering (...)" where "ordering" != fallback
+        if (parser.peek(2).type() == Token::Type::PunctuationColon) {
+            if (parser.peek(3).str() != "fallback") {
+                return AtomicExpressionNode::parse(parser);
+            }
+        }
+
+        return AtomicStatementNode::parse(parser);
     }
 
     void AtomicNode::parseOrdering(Parser& parser, AtomicNode* node) {
