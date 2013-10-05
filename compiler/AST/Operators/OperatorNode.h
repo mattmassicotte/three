@@ -13,6 +13,7 @@ namespace Language {
         static ASTNode* parseOperator(Parser& parser, ASTNode* leftOperand);
 
     public:
+        virtual TypeReference nodeType() const;
         virtual std::string name() const;
 
         virtual std::string str() const;

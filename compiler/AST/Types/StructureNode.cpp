@@ -43,8 +43,13 @@ namespace Language {
 
         // parse the members, but be sure not to create scoped variables for them
         parser.parseUntilEnd([&] () {
-            node->addChild(VariableDeclarationNode::parse(parser, false));
+            VariableDeclarationNode* var = VariableDeclarationNode::parse(parser, false);
             parser.parseNewline();
+
+            node->addChild(var);
+
+            // make sure to add a child to the structure type
+            type->addChild(var->variable()->type(), var->variable()->name());
         });
 
         parser.parseNewline();

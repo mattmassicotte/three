@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../ASTNode.h"
+#include "AtomicNode.h"
 
 namespace Language {
-    class AtomicExpressionNode : public ASTNode {
+    class AtomicExpressionNode : public Three::AtomicNode {
     public:
         static AtomicExpressionNode* parse(Parser& parser, std::string type=std::string(""));
 

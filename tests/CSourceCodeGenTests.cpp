@@ -28,8 +28,8 @@ TEST_F(CSourceCodeGenTest, FunctionDeclaration) {
     Language::DataType intType(Language::DataType::Flavor::Scalar, "int");
     Language::DataType functionType(Language::DataType::Flavor::Function, "my_function");
     
-    functionType.addChild(Language::TypeReference(&intType, 0));
-    functionType.addChild(Language::TypeReference(&intType, 1));
+    functionType.addChild(Language::TypeReference(&intType, 0), "a");
+    functionType.addChild(Language::TypeReference(&intType, 1), "b");
     functionType.setReturnType(Language::TypeReference(&intType, 2));
     
     Language::TypeReference ref(&functionType, 0);
@@ -45,8 +45,8 @@ TEST_F(CSourceCodeGenTest, FunctionReference) {
     Language::DataType intType(Language::DataType::Flavor::Scalar, "int");
     Language::DataType functionType(Language::DataType::Flavor::Function, "my_function");
     
-    functionType.addChild(Language::TypeReference(&intType, 0));
-    functionType.addChild(Language::TypeReference(&intType, 1));
+    functionType.addChild(Language::TypeReference(&intType, 0), "a");
+    functionType.addChild(Language::TypeReference(&intType, 1), "b");
     functionType.setReturnType(Language::TypeReference(&intType, 2));
     
     Language::TypeReference ref(&functionType, 1);

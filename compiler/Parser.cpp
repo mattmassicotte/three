@@ -503,17 +503,20 @@ namespace Language {
                 break;
             }
 
-            type->addChild(this->parseType());
+            std::string label = "";
+            TypeReference paramType = this->parseType();
 
             // We might have a parameter label.  If the caller cares, we need to enforce that a label is present.
-            if (params) {
-                assert(this->peek().type() == Token::Type::Identifier);
-                params->push_back(this->next().str());
-            } else {
-                if (this->peek().type() == Token::Type::Identifier) {
-                    this->next();
-                }
+            if (this->peek().type() == Token::Type::Identifier) {
+                label = this->next().str();
             }
+
+            if (params) {
+                assert(label.length() > 0);
+                params->push_back(label);
+            }
+
+            type->addChild(paramType, label);
 
             // a ',' means another paramter was specified
             if (!this->nextIf(",")) {

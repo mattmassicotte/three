@@ -68,6 +68,11 @@ namespace Language {
         return leftNode;
     }
 
+    TypeReference OperatorNode::nodeType() const {
+        // TODO: is this correct?
+        return this->childAtIndex(0)->nodeType();
+    }
+
     std::string OperatorNode::name() const {
         return "Operator";
     }

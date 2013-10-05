@@ -33,15 +33,16 @@ namespace Language {
         void setCSourcePrependStructKeyword(bool prepend);
 
         uint32_t childCount() const;
-        void addChild(const TypeReference& value);
+        void addChild(const TypeReference& value, const std::string& name);
         TypeReference childAtIndex(uint32_t index) const;
-        void eachChild(std::function<void (const TypeReference&, uint32_t)> func) const;
+        TypeReference childForName(const std::string& name) const;
+        void eachChild(std::function<void (const TypeReference&, const std::string&, uint32_t)> func) const;
         
         bool isCallable() const;
 
         TypeReference returnType() const;
         void          setReturnType(const TypeReference& value);
-        void          eachParameterWithLast(std::function<void (const TypeReference&, bool)> func) const;
+        void          eachParameterWithLast(std::function<void (const TypeReference&, const std::string&, bool)> func) const;
 
     private:
         Flavor _type;
@@ -49,5 +50,6 @@ namespace Language {
 
         TypeReference              _returnType;
         std::vector<TypeReference> _children;
+        std::vector<std::string>   _childNames;
     };
 }

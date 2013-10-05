@@ -156,45 +156,6 @@ TEST_F(ParserTest, StructureDefinitionUsedAsType) {
     ASSERT_VARIABLE_DECLERATION("MyStructure",  0, "a", node->childAtIndex(0));
 }
 
-TEST_F(ParserTest, AtomicBarrierWithoutSpecifier) {
-    Language::ASTNode* node;
-
-    node = this->parse("def test()\nbarrier\nend\n");
-    node = node->childAtIndex(0)->childAtIndex(0);
-
-    ASSERT_EQ("Barrier", node->name());
-    ASSERT_EQ("ordered", dynamic_cast<Language::BarrierNode*>(node)->type());
-}
-
-TEST_F(ParserTest, AtomicBarrierWithSpecifier) {
-    Language::ASTNode* node;
-
-    node = this->parse("def test()\nbarrier:unordered\nend\n");
-    node = node->childAtIndex(0)->childAtIndex(0);
-
-    ASSERT_EQ("Barrier", node->name());
-    ASSERT_EQ("unordered", dynamic_cast<Language::BarrierNode*>(node)->type());
-}
-
-TEST_F(ParserTest, AtomicExpression) {
-    Language::ASTNode* node;
-
-    node = this->parse("def test()\nInt a\natomic:ordered(a = 1)\nend\n");
-    node = node->childAtIndex(0)->childAtIndex(1);
-
-    ASSERT_EQ("AtomicExpression", node->name());
-    ASSERT_EQ("ordered", dynamic_cast<Language::AtomicExpressionNode*>(node)->type());
-}
-
-TEST_F(ParserTest, AtomicStatement) {
-    Language::ASTNode* node;
-
-    node = this->parse("def test()\natomic\nend\nend\n");
-    node = node->childAtIndex(0)->childAtIndex(0);
-
-    ASSERT_EQ("AtomicStatement", node->name());
-}
-
 TEST_F(ParserTest, NullLiteral) {
     Language::ASTNode* node;
 
