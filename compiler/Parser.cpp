@@ -6,7 +6,7 @@
 
 #define DEBUG_PARSING 0
 
-namespace Language {
+namespace Three {
     Parser::Parser(Lexer* lexer) : _lexer(lexer) {
     }
 

@@ -2,8 +2,6 @@
 
 #include "OperatorNode.h"
 
-using namespace Language;
-
 namespace Three {
     class MemberAccessNode : public OperatorNode {
     public:

@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <iostream>
 
-namespace Language {
+namespace Three {
     TranslationUnit* TranslationUnit::createTranslationUnit() {
         TranslationUnit* translationUnit = new TranslationUnit();
         Three::Module* module = new Three::Module();

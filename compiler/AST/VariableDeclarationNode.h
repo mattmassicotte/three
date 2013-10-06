@@ -3,7 +3,7 @@
 #include "ASTNode.h"
 #include "../Constructs/Variable.h"
 
-namespace Language {
+namespace Three {
     class VariableDeclarationNode : public ASTNode {
     public:
         static VariableDeclarationNode* parse(Parser& parser, bool createVariable=true);

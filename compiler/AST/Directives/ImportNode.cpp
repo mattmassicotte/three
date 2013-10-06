@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <sstream>
 
-namespace Language {
+namespace Three {
     ImportNode* ImportNode::parse(Parser& parser) {
         ImportNode* node = new ImportNode();
 

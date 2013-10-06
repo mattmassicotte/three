@@ -130,16 +130,16 @@ namespace Three {
     }
 
     void CSourceIndexer::addFunction(const std::string& name) {
-        Language::Function* fn;
+        Function* fn;
 
-        fn = new Language::Function();
+        fn = new Function();
         fn->setName(name);
 
         _module->addFunction(name, fn);
     }
 
-    void CSourceIndexer::addType(const std::string& name, Language::DataType::Flavor flavor) {
-        Language::DataType* type;
+    void CSourceIndexer::addType(const std::string& name, DataType::Flavor flavor) {
+        DataType* type;
 
         // first, check to see if we've already defined a type with this name
         type = _module->dataTypeForName(name);
@@ -147,7 +147,7 @@ namespace Three {
             // now, if this type is just the struct version of a scalar, we can ignore it safely
             // If we are now defining a new type with a struct prefix, then we can just remove
             // the existing type
-            if (!type->cSourcePrependStructKeyword() && flavor == Language::DataType::Flavor::Structure) {
+            if (!type->cSourcePrependStructKeyword() && flavor == DataType::Flavor::Structure) {
                 return;
             }
 
@@ -157,9 +157,9 @@ namespace Three {
         }
 
         // everything is good to define a new type
-        type = new Language::DataType(flavor, name);
+        type = new DataType(flavor, name);
 
-        if (flavor == Language::DataType::Flavor::Structure) {
+        if (flavor == DataType::Flavor::Structure) {
             type->setCSourcePrependStructKeyword(true);
         }
 
@@ -212,7 +212,7 @@ static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declI
 
     switch(declInfo->entityInfo->kind) {
         case CXIdxEntity_Typedef:
-            index->addType(name, Language::DataType::Flavor::Scalar);
+            index->addType(name, Three::DataType::Flavor::Scalar);
             break;
         case CXIdxEntity_Function:
             index->addFunction(name);
@@ -224,7 +224,7 @@ static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declI
             break;
         case CXIdxEntity_Struct:
             if (name.length() > 0) {
-                index->addType(name, Language::DataType::Flavor::Structure);
+                index->addType(name, Three::DataType::Flavor::Structure);
             }
             break;
         case CXIdxEntity_Union:

@@ -11,7 +11,7 @@
 #include <string>
 #include <map>
 
-namespace Language {
+namespace Three {
     class Parser {
     public:
         Parser(Lexer* lexer);

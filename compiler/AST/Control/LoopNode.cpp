@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     LoopNode* LoopNode::parse(Parser& parser) {
         LoopNode* node = new LoopNode();
 

@@ -7,7 +7,7 @@
 #include <vector>
 #include <map>
 
-namespace Language {
+namespace Three {
     class TranslationUnit {
     public:
         typedef enum {

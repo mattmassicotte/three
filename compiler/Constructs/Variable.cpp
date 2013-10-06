@@ -1,7 +1,7 @@
 #include "Variable.h"
 #include "DataType.h"
 
-namespace Language {
+namespace Three {
     Variable::Variable() {
     }
 

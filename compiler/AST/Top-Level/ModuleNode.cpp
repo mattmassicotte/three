@@ -13,7 +13,7 @@ namespace Three {
     ModuleNode* ModuleNode::parse(Parser& parser) {
         ModuleNode* node = new ModuleNode();
 
-        assert(parser.next().type() == Language::Token::Type::KeywordModule);
+        assert(parser.next().type() == Token::Type::KeywordModule);
 
         node->_name = parser.parseQualifiedIdentifier();
         assert(node->_name.length() > 0);

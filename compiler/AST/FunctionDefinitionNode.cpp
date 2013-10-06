@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <sstream>
 
-namespace Language {
+namespace Three {
     FunctionDefinitionNode* FunctionDefinitionNode::parse(Parser& parser) {
         FunctionDefinitionNode* node = new FunctionDefinitionNode();
 

@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <sstream>
 
-namespace Language {
+namespace Three {
     StructureNode* StructureNode::parse(Parser& parser) {
         StructureNode* node = new StructureNode();
 

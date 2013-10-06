@@ -4,7 +4,7 @@ class ParserTest_Functions : public ParserTestBase {
 };
 
 TEST_F(ParserTest_Functions, EmptyFunction) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\nend\n");
 
@@ -12,7 +12,7 @@ TEST_F(ParserTest_Functions, EmptyFunction) {
 }
 
 TEST_F(ParserTest_Functions, BackToBackEmptyFunctions) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\nend\ndef test2()\nend\n");
 
@@ -23,7 +23,7 @@ TEST_F(ParserTest_Functions, BackToBackEmptyFunctions) {
 }
 
 TEST_F(ParserTest_Functions, ClosureInFunctionSignature) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test({Int} closure)\nclosure(1)\nend\n");
     node = node->childAtIndex(0);
@@ -33,7 +33,7 @@ TEST_F(ParserTest_Functions, ClosureInFunctionSignature) {
 }
 
 TEST_F(ParserTest_Functions, ClosureWithLabelledParameterInFunctionSignature) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test({Int value} closure)\nclosure(1)\nend\n");
     node = node->childAtIndex(0);
@@ -43,11 +43,11 @@ TEST_F(ParserTest_Functions, ClosureWithLabelledParameterInFunctionSignature) {
 }
 
 TEST_F(ParserTest_Functions, MethodDefinition) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def Int.test()\nend\n");
 
-    Language::FunctionDefinitionNode* defNode = dynamic_cast<Language::FunctionDefinitionNode*>(node->childAtIndex(0));
+    Three::FunctionDefinitionNode* defNode = dynamic_cast<Three::FunctionDefinitionNode*>(node->childAtIndex(0));
 
     ASSERT_FUNCTION_DEFINITION("Int_3_test", defNode);
     ASSERT_EQ(0, defNode->childCount());
@@ -60,15 +60,15 @@ TEST_F(ParserTest_Functions, MethodDefinition) {
 }
 
 TEST_F(ParserTest_Functions, MethodInvocation) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def Int.test(Int b)\nend\n def invoke(*Int a)\n a.test(5)\nend\n");
     ASSERT_EQ(2, node->childCount());
 
     // grab a reference to the method invocation
-    Language::FunctionCallNode* callNode;
+    Three::FunctionCallNode* callNode;
 
-    callNode = dynamic_cast<Language::FunctionCallNode*>(node->childAtIndex(1)->childAtIndex(0));
+    callNode = dynamic_cast<Three::FunctionCallNode*>(node->childAtIndex(1)->childAtIndex(0));
 
     ASSERT_EQ("FunctionCall", callNode->name());
     ASSERT_EQ("Int_3_test", callNode->functionName());
@@ -78,7 +78,7 @@ TEST_F(ParserTest_Functions, MethodInvocation) {
 }
 
 TEST_F(ParserTest_Functions, SelfInMethodDefinition) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def Int.test()\n*self + 1\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
@@ -92,7 +92,7 @@ TEST_F(ParserTest_Functions, SelfInMethodDefinition) {
 }
 
 TEST_F(ParserTest_Functions, InvokeVariableAsFunction) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\n(Int) func\n func(1)\nend\n");
 

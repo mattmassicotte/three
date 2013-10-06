@@ -67,19 +67,19 @@ void getOptions(build_options_t* options, int argc, char** argv)
     }
 }
 
-Language::RootNode* createRootNodeFromFile(const std::string& path) {
+Three::RootNode* createRootNodeFromFile(const std::string& path) {
     std::ifstream inputFile(path);
 
-    Language::Lexer lexer(&inputFile);
-    Language::Parser parser(&lexer);
+    Three::Lexer lexer(&inputFile);
+    Three::Parser parser(&lexer);
 
     parser.setContext(Three::ParsingContext::translationUnitContext());
 
     return parser.rootASTNode();
 }
 
-bool createCSource(Language::RootNode* node, const std::string& path) {
-    Language::CSourceContext c;
+bool createCSource(Three::RootNode* node, const std::string& path) {
+    Three::CSourceContext c;
     std::ofstream outputFile(path);
 
     node->codeGenCSource(c);
@@ -97,7 +97,7 @@ std::vector<std::string> defaultCIncludePaths(void) {
     return paths;
 }
 
-bool compileCSource(Language::RootNode* node, const std::string& cSourcePath) {
+bool compileCSource(Three::RootNode* node, const std::string& cSourcePath) {
     std::stringstream s;
 
     s << "clang -std=c11";
@@ -128,7 +128,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    Language::RootNode* node;
+    Three::RootNode* node;
 
     node = createRootNodeFromFile(std::string(argv[0]));
 

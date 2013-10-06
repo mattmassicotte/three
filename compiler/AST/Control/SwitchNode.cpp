@@ -4,7 +4,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     SwitchNode* SwitchNode::parse(Parser& parser) {
         SwitchNode* node = new SwitchNode();
 

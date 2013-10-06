@@ -3,8 +3,6 @@
 #include "../ASTNode.h"
 #include "../../Constructs/Module.h"
 
-using namespace Language;
-
 namespace Three {
     class ModuleNode : public ASTNode {
     public:

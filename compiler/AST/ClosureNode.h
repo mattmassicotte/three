@@ -4,7 +4,7 @@
 #include "../Constructs/Function.h"
 #include "../Constructs/Variable.h"
 
-namespace Language {
+namespace Three {
     class ClosureNode : public ASTNode {
     public:
         static ClosureNode* parse(Parser& parser);

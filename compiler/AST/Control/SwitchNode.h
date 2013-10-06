@@ -2,7 +2,7 @@
 
 #include "../ASTNode.h"
 
-namespace Language {
+namespace Three {
     class SwitchNode : public ASTNode {
     public:
         static SwitchNode* parse(Parser& parser);

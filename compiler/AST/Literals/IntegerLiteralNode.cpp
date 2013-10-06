@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <sstream>
 
-namespace Language {
+namespace Three {
     IntegerLiteralNode* IntegerLiteralNode::parse(Parser& parser) {
         IntegerLiteralNode* node = new IntegerLiteralNode();
 

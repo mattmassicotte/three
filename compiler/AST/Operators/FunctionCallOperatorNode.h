@@ -2,8 +2,6 @@
 
 #include "OperatorNode.h"
 
-using namespace Language;
-
 namespace Three {
     class FunctionCallOperatorNode : public OperatorNode {
     public:

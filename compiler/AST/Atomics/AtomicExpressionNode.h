@@ -2,7 +2,7 @@
 
 #include "AtomicNode.h"
 
-namespace Language {
+namespace Three {
     class AtomicExpressionNode : public Three::AtomicNode {
     public:
         static AtomicExpressionNode* parse(Parser& parser, std::string type=std::string(""));

@@ -4,7 +4,7 @@ class ParserTest_Variables : public ParserTestBase {
 };
 
 TEST_F(ParserTest_Variables, TopLevelVariableDeclaration) {
-    Language::ASTNode* node;
+    ASTNode* node;
 
     node = this->parse("Int x\n");
 
@@ -12,7 +12,7 @@ TEST_F(ParserTest_Variables, TopLevelVariableDeclaration) {
 }
 
 TEST_F(ParserTest_Variables, NewLinesAroundTopLevelVariableDeclarations) {
-    Language::ASTNode* node;
+    ASTNode* node;
 
     node = this->parse("Int x\n\nInt y\n");
 
@@ -21,7 +21,7 @@ TEST_F(ParserTest_Variables, NewLinesAroundTopLevelVariableDeclarations) {
 }
 
 TEST_F(ParserTest_Variables, VariableDeclaration) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\nInt x\nend\n");
     node = node->childAtIndex(0);
@@ -30,7 +30,7 @@ TEST_F(ParserTest_Variables, VariableDeclaration) {
 }
 
 TEST_F(ParserTest_Variables, IntegerVariableWithSpecifier) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\nInt:64 x\nend\n");
     node = node->childAtIndex(0);
@@ -39,7 +39,7 @@ TEST_F(ParserTest_Variables, IntegerVariableWithSpecifier) {
 }
 
 TEST_F(ParserTest_Variables, VariableDeclarationWithInitializer) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\nInt x = 0\nend\n");
     node = node->childAtIndex(0);
@@ -51,7 +51,7 @@ TEST_F(ParserTest_Variables, VariableDeclarationWithInitializer) {
 }
 
 // TEST_F(ParserTest_Variables, ArrayDeclaration) {
-//     Language::ASTNode* node;
+//     Three::ASTNode* node;
 // 
 //     node = this->parse("def test()\n[3]Int x\nend\n");
 //     node = node->childAtIndex(0);

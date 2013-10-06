@@ -6,7 +6,7 @@
 #include <vector>
 #include <map>
 
-namespace Language {
+namespace Three {
     class Lexer {
     public:
         Lexer(std::istream* stream);

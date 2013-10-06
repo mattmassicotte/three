@@ -8,7 +8,7 @@
 #include <vector>
 #include <sstream>
 
-namespace Language {
+namespace Three {
     class DataType : public Three::Entity {
     public:
         typedef enum {

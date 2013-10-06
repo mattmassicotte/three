@@ -4,7 +4,7 @@ class ParserTest_CompoundTypes : public ParserTestBase {
 };
 
 TEST_F(ParserTest_CompoundTypes, EnumWithValues) {
-    Language::ASTNode* node;
+    ASTNode* node;
 
     node = this->parse("enum MyEnum\nvalue = 1\nend\n");
     node = node->childAtIndex(0);
@@ -13,7 +13,7 @@ TEST_F(ParserTest_CompoundTypes, EnumWithValues) {
 }
 
 TEST_F(ParserTest_CompoundTypes, TypeOfUnaryAddressOfMemberAccess) {
-    Language::ASTNode* node;
+    ASTNode* node;
 
     node = this->parse("struct MyStruct\nInt a\nend\ndef test()\n*MyStruct s\n&s->a\nend\n");
     node = node->childAtIndex(1)->childAtIndex(1);
@@ -25,7 +25,7 @@ TEST_F(ParserTest_CompoundTypes, TypeOfUnaryAddressOfMemberAccess) {
 }
 
 TEST_F(ParserTest_CompoundTypes, NestedStruct) {
-    Language::ASTNode* node;
+    ASTNode* node;
 
     node = this->parse("struct A\nInt in\nend\nstruct B\nA out\nend\ndef test(B b)\nb.out.in = 5\nend\n");
 
@@ -33,7 +33,7 @@ TEST_F(ParserTest_CompoundTypes, NestedStruct) {
 }
 
 TEST_F(ParserTest_CompoundTypes, InvokeFunctionPointerMember) {
-    Language::ASTNode* node;
+    ASTNode* node;
 
     node = this->parse("struct MyStruct\n*(*Void arg; *Void) fn_ptr\nend\ndef test()\nMyStruct s\ns.fn_ptr(null)\nend\n");
 

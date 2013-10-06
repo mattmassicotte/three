@@ -3,7 +3,7 @@
 #include "ASTNode.h"
 #include "../Constructs/Function.h"
 
-namespace Language {
+namespace Three {
     class FunctionDefinitionNode : public ASTNode {
     public:
         static FunctionDefinitionNode* parse(Parser& parser);

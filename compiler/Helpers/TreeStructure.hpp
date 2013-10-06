@@ -3,7 +3,7 @@
 #include <functional>
 #include <vector>
 
-namespace Language {
+namespace Three {
     template<class T>
     class TreeStructure {
     public:

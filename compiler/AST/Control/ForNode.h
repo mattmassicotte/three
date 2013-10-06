@@ -3,8 +3,6 @@
 #include "../ASTNode.h"
 #include "../../Constructs/Variable.h"
 
-using namespace Language;
-
 namespace Three {
     class ForNode : public ASTNode {
     public:
@@ -21,7 +19,7 @@ namespace Three {
         ASTNode* rangeEndExpression() const;
         bool evaluateConditionAtEnd() const;
 
-        Language::Variable* rangeLoopVariable() const;
+        Variable* rangeLoopVariable() const;
 
         void codeGenCSourceStartExpression(CSourceContext& context) const;
         void codeGenCSourceCondition(CSourceContext& context) const;

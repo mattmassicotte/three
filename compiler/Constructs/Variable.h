@@ -3,7 +3,7 @@
 #include "TypeReference.h"
 #include "../CodeGen/CSource.h"
 
-namespace Language {
+namespace Three {
     class Variable {
     public:
         Variable();

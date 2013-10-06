@@ -4,7 +4,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     AtomicExpressionNode* AtomicExpressionNode::parse(Parser& parser, std::string type) {
         AtomicExpressionNode* node = new AtomicExpressionNode();
 

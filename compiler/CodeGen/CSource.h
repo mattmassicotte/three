@@ -3,7 +3,7 @@
 #include <string>
 #include <sstream>
 
-namespace Language {
+namespace Three {
     class CSource {
     public:
         CSource();

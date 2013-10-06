@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     BooleanLiteralNode* BooleanLiteralNode::parse(Parser& parser) {
         BooleanLiteralNode* node = new BooleanLiteralNode();
 

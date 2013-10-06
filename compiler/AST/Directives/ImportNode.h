@@ -3,7 +3,7 @@
 #include "../ASTNode.h"
 #include "../../Constructs/TranslationUnit.h"
 
-namespace Language {
+namespace Three {
     class ImportNode : public ASTNode {
     public:
         static ImportNode* parse(Parser& parser);

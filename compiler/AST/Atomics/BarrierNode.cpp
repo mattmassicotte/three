@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     BarrierNode* BarrierNode::parse(Parser& parser) {
         BarrierNode* node = new BarrierNode();
 

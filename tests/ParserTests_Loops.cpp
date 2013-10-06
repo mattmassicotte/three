@@ -4,7 +4,7 @@ class ParserTest_Loops : public ParserTestBase {
 };
 
 TEST_F(ParserTest_Loops, InfiniteLoop) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\nloop\nend\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
@@ -13,35 +13,35 @@ TEST_F(ParserTest_Loops, InfiniteLoop) {
 }
 
 TEST_F(ParserTest_Loops, SingleConditionLoop) {
-    Language::ASTNode* node;
+    ASTNode* node;
 
     node = this->parse("def test(Int a)\nloop a\nend\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
 
-    Language::LoopNode* loop = dynamic_cast<Language::LoopNode*>(node);
+    LoopNode* loop = dynamic_cast<Three::LoopNode*>(node);
     ASSERT_LOOP(loop);
     ASSERT_VARIABLE_NODE("Int",  0, "a", loop->condition());
 }
 
 TEST_F(ParserTest_Loops, LoopAfter) {
-    Language::ASTNode* node;
+    ASTNode* node;
 
     node = this->parse("def test(Int a)\nloop:after a\nend\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
 
-    Language::LoopNode* loop = dynamic_cast<Language::LoopNode*>(node);
+    LoopNode* loop = dynamic_cast<Three::LoopNode*>(node);
     ASSERT_LOOP(loop);
     ASSERT_TRUE(loop->evaluateConditionAtEnd());
     ASSERT_VARIABLE_NODE("Int",  0, "a", loop->condition());
 }
 
 TEST_F(ParserTest_Loops, ForStatement) {
-    Language::ASTNode* node;
+    ASTNode* node;
 
     node = this->parse("def test()\nfor (Int i = 0; i < 10; i += 1)\nend\nend\n");
     node = node->childAtIndex(0);
 
-    Three::ForNode* loop = dynamic_cast<Three::ForNode*>(node->childAtIndex(0));
+    ForNode* loop = dynamic_cast<Three::ForNode*>(node->childAtIndex(0));
     ASSERT_EQ("For", loop->nodeName());
 
     ASSERT_VARIABLE_DECLERATION("Int", 0, "i", loop->startExpression());
@@ -50,7 +50,7 @@ TEST_F(ParserTest_Loops, ForStatement) {
 }
 
 TEST_F(ParserTest_Loops, ForRangeStatement) {
-    Language::ASTNode* node;
+    ASTNode* node;
 
     node = this->parse("def test()\nfor (Int i in 0:10)\nend\nend\n");
     node = node->childAtIndex(0);
@@ -63,24 +63,24 @@ TEST_F(ParserTest_Loops, ForRangeStatement) {
 }
 
 TEST_F(ParserTest_Loops, BreakStatement) {
-    Language::ASTNode* node;
+    ASTNode* node;
 
     node = this->parse("def test(Int a)\nloop a\nbreak\nend\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
 
-    Language::LoopNode* loop = dynamic_cast<Language::LoopNode*>(node);
+    Three::LoopNode* loop = dynamic_cast<Three::LoopNode*>(node);
     ASSERT_LOOP(loop);
 
     ASSERT_EQ("Break", loop->childAtIndex(0)->nodeName());
 }
 
 TEST_F(ParserTest_Loops, ContinueStatement) {
-    Language::ASTNode* node;
+    ASTNode* node;
 
     node = this->parse("def test(Int a)\nloop a\ncontinue\nend\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
 
-    Language::LoopNode* loop = dynamic_cast<Language::LoopNode*>(node);
+    Three::LoopNode* loop = dynamic_cast<Three::LoopNode*>(node);
     ASSERT_LOOP(loop);
 
     ASSERT_EQ("Continue", loop->childAtIndex(0)->nodeName());

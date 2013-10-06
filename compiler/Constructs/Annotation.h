@@ -4,7 +4,7 @@
 
 #include <string>
 
-namespace Language {
+namespace Three {
     class Annotation {
     public:
         virtual ~Annotation();

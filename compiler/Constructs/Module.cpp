@@ -32,8 +32,8 @@ namespace Three {
 
         std::ifstream inputFile(path);
 
-        Language::Lexer lexer(&inputFile);
-        Language::Parser parser(&lexer);
+        Lexer lexer(&inputFile);
+        Parser parser(&lexer);
 
         parser.setContext(Three::ParsingContext::translationUnitContext());
 

@@ -5,12 +5,12 @@
 
 // This macro is a little crappy, but it needs to be careful about evaluation
 #define ASSERT_TOKEN(exp_type, exp_value, token) do {\
-Language::Token tmp = token; \
+Three::Token tmp = token; \
 EXPECT_EQ(exp_type, tmp.type()); \
 ASSERT_EQ(exp_value, tmp.str()); \
 } while(0)
 
-#define ASSERT_NEXT_TOKEN(exp_type, exp_value) ASSERT_TOKEN(Language::Token::Type::exp_type, exp_value, this->next())
+#define ASSERT_NEXT_TOKEN(exp_type, exp_value) ASSERT_TOKEN(Three::Token::Type::exp_type, exp_value, this->next())
 
 class LexerTest : public testing::Test {
 protected:
@@ -31,19 +31,19 @@ protected:
         _stream = new std::istringstream(inputString);
 
         assert(!_lexer);
-        _lexer = new Language::Lexer(_stream);
+        _lexer = new Three::Lexer(_stream);
     }
 
-    Language::Token next() {
+    Three::Token next() {
         return _lexer->next();
     }
 
-    Language::Token peek(unsigned int distance = 1) {
+    Three::Token peek(unsigned int distance = 1) {
         return _lexer->peek(distance);
     }
 
     std::istringstream* _stream;
-    Language::Lexer*    _lexer;
+    Three::Lexer*    _lexer;
 };
 
 TEST_F(LexerTest, SingleIdentifierWithDigit) {

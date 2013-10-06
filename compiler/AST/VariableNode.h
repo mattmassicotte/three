@@ -3,7 +3,7 @@
 #include "ASTNode.h"
 #include "../Constructs/Variable.h"
 
-namespace Language {
+namespace Three {
     class VariableNode : public ASTNode {
     public:
         static VariableNode* parse(Parser& parser, const std::string& identifier);

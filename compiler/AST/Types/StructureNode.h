@@ -3,7 +3,7 @@
 #include "../ASTNode.h"
 #include "../../Constructs/DataType.h"
 
-namespace Language {
+namespace Three {
     class StructureNode : public ASTNode {
     public:
         static StructureNode* parse(Parser& parser);

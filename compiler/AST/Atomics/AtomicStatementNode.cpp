@@ -4,7 +4,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     ASTNode* AtomicStatementNode::parse(Parser& parser) {
         AtomicStatementNode* node = new AtomicStatementNode();
 

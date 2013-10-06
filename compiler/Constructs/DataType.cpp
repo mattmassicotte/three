@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     DataType::DataType(const Flavor& type) : _type(type), _prependStructKeyword(false) {
     }
 

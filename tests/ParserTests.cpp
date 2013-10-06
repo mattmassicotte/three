@@ -4,7 +4,7 @@ class ParserTest : public ParserTestBase {
 };
 
 TEST_F(ParserTest, SimpleHelloWorldProgram) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("include \"stdio.h\"\n\ndef main(Int argc, **Char argv; Int)\n    printf(\"hello world\")\n    return 0\nend\n");
 
@@ -15,9 +15,9 @@ TEST_F(ParserTest, SimpleHelloWorldProgram) {
     ASSERT_INCLUDE("stdio.h", node->childAtIndex(0));
 
     // function definition
-    Language::FunctionDefinitionNode* defNode;
+    Three::FunctionDefinitionNode* defNode;
 
-    defNode = dynamic_cast<Language::FunctionDefinitionNode*>(node->childAtIndex(1));
+    defNode = dynamic_cast<Three::FunctionDefinitionNode*>(node->childAtIndex(1));
 
     ASSERT_EQ("FunctionDefinition", defNode->name());
     ASSERT_EQ(2, defNode->childCount());
@@ -43,11 +43,11 @@ TEST_F(ParserTest, SimpleHelloWorldProgram) {
 }
 
 TEST_F(ParserTest, SimpleIfWithNoElseStatement) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\nif true\nreturn\nend\nend\n");
 
-    Language::IfNode* ifNode = dynamic_cast<Language::IfNode*>(node->childAtIndex(0)->childAtIndex(0));
+    Three::IfNode* ifNode = dynamic_cast<Three::IfNode*>(node->childAtIndex(0)->childAtIndex(0));
 
     ASSERT_EQ("If", ifNode->name());
     ASSERT_BOOLEAN_LITERAL_NODE(true, ifNode->condition());
@@ -57,11 +57,11 @@ TEST_F(ParserTest, SimpleIfWithNoElseStatement) {
 }
 
 TEST_F(ParserTest, SimpleIfWithElseStatement) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\nif false\nreturn\nelse\nreturn\nend\nend\n");
 
-    Language::IfNode* ifNode = dynamic_cast<Language::IfNode*>(node->childAtIndex(0)->childAtIndex(0));
+    Three::IfNode* ifNode = dynamic_cast<Three::IfNode*>(node->childAtIndex(0)->childAtIndex(0));
 
     ASSERT_EQ("If", ifNode->name());
     ASSERT_BOOLEAN_LITERAL_NODE(false, ifNode->condition());
@@ -71,11 +71,11 @@ TEST_F(ParserTest, SimpleIfWithElseStatement) {
 }
 
 TEST_F(ParserTest, TailingIfStatement) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\nreturn if false\nend\n");
 
-    Language::IfNode* ifNode = dynamic_cast<Language::IfNode*>(node->childAtIndex(0)->childAtIndex(0));
+    Three::IfNode* ifNode = dynamic_cast<Three::IfNode*>(node->childAtIndex(0)->childAtIndex(0));
 
     ASSERT_EQ("If", ifNode->name());
     ASSERT_BOOLEAN_LITERAL_NODE(false, ifNode->condition());
@@ -84,7 +84,7 @@ TEST_F(ParserTest, TailingIfStatement) {
 }
 
 TEST_F(ParserTest, ClosureInFunction) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("include \"stdio.h\"\n\ndef main(;Int)\nInt x\nInt y\n{Int, Int; Int} closure\nx = 42\ny = 43\nclosure = do (Int a, Int b; Int; x) {\nx = a + b + y\nreturn a + b\n}\n printf(\"x = %d, value = %d\\n\", x, closure(1,2))\nprintf(\"x = %d\\n\", x)\nend\n");
 
@@ -97,7 +97,7 @@ TEST_F(ParserTest, ClosureInFunction) {
     ASSERT_VARIABLE_DECLERATION("Int", 0, "x", node->childAtIndex(0));
     ASSERT_VARIABLE_DECLERATION("Int", 0, "y", node->childAtIndex(1));
 
-    Language::VariableDeclarationNode* varDecl = dynamic_cast<Language::VariableDeclarationNode*>(node->childAtIndex(2));
+    Three::VariableDeclarationNode* varDecl = dynamic_cast<Three::VariableDeclarationNode*>(node->childAtIndex(2));
     ASSERT_VARIABLE_DECLERATION("", 0, "closure", varDecl);
     ASSERT_EQ(2, varDecl->variable()->type().referencedType()->childCount());
     ASSERT_EQ("Int", varDecl->variable()->type().referencedType()->childAtIndex(0).name());
@@ -109,12 +109,12 @@ TEST_F(ParserTest, ClosureInFunction) {
     ASSERT_OPERATOR("=", node->childAtIndex(4));
     ASSERT_OPERATOR("=", node->childAtIndex(5));
 
-    Language::ClosureNode* closure = dynamic_cast<Language::ClosureNode*>(node->childAtIndex(5)->childAtIndex(1));
+    Three::ClosureNode* closure = dynamic_cast<Three::ClosureNode*>(node->childAtIndex(5)->childAtIndex(1));
     ASSERT_EQ("Closure", closure->name());
 }
 
 TEST_F(ParserTest, NewlinesAfterStatements) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\n\nInt x\n\nx = 1\n\n\nend\n\n\n");
     node = node->childAtIndex(0);
@@ -129,7 +129,7 @@ TEST_F(ParserTest, NewlinesAfterStatements) {
 }
 
 TEST_F(ParserTest, StructureDefinitionWithPacking) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("struct:2 MyStructure\nInt x\nInt y\nend\n");
 
@@ -137,7 +137,7 @@ TEST_F(ParserTest, StructureDefinitionWithPacking) {
 }
 
 TEST_F(ParserTest, StructureDefinitionWithoutPacking) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("struct MyStructure\nInt x\nInt y\nend\n");
 
@@ -145,7 +145,7 @@ TEST_F(ParserTest, StructureDefinitionWithoutPacking) {
 }
 
 TEST_F(ParserTest, StructureDefinitionUsedAsType) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("struct MyStructure\nInt x\nend\ndef foo()\nMyStructure a\nend\n");
 
@@ -157,7 +157,7 @@ TEST_F(ParserTest, StructureDefinitionUsedAsType) {
 }
 
 TEST_F(ParserTest, NullLiteral) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test(*Int a)\na = null\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
@@ -167,7 +167,7 @@ TEST_F(ParserTest, NullLiteral) {
 }
 
 TEST_F(ParserTest, BinaryIntegerLiteral) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test(Int a)\na = 0b1001\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
@@ -177,7 +177,7 @@ TEST_F(ParserTest, BinaryIntegerLiteral) {
 }
 
 TEST_F(ParserTest, OrAssignmentOperator) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test(Int a)\na ||= 1\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
@@ -187,7 +187,7 @@ TEST_F(ParserTest, OrAssignmentOperator) {
 }
 
 TEST_F(ParserTest, Comment) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\n//Int a = 1\nreturn\nend\n");
     node = node->childAtIndex(0);
@@ -197,7 +197,7 @@ TEST_F(ParserTest, Comment) {
 }
 
 TEST_F(ParserTest, PointerVariableDefinition) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\n*Char a\nend\n");
     node = node->childAtIndex(0);
@@ -206,7 +206,7 @@ TEST_F(ParserTest, PointerVariableDefinition) {
 }
 
 TEST_F(ParserTest, MultiplePointerVariableDefinition) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\n***Char a\nend\n");
     node = node->childAtIndex(0);
@@ -215,14 +215,14 @@ TEST_F(ParserTest, MultiplePointerVariableDefinition) {
 }
 
 TEST_F(ParserTest, FunctionCallDereference) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def foo(;*Int)\nreturn null\nend\ndef test()\n*foo() = 1\nend\n");
     node = node->childAtIndex(0);
 }
 
 TEST_F(ParserTest, InlineClosureWithoutTypes) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def foo({} c)\nend\ndef test()\nfoo(do {})\nend\n");
     node = node->childAtIndex(1); // def test
@@ -233,7 +233,7 @@ TEST_F(ParserTest, InlineClosureWithoutTypes) {
 }
 
 TEST_F(ParserTest, InlineClosureWithTypes) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def foo({Int} c)\nend\ndef test()\nfoo(do (Int x) {})\nend\n");
     node = node->childAtIndex(1); // def test

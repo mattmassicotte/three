@@ -2,7 +2,7 @@
 
 #include "AtomicNode.h"
 
-namespace Language {
+namespace Three {
     class BarrierNode : public Three::AtomicNode {
     public:
         static BarrierNode* parse(Parser& parser);

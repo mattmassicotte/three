@@ -14,10 +14,10 @@ protected:
 };
 
 TEST_F(CSourceCodeGenTest, ScalarDeclaration) {
-    Language::DataType intType(Language::DataType::Flavor::Scalar, "int");
-    Language::TypeReference ref(&intType, 1);
+    Three::DataType intType(Three::DataType::Flavor::Scalar, "int");
+    Three::TypeReference ref(&intType, 1);
 
-    Language::CSource source;
+    Three::CSource source;
 
     ref.codeGenCSource(&source, "x");
 
@@ -25,16 +25,16 @@ TEST_F(CSourceCodeGenTest, ScalarDeclaration) {
 }
 
 TEST_F(CSourceCodeGenTest, FunctionDeclaration) {
-    Language::DataType intType(Language::DataType::Flavor::Scalar, "int");
-    Language::DataType functionType(Language::DataType::Flavor::Function, "my_function");
+    Three::DataType intType(Three::DataType::Flavor::Scalar, "int");
+    Three::DataType functionType(Three::DataType::Flavor::Function, "my_function");
     
-    functionType.addChild(Language::TypeReference(&intType, 0), "a");
-    functionType.addChild(Language::TypeReference(&intType, 1), "b");
-    functionType.setReturnType(Language::TypeReference(&intType, 2));
+    functionType.addChild(Three::TypeReference(&intType, 0), "a");
+    functionType.addChild(Three::TypeReference(&intType, 1), "b");
+    functionType.setReturnType(Three::TypeReference(&intType, 2));
     
-    Language::TypeReference ref(&functionType, 0);
+    Three::TypeReference ref(&functionType, 0);
 
-    Language::CSource source;
+    Three::CSource source;
 
     ref.codeGenCSource(&source, "x");
 
@@ -42,16 +42,16 @@ TEST_F(CSourceCodeGenTest, FunctionDeclaration) {
 }
 
 TEST_F(CSourceCodeGenTest, FunctionReference) {
-    Language::DataType intType(Language::DataType::Flavor::Scalar, "int");
-    Language::DataType functionType(Language::DataType::Flavor::Function, "my_function");
+    Three::DataType intType(Three::DataType::Flavor::Scalar, "int");
+    Three::DataType functionType(Three::DataType::Flavor::Function, "my_function");
     
-    functionType.addChild(Language::TypeReference(&intType, 0), "a");
-    functionType.addChild(Language::TypeReference(&intType, 1), "b");
-    functionType.setReturnType(Language::TypeReference(&intType, 2));
+    functionType.addChild(Three::TypeReference(&intType, 0), "a");
+    functionType.addChild(Three::TypeReference(&intType, 1), "b");
+    functionType.setReturnType(Three::TypeReference(&intType, 2));
     
-    Language::TypeReference ref(&functionType, 1);
+    Three::TypeReference ref(&functionType, 1);
 
-    Language::CSource source;
+    Three::CSource source;
 
     ref.codeGenCSource(&source, "");
 
@@ -59,19 +59,19 @@ TEST_F(CSourceCodeGenTest, FunctionReference) {
 }
 
 TEST_F(CSourceCodeGenTest, IfStatementWithSingleVariableCondition) {
-    Language::DataType intType(Language::DataType::Flavor::Scalar, "int");
+    Three::DataType intType(Three::DataType::Flavor::Scalar, "int");
 
-    Language::Variable* variable = new Language::Variable();
+    Three::Variable* variable = new Three::Variable();
     variable->setName("a");
-    variable->setType(Language::TypeReference(&intType, 0));
+    variable->setType(Three::TypeReference(&intType, 0));
 
-    Language::VariableNode* variableNode = new Language::VariableNode();
+    Three::VariableNode* variableNode = new Three::VariableNode();
     variableNode->setVariable(variable);
 
-    Language::IfNode* ifNode = new Language::IfNode();
+    Three::IfNode* ifNode = new Three::IfNode();
     ifNode->setCondition(variableNode);
 
-    Language::CSourceContext context;
+    Three::CSourceContext context;
 
     ifNode->codeGenCSource(context);
 
@@ -79,21 +79,21 @@ TEST_F(CSourceCodeGenTest, IfStatementWithSingleVariableCondition) {
 }
 
 TEST_F(CSourceCodeGenTest, AddressOfOperator) {
-    Language::DataType intType(Language::DataType::Flavor::Scalar, "int");
+    Three::DataType intType(Three::DataType::Flavor::Scalar, "int");
 
-    Language::Variable* variable = new Language::Variable();
+    Three::Variable* variable = new Three::Variable();
     variable->setName("a");
-    variable->setType(Language::TypeReference(&intType, 0));
+    variable->setType(Three::TypeReference(&intType, 0));
 
-    Language::VariableNode* variableNode = new Language::VariableNode();
+    Three::VariableNode* variableNode = new Three::VariableNode();
     variableNode->setVariable(variable);
 
-    Language::OperatorNode* opNode = new Language::OperatorNode();
+    Three::OperatorNode* opNode = new Three::OperatorNode();
     opNode->setOp("&");
     opNode->setStatement(false);
     opNode->addChild(variableNode);
 
-    Language::CSourceContext context;
+    Three::CSourceContext context;
 
     opNode->codeGenCSource(context);
 

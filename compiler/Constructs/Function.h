@@ -8,7 +8,7 @@
 #include <vector>
 #include <functional>
 
-namespace Language {
+namespace Three {
     class Function : public Three::Entity {
     public:
         virtual ~Function();

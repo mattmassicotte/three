@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <sstream>
 
-namespace Language {
+namespace Three {
     ASTNode::ASTNode() {
         _childNodes.clear();
     }

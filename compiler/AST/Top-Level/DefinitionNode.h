@@ -3,8 +3,6 @@
 #include "../ASTNode.h"
 #include "../../Constructs/TranslationUnit.h"
 
-using namespace Language;
-
 namespace Three {
     class DefinitionNode : public ASTNode {
     public:

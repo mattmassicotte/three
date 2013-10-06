@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     NullLiteralNode* NullLiteralNode::parse(Parser& parser) {
         NullLiteralNode* node = new NullLiteralNode();
 

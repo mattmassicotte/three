@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 
-namespace Language {
+namespace Three {
     class Scope {
     public:
         static Scope* createRootScope();

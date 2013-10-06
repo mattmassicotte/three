@@ -7,8 +7,6 @@
 
 #include <string>
 
-using namespace Language;
-
 namespace Three {
     class ParsingContext {
     public:

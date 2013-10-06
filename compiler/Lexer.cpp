@@ -5,7 +5,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     Lexer::Lexer(std::istream* stream) : _stream(stream) {
         _stream = stream;
         _subtoken = this->advanceSubtoken();

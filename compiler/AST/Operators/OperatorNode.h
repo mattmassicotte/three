@@ -2,7 +2,7 @@
 
 #include "../ASTNode.h"
 
-namespace Language {
+namespace Three {
     class OperatorNode : public ASTNode {
     public:
         static ASTNode* parse(Parser& parser, ASTNode* left, uint32_t precedence);

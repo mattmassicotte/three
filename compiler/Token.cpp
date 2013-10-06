@@ -1,6 +1,6 @@
 #include "Token.h"
 
-namespace Language {
+namespace Three {
     Token::Token(const std::string& string, const Type& type) :
             _string(string),
             _type(type) {

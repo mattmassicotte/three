@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Language {
+namespace Three {
     class Token {
 
     public:

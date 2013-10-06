@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     IfNode* IfNode::parse(Parser& parser) {
         IfNode* node = new IfNode();
 

@@ -2,8 +2,6 @@
 
 #include "../ASTNode.h"
 
-using namespace Language;
-
 namespace Three {
     class AtomicNode : public ASTNode {
     public:

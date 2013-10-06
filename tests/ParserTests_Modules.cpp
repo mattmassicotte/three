@@ -96,7 +96,7 @@ TEST_F(ParserTest_Modules, DefValueUsedForVariableInitialization) {
 
     ASSERT_EQ("ValueDefinition", node->childAtIndex(0)->nodeName());
 
-    Language::VariableDeclarationNode* varNode = dynamic_cast<Language::VariableDeclarationNode*>(node->childAtIndex(1));
+    Three::VariableDeclarationNode* varNode = dynamic_cast<Three::VariableDeclarationNode*>(node->childAtIndex(1));
 
     ASSERT_VARIABLE_DECLERATION("Int", 0, "x", varNode);
     ASSERT_EQ("Value", varNode->initializerExpression()->nodeName());
@@ -128,7 +128,7 @@ TEST_F(ParserTest_Modules, DefinitionAfterNamespace) {
 }
 
 TEST_F(ParserTest_Modules, NamespacedStruct) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("namespace Foo\nstruct Bar\nInt x\nend\ndef in()\n Bar x\nend\nend\n\n\ndef out()\nFoo::Bar y\nend\n");
 
@@ -145,7 +145,7 @@ TEST_F(ParserTest_Modules, NamespacedStruct) {
 }
 
 TEST_F(ParserTest_Modules, NestedNamespaceRecursiveStruct) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("namespace Foo\nnamespace Bar\nstruct MyStruct\n*MyStruct item\nend\nend\nend\n");
 
@@ -153,7 +153,7 @@ TEST_F(ParserTest_Modules, NestedNamespaceRecursiveStruct) {
 }
     
 TEST_F(ParserTest_Modules, NamespacedStructUsedInMethod) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("namespace Foo\nstruct Bar\nInt x\nend\ndef Bar.in()\nend\nend\n");
     node = node->childAtIndex(0);
@@ -162,7 +162,7 @@ TEST_F(ParserTest_Modules, NamespacedStructUsedInMethod) {
 }
 
 TEST_F(ParserTest_Modules, NamespacedFunctionUsedInFunction) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("namespace Foo\ndef in()\nend\nend\n\ndef out()\nFoo::in()\nend\n");
     node = node->childAtIndex(1);
@@ -171,7 +171,7 @@ TEST_F(ParserTest_Modules, NamespacedFunctionUsedInFunction) {
     ASSERT_FUNCTION_CALL("Foo_3_in", node->childAtIndex(0));
 }
 TEST_F(ParserTest_Modules, NestedNamespacedFunctionUsedInFunction) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("namespace Foo\nnamespace Bar\ndef in()\nend\nend\nend\n\ndef out()\nFoo::Bar::in()\nend\n");
     node = node->childAtIndex(1);

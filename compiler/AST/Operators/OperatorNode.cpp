@@ -7,7 +7,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     ASTNode* OperatorNode::parse(Parser& parser, ASTNode* left, uint32_t precedence) {
         OperatorNode* node = new OperatorNode();
 

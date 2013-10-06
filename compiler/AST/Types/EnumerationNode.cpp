@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     EnumerationNode* EnumerationNode::parse(Parser& parser) {
         EnumerationNode* node = new EnumerationNode();
 

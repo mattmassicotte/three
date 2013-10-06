@@ -5,7 +5,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace Language {
+namespace Three {
     Function::~Function() {
         // this->eachChild([=] (Variable* v, uint32_t index) {
         //     delete v;
@@ -75,7 +75,7 @@ namespace Language {
     }
 
     DataType* Function::createType() const {
-        DataType* type = new DataType(Language::DataType::Flavor::Function, this->name());;
+        DataType* type = new DataType(DataType::Flavor::Function, this->name());;
 
         type->setReturnType(this->returnType());
 

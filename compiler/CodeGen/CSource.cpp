@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <iostream>
 
-namespace Language {
+namespace Three {
     CSource::CSource() : _indentationLevel(0) {
     }
 

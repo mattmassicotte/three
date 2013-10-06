@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iostream>
 
-namespace Language {
+namespace Three {
     Scope* Scope::createRootScope() {
         Scope* scope = new Scope("top_level_scope");
 

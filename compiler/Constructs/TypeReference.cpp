@@ -4,7 +4,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     TypeReference TypeReference::ref(Three::Module* module, const std::string& name, uint32_t indirection) {
         assert(module);
 

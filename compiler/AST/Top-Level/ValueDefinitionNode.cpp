@@ -7,7 +7,7 @@ namespace Three {
     ValueDefinitionNode* ValueDefinitionNode::parse(Parser& parser) {
         ValueDefinitionNode* node = new ValueDefinitionNode();
 
-        assert(parser.peek().type() == Language::Token::Identifier);
+        assert(parser.peek().type() == Token::Identifier);
 
         node->_definedName = parser.next().str();
 

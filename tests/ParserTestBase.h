@@ -17,17 +17,17 @@ protected:
         delete _stream;
     }
 
-    Language::ASTNode* parse(const char* input) {
+    Three::ASTNode* parse(const char* input) {
         std::string inputString(input);
 
         assert(!_stream);
         _stream = new std::istringstream(inputString);
 
         assert(!_lexer);
-        _lexer = new Language::Lexer(_stream);
+        _lexer = new Three::Lexer(_stream);
 
         assert(!_parser);
-        _parser = new Language::Parser(_lexer);
+        _parser = new Three::Parser(_lexer);
 
         assert(!_context);
         _context = Three::ParsingContext::translationUnitContext();
@@ -37,12 +37,12 @@ protected:
         return _parser->rootASTNode();
     }
 
-    Language::ASTNode* parseString() {
+    Three::ASTNode* parseString() {
         return _parser->rootASTNode();
     }
 
     std::istringstream* _stream;
-    Language::Lexer*    _lexer;
-    Language::Parser*   _parser;
+    Three::Lexer*    _lexer;
+    Three::Parser*   _parser;
     Three::ParsingContext* _context;
 };

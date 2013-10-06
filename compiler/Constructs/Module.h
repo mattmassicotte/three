@@ -7,8 +7,6 @@
 #include <map>
 #include <vector>
 
-using namespace Language;
-
 namespace Three {
     class Module {
     public:

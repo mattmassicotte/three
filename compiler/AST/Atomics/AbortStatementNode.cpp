@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     AbortStatementNode* AbortStatementNode::parse(Parser& parser) {
         AbortStatementNode* node = new AbortStatementNode();
 

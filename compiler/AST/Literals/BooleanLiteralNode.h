@@ -2,7 +2,7 @@
 
 #include "../ASTNode.h"
 
-namespace Language {
+namespace Three {
     class BooleanLiteralNode : public ASTNode {
     public:
         static BooleanLiteralNode* parse(Parser& parser);

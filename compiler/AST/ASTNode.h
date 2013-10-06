@@ -9,12 +9,12 @@
 #include <functional>
 
 // forward declaration
-namespace Language {
+namespace Three {
     class Parser;
     class Annotation;
 };
 
-namespace Language {
+namespace Three {
     class ASTNode {
     public:
         ASTNode();

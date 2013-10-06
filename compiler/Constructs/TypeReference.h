@@ -5,15 +5,12 @@
 #include <string>
 #include <vector>
 
-namespace Language {
-    class DataType;
-}
-
 namespace Three {
+    class DataType;
     class Module;
 }
 
-namespace Language {
+namespace Three {
     class TypeReference {
     public:
         static TypeReference ref(Three::Module* module, const std::string& name, uint32_t indirection);

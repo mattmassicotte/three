@@ -87,8 +87,8 @@ namespace Three {
         return _rangeEndExpression;
     }
 
-    Language::Variable* ForNode::rangeLoopVariable() const {
-        return dynamic_cast<Language::VariableDeclarationNode*>(this->startExpression())->variable();
+    Variable* ForNode::rangeLoopVariable() const {
+        return dynamic_cast<VariableDeclarationNode*>(this->startExpression())->variable();
     }
 
     bool ForNode::evaluateConditionAtEnd() const {

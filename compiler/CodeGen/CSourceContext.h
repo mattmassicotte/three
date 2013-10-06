@@ -6,7 +6,7 @@
 #include <sstream>
 #include <set>
 
-namespace Language {
+namespace Three {
     class CSourceContext {
     public:
         typedef enum {

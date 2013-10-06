@@ -1,6 +1,6 @@
 #include "RootNode.h"
 
-namespace Language {
+namespace Three {
     std::string RootNode::name() const {
         return "Root";
     }

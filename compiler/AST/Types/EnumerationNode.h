@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace Language {
+namespace Three {
     class EnumerationNode : public ASTNode {
     public:
         static EnumerationNode* parse(Parser& parser);

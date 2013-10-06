@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     CaseNode* CaseNode::parse(Parser& parser) {
         CaseNode* node = new CaseNode();
 

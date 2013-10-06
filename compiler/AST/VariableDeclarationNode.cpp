@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     VariableDeclarationNode* VariableDeclarationNode::parse(Parser& parser, bool createVariable) {
         VariableDeclarationNode* node = new VariableDeclarationNode();
 

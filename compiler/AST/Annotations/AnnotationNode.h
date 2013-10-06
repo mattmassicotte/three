@@ -3,7 +3,7 @@
 #include "../ASTNode.h"
 #include "../../Constructs/Annotation.h"
 
-namespace Language {
+namespace Three {
     class AnnotationNode : public ASTNode {
     public:
         static AnnotationNode* parse(Parser& parser);

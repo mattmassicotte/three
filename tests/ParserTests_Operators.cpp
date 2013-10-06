@@ -4,11 +4,11 @@ class ParserTest_Operators : public ParserTestBase {
 };
 
 TEST_F(ParserTest_Operators, AssignmentExpression) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\nInt x\nx = 42\nend\n");
 
-    Language::OperatorNode* opNode = dynamic_cast<Language::OperatorNode*>(node->childAtIndex(0)->childAtIndex(1));
+    Three::OperatorNode* opNode = dynamic_cast<Three::OperatorNode*>(node->childAtIndex(0)->childAtIndex(1));
 
     ASSERT_OPERATOR("=", opNode);
     ASSERT_VARIABLE_NODE("Int",  0, "x", opNode->childAtIndex(0));
@@ -16,30 +16,30 @@ TEST_F(ParserTest_Operators, AssignmentExpression) {
 }
 
 TEST_F(ParserTest_Operators, ComplexExpression) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\nInt x\nx = 42 * (5 + 1)\nend\n");
     node = node->childAtIndex(0);
 
     ASSERT_VARIABLE_DECLERATION("Int", 0, "x", node->childAtIndex(0));
 
-    Language::OperatorNode* opNode = dynamic_cast<Language::OperatorNode*>(node->childAtIndex(1));
+    Three::OperatorNode* opNode = dynamic_cast<Three::OperatorNode*>(node->childAtIndex(1));
 
     ASSERT_OPERATOR("=", opNode);
     ASSERT_VARIABLE_NODE("Int",  0, "x", opNode->childAtIndex(0));
 
-    opNode = dynamic_cast<Language::OperatorNode*>(opNode->childAtIndex(1));
+    opNode = dynamic_cast<Three::OperatorNode*>(opNode->childAtIndex(1));
     ASSERT_OPERATOR("*", opNode);
     ASSERT_INTEGER_LITERAL_NODE(42, opNode->childAtIndex(0));
 
-    opNode = dynamic_cast<Language::OperatorNode*>(opNode->childAtIndex(1));
+    opNode = dynamic_cast<Three::OperatorNode*>(opNode->childAtIndex(1));
     ASSERT_OPERATOR("+", opNode);
     ASSERT_INTEGER_LITERAL_NODE(5, opNode->childAtIndex(0));
     ASSERT_INTEGER_LITERAL_NODE(1, opNode->childAtIndex(1));
 }
 
 TEST_F(ParserTest_Operators, DereferenceUnaryOperator) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test(*Int a)\n*a\nend\n");
     node = node->childAtIndex(0);
@@ -48,7 +48,7 @@ TEST_F(ParserTest_Operators, DereferenceUnaryOperator) {
 }
 
 TEST_F(ParserTest_Operators, DereferenceUnaryOperatorAsLValue) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test(*Int a)\n*a = null\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
@@ -59,7 +59,7 @@ TEST_F(ParserTest_Operators, DereferenceUnaryOperatorAsLValue) {
 }
 
 TEST_F(ParserTest_Operators, MoreComplexUnaryOperatorAsLValue) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test(*Int a)\n***a = &*a\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
@@ -70,7 +70,7 @@ TEST_F(ParserTest_Operators, MoreComplexUnaryOperatorAsLValue) {
 }
 
 TEST_F(ParserTest_Operators, AddressOfUnaryOperator) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test(*Int a)\na = &a\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
@@ -81,7 +81,7 @@ TEST_F(ParserTest_Operators, AddressOfUnaryOperator) {
 }
 
 TEST_F(ParserTest_Operators, AddressOfPrecedence) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("struct MyStruct\nInt x\nend\ndef test(*MyStruct a, Int b)\nb = &a->x\nend\n");
     node = node->childAtIndex(1)->childAtIndex(0);
@@ -95,7 +95,7 @@ TEST_F(ParserTest_Operators, AddressOfPrecedence) {
 }
 
 TEST_F(ParserTest_Operators, SizeofOperator) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test(Int x)\nx = sizeof(Int)\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
@@ -105,7 +105,7 @@ TEST_F(ParserTest_Operators, SizeofOperator) {
 }
 
 TEST_F(ParserTest_Operators, MemberAccessOperator) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("struct MyStruct\nInt a\nend\ndef test(MyStruct value)\n value.a = 0\nend\n");
     node = node->childAtIndex(1)->childAtIndex(0);
@@ -121,7 +121,7 @@ TEST_F(ParserTest_Operators, MemberAccessOperator) {
 }
 
 TEST_F(ParserTest_Operators, IndirectMemberAccessOperator) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("struct MyStruct\nInt a\nend\ndef test(*MyStruct value)\n value->a = 0\nend\n");
     node = node->childAtIndex(1)->childAtIndex(0);
@@ -137,7 +137,7 @@ TEST_F(ParserTest_Operators, IndirectMemberAccessOperator) {
 }
 
 TEST_F(ParserTest_Operators, IndexerOperator) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test(Int x)\nx[5] = 0\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
@@ -152,7 +152,7 @@ TEST_F(ParserTest_Operators, IndexerOperator) {
 }
 
 TEST_F(ParserTest_Operators, NotEqualOperator) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test(Int x)\nx != 0\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);
@@ -163,7 +163,7 @@ TEST_F(ParserTest_Operators, NotEqualOperator) {
 }
 
 TEST_F(ParserTest_Operators, TernaryConditionalOperator) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\nInt a\na = (a == 0) ? 1 : 2\nend\n");
     node = node->childAtIndex(0)->childAtIndex(1);
@@ -184,7 +184,7 @@ TEST_F(ParserTest_Operators, TernaryConditionalOperator) {
 }
 
 TEST_F(ParserTest_Operators, TernaryCompareAndSwapOperator) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\nInt a\na cas 1 : 2\nend\n");
     node = node->childAtIndex(0)->childAtIndex(1);
@@ -196,7 +196,7 @@ TEST_F(ParserTest_Operators, TernaryCompareAndSwapOperator) {
 }
 
 TEST_F(ParserTest_Operators, CompoundAdditionAssignmentOperator) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test()\nInt a\na += 1\nend\n");
     node = node->childAtIndex(0)->childAtIndex(1);
@@ -207,7 +207,7 @@ TEST_F(ParserTest_Operators, CompoundAdditionAssignmentOperator) {
 }
 
 TEST_F(ParserTest_Operators, PrecedenceTest) {
-    Language::ASTNode* node;
+    Three::ASTNode* node;
 
     node = this->parse("def test(Int x)\nx = 4 * 5 + 1\nend\n");
     node = node->childAtIndex(0)->childAtIndex(0);

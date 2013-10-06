@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     VariableNode* VariableNode::parse(Parser& parser, const std::string& identifier) {
         VariableNode* node = new VariableNode();
 

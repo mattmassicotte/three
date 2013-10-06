@@ -9,10 +9,10 @@ namespace Three {
 
         switch (parser.peek().type()) {
             case Token::Type::KeywordPublic:
-                node->_type = Language::TranslationUnit::Visibility::External;
+                node->_type = TranslationUnit::Visibility::External;
                 break;
             case Token::Type::KeywordPrivate:
-                node->_type = Language::TranslationUnit::Visibility::None;
+                node->_type = TranslationUnit::Visibility::None;
                 break;
             default:
                 assert(0 && "Unexpected value in VisibilityNode::parse");
@@ -30,7 +30,7 @@ namespace Three {
         return "Visibility";
     }
 
-    Language::TranslationUnit::Visibility VisibilityNode::type() const {
+    TranslationUnit::Visibility VisibilityNode::type() const {
         return _type;
     }
 

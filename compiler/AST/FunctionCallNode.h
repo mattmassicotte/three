@@ -3,7 +3,7 @@
 #include "ASTNode.h"
 #include "../Constructs/DataType.h"
 
-namespace Language {
+namespace Three {
     class FunctionCallNode : public ASTNode {
     public:
         static FunctionCallNode* parse(Parser& parser, const std::string& functionName, ASTNode* firstArgument);

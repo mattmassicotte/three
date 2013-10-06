@@ -2,7 +2,7 @@
 
 #include "../ASTNode.h"
 
-namespace Language {
+namespace Three {
     class AbortStatementNode : public ASTNode {
     public:
         static AbortStatementNode* parse(Parser& parser);

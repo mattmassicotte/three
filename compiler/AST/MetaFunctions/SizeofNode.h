@@ -3,8 +3,6 @@
 #include "../ASTNode.h"
 #include "../../Constructs/TypeReference.h"
 
-using namespace Language;
-
 namespace Three {
     class SizeofNode : public ASTNode {
     public:

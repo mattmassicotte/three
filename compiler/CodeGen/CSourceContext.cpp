@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <iostream>
 
-namespace Language {
+namespace Three {
     CSourceContext::CSourceContext() {
         _declarationSource = new CSource();
         _bodySource = new CSource();

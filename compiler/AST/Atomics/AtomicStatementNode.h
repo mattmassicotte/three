@@ -3,7 +3,7 @@
 #include "../ASTNode.h"
 #include "../ElseNode.h"
 
-namespace Language {
+namespace Three {
     class AtomicStatementNode : public ASTNode {
     public:
         static ASTNode* parse(Parser& parser);

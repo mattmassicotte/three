@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <sstream>
 
-namespace Language {
+namespace Three {
     FunctionCallNode* FunctionCallNode::parse(Parser& parser, const std::string& functionName, ASTNode* firstArgument) {
         FunctionCallNode* node = new FunctionCallNode();
 

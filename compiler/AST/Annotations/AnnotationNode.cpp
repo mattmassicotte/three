@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-namespace Language {
+namespace Three {
     AnnotationNode* AnnotationNode::parse(Parser& parser) {
         std::string name;
 
