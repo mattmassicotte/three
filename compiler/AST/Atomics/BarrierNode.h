@@ -10,7 +10,6 @@ namespace Three {
     public:
         virtual std::string name() const;
 
-    public:
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
     };
 }

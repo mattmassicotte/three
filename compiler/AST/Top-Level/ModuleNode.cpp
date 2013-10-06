@@ -4,7 +4,7 @@
 #include "VisibilityNode.h"
 #include "DefinitionNode.h"
 #include "../Directives/ImportNode.h"
-#include "../Types/StructureNode.h"
+#include "StructureNode.h"
 #include "../../Parser.h"
 
 #include <assert.h>
@@ -65,8 +65,5 @@ namespace Three {
 
     std::string ModuleNode::moduleName() const {
         return _name;
-    }
-
-    void ModuleNode::codeGenCSource(CSourceContext& context) {
     }
 }

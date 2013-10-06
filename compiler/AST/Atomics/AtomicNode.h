@@ -15,7 +15,7 @@ namespace Three {
             SequentiallyConsistent
         } Ordering;
     public:
-        static ASTNode* parse(Parser& parser);
+        static ASTNode* parse(Parser& parser, bool statement=false);
         static void parseOrdering(Parser& parser, AtomicNode* node);
 
     public:

@@ -29,6 +29,7 @@ TEST_F(ParserTest_CompoundTypes, NestedStruct) {
 
     node = this->parse("struct A\nInt in\nend\nstruct B\nA out\nend\ndef test(B b)\nb.out.in = 5\nend\n");
 
+    // TODO
     std::cout << node->recursiveStr() << std::endl;
 }
 
@@ -37,5 +38,6 @@ TEST_F(ParserTest_CompoundTypes, InvokeFunctionPointerMember) {
 
     node = this->parse("struct MyStruct\n*(*Void arg; *Void) fn_ptr\nend\ndef test()\nMyStruct s\ns.fn_ptr(null)\nend\n");
 
+    // TODO
     std::cout << node->recursiveStr() << std::endl;
 }

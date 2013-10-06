@@ -8,11 +8,17 @@
 #include <string>
 
 namespace Three {
+    class ASTNode;
+}
+
+namespace Three {
     class ParsingContext {
     public:
         static ParsingContext* translationUnitContext();
 
     public:
+        virtual ~ParsingContext();
+
         TypeReference refForName(const std::string& name, int indirectionDepth);
         Function*     functionForName(const std::string& name);
         void          addFunction(Function* func);
@@ -27,6 +33,9 @@ namespace Three {
         void   pushScope(Scope* scope);
         void   popScope();
 
+        void setRootNode(ASTNode* node);
+        ASTNode* rootNode() const;
+
         void setVisibility(TranslationUnit::Visibility visibility);
         TranslationUnit::Visibility visibility() const;
 
@@ -34,6 +43,7 @@ namespace Three {
         TranslationUnit* _translationUnit;
         Scope*           _currentScope;
         Module*          _module;
+        ASTNode*         _rootNode;
         TranslationUnit::Visibility _visibility;
     };
 }

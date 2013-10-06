@@ -36,6 +36,7 @@ namespace Three {
         return _destTypeName;
     }
 
-    void TypeDefinitionNode::codeGenCSource(CSourceContext& context) {
+    void TypeDefinitionNode::codeGen(CSourceContext& context) {
+        assert(0 && "Codegen not supported");
     }
 }

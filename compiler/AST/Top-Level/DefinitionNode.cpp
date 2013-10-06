@@ -1,7 +1,7 @@
 #include "DefinitionNode.h"
 #include "TypeDefinitionNode.h"
 #include "FunctionDeclarationNode.h"
-#include "../FunctionDefinitionNode.h"
+#include "FunctionDefinitionNode.h"
 #include "ValueDefinitionNode.h"
 #include "../../Parser.h"
 

@@ -59,34 +59,84 @@ module BuildFunctions
   def self.absolute_path(input)
     File.absolute_path(File.join(BUILD_DIR, input))
   end
-  
+
+  def self.output_extension_for_file(source_file)
+    case File.extname(source_file)
+    when '.h', '.hpp'
+      '.gch'
+    when '.c', '.cc', '.cpp'
+      '.o'
+    else
+      raise
+    end
+  end
+
+  def self.define_dependencies_for_source(source, opts={})
+    # define the path
+    object_dir  = BuildFunctions::absolute_path(File.dirname(source))
+    output_ext  = BuildFunctions::output_extension_for_file(source)
+    object_path = BuildFunctions::absolute_path(File.basename(source, '.*') + output_ext)
+
+    # define a dependency on the object path
+    directory(object_dir)
+
+    # make sure to clean this object
+    CLEAN.include(object_path)
+
+    # setup object file dependencies
+    dependencies = [__FILE__, object_dir]
+
+    compiler_flags = opts[:flags]
+
+    dependencies.concat(opts[:deps])
+    dependencies.concat(BuildFunctions::get_dependencies(source, compiler_flags)) if opts[:find_deps]
+
+    # Add the pch include flag only to the compilation, not when finding dependencies.  This is because
+    # the prefix header might not be compiled yet.
+    if opts[:pch]
+      compiler_flags += BuildFunctions::compiler_flag_for_pch(opts[:pch])
+    end
+
+    # and finally, setup the rule to build this object
+    file(object_path => dependencies) do
+      BuildFunctions::compile(source, object_path, compiler_flags)
+    end
+
+    object_path
+  end
+
   def self.objects_for_sources(filelist, opts={})
     opts[:find_deps] = true if opts[:find_deps].nil?
-    
+    opts[:deps] ||= []
+
+    # define the dependencies for the pch file, if any
+    pch_output = define_pch_dependencies(opts)
+    if pch_output
+      opts[:deps] << pch_output
+    end
+
     object_files = []
     filelist.each do |source|
-      # define the path
-      object_dir  = BuildFunctions::absolute_path(File.dirname(source))
-      object_path = BuildFunctions::absolute_path(File.basename(source, '.*') + '.o')
-
-      # define a dependency on the object path
-      directory(object_dir)
-
-      object_files << object_path
-
-      # make sure to clean this object
-      CLEAN.include(object_path)
-
-      # setup object file dependencies
-      dependencies = [__FILE__, object_dir]
-      dependencies.concat(BuildFunctions::get_dependencies(source, opts[:flags])) if opts[:find_deps]
-
-      # and finally, setup the rule to build this object
-      file(object_path => dependencies) do
-        BuildFunctions::compile(source, object_path, opts[:flags])
-      end
+      object_files << define_dependencies_for_source(source, opts)
     end
-    
+
     object_files
+  end
+
+  def self.define_pch_dependencies(opts)
+    pch_source = opts[:pch]
+    return nil if pch_source.nil?
+
+    opts = opts.dup
+    opts.delete(:pch)
+
+    define_dependencies_for_source(pch_source, opts)
+  end
+
+  def self.compiler_flag_for_pch(pch)
+    # remove the extension, create an absolute path to the build directory
+    pch = BuildFunctions::absolute_path(File.basename(pch, '.*'))
+
+    " -include #{pch}"
   end
 end

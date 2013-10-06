@@ -36,7 +36,7 @@ namespace Three {
         return _stringValue;
     }
 
-    void StringLiteralNode::codeGenCSource(CSourceContext& context) {
+    void StringLiteralNode::codeGen(CSourceContext& context) {
         context << "\"" << this->stringValue() << "\"";
     }
 }

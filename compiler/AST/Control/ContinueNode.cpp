@@ -9,6 +9,8 @@ namespace Three {
 
         assert(parser.next().type() == Token::Type::KeywordContinue);
 
+        node->setStatement(true);
+
         return node;
     }
 
@@ -16,7 +18,7 @@ namespace Three {
         return "Continue";
     }
 
-    void ContinueNode::codeGenCSource(CSourceContext& context) {
-        context.current()->printLine("continue;");
+    void ContinueNode::codeGen(CSourceContext& context) {
+        context << "continue";
     }
 }

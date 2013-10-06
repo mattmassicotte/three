@@ -16,9 +16,7 @@ namespace Three {
         return "NullLiteral";
     }
 
-    void NullLiteralNode::codeGenCSource(CSourceContext& context) {
-        context.addHeader("stddef.h");
-
+    void NullLiteralNode::codeGen(CSourceContext& context) {
         context << "NULL";
     }
 }

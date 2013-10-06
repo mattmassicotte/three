@@ -38,22 +38,18 @@ namespace Three {
         return _receiver;
     }
 
-    void FunctionCallOperatorNode::codeGenCSource(CSourceContext& context) {
-        this->_receiver->codeGenCSource(context);
+    void FunctionCallOperatorNode::codeGen(CSourceContext& context) {
+        this->_receiver->codeGen(context);
 
         context << "(";
 
         this->eachChildWithLast([=, &context] (ASTNode* node, bool last) {
-            node->codeGenCSource(context);
+            node->codeGen(context);
             if (!last) {
                 context << ", ";
             }
         });
 
         context << ")";
-
-        if (this->statement()) {
-            context << ";";
-        }
     }
 }

@@ -16,6 +16,7 @@ typedef struct three_transaction {
 } three_transaction_t;
 
 #define THREE_MAKE_TRANSACTION(ctx, begin, end) ((three_transaction_t){0, ctx, begin, end})
+#define THREE_MAKE_DEFAULT_TRANSACTION() THREE_MAKE_TRANSACTION(NULL, NULL, NULL)
 
 // transactional memory
 void three_transaction_initialize(void);

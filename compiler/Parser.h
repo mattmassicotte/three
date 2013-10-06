@@ -2,22 +2,30 @@
 
 #include "Lexer.h"
 #include "ParsingContext.h"
-#include "AST/RootNode.h"
-#include "Constructs/Scope.h"
-#include "Constructs/TranslationUnit.h"
-#include "Constructs/TypeReference.h"
-#include "Constructs/Function.h"
 
 #include <string>
 #include <map>
 
 namespace Three {
+    class Function;
+    class TranslationUnit;
+    class Scope;
+    class RootNode;
+    class TypeReference;
+}
+
+namespace Three {
     class Parser {
+    public:
+        static ParsingContext* contextFromFile(const std::string& path);
+
     public:
         Parser(Lexer* lexer);
         virtual ~Parser();
 
         RootNode* rootASTNode();
+
+        bool parse(ParsingContext* context);
 
         ASTNode* parseStatement();
         ASTNode* parsePrimaryExpression();
@@ -41,17 +49,16 @@ namespace Three {
         Token next();
         bool  nextIf(const std::string& value);
 
-        Three::ParsingContext* context() const;
-        void setContext(Three::ParsingContext* context);
+        ParsingContext* context() const;
 
         TranslationUnit* currentTranslationUnit() const;
-        Three::Module* currentModule() const;
+        Module* currentModule() const;
         Scope* currentScope() const;
         void   pushScope(Scope* scope);
         void   popScope();
 
     private:
         Lexer* _lexer;
-        Three::ParsingContext* _context;
+        ParsingContext* _context;
     };
 }

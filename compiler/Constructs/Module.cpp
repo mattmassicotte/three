@@ -30,16 +30,16 @@ namespace Three {
     Module* Module::loadModuleAtPath(const std::string& path) {
         std::cout << "Loading Module at: '" << path << "'" << std::endl;
 
-        std::ifstream inputFile(path);
-
-        Lexer lexer(&inputFile);
-        Parser parser(&lexer);
-
-        parser.setContext(Three::ParsingContext::translationUnitContext());
-
-        RootNode* node = parser.rootASTNode();
-
-        return parser.currentModule();
+        return nullptr;
+        // 
+        // std::ifstream inputFile(path);
+        // 
+        // Lexer lexer(&inputFile);
+        // Parser parser(&lexer);
+        // 
+        // RootNode* node = parser.rootASTNode();
+        // 
+        // return parser.currentModule();
     }
 
     Module::Module() : _parentModule(NULL) {
@@ -133,6 +133,10 @@ namespace Three {
         }
 
         return _functions[name];
+    }
+
+    bool Module::hasMainFunction() {
+        return _functions["main"] != nullptr;
     }
 
     void Module::addDataType(const std::string& name, DataType* type) {

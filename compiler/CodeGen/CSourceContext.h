@@ -1,35 +1,40 @@
 #pragma once
 
-#include "CSource.h"
+#include "../Constructs/TranslationUnit.h"
 
+#include <functional>
 #include <string>
-#include <sstream>
-#include <set>
+
+namespace Three {
+    class CSource;
+}
 
 namespace Three {
     class CSourceContext {
     public:
-        typedef enum {
-            Declarations,
-            Body
-        } Section;
-    public:
         CSourceContext();
         virtual ~CSourceContext();
 
-        void addHeader(const std::string& header);
-
+        // sections
+        CSource* externalDeclarations() const;
+        CSource* internalDeclarations() const;
         CSource* declarations() const;
-        CSource* body() const;
-        CSource* current() const;
-        void setCurrent(Section section);
 
+        CSource* body() const;
+
+        CSource* current() const;
+        void setCurrent(CSource* source);
+        CSource* declaractionSourceForVisibility(TranslationUnit::Visibility v) const;
+
+        void adjustCurrent(CSource* source, std::function<void (CSource*)> func);
+        void adjustCurrentForVisibility(TranslationUnit::Visibility v, std::function<void (CSource*)> func);
+
+        CSourceContext& operator <<(const char* string);
         CSourceContext& operator <<(const std::string& string);
 
-        std::string renderToString();
     private:
-        std::set<std::string> _headers;
-
+        CSource* _externalDeclarationSource;
+        CSource* _internalDeclarationSource;
         CSource* _declarationSource;
         CSource* _bodySource;
         CSource* _currentSource;

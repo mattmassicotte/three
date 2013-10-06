@@ -35,7 +35,7 @@ namespace Three {
         return _name;
     }
 
-    void NamespaceNode::codeGenCSource(CSourceContext& context) {
-        this->codeGenCSourceForChildren(context);
+    void NamespaceNode::codeGen(CSourceContext& context) {
+        this->codeGenChildren(context);
     }
 }

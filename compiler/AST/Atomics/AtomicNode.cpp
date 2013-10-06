@@ -6,19 +6,19 @@
 #include <assert.h>
 
 namespace Three {
-    ASTNode* AtomicNode::parse(Parser& parser) {
+    ASTNode* AtomicNode::parse(Parser& parser, bool statement) {
         assert(parser.peek().type() == Token::Type::KeywordAtomic);
 
         // we need to check for an atomic statement
         // case #1 "atomic (...)"
         if (parser.peek(2).type() == Token::Type::PunctuationOpenParen) {
-            return AtomicExpressionNode::parse(parser);
+            return AtomicExpressionNode::parse(parser, statement);
         }
 
         // case #1 "atomic:ordering (...)" where "ordering" != fallback
         if (parser.peek(2).type() == Token::Type::PunctuationColon) {
             if (parser.peek(3).str() != "fallback") {
-                return AtomicExpressionNode::parse(parser);
+                return AtomicExpressionNode::parse(parser, statement);
             }
         }
 

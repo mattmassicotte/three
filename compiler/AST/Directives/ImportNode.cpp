@@ -1,5 +1,6 @@
 #include "ImportNode.h"
 #include "../../Parser.h"
+#include "../../CSourceIndexer.h"
 
 #include <assert.h>
 #include <sstream>
@@ -12,11 +13,19 @@ namespace Three {
 
         node->setPath(parser.parseQualifiedIdentifier());
         assert(node->_path.length() > 0);
-
-        // TODO: not exactly right.  This might not be the current translation unit
-        node->_module = parser.currentModule()->importModule(node->path(), std::vector<std::string>());
+        node->_visibility = parser.context()->visibility();
 
         parser.parseNewline();
+
+        // TODO: This is copy-paste from the include node.
+        CSourceIndexer index;
+
+        if (!index.indexFileAtPath(node->resolvedFilePath())) {
+            std::cout << "Unable to import '" << node->path() << "'" << std::endl;
+            assert(0);
+        }
+
+        parser.currentModule()->addModule(node->resolvedFilePath(), index.module());
 
         return node;
     }
@@ -41,14 +50,19 @@ namespace Three {
         return _path;
     }
 
+    std::string ImportNode::resolvedFilePath() const {
+        std::string filePath = this->path() + ".h";
+
+        return filePath;
+    }
+
     Three::Module* ImportNode::module() const {
         return this->_module;
     }
 
-    void ImportNode::codeGenCSource(CSourceContext& context) {
-        _module->eachCIncludePath([&] (const std::string& path) {
-            std::cout << "Header: " << path << std::endl;
-            context.addHeader(path);
+    void ImportNode::codeGen(CSourceContext& context) {
+        context.adjustCurrentForVisibility(this->_visibility, [&] (CSource* source) {
+            source->addHeader(true, this->path() + ".h");
         });
     }
 }

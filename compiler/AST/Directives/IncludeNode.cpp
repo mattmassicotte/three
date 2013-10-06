@@ -12,6 +12,7 @@ namespace Three {
 
         assert(parser.peek().type() == Token::Type::String);
         node->_headerName = parser.next().str();
+        node->_visibility = parser.context()->visibility();
 
         parser.parseNewline();
 
@@ -37,7 +38,9 @@ namespace Three {
         return _headerName;
     }
 
-    void IncludeNode::codeGenCSource(CSourceContext& context) {
-        context.addHeader(this->_headerName);
+    void IncludeNode::codeGen(CSourceContext& context) {
+        context.adjustCurrentForVisibility(this->_visibility, [&] (CSource* source) {
+            source->addHeader(false, this->_headerName);
+        });
     }
 }

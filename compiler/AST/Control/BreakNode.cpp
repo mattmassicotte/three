@@ -8,6 +8,7 @@ namespace Three {
         BreakNode* node = new BreakNode();
 
         assert(parser.next().type() == Token::Type::KeywordBreak);
+        node->setStatement(true);
 
         return node;
     }
@@ -16,7 +17,7 @@ namespace Three {
         return "Break";
     }
 
-    void BreakNode::codeGenCSource(CSourceContext& context) {
-        context.current()->printLine("break;");
+    void BreakNode::codeGen(CSourceContext& context) {
+        context << "break";
     }
 }

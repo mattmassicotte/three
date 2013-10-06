@@ -14,12 +14,14 @@ namespace Three {
 
         void setPath(const std::string& value);
         std::string path() const;
+        std::string resolvedFilePath() const;
         Three::Module* module() const;
 
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
         std::string    _path;
         Three::Module* _module;
+        TranslationUnit::Visibility _visibility;
     };
 }

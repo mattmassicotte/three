@@ -27,6 +27,7 @@ namespace Three {
         return _libraryName;
     }
 
-    void LinkageNode::codeGenCSource(CSourceContext& context) {
+    void LinkageNode::codeGen(CSourceContext& context) {
+        assert(0 && "Linkage node codegen not implemented");
     }
 }

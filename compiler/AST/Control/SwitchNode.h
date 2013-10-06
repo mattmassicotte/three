@@ -12,7 +12,7 @@ namespace Three {
 
         ASTNode* argument() const;
 
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
         ASTNode* _argumentNode;

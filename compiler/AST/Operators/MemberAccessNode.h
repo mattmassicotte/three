@@ -15,7 +15,7 @@ namespace Three {
         std::string memberName() const;
         bool indirect() const;
 
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
         std::string _memberName;

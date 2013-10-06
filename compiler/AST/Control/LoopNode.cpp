@@ -54,40 +54,38 @@ namespace Three {
         return _evaluateConditionAtEnd;
     }
 
-    void LoopNode::codeGenCWhile(CSourceContext& context) {
-        context << "while (";
-        this->condition()->codeGenCSource(context);
-        context << ")";
-    }
-
-    void LoopNode::codeGenCSource(CSourceContext& context) {
+    void LoopNode::codeGen(CSourceContext& context) {
+        // infinite loop
         if (!this->condition()) {
-            context.current()->print("for (;;)");
+            context.current()->printLineAndIndent("for (;;) {");
 
-            context.current()->printLineAndIndent(" {");
-            this->codeGenCSourceForChildren(context);
+            this->codeGenChildren(context);
+
             context.current()->outdentAndPrintLine("}");
 
             return;
         }
 
+        // do-while
         if (this->evaluateConditionAtEnd()) {
-            context.current()->print("do");
-            context.current()->printLineAndIndent(" {");
+            context.current()->printLineAndIndent("do {");
 
-            this->codeGenCSourceForChildren(context);
+            this->codeGenChildren(context);
 
-            context.current()->print("} ");
-
-            this->codeGenCWhile(context);
-            context.current()->outdentAndPrintLine(";");
+            context.current()->print("} while (");
+            this->condition()->codeGen(context);
+            context.current()->outdentAndPrintLine(");");
 
             return;
         }
 
-        this->codeGenCWhile(context);
-        context.current()->printLineAndIndent(" {");
-        this->codeGenCSourceForChildren(context);
+        // regular while
+        context.current()->print("while (");
+        this->condition()->codeGen(context);
+        context.current()->printLineAndIndent(") {");
+
+        this->codeGenChildren(context);
+
         context.current()->outdentAndPrintLine("}");
     }
 }

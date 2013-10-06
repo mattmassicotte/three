@@ -14,7 +14,7 @@ namespace Three {
         TypeReference sourceType() const;
         std::string destTypeName() const;
 
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
         TypeReference _sourceType;

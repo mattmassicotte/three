@@ -74,7 +74,7 @@ namespace Three {
         return _annotation;
     }
 
-    void AnnotationNode::codeGenCSource(CSourceContext& context) {
-        context.addHeader("three/runtime/annotations.h");
+    void AnnotationNode::codeGen(CSourceContext& context) {
+        context.current()->addHeader(false, "three/runtime/annotations.h");
     }
 }

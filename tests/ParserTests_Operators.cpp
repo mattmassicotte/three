@@ -21,7 +21,7 @@ TEST_F(ParserTest_Operators, ComplexExpression) {
     node = this->parse("def test()\nInt x\nx = 42 * (5 + 1)\nend\n");
     node = node->childAtIndex(0);
 
-    ASSERT_VARIABLE_DECLERATION("Int", 0, "x", node->childAtIndex(0));
+    ASSERT_VARIABLE_DECLARATION("Int", 0, "x", node->childAtIndex(0));
 
     Three::OperatorNode* opNode = dynamic_cast<Three::OperatorNode*>(node->childAtIndex(1));
 

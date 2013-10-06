@@ -1,4 +1,6 @@
 #include "../compiler/Parser.h"
+#include "../compiler/CodeGen/CSourceContext.h"
+#include "../compiler/AST/ASTNode.h"
 #include "../compiler/CSourceIndexer.h"
 
 #include <getopt.h>
@@ -30,8 +32,6 @@ void getOptions(build_options_t* options, int argc, char** argv)
     options->debug    = false;
     options->printAST = false;
     options->trace    = false;
-
-    options->outputFile = std::string("three_output.c");
 
     while ((c = getopt_long(argc, argv, "dho:ptv", longopts, NULL)) != -1) {
         switch (c) {
@@ -67,24 +67,29 @@ void getOptions(build_options_t* options, int argc, char** argv)
     }
 }
 
-Three::RootNode* createRootNodeFromFile(const std::string& path) {
-    std::ifstream inputFile(path);
+bool createCOutputs(Three::ParsingContext* context, const std::string& basePath) {
+    Three::CSourceContext outputContext;
 
-    Three::Lexer lexer(&inputFile);
-    Three::Parser parser(&lexer);
+    context->rootNode()->codeGen(outputContext);
+    
+    std::ofstream bodyFile(basePath + ".c");
 
-    parser.setContext(Three::ParsingContext::translationUnitContext());
+    // make sure to import the headers
+    outputContext.internalDeclarations()->addHeader(true, basePath + ".h");
+    outputContext.declarations()->addHeader(true, basePath + "_internal.h");
 
-    return parser.rootASTNode();
-}
+    bodyFile << "// Declarations" << std::endl;
+    bodyFile << outputContext.declarations()->renderToString();
+    bodyFile << std::endl << "// Definitions" << std::endl;
+    bodyFile << outputContext.body()->renderToString();
 
-bool createCSource(Three::RootNode* node, const std::string& path) {
-    Three::CSourceContext c;
-    std::ofstream outputFile(path);
+    std::ofstream internalHeaderFile(basePath + "_internal.h");
 
-    node->codeGenCSource(c);
+    internalHeaderFile << outputContext.internalDeclarations()->renderToStringWithIncludeGuard("__" + basePath + "_internal__");
 
-    outputFile << c.renderToString();
+    std::ofstream externalHeaderFile(basePath + ".h");
+
+    externalHeaderFile << outputContext.externalDeclarations()->renderToStringWithIncludeGuard("__" + basePath + "__");
 
     return true;
 }
@@ -97,21 +102,59 @@ std::vector<std::string> defaultCIncludePaths(void) {
     return paths;
 }
 
-bool compileCSource(Three::RootNode* node, const std::string& cSourcePath) {
+bool compileCSource(Three::ParsingContext* context, const std::string& cSourcePath, const std::string& outputPath) {
     std::stringstream s;
+    bool asMain = context->currentModule()->hasMainFunction();
 
     s << "clang -std=c11";
-    s << " -o three_binary";
-    s << " -L/usr/local/lib";
-    s << " -lthree_runtime";
+    s << " -o '" << outputPath;
+    if (!asMain) {
+        s << ".o";
+    }
+    s << "'";
+
+    // only link if main symbol is present
+    if (asMain) {
+        s << " -L/usr/local/lib";
+        s << " -lthree_runtime";
+    }
+
+    s << " -I.";
 
     for (const std::string& string : defaultCIncludePaths()) {
         s << " '-I" << string << "'";
     }
 
-    s << " " << cSourcePath;
+    if (!asMain) {
+        s << " -c";
+    }
+
+    s << " '" << cSourcePath << "'";
 
     return system(s.str().c_str()) == 0;
+}
+
+int processInputFile(build_options_t* options, const std::string& inputFile) {
+    Three::ParsingContext* parsingContext = Three::Parser::contextFromFile(inputFile);
+    
+    if (options->printAST) {
+        std::cout << parsingContext->rootNode()->recursiveStr() << std::endl;
+        return 0;
+    }
+
+    // create a sensible output path default, if none was supplied
+    if (options->outputFile.length() == 0) {
+        if (inputFile.substr(inputFile.length() - 2, 2) == ".3") {
+            options->outputFile = inputFile.substr(0, inputFile.length() - 2);
+        } else {
+            options->outputFile = std::string("three_output");
+        }
+    }
+
+    createCOutputs(parsingContext, options->outputFile);
+    compileCSource(parsingContext, options->outputFile + ".c", options->outputFile);
+
+    return 0;
 }
 
 int main(int argc, char** argv) {
@@ -128,17 +171,6 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    Three::RootNode* node;
+    return processInputFile(&options, std::string(argv[0]));
 
-    node = createRootNodeFromFile(std::string(argv[0]));
-
-    if (options.printAST) {
-        std::cout << node->recursiveStr() << std::endl;
-        return 0;
-    }
-
-    createCSource(node, options.outputFile);
-    compileCSource(node, options.outputFile);
-
-    return 0;
 }

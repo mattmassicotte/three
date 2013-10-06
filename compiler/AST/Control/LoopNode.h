@@ -14,10 +14,7 @@ namespace Three {
         ASTNode* condition() const;
         bool evaluateConditionAtEnd() const;
 
-        void codeGenCSource(CSourceContext& context);
-
-    private:
-        void codeGenCWhile(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
         ASTNode* _condition;

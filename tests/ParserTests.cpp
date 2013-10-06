@@ -94,11 +94,11 @@ TEST_F(ParserTest, ClosureInFunction) {
     node = node->childAtIndex(1);
 
     // Variable declarations
-    ASSERT_VARIABLE_DECLERATION("Int", 0, "x", node->childAtIndex(0));
-    ASSERT_VARIABLE_DECLERATION("Int", 0, "y", node->childAtIndex(1));
+    ASSERT_VARIABLE_DECLARATION("Int", 0, "x", node->childAtIndex(0));
+    ASSERT_VARIABLE_DECLARATION("Int", 0, "y", node->childAtIndex(1));
 
     Three::VariableDeclarationNode* varDecl = dynamic_cast<Three::VariableDeclarationNode*>(node->childAtIndex(2));
-    ASSERT_VARIABLE_DECLERATION("", 0, "closure", varDecl);
+    ASSERT_VARIABLE_DECLARATION("", 0, "closure", varDecl);
     ASSERT_EQ(2, varDecl->variable()->type().referencedType()->childCount());
     ASSERT_EQ("Int", varDecl->variable()->type().referencedType()->childAtIndex(0).name());
     ASSERT_EQ(0, varDecl->variable()->type().referencedType()->childAtIndex(0).indirectionDepth());
@@ -119,7 +119,7 @@ TEST_F(ParserTest, NewlinesAfterStatements) {
     node = this->parse("def test()\n\nInt x\n\nx = 1\n\n\nend\n\n\n");
     node = node->childAtIndex(0);
 
-    ASSERT_VARIABLE_DECLERATION("Int", 0, "x", node->childAtIndex(0));
+    ASSERT_VARIABLE_DECLARATION("Int", 0, "x", node->childAtIndex(0));
 
     node = node->childAtIndex(1);
 
@@ -153,7 +153,7 @@ TEST_F(ParserTest, StructureDefinitionUsedAsType) {
 
     node = node->childAtIndex(1);
 
-    ASSERT_VARIABLE_DECLERATION("MyStructure",  0, "a", node->childAtIndex(0));
+    ASSERT_VARIABLE_DECLARATION("MyStructure",  0, "a", node->childAtIndex(0));
 }
 
 TEST_F(ParserTest, NullLiteral) {
@@ -202,7 +202,7 @@ TEST_F(ParserTest, PointerVariableDefinition) {
     node = this->parse("def test()\n*Char a\nend\n");
     node = node->childAtIndex(0);
 
-    ASSERT_VARIABLE_DECLERATION("Char",  1, "a", node->childAtIndex(0));
+    ASSERT_VARIABLE_DECLARATION("Char",  1, "a", node->childAtIndex(0));
 }
 
 TEST_F(ParserTest, MultiplePointerVariableDefinition) {
@@ -211,7 +211,7 @@ TEST_F(ParserTest, MultiplePointerVariableDefinition) {
     node = this->parse("def test()\n***Char a\nend\n");
     node = node->childAtIndex(0);
 
-    ASSERT_VARIABLE_DECLERATION("Char",  3, "a", node->childAtIndex(0));
+    ASSERT_VARIABLE_DECLARATION("Char",  3, "a", node->childAtIndex(0));
 }
 
 TEST_F(ParserTest, FunctionCallDereference) {

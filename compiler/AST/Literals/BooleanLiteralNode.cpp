@@ -30,9 +30,7 @@ namespace Three {
         return _value;
     }
 
-    void BooleanLiteralNode::codeGenCSource(CSourceContext& context) {
-        context.addHeader("stdbool.h");
-
+    void BooleanLiteralNode::codeGen(CSourceContext& context) {
         context << (this->value() ? "true" : "false");
     }
 }

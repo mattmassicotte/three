@@ -18,9 +18,11 @@ namespace Three {
         return "Barrier";
     }
 
-    void BarrierNode::codeGenCSource(CSourceContext& context) {
-        context.addHeader("three/runtime/stdatomic.h");
+    void BarrierNode::codeGen(CSourceContext& context) {
+        context.declarations()->addHeader(false, "three/runtime/atomic.h");
 
-        context << "atomic_thread_fence(" << this->c11MemoryOrderString() << ");";
+        context << "atomic_thread_fence(";
+        context << this->c11MemoryOrderString();
+        context.current()->printLine(");");
     }
 }

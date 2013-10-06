@@ -3,10 +3,13 @@
 #include "Entity.h"
 #include "TypeReference.h"
 #include "Variable.h"
-#include "../CodeGen/CSourceContext.h"
 
 #include <vector>
 #include <functional>
+
+namespace Three {
+    class CSourceContext;
+}
 
 namespace Three {
     class Function : public Three::Entity {
@@ -29,7 +32,7 @@ namespace Three {
         Variable* parameterAtIndex(uint32_t index) const;
         void      eachParameterWithLast(std::function<void (Variable*, bool)> func) const;
 
-        void codeGenCSource(CSourceContext& context, std::function<void (void)> func) const;
+        void codeGen(CSourceContext& context) const;
 
     private:
         TypeReference          _returnType;

@@ -12,7 +12,7 @@ namespace Three {
 
         std::string libraryName() const;
 
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
         std::string _libraryName;
