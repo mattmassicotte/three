@@ -117,8 +117,18 @@ namespace Three {
     // }
 
     void FunctionCallNode::codeGen(CSourceContext& context) {
-        context << this->functionName();
-        context << "(";
+        if (this->isClosure()) {
+            context << "THREE_CALL_CLOSURE(";
+            this->functionType().codeGenFunction(context, "");
+            context << ", ";
+            context << this->functionName();
+
+            if (this->childCount() > 0) {
+                context << ", ";
+            }
+        } else {
+            context << this->functionName() << "(";
+        }
 
         this->eachChildWithLast([=, &context] (ASTNode* node, bool last) {
             node->codeGen(context);

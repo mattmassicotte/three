@@ -17,6 +17,11 @@ namespace Three {
         void codeGen(CSourceContext& context);
 
     private:
+        void codeGenEnvironmentStructure(CSourceContext& context) const;
+        void codeGenBodyFunction(CSourceContext& context);
+        void codeGenEnvironmentCapture(CSourceContext& context) const;
+
+    private:
         Function*   _function;
         TypeReference _type;
         std::string _name;

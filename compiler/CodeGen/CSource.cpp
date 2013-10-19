@@ -130,7 +130,7 @@ namespace Three {
 
         s << this->renderToString();
 
-        s << "#endif" << std::endl;
+        s << std::endl << "#endif" << std::endl;
 
         return s.str();
     }

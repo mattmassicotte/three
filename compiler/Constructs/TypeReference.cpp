@@ -129,7 +129,7 @@ namespace Three {
         // they have to be referenced like regular structure types.  In rare cases,
         // like invoking their functions, this method should not be used.  But, in pretty much
         // all other situations, this check is appropriate.
-        if (_type->flavor() == DataType::Flavor::Function || _type->flavor() == DataType::Flavor::Closure) {
+        if (_type->flavor() == DataType::Flavor::Function) {
             this->codeGenFunction(context, variableName);
             return;
         }

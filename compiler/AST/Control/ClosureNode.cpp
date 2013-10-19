@@ -111,31 +111,6 @@ namespace Three {
         return "Closure";
     }
 
-    // void ClosureNode::codeGenCSourceStructDefinition(CSourceContext& context) {
-    //     CSource* source = context.current();
-    //     
-    //     // struct to hold the closure function and environment
-    //     source->printLineAndIndent("struct " + this->_environmentName + " {");
-    // 
-    //     this->eachCapturedVariable([=] (Variable* v, bool ref, bool last) {
-    //         TypeReference refType = v->type();
-    // 
-    //         if (ref) {
-    //             // grab a copy of the referenced variable's type, bump up the indirection
-    //             // and render it
-    //             refType.incrementIndirectionDepth();
-    //         }
-    // 
-    //         refType.codeGenCSource(source, v->name());
-    //         source->printLine(";");
-    //     });
-    // 
-    //     source->outdentAndPrintLine("};");
-    //     // source->decreaseIndentation();
-    //     // source->printNewLine();
-    //     // source->printLine("};");
-    // }
-
     void ClosureNode::eachCapturedVariable(std::function<void (Variable*, bool, bool)> func) const {
         uint32_t refSize    = this->_referencedVariables.size();
         uint32_t closedSize = this->_capturedVariables.size();
@@ -153,47 +128,80 @@ namespace Three {
         }
     }
 
-    // void ClosureNode::codeGenCSource(CSourceContext& context) {
-    //     context.setCurrent(CSourceContext::Section::Declarations);
-    // 
-    //     this->codeGenCSourceStructDefinition(context);
-    //     context << "static ";
-    //     this->_function->codeGenCSource(context, [=, &context] () {
-    //         // this->codeGenCSourceForChildren(context);
-    //     });
-    // 
-    //     context.setCurrent(CSourceContext::Section::Body);
-    // 
-    //     // create the environment capture
-    //     // struct main_closure_1_env main_closure_1_env_value = (struct main_closure_1_env){&x, y};
-    //     std::stringstream stream;
-    // 
-    //     stream << "struct " << this->_environmentName << " ";
-    //     stream << this->_environmentName << "_value";
-    //     stream << " = (struct " << this->_environmentName << "){";
-    // 
-    //     this->eachCapturedVariable([=, &context, &stream] (Variable* v, bool ref, bool last) {
-    //         if (ref) {
-    //             stream << "&";
-    //         }
-    // 
-    //         stream << v->name();
-    // 
-    //         if (!last) {
-    //             stream << ", ";
-    //         }
-    //     });
-    // 
-    //     stream << "};";
-    //     context.current()->printPreviousLine(stream.str());
-    // 
-    //     // cast the to generic type
-    //     context.current()->print("THREE_MAKE_CLOSURE(");
-    //     context.current()->print(this->_name);
-    //     context.current()->print(")");
-    // }
-
     void ClosureNode::codeGen(CSourceContext& context) {
-        assert(0 && "Not implemented yet");
+        // The codegen for closures is complex.  We need:
+        // - the environment structure definition
+        // - the body function
+        // - the environment capture
+        // - the actual closure creation
+
+        context.adjustCurrent(context.declarations(), [&] (CSource* source) {
+            this->codeGenEnvironmentStructure(context);
+            this->codeGenBodyFunction(context);
+        });
+
+        this->codeGenEnvironmentCapture(context);
+
+        context << "THREE_MAKE_CLOSURE(" << this->_name << ")";
+    }
+
+    void ClosureNode::codeGenEnvironmentStructure(CSourceContext& context) const {
+        context.current()->printLineAndIndent("struct " + this->_environmentName + " {");
+
+        this->eachCapturedVariable([&] (Variable* v, bool ref, bool last) {
+            TypeReference refType = v->type();
+
+            if (ref) {
+                // grab a copy of the referenced variable's type, bump up the indirection
+                // and render it
+                refType.incrementIndirectionDepth();
+            }
+
+            refType.codeGen(context, v->name());
+            context.current()->printLine(";");
+        });
+
+        context.current()->outdentAndPrintLine("};");
+    }
+
+    void ClosureNode::codeGenBodyFunction(CSourceContext& context) {
+        context << "static ";
+
+        this->_function->codeGen(context);
+
+        context.current()->printLineAndIndent(" {");
+
+        this->codeGenChildren(context);
+
+        context.current()->outdentAndPrintLine("}");
+
+        context << "THREE_CHECK_CLOSURE_FUNCTION(";
+        context << this->_function->fullyQualifiedName();
+        context.current()->printLine(");");
+        context.current()->printLine("");
+    }
+
+    void ClosureNode::codeGenEnvironmentCapture(CSourceContext& context) const {
+        // struct main_closure_1_env main_closure_1_env_value = (struct main_closure_1_env){&x, y};
+        // THREE_CAPTURE_ENV(main_closure_1_env, &x, y);
+        std::stringstream stream;
+
+        // stream << "struct " << this->_environmentName << " ";
+        // stream << this->_environmentName << "_value";
+        // stream << " = (struct " << this->_environmentName << "){";
+        stream << "THREE_CAPTURE_ENV(" << this->_environmentName;
+
+        this->eachCapturedVariable([=, &context, &stream] (Variable* v, bool ref, bool last) {
+            stream << ", ";
+
+            if (ref) {
+                stream << "&";
+            }
+
+            stream << v->name();
+        });
+
+        stream << ");";
+        context.current()->printPreviousLine(stream.str());
     }
 }
