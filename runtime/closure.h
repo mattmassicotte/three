@@ -1,7 +1,5 @@
 #pragma once
 
-#include <three/runtime/types.h>
-
 // closure types
 typedef void* (*three_closure_function_t)(void*, ...);
 typedef struct {
@@ -16,3 +14,10 @@ typedef struct {
 #define THREE_CALL_CLOSURE(func_type, closure, ...) ((func_type)closure.function)(closure.env, ##__VA_ARGS__)
 
 #define THREE_CHECK_CLOSURE_FUNCTION(func) _Static_assert(THREE_CHECK_SIZEALIGN(__typeof__(func)*, three_closure_function_t), "Closure function must be compatiable")
+
+static int three_closure_get_size(three_closure_t closure) {
+    return sizeof(three_closure_t) + closure.env_size;
+}
+
+three_closure_t* three_closure_copy(three_closure_t closure);
+void three_closure_release(three_closure_t* closure);
