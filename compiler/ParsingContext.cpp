@@ -1,4 +1,5 @@
 #include "ParsingContext.h"
+#include "AST/ASTNode.h"
 
 #include <assert.h>
 
@@ -8,9 +9,15 @@ namespace Three {
 
         context->_currentScope = Scope::createRootScope();
         context->_translationUnit = TranslationUnit::createTranslationUnit();
-        context->_visibility = TranslationUnit::Visibility::External;
+        context->_visibility = TranslationUnit::Visibility::Default;
 
         return context;
+    }
+
+    ParsingContext::~ParsingContext() {
+        if (_rootNode) {
+            delete _rootNode;
+        }
     }
 
     TypeReference ParsingContext::refForName(const std::string& name, int indirectionDepth) {
@@ -71,11 +78,24 @@ namespace Three {
         delete old;
     }
 
+    void ParsingContext::setRootNode(ASTNode* node) {
+        assert(node);
+        _rootNode = node;
+    }
+
+    ASTNode* ParsingContext::rootNode() const {
+        return _rootNode;
+    }
+
     void ParsingContext::setVisibility(TranslationUnit::Visibility visibility) {
         _visibility = visibility;
     }
 
     TranslationUnit::Visibility ParsingContext::visibility() const {
+        if (_visibility == TranslationUnit::Visibility::Default) {
+            return TranslationUnit::Visibility::Internal;
+        }
+
         return _visibility;
     }
 }

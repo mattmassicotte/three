@@ -28,7 +28,7 @@ namespace Three {
         return this->_argumentNode;
     }
 
-    void SwitchNode::codeGenCSource(CSourceContext& context) {
+    void SwitchNode::codeGen(CSourceContext& context) {
         this->eachChild([&] (ASTNode* child, uint32_t index) {
             CaseNode* caseNode = dynamic_cast<CaseNode*>(child);
 
@@ -37,12 +37,12 @@ namespace Three {
             }
 
             context << "if (";
-            this->argument()->codeGenCSource(context);
+            this->argument()->codeGen(context);
             context << " == ";
-            caseNode->argument()->codeGenCSource(context);
+            caseNode->argument()->codeGen(context);
             context.current()->printLineAndIndent(") {");
 
-            caseNode->codeGenCSource(context);
+            caseNode->codeGen(context);
 
             if (index == this->childCount() - 1) {
                 context.current()->outdentAndPrintLine("}");

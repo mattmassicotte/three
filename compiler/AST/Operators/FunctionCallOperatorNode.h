@@ -10,7 +10,7 @@ namespace Three {
     public:
         ASTNode* receiver() const;
 
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
         ASTNode* _receiver;

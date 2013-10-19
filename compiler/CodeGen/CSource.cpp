@@ -16,6 +16,18 @@ namespace Three {
         this->print(string.c_str());
     }
 
+    CSource& CSource::operator <<(const char* string) {
+        this->print(string);
+
+        return *this;
+    }
+
+    CSource& CSource::operator <<(const std::string& string) {
+        this->print(string);
+
+        return *this;
+    }
+
     void CSource::printNewLine() {
         this->printLine("");
     }
@@ -54,6 +66,14 @@ namespace Three {
         // std::cout << "indentation now: " << _indentationLevel << std::endl;
     }
 
+    void CSource::addHeader(bool relative, const std::string& header) {
+        if (relative) {
+            _relativeHeaders.insert(header);
+        } else {
+            _headers.insert(header);
+        }
+    }
+
     void CSource::flushLineBuffer() {
         if (_lineStream.tellp() == 0) {
             return;
@@ -72,6 +92,46 @@ namespace Three {
     std::string CSource::renderToString() {
         this->flushLineBuffer();
 
-        return _stream.str();
+        if (_headers.size() == 0 && _relativeHeaders.size() == 0) {
+            return _stream.str();
+        }
+
+        std::stringstream s;
+
+        for (const std::string& header : _headers) {
+            s << "#include <" + header + ">" << std::endl;
+        }
+
+        if (_headers.size() > 0) {
+            s << std::endl;
+        }
+
+        for (const std::string& header : _relativeHeaders) {
+            s << "#include \"" + header + "\"" << std::endl;
+        }
+
+        if (_relativeHeaders.size() > 0) {
+            s << std::endl;
+        }
+
+        s << _stream.str();
+
+        return s.str();
+    }
+
+    std::string CSource::renderToStringWithIncludeGuard(const std::string& name) {
+        std::stringstream s;
+
+        // #pragma once is a way, way better construct.  However, due to a bug in
+        // clang, you cannot suppress that warning.
+
+        s << "#ifndef " << name << std::endl;
+        s << "#define " << name << std::endl << std::endl;
+
+        s << this->renderToString();
+
+        s << "#endif" << std::endl;
+
+        return s.str();
     }
 }

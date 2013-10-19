@@ -13,7 +13,7 @@ namespace Three {
 
         TranslationUnit::Visibility type() const;
 
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
         TranslationUnit::Visibility _type;

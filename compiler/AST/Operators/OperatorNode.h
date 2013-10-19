@@ -23,8 +23,6 @@ namespace Three {
         void        setOp(const std::string& string);
         bool        ternary() const;
 
-        virtual void codeGenCSource(CSourceContext& context);
-
     private:
         std::string _operator;
     };

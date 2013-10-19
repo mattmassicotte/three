@@ -14,7 +14,7 @@ namespace Three {
         void setValue(uint64_t v);
         uint64_t value() const;
 
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
         uint64_t _value;

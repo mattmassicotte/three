@@ -1,6 +1,6 @@
 #include "ForNode.h"
 #include "../../Parser.h"
-#include "../VariableDeclarationNode.h"
+#include "../Variables/VariableDeclarationNode.h"
 
 #include <assert.h>
 
@@ -95,18 +95,25 @@ namespace Three {
         return _evaluateConditionAtEnd;
     }
 
-    void ForNode::codeGenCSourceStartExpression(CSourceContext& context) const {
-        this->startExpression()->codeGenCSource(context);
+    void ForNode::codeGen(CSourceContext& context) {
+        context << "for (";
 
-        if (_rangeStartExpression) {
-            context << " = ";
-            this->rangeStartExpression()->codeGenCSource(context);
-        }
+        this->codeGenStartExpression(context);
+        context << "; ";
+
+        this->codeGenCondition(context);
+        context << "; ";
+
+        this->codeGenLoopExpression(context);
+
+        context.current()->printLineAndIndent(") {");
+        this->codeGenChildren(context);
+        context.current()->outdentAndPrintLine("}");
     }
 
-    void ForNode::codeGenCSourceCondition(CSourceContext& context) const {
+    void ForNode::codeGenCondition(CSourceContext& context) const {
         if (this->condition()) {
-            this->condition()->codeGenCSource(context);
+            this->condition()->codeGen(context);
             return;
         }
 
@@ -116,45 +123,36 @@ namespace Three {
         context << this->rangeLoopVariable()->name();
         context << " < ";
 
-        this->rangeEndExpression()->codeGenCSource(context);
+        this->rangeEndExpression()->codeGen(context);
 
         context << ") && (";
 
-        this->rangeStartExpression()->codeGenCSource(context);
+        this->rangeStartExpression()->codeGen(context);
 
         context << " < ";
 
-        this->rangeEndExpression()->codeGenCSource(context);
+        this->rangeEndExpression()->codeGen(context);
 
         context << ")";
     }
 
-    void ForNode::codeGenCSourceLoopExpression(CSourceContext& context) const {
+    void ForNode::codeGenStartExpression(CSourceContext& context) const {
+        this->startExpression()->codeGen(context);
+
+        if (_rangeStartExpression) {
+            context << " = ";
+            this->rangeStartExpression()->codeGen(context);
+        }
+    }
+
+    void ForNode::codeGenLoopExpression(CSourceContext& context) const {
         if (this->loopExpression()) {
-            this->loopExpression()->codeGenCSource(context);
+            this->loopExpression()->codeGen(context);
             return;
         }
 
         assert(_rangeStartExpression && _rangeEndExpression);
 
         context << "++" << this->rangeLoopVariable()->name();
-    }
-
-    void ForNode::codeGenCSource(CSourceContext& context) {
-        context << "for (";
-        
-        this->codeGenCSourceStartExpression(context);
-        context << "; ";
-
-        this->codeGenCSourceCondition(context);
-        context << "; ";
-
-        this->codeGenCSourceLoopExpression(context);
-
-        context.current()->printLineAndIndent(") {");
-
-        this->codeGenCSourceForChildren(context);
-
-        context.current()->outdentAndPrintLine("}");
     }
 }

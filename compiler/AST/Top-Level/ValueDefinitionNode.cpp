@@ -26,7 +26,7 @@ namespace Three {
         return _definedName;
     }
 
-    void ValueDefinitionNode::codeGenCSource(CSourceContext& context) {
-        // context.current()->print(this->definedName());
+    void ValueDefinitionNode::codeGen(CSourceContext& context) {
+        assert(0 && "Codegen unsupported");
     }
 }

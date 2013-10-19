@@ -3,19 +3,23 @@
 #include "AtomicNode.h"
 
 namespace Three {
+    class OperatorNode;
+}
+
+namespace Three {
     class AtomicExpressionNode : public Three::AtomicNode {
     public:
-        static AtomicExpressionNode* parse(Parser& parser, std::string type=std::string(""));
+        static AtomicExpressionNode* parse(Parser& parser, bool statement);
         std::string c11AtomicFunctionForOperator(const std::string& op);
 
     public:
         virtual std::string name() const;
 
-        std::string type() const;
-
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
-        std::string _type;
+        void codeGenAtomicVariable(CSourceContext& context, OperatorNode* op);
+        std::string c11AtomicFunctionForFullOperation(const std::string& op);
+        bool c11AtomicFunctionIsLoadOperation(const std::string& op);
     };
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../ASTNode.h"
+#include "../../Constructs/TranslationUnit.h"
 
 namespace Three {
     class IncludeNode : public ASTNode {
@@ -12,9 +13,10 @@ namespace Three {
 
         std::string headerName() const;
 
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
         std::string _headerName;
+        TranslationUnit::Visibility _visibility;
     };
 }

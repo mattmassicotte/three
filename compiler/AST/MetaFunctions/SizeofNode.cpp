@@ -21,10 +21,10 @@ namespace Three {
         return "MetaFunction";
     }
 
-    void SizeofNode::codeGenCSource(CSourceContext& context) {
+    void SizeofNode::codeGen(CSourceContext& context) {
         context << "sizeof(";
 
-        _typeArgument.codeGenCSource(context.current(), "");
+        _typeArgument.codeGen(context);
 
         context << ")";
     }

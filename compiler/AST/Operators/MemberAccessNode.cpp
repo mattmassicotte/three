@@ -41,8 +41,8 @@ namespace Three {
         return _indirect;
     }
 
-    void MemberAccessNode::codeGenCSource(CSourceContext& context) {
-        this->childAtIndex(0)->codeGenCSource(context);
+    void MemberAccessNode::codeGen(CSourceContext& context) {
+        this->childAtIndex(0)->codeGen(context);
 
         if (this->indirect()) {
             context << "->";

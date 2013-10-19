@@ -5,7 +5,7 @@ namespace Three {
         return "Root";
     }
 
-    void RootNode::codeGenCSource(CSourceContext& context) {
-        this->codeGenCSourceForChildren(context);
+    void RootNode::codeGen(CSourceContext& context) {
+        this->codeGenChildren(context);
     }
 }

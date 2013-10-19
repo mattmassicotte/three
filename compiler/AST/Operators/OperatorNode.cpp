@@ -1,17 +1,26 @@
 #include "OperatorNode.h"
 #include "MemberAccessNode.h"
 #include "IndexerNode.h"
+#include "UnaryOperatorNode.h"
+#include "BinaryOperatorNode.h"
+#include "TernaryOperatorNode.h"
 #include "FunctionCallOperatorNode.h"
-#include "../FunctionCallNode.h"
+#include "FunctionCallNode.h"
 #include "../../Parser.h"
 
 #include <assert.h>
 
 namespace Three {
     ASTNode* OperatorNode::parse(Parser& parser, ASTNode* left, uint32_t precedence) {
-        OperatorNode* node = new OperatorNode();
+        OperatorNode* node = nullptr;
 
-        assert(parser.peek().type() == Token::Type::Operator); // move past the current operator
+        assert(parser.peek().type() == Token::Type::Operator);
+        if (parser.peek().str() == "?" || parser.peek().str() == "cas") {
+            node = new TernaryOperatorNode();
+        } else {
+            node = new BinaryOperatorNode();
+        }
+
         node->setOp(parser.next().str());
 
         node->addChild(left);
@@ -29,7 +38,7 @@ namespace Three {
     ASTNode* OperatorNode::parseUnary(Parser& parser) {
         assert(parser.peek().isUnaryOperator());
 
-        OperatorNode* node = new OperatorNode();
+        OperatorNode* node = new UnaryOperatorNode();
         node->setOp(parser.next().str());
 
         // unary operators can only have secondary expressions
@@ -114,60 +123,60 @@ namespace Three {
         return (this->op() == "?") || (this->op() == "cas");
     }
 
-    void OperatorNode::codeGenCSource(CSourceContext& context) {
-        if (!this->statement()) {
-            context.current()->print("(");
-        }
-
-        if (this->op() == "||=") {
-            context << "!";
-            this->childAtIndex(0)->codeGenCSource(context);
-            context << " ? (";
-            this->childAtIndex(0)->codeGenCSource(context);
-            context << " = ";
-            this->childAtIndex(1)->codeGenCSource(context);
-            context << ") : ";
-            this->childAtIndex(0)->codeGenCSource(context);
-        } else if (this->op() == "&&=") {
-            this->childAtIndex(1)->codeGenCSource(context);
-            context << " ? (";
-            this->childAtIndex(0)->codeGenCSource(context);
-            context << " = ";
-            this->childAtIndex(1)->codeGenCSource(context);
-            context << ") : ";
-            this->childAtIndex(0)->codeGenCSource(context);
-        } else if (this->op() == "?") {
-            this->childAtIndex(0)->codeGenCSource(context);
-            context << " ? ";
-            this->childAtIndex(1)->codeGenCSource(context);
-            context << " : ";
-            this->childAtIndex(2)->codeGenCSource(context);
-        } else if (this->op() == "cas") {
-            context << "(";
-            this->childAtIndex(0)->codeGenCSource(context);
-            context << " == ";
-            this->childAtIndex(1)->codeGenCSource(context);
-            context << ") ? (";
-            this->childAtIndex(0)->codeGenCSource(context);
-            context << " = ";
-            this->childAtIndex(2)->codeGenCSource(context);
-            context << ") : ";
-            this->childAtIndex(1)->codeGenCSource(context);
-        } else if ((this->op() == "&" || this->op() == "*") && this->childCount() == 1) {
-            context.current()->print(this->op());
-            this->childAtIndex(0)->codeGenCSource(context);
-        } else {
-            this->childAtIndex(0)->codeGenCSource(context);
-            context.current()->print(" ");
-            context.current()->print(this->op());
-            context.current()->print(" ");
-            this->childAtIndex(1)->codeGenCSource(context);
-        }
-
-        if (this->statement()) {
-            context.current()->print(";");
-        } else {
-            context.current()->print(")");
-        }
-    }
+    // void OperatorNode::codeGenCSource(CSourceContext& context) {
+    //     if (!this->statement()) {
+    //         context.current()->print("(");
+    //     }
+    // 
+    //     if (this->op() == "||=") {
+    //         context << "!";
+    //         this->childAtIndex(0)->codeGenCSource(context);
+    //         context << " ? (";
+    //         this->childAtIndex(0)->codeGenCSource(context);
+    //         context << " = ";
+    //         this->childAtIndex(1)->codeGenCSource(context);
+    //         context << ") : ";
+    //         this->childAtIndex(0)->codeGenCSource(context);
+    //     } else if (this->op() == "&&=") {
+    //         this->childAtIndex(1)->codeGenCSource(context);
+    //         context << " ? (";
+    //         this->childAtIndex(0)->codeGenCSource(context);
+    //         context << " = ";
+    //         this->childAtIndex(1)->codeGenCSource(context);
+    //         context << ") : ";
+    //         this->childAtIndex(0)->codeGenCSource(context);
+    //     } else if (this->op() == "?") {
+    //         this->childAtIndex(0)->codeGenCSource(context);
+    //         context << " ? ";
+    //         this->childAtIndex(1)->codeGenCSource(context);
+    //         context << " : ";
+    //         this->childAtIndex(2)->codeGenCSource(context);
+    //     } else if (this->op() == "cas") {
+    //         context << "(";
+    //         this->childAtIndex(0)->codeGenCSource(context);
+    //         context << " == ";
+    //         this->childAtIndex(1)->codeGenCSource(context);
+    //         context << ") ? (";
+    //         this->childAtIndex(0)->codeGenCSource(context);
+    //         context << " = ";
+    //         this->childAtIndex(2)->codeGenCSource(context);
+    //         context << ") : ";
+    //         this->childAtIndex(1)->codeGenCSource(context);
+    //     } else if ((this->op() == "&" || this->op() == "*") && this->childCount() == 1) {
+    //         context.current()->print(this->op());
+    //         this->childAtIndex(0)->codeGenCSource(context);
+    //     } else {
+    //         this->childAtIndex(0)->codeGenCSource(context);
+    //         context.current()->print(" ");
+    //         context.current()->print(this->op());
+    //         context.current()->print(" ");
+    //         this->childAtIndex(1)->codeGenCSource(context);
+    //     }
+    // 
+    //     if (this->statement()) {
+    //         context.current()->print(";");
+    //     } else {
+    //         context.current()->print(")");
+    //     }
+    // }
 }

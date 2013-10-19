@@ -1,6 +1,7 @@
 #include "TypeReference.h"
 #include "TranslationUnit.h"
 #include "DataType.h"
+#include "../CodeGen/CSourceContext.h"
 
 #include <assert.h>
 
@@ -15,13 +16,15 @@ namespace Three {
         return TypeReference(type, indirection);
     }
 
-    TypeReference::TypeReference() : _type(NULL), _indirection(0), _prependsStructKeyword(false) {
-    }
-
-    TypeReference::TypeReference(DataType* referencedType, uint32_t indirection) : _type(referencedType), _indirection(indirection) {
+    TypeReference::TypeReference(DataType* referencedType, uint32_t indirection, const std::vector<uint32_t>& dimensions) :
+        _type(referencedType),
+        _indirection(indirection),
+        _arrayDimensions(dimensions) {
         // We have to store this in case the type changes the value.  This is a little bit of a 
         // hack to address self-referential struct definition codegen for C.
-        _prependsStructKeyword = _type->cSourcePrependStructKeyword();
+        if (_type) {
+            _prependsStructKeyword = _type->cSourcePrependStructKeyword();
+        }
     }
 
     std::string TypeReference::str() const {
@@ -118,5 +121,61 @@ namespace Three {
             source->print(" ");
             source->print(variableName);
         }
+    }
+
+    void TypeReference::codeGen(CSourceContext& context, const std::string& variableName) const {
+        // It seems like it would make more sense to do this for both functions and
+        // closures.  However, closures are actually structures, and nearly all of the time
+        // they have to be referenced like regular structure types.  In rare cases,
+        // like invoking their functions, this method should not be used.  But, in pretty much
+        // all other situations, this check is appropriate.
+        if (_type->flavor() == DataType::Flavor::Function || _type->flavor() == DataType::Flavor::Closure) {
+            this->codeGenFunction(context, variableName);
+            return;
+        }
+
+        if (_prependsStructKeyword) {
+            context << "struct ";
+        }
+
+        context << _type->cSourceName();
+        context << std::string(this->indirectionDepth(), '*');
+
+        if (variableName.size() > 0) {
+            context << " " << variableName;
+        }
+    }
+
+    void TypeReference::codeGenFunction(CSourceContext& context, const std::string& variableName) const {
+        assert(!_prependsStructKeyword);
+
+        // return (*varName)(param1, param2);
+        _type->returnType().codeGen(context);
+        context << " (";
+        context << std::string(this->indirectionDepth(), '*');
+
+        if (variableName.size() > 0) {
+            context << variableName;
+        }
+
+        context << ")(";
+
+        // our environment pointer
+        if (_type->flavor() == DataType::Flavor::Closure) {
+            context << "void*";
+            if (_type->childCount() > 0) {
+                context << ", ";
+            }
+        }
+
+        // parameters
+        _type->eachParameterWithLast([&context] (const TypeReference& param, const std::string& name, bool last) {
+            param.codeGen(context);
+            if (!last) {
+                context << ", ";
+            }
+        });
+
+        context << ")";
     }
 }

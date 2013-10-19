@@ -36,6 +36,7 @@ namespace Three {
 
         void addFunction(const std::string& name, Function* func);
         Function* functionForName(const std::string& name);
+        bool hasMainFunction();
 
         void addDataType(const std::string& name, DataType* type);
         void addDataType(DataType* type);

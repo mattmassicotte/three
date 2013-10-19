@@ -29,6 +29,7 @@ namespace Three {
         void setFlavor(const Flavor& value);
         std::string fullyQualifiedName() const;
         std::string cSourceName() const;
+        std::string cHeader() const;
         bool cSourcePrependStructKeyword() const;
         void setCSourcePrependStructKeyword(bool prepend);
 

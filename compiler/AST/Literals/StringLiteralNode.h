@@ -14,7 +14,7 @@ namespace Three {
         void setStringValue(const std::string& name);
         std::string stringValue() const;
 
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
         std::string _stringValue;

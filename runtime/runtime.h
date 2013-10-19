@@ -3,5 +3,6 @@
 
 #pragma once
 
-#include "cpu.h"
-#include "transactional_memory.h"
+#include "runtime/annotations.h"
+#include "runtime/closure.h"
+#include "runtime/transactional_memory.h"

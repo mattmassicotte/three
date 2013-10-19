@@ -6,8 +6,9 @@ GTEST_HEADER = 'gtest/include/gtest/gtest.h'
 
 COMPILER_SOURCES = FileList['compiler/**/*.cpp']
 COMPILER_SOURCES.exclude('compiler/compiler.cpp')
+COMPILER_PCH = 'compiler/compiler_prefix.hpp'
 
-COMPILER_OBJECTS = BuildFunctions::objects_for_sources(COMPILER_SOURCES, :flags => COMPILER_CC_FLAGS)
+COMPILER_OBJECTS = BuildFunctions::objects_for_sources(COMPILER_SOURCES, :flags => COMPILER_CC_FLAGS, :pch => COMPILER_PCH)
 
 directory "#{BUILD_DIR}/tests"
 
@@ -17,10 +18,12 @@ file COMPILER_LIB => COMPILER_OBJECTS do
 end
 
 COMPILER_TEST_SOURCES = FileList['tests/**/*.cpp']
+COMPILER_TEST_PCH = 'tests/test_prefix.hpp'
+
 # Handle bootstrapping the first rake invocation, when gtest is install installed.  This
 # is messy, because these rake task *definitions* depend on gtest.
 find_deps = File.exist?(File.join(File.dirname(__FILE__), "../#{GTEST_HEADER}"))
-opts = {:flags => COMPILER_GTEST_CC_FLAGS, :find_deps => find_deps}
+opts = {:flags => COMPILER_GTEST_CC_FLAGS, :find_deps => find_deps, :pch => COMPILER_TEST_PCH}
 COMPILER_TEST_OBJECTS = BuildFunctions::objects_for_sources(COMPILER_TEST_SOURCES, opts)
 
 CLOBBER.include("#{BUILD_DIR}/compiler_test")

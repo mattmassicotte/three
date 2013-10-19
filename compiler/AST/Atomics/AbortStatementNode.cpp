@@ -18,9 +18,12 @@ namespace Three {
         return "AbortStatement";
     }
 
-    void AbortStatementNode::codeGenCSource(CSourceContext& context) {
-        context.addHeader("three/runtime/transactional_memory.h");
+    void AbortStatementNode::codeGen(CSourceContext& context) {
+        context.declarations()->addHeader(false, "three/runtime/transactional_memory.h");
 
-        context << "three_transaction_abort(NULL);";
+        context << "three_transaction_abort(&";
+        // TODO: transaction name will need to tracked somehow
+        context << "tx1";
+        context << ")";
     }
 }

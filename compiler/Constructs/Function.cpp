@@ -1,5 +1,6 @@
 #include "Function.h"
 #include "DataType.h"
+#include "../CodeGen/CSourceContext.h"
 
 #include <assert.h>
 #include <iostream>
@@ -106,31 +107,23 @@ namespace Three {
         }
     }
 
-    void Function::codeGenCSource(CSourceContext& context, std::function<void (void)> func) const {
-        this->returnType().codeGenCSource(context.current(), "");
+    void Function::codeGen(CSourceContext& context) const {
+        this->returnType().codeGen(context);
+        context << " ";
+        context << this->fullyQualifiedName();
+        context << "(";
 
-        context << " " << this->fullyQualifiedName() << "(";
-
-        this->eachParameterWithLast([=, &context] (Variable* var, bool last) {
-            var->type().codeGenCSource(context.current(), var->name());
-            if (!last) {
-                context << ", ";
-            }
-        });
-        
         if (this->parameterCount() == 0) {
             context << "void";
         }
 
-        if (!func) {
-            context.current()->printLine(");");
-            return;
-        }
+        this->eachParameterWithLast([&context] (Variable* var, bool last) {
+            var->type().codeGen(context, var->name());
+            if (!last) {
+                context << ", ";
+            }
+        });
 
-        context.current()->printLineAndIndent(") {");
-
-        func();
-
-        context.current()->outdentAndPrintLine("}");
+        context << ")";
     }
 }

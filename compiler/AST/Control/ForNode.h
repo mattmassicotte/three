@@ -21,11 +21,12 @@ namespace Three {
 
         Variable* rangeLoopVariable() const;
 
-        void codeGenCSourceStartExpression(CSourceContext& context) const;
-        void codeGenCSourceCondition(CSourceContext& context) const;
-        void codeGenCSourceLoopExpression(CSourceContext& context) const;
+        void codeGen(CSourceContext& context);
 
-        void codeGenCSource(CSourceContext& context);
+    protected:
+        void codeGenCondition(CSourceContext& context) const;
+        void codeGenStartExpression(CSourceContext& context) const;
+        void codeGenLoopExpression(CSourceContext& context) const;
 
     public:
         ASTNode* _startExpression;

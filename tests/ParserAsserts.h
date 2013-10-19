@@ -64,7 +64,7 @@ ASSERT_EQ(var_indirection, tmp->variable()->type().indirectionDepth()); \
 ASSERT_EQ(var_name, tmp->variable()->name()); \
 } while(0)
 
-#define ASSERT_VARIABLE_DECLERATION(var_type, var_indirection, var_name, obj) do {\
+#define ASSERT_VARIABLE_DECLARATION(var_type, var_indirection, var_name, obj) do {\
 Three::VariableDeclarationNode* tmp = dynamic_cast<Three::VariableDeclarationNode*>(obj); \
 ASSERT_EQ("VariableDeclaration", tmp->name()); \
 ASSERT_DATA_TYPE(var_type, tmp->variable()->type().referencedType()); \

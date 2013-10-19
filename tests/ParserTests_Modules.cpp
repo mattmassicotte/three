@@ -98,7 +98,7 @@ TEST_F(ParserTest_Modules, DefValueUsedForVariableInitialization) {
 
     Three::VariableDeclarationNode* varNode = dynamic_cast<Three::VariableDeclarationNode*>(node->childAtIndex(1));
 
-    ASSERT_VARIABLE_DECLERATION("Int", 0, "x", varNode);
+    ASSERT_VARIABLE_DECLARATION("Int", 0, "x", varNode);
     ASSERT_EQ("Value", varNode->initializerExpression()->nodeName());
 }
 
@@ -137,11 +137,11 @@ TEST_F(ParserTest_Modules, NamespacedStruct) {
 
     ASTNode* defNode = node->childAtIndex(0)->childAtIndex(1);
     ASSERT_FUNCTION_DEFINITION("Foo_3_in", defNode);
-    ASSERT_VARIABLE_DECLERATION("Foo_3_Bar", 0, "x", defNode->childAtIndex(0));
+    ASSERT_VARIABLE_DECLARATION("Foo_3_Bar", 0, "x", defNode->childAtIndex(0));
 
     defNode = node->childAtIndex(1);
     ASSERT_FUNCTION_DEFINITION("out", defNode);
-    ASSERT_VARIABLE_DECLERATION("Foo_3_Bar", 0, "y", defNode->childAtIndex(0));
+    ASSERT_VARIABLE_DECLARATION("Foo_3_Bar", 0, "y", defNode->childAtIndex(0));
 }
 
 TEST_F(ParserTest_Modules, NestedNamespaceRecursiveStruct) {

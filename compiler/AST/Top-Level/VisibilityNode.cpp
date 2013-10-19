@@ -34,6 +34,6 @@ namespace Three {
         return _type;
     }
 
-    void VisibilityNode::codeGenCSource(CSourceContext& context) {
+    void VisibilityNode::codeGen(CSourceContext& context) {
     }
 }

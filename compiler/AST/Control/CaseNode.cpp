@@ -35,7 +35,7 @@ namespace Three {
         return this->_argumentNode;
     }
 
-    void CaseNode::codeGenCSource(CSourceContext& context) {
-        this->codeGenCSourceForChildren(context);
+    void CaseNode::codeGen(CSourceContext& context) {
+        this->codeGenChildren(context);
     }
 }

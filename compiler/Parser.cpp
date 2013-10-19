@@ -1,12 +1,32 @@
 #include "Parser.h"
+#include "Lexer.h"
 #include "AST.h"
 #include "Constructs/Annotation.h"
+#include "Constructs/Function.h"
+#include "Constructs/Scope.h"
+#include "Constructs/TranslationUnit.h"
+#include "Constructs/TypeReference.h"
 
 #include <assert.h>
+#include <iostream>
+#include <fstream>
 
 #define DEBUG_PARSING 0
 
 namespace Three {
+    ParsingContext* Parser::contextFromFile(const std::string& path) {
+        ParsingContext* context = ParsingContext::translationUnitContext();
+
+        std::ifstream inputFile(path);
+
+        Lexer lexer(&inputFile);
+        Parser parser(&lexer);
+
+        parser.parse(context);
+
+        return context;
+    }
+
     Parser::Parser(Lexer* lexer) : _lexer(lexer) {
     }
 
@@ -27,6 +47,15 @@ namespace Three {
         }
 
         return root;
+    }
+
+    bool Parser::parse(ParsingContext* context) {
+        assert(context);
+        _context = context;
+
+        _context->setRootNode(this->rootASTNode());
+
+        return true;
     }
 
     ASTNode* Parser::parseStatement() {
@@ -50,19 +79,19 @@ namespace Three {
                 node = LoopNode::parse(*this);
                 break;
             case Token::Type::KeywordFor:
-                node = Three::ForNode::parse(*this);
+                node = ForNode::parse(*this);
                 break;
             case Token::Type::KeywordBreak:
-                node = Three::BreakNode::parse(*this);
+                node = BreakNode::parse(*this);
                 break;
             case Token::Type::KeywordContinue:
-                node = Three::ContinueNode::parse(*this);
+                node = ContinueNode::parse(*this);
                 break;
             case Token::Type::KeywordSwitch:
                 node = SwitchNode::parse(*this);
                 break;
             case Token::Type::KeywordAtomic:
-                node = Three::AtomicNode::parse(*this);
+                node = AtomicNode::parse(*this, true);
                 break;
             case Token::Type::KeywordAbort:
                 node = AbortStatementNode::parse(*this);
@@ -89,6 +118,8 @@ namespace Three {
             std::cout << "Parser: falling back to expression statement" << std::endl;
 #endif
             node = this->parseExpression();
+            node->setStatement(true);
+
             node = IfNode::parseTailing(*this, node);
         }
 
@@ -97,7 +128,6 @@ namespace Three {
 #endif
 
         this->parseNewline();
-        node->setStatement(true);
 
         return node;
     }
@@ -146,9 +176,9 @@ namespace Three {
             case Token::Type::NullLiteral:
                 return NullLiteralNode::parse(*this);
             case Token::Type::KeywordAtomic:
-                return AtomicExpressionNode::parse(*this);
+                return AtomicExpressionNode::parse(*this, false);
             case Token::Type::KeywordSizeof:
-                return Three::SizeofNode::parse(*this);
+                return SizeofNode::parse(*this);
             default:
                 break;
         }
@@ -214,7 +244,7 @@ namespace Three {
         }
 
         if (this->currentModule()->definesConstant(identifier)) {
-            return new Three::ValueNode(identifier);
+            return new ValueNode(identifier);
         }
 
         return VariableNode::parse(*this, identifier);
@@ -405,12 +435,23 @@ namespace Three {
             return this->peek(peekDepth+1).type() == Token::Type::Identifier;
         }
 
-        // "{Identifier...} Identifier"
         // "{;...} Identifier"
+        // "(;...) Identifier"
+        if (this->peek(peekDepth).type() == Token::Type::PunctuationSemicolon) {
+            return true;
+        }
+
+        // "(Type...) Identifier"
+        // "{Type...} Identifier"
+
+        // TODO: this is not quite correct.  We need to check for all the possible leading
+        // values for a type, just like above
+
         switch (this->peek(peekDepth).type()) {
             case Token::Type::Identifier:
-            case Token::Type::PunctuationSemicolon:
                 return true;
+            case Token::Type::Operator:
+                return this->peek(peekDepth).str() == "*";
             default:
                 break;
         }
@@ -421,21 +462,28 @@ namespace Three {
     TypeReference Parser::parseType() {
         DataType* dataType = NULL;
         uint32_t  depth    = 0;
+        std::vector<uint32_t> dimensions;
 
 #if DEBUG_PARSING
         std::cout << "Parser: type: '" << this->peek().str() << "'" << std::endl;
 #endif
 
-        // parse '*' and annotations, if they are there
+        // parse '*', annotations and array dimensions, if they are there
         while (1) {
-            if (this->peek().str() == "*") {
-                this->next();
+            if (this->nextIf("*")) {
                 depth++;
                 continue;
             }
 
             if (this->peek().type() == Token::Type::Annotation) {
                 this->next();
+                continue;
+            }
+
+            if (this->nextIf("[")) {
+                assert(this->peek().type() == Token::Type::NumericLiteral);
+                dimensions.push_back(strtol(this->next().str().c_str(), NULL, 10));
+                assert(this->next().type() == Token::Type::PunctuationCloseBracket);
                 continue;
             }
 
@@ -470,6 +518,7 @@ namespace Three {
                 break;
             case Token::Type::PunctuationOpenBrace:
             case Token::Type::PunctuationOpenParen:
+                assert(dimensions.size() == 0 && "Array of functions/closures not supported yet");
                 return this->parseFunctionType(depth, NULL, NULL);
                 break;
             default:
@@ -479,7 +528,7 @@ namespace Three {
 
         assert(dataType && "Unable to create type");
 
-        return TypeReference(dataType, depth);
+        return TypeReference(dataType, depth, dimensions);
     }
 
     TypeReference Parser::parseFunctionType(uint32_t depth, std::vector<std::string>* params, std::vector<std::string>* references) {
@@ -673,7 +722,7 @@ namespace Three {
         
         switch (this->peek().type()) {
             case Token::Type::KeywordDef:
-                return Three::DefinitionNode::parse(*this, false);
+                return DefinitionNode::parse(*this, false);
             case Token::Type::KeywordImport:
                 return ImportNode::parse(*this);
             case Token::Type::KeywordStructure:
@@ -685,16 +734,16 @@ namespace Three {
                 this->parseNewline();
                 return node;
             case Token::Type::KeywordLinkage:
-                return Three::LinkageNode::parse(*this);
+                return LinkageNode::parse(*this);
             case Token::Type::KeywordInclude:
-                return Three::IncludeNode::parse(*this);
+                return IncludeNode::parse(*this);
             case Token::Type::KeywordModule:
-                return Three::ModuleNode::parse(*this);
+                return ModuleNode::parse(*this);
             case Token::Type::KeywordPublic:
             case Token::Type::KeywordPrivate:
-                return Three::VisibilityNode::parse(*this);
+                return VisibilityNode::parse(*this);
             case Token::Type::KeywordNamespace:
-                return Three::NamespaceNode::parse(*this);
+                return NamespaceNode::parse(*this);
             case Token::Type::EndOfInput:
                 assert(0 && "parseTopLevelNode invalid state");
                 break;
@@ -704,6 +753,7 @@ namespace Three {
 
         if (this->isAtType()) {
             node = VariableDeclarationNode::parse(*this);
+            node->setStatement(true);
             this->parseNewline();
 
             return node;
@@ -741,19 +791,15 @@ namespace Three {
         return _lexer->nextIf(value);
     }
 
-    Three::ParsingContext* Parser::context() const {
+    ParsingContext* Parser::context() const {
         return _context;
-    }
-
-    void Parser::setContext(Three::ParsingContext* context) {
-        _context = context;
     }
 
     TranslationUnit* Parser::currentTranslationUnit() const {
         return _context->translationUnit();
     }
 
-    Three::Module* Parser::currentModule() const {
+    Module* Parser::currentModule() const {
         return _context->currentModule();
     }
 

@@ -32,9 +32,9 @@ protected:
         assert(!_context);
         _context = Three::ParsingContext::translationUnitContext();
 
-        _parser->setContext(_context);
+        _parser->parse(_context);
 
-        return _parser->rootASTNode();
+        return _context->rootNode();
     }
 
     Three::ASTNode* parseString() {

@@ -5,7 +5,7 @@
 #include <sstream>
 
 namespace Three {
-    ASTNode::ASTNode() {
+    ASTNode::ASTNode() : _statement(false) {
         _childNodes.clear();
     }
 
@@ -51,6 +51,10 @@ namespace Three {
         _statement = value;
     }
 
+    bool ASTNode::includesParentheses() const {
+        return false;
+    }
+
     TypeReference ASTNode::nodeType() const {
         return TypeReference();
     }
@@ -91,10 +95,15 @@ namespace Three {
         return s.str();
     }
 
-    void ASTNode::codeGenCSourceForChildren(CSourceContext& context) {
+    void ASTNode::codeGen(CSourceContext& context) {
+    }
+
+    void ASTNode::codeGenChildren(CSourceContext& context) {
         this->eachChildWithLast([=, &context] (ASTNode* node, bool last) {
-            node->codeGenCSource(context);
-            context.current()->printNewLine();
+            node->codeGen(context);
+            if (node->statement()) {
+                context.current()->printLine(";");
+            }
         });
     }
 }

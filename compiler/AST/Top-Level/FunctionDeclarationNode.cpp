@@ -32,6 +32,6 @@ namespace Three {
         return _function;
     }
 
-    void FunctionDeclarationNode::codeGenCSource(CSourceContext& context) {
+    void FunctionDeclarationNode::codeGen(CSourceContext& context) {
     }
 }

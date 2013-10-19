@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../ASTNode.h"
-#include "../ElseNode.h"
 
 namespace Three {
     class AtomicStatementNode : public ASTNode {
@@ -11,6 +10,13 @@ namespace Three {
     public:
         virtual std::string name() const;
 
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
+
+    protected:
+        void codeGenTransactionAllocation(CSourceContext& context);
+
+    private:
+        ASTNode* _elseNode;
+        std::string _transactionName;
     };
 }

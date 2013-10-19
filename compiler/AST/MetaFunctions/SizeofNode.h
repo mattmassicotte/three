@@ -11,7 +11,7 @@ namespace Three {
     public:
         virtual std::string name() const;
 
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
         TypeReference _typeArgument;

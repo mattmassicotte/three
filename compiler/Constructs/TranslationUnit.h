@@ -11,6 +11,7 @@ namespace Three {
     class TranslationUnit {
     public:
         typedef enum {
+            Default,
             None,
             Internal,
             External

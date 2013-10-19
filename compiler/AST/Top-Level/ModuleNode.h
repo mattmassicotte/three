@@ -13,8 +13,6 @@ namespace Three {
         virtual std::string name() const;
         std::string moduleName() const;
 
-        void codeGenCSource(CSourceContext& context);
-
     private:
         std::string _name;
         Three::Module* _module;

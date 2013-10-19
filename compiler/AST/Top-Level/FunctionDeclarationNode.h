@@ -13,7 +13,7 @@ namespace Three {
 
         Function* function() const;
 
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
         Function* _function;

@@ -83,6 +83,20 @@ namespace Three {
         return this->fullyQualifiedName();
     }
 
+    std::string DataType::cHeader() const {
+        if (this->flavor() == Flavor::Closure) {
+            return "three/runtime/closure.h";
+        } else if (this->name() == "Bool") {
+            return "stdbool.h";
+        } else if (this->name() == "Natural:32") {
+            return "stdint.h";
+        } else if (this->name() == "Int:64") {
+            return "stdint.h";
+        }
+
+        return "";
+    }
+
     bool DataType::cSourcePrependStructKeyword() const {
         return _prependStructKeyword;
     }

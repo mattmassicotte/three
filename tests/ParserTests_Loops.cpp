@@ -44,7 +44,7 @@ TEST_F(ParserTest_Loops, ForStatement) {
     ForNode* loop = dynamic_cast<Three::ForNode*>(node->childAtIndex(0));
     ASSERT_EQ("For", loop->nodeName());
 
-    ASSERT_VARIABLE_DECLERATION("Int", 0, "i", loop->startExpression());
+    ASSERT_VARIABLE_DECLARATION("Int", 0, "i", loop->startExpression());
     ASSERT_OPERATOR("<", loop->condition());
     ASSERT_OPERATOR("+=", loop->loopExpression());
 }
@@ -57,7 +57,7 @@ TEST_F(ParserTest_Loops, ForRangeStatement) {
 
     Three::ForNode* loop = dynamic_cast<Three::ForNode*>(node->childAtIndex(0));
     ASSERT_EQ("For", loop->nodeName());
-    ASSERT_VARIABLE_DECLERATION("Int", 0, "i", loop->startExpression());
+    ASSERT_VARIABLE_DECLARATION("Int", 0, "i", loop->startExpression());
     ASSERT_INTEGER_LITERAL_NODE(0, loop->rangeStartExpression());
     ASSERT_INTEGER_LITERAL_NODE(10, loop->rangeEndExpression());
 }

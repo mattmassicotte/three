@@ -48,9 +48,7 @@ namespace Three {
         return _value;
     }
 
-    void IntegerLiteralNode::codeGenCSource(CSourceContext& context) {
-        context.addHeader("stdint.h");
-
+    void IntegerLiteralNode::codeGen(CSourceContext& context) {
         std::stringstream s;
 
         // TODO: this is kinda stupid just to convert into a string...

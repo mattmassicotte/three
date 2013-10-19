@@ -8,6 +8,7 @@
 namespace Three {
     class DataType;
     class Module;
+    class CSourceContext;
 }
 
 namespace Three {
@@ -16,8 +17,7 @@ namespace Three {
         static TypeReference ref(Three::Module* module, const std::string& name, uint32_t indirection);
 
     public:
-        TypeReference();
-        TypeReference(DataType* referencedType, uint32_t indirection);
+        TypeReference(DataType* referencedType = nullptr, uint32_t indirection = 0, const std::vector<uint32_t>& dimensions = std::vector<uint32_t>());
 
         std::string str() const;
 
@@ -34,6 +34,10 @@ namespace Three {
 
         void codeGenCSourceFunctionType(CSource* source, const std::string& variableName) const;
         void codeGenCSource(CSource* source, const std::string& variableName) const;
+        void codeGen(CSourceContext& context, const std::string& variableName = std::string()) const;
+
+    protected:
+        void codeGenFunction(CSourceContext& context, const std::string& variableName) const;
 
     private:
         DataType* _type;

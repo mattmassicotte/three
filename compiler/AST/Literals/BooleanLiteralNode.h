@@ -12,7 +12,7 @@ namespace Three {
 
         bool value() const;
 
-        void codeGenCSource(CSourceContext& context);
+        void codeGen(CSourceContext& context);
 
     private:
         bool _value;

@@ -21,13 +21,13 @@ namespace Three {
         return "Indexer";
     }
 
-    void IndexerNode::codeGenCSource(CSourceContext& context) {
-        this->childAtIndex(0)->codeGenCSource(context);
+    void IndexerNode::codeGen(CSourceContext& context) {
+        this->childAtIndex(0)->codeGen(context);
 
         context << "[";
 
         // index expression
-        this->childAtIndex(1)->codeGenCSource(context);
+        this->childAtIndex(1)->codeGen(context);
 
         context << "]";
     }
