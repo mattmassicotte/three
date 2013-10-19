@@ -12,7 +12,7 @@ TEST_F(CCodeGenTests, IncludeNode) {
     node->codeGen(context);
 
     EXPECT_EQ("#include <stdio.h>\n\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
     EXPECT_EQ("", context.body()->renderToString());
 }
 
@@ -24,7 +24,7 @@ TEST_F(CCodeGenTests, PublicIncludeNode) {
     node->codeGen(context);
 
     EXPECT_EQ("", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("#include <stdio.h>\n\n", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#include <stdio.h>\n#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
     EXPECT_EQ("", context.body()->renderToString());
 }
 
@@ -36,7 +36,6 @@ TEST_F(CCodeGenTests, FunctionDefinition) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(void);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(void) {\n}\n\n", context.body()->renderToString());
 }
 
@@ -49,10 +48,9 @@ TEST_F(CCodeGenTests, PrivateFunctionDefinition) {
 
     node->codeGen(context);
 
-    EXPECT_EQ("#include <three/runtime/types.h>\n\n"
-              "void test(void);\n", context.declarations()->renderToString());
+    EXPECT_EQ("void test(void);\n", context.declarations()->renderToString());
     EXPECT_EQ("", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(void) {\n}\n\n", context.body()->renderToString());
 }
 
@@ -64,7 +62,6 @@ TEST_F(CCodeGenTests, FunctionDefinitionWithArguments) {
     node->codeGen(context);
 
     EXPECT_EQ("int* test(int a, int b);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("int* test(int a, int b) {\n}\n\n", context.body()->renderToString());
 }
 
@@ -76,7 +73,6 @@ TEST_F(CCodeGenTests, VariableDeclarationWithInitializer) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(int a);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int a) {\n    int b = a;\n}\n\n", context.body()->renderToString());
 }
 
@@ -88,7 +84,6 @@ TEST_F(CCodeGenTests, UsingFunctionFromCHeader) {
     node->codeGen(context);
 
     EXPECT_EQ("#include <stdio.h>\n\nvoid test(void);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(void) {\n    printf(\"hello world\");\n}\n\n", context.body()->renderToString());
 }
 
@@ -100,7 +95,6 @@ TEST_F(CCodeGenTests, SwitchStatement) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n    if (x == 1) {\n        x = 5;\n    } else if (x == 2) {\n        x = 6;\n    }\n}\n\n", context.body()->renderToString());
 }
 
@@ -115,7 +109,6 @@ TEST_F(CCodeGenTests, Structure) {
     node->codeGen(context);
 
     EXPECT_EQ("typedef struct Foo {\n    int x;\n    int y;\n} Foo;\n\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("", context.body()->renderToString());
 }
 
@@ -131,7 +124,7 @@ TEST_F(CCodeGenTests, PublicStructure) {
     node->codeGen(context);
 
     EXPECT_EQ("typedef struct Foo {\n    int x;\n    int y;\n} Foo;\n\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("typedef struct Foo Foo;\n\n", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\ntypedef struct Foo Foo;\n\n", context.externalDeclarations()->renderToString());
     EXPECT_EQ("", context.body()->renderToString());
 }
 
@@ -146,7 +139,6 @@ TEST_F(CCodeGenTests, PrivateStructure) {
     node->codeGen(context);
 
     EXPECT_EQ("typedef struct Foo {\n    int x;\n} Foo;\n\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("", context.body()->renderToString());
 }
 
@@ -160,8 +152,13 @@ TEST_F(CCodeGenTests, PackedStructure) {
 
     node->codeGen(context);
 
-    EXPECT_EQ("#pragma pack(push)\n#pragma pack(4)\ntypedef struct Foo {\n    int x;\n    int y;\n} Foo;\n#pragma pack(pop)\n\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#pragma pack(push)\n"
+              "#pragma pack(4)\n"
+              "typedef struct Foo {\n"
+              "    int x;\n"
+              "    int y;\n"
+              "} Foo;\n"
+              "#pragma pack(pop)\n\n", context.internalDeclarations()->renderToString());
     EXPECT_EQ("", context.body()->renderToString());
 }
 
@@ -174,7 +171,7 @@ TEST_F(CCodeGenTests, SimpleGlobalVariable) {
 
     // TODO: this needs to happen eventually
     // EXPECT_EQ("extern int a;\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
     EXPECT_EQ("int a;\n", context.body()->renderToString());
 }
 
@@ -187,7 +184,7 @@ TEST_F(CCodeGenTests, FunctionPointerVariable) {
 
     // TODO: this needs to happen eventually
     // EXPECT_EQ("extern void* (*fn_ptr)(void* arg);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void* (*fn_ptr)(void*);\n", context.body()->renderToString());
 }
 
@@ -204,7 +201,7 @@ TEST_F(CCodeGenTests, MemberAccess) {
     node->codeGen(context);
 
     EXPECT_EQ("typedef struct Foo {\n    uint32_t a;\n} Foo;\n\nvoid test(Foo f);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(Foo f) {\n    f.a = 0;\n}\n\n", context.body()->renderToString());
 }
 
@@ -224,7 +221,7 @@ TEST_F(CCodeGenTests, FunctionCallOperator) {
               "    void (*fn)(int);\n"
               "} Foo;\n\n"
               "void test(Foo f);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(Foo f) {\n    f.fn(1);\n}\n\n", context.body()->renderToString());
 }
 
@@ -241,7 +238,6 @@ TEST_F(CCodeGenTests, StructMemberWithUnaryOperators) {
     node->codeGen(context);
 
     EXPECT_EQ("typedef struct Foo {\n    int a;\n} Foo;\n\nvoid test(Foo** f);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(Foo** f) {\n    f = (&(*f)->a);\n}\n\n", context.body()->renderToString());
 }
 
@@ -256,7 +252,6 @@ TEST_F(CCodeGenTests, InfiniteLoop) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(void);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(void) {\n    for (;;) {\n    }\n}\n\n", context.body()->renderToString()); 
 }
 
@@ -271,7 +266,6 @@ TEST_F(CCodeGenTests, ConditionLoop) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n    while (x > 0) {\n    }\n}\n\n", context.body()->renderToString());
 }
 
@@ -287,7 +281,6 @@ TEST_F(CCodeGenTests, ConditionLoopWithStatement) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n"
               "    while (x > 0) {\n"
               "        x += 1;\n"
@@ -306,7 +299,6 @@ TEST_F(CCodeGenTests, AfterConditionLoop) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n    do {\n    } while (x > 0);\n}\n\n", context.body()->renderToString());
 }
 
@@ -321,7 +313,6 @@ TEST_F(CCodeGenTests, ForLoop) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(void);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(void) {\n    for (int i = 0; i < 10; i += 1) {\n    }\n}\n\n", context.body()->renderToString());
 }
 
@@ -336,7 +327,6 @@ TEST_F(CCodeGenTests, RangedForLoop) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(void);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(void) {\n    for (int i = 0; (i < 10) && (0 < 10); ++i) {\n    }\n}\n\n", context.body()->renderToString());
 }
 
@@ -350,7 +340,6 @@ TEST_F(CCodeGenTests, Return) {
     node->codeGen(context);
 
     EXPECT_EQ("int test(void);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("int test(void) {\n    return;\n}\n\n", context.body()->renderToString());
 }
 
@@ -365,7 +354,6 @@ TEST_F(CCodeGenTests, ReturnWithExpression) {
     node->codeGen(context);
 
     EXPECT_EQ("int test(void);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("int test(void) {\n    return 1 + 1;\n}\n\n", context.body()->renderToString());
 }
 
@@ -381,7 +369,7 @@ TEST_F(CCodeGenTests, FunctionReferences) {
     node->codeGen(context);
 
     EXPECT_EQ("void foo(void);\nvoid test(void);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void foo(void) {\n}\n\nvoid test(void) {\n    void* ptr = (&foo);\n}\n\n", context.body()->renderToString());
 }
 
@@ -397,10 +385,9 @@ TEST_F(CCodeGenTests, AtomicStatement) {
     node->codeGen(context);
 
     EXPECT_EQ("#include <assert.h>\n"
-              "#include <three/runtime/transactional_memory.h>\n"
-              "#include <three/runtime/types.h>\n\n", context.declarations()->renderToString());
+              "#include <three/runtime/transactional_memory.h>\n\n", context.declarations()->renderToString());
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n"
               "    three_transaction_t tx1 = THREE_MAKE_DEFAULT_TRANSACTION();\n"
               "    if (three_transaction_begin(&tx1)) {\n"
@@ -425,10 +412,8 @@ TEST_F(CCodeGenTests, AtomicStatementWithElse) {
 
     node->codeGen(context);
 
-    EXPECT_EQ("#include <three/runtime/transactional_memory.h>\n"
-              "#include <three/runtime/types.h>\n\n", context.declarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/transactional_memory.h>\n\n", context.declarations()->renderToString());
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n"
               "    three_transaction_t tx1 = THREE_MAKE_DEFAULT_TRANSACTION();\n"
               "    if (three_transaction_begin(&tx1)) {\n"
@@ -453,10 +438,8 @@ TEST_F(CCodeGenTests, AtomicStatementWithAbort) {
     node->codeGen(context);
 
     EXPECT_EQ("#include <assert.h>\n"
-              "#include <three/runtime/transactional_memory.h>\n"
-              "#include <three/runtime/types.h>\n\n", context.declarations()->renderToString());
+              "#include <three/runtime/transactional_memory.h>\n\n", context.declarations()->renderToString());
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n"
               "    three_transaction_t tx1 = THREE_MAKE_DEFAULT_TRANSACTION();\n"
               "    if (three_transaction_begin(&tx1)) {\n"
@@ -480,10 +463,8 @@ TEST_F(CCodeGenTests, MemoryBarrier) {
 
     node->codeGen(context);
 
-    EXPECT_EQ("#include <three/runtime/atomic.h>\n"
-              "#include <three/runtime/types.h>\n\n", context.declarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/atomic.h>\n\n", context.declarations()->renderToString());
     EXPECT_EQ("void test(void);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(void) {\n"
               "    atomic_thread_fence(memory_order_seq_cst);\n"
               "}\n\n", context.body()->renderToString());
@@ -498,11 +479,9 @@ TEST_F(CCodeGenTests, AtomicExpressionAdd) {
 
     node->codeGen(context);
 
-    EXPECT_EQ("#include <three/runtime/atomic.h>\n"
-              "#include <three/runtime/types.h>\n\n"
+    EXPECT_EQ("#include <three/runtime/atomic.h>\n\n"
               "THREE_CHECK_ATOMIC(int);\n", context.declarations()->renderToString());
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n"
               "    x = atomic_fetch_add_explicit((_Atomic(int)*)&x, 1, memory_order_seq_cst);\n"
               "}\n\n", context.body()->renderToString());
@@ -517,11 +496,9 @@ TEST_F(CCodeGenTests, AtomicExpressionSubtract) {
 
     node->codeGen(context);
 
-    EXPECT_EQ("#include <three/runtime/atomic.h>\n"
-              "#include <three/runtime/types.h>\n\n"
+    EXPECT_EQ("#include <three/runtime/atomic.h>\n\n"
               "THREE_CHECK_ATOMIC(int);\n", context.declarations()->renderToString());
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n"
               "    x = atomic_fetch_sub_explicit((_Atomic(int)*)&x, 1, memory_order_seq_cst);\n"
               "}\n\n", context.body()->renderToString());
@@ -536,11 +513,9 @@ TEST_F(CCodeGenTests, AtomicExpressionLoad) {
 
     node->codeGen(context);
 
-    EXPECT_EQ("#include <three/runtime/atomic.h>\n"
-              "#include <three/runtime/types.h>\n\n"
+    EXPECT_EQ("#include <three/runtime/atomic.h>\n\n"
               "THREE_CHECK_ATOMIC(int);\n", context.declarations()->renderToString());
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n"
               "    bool value = atomic_load_explicit((_Atomic(int)*)&x, memory_order_seq_cst) > 0;\n"
               "}\n\n", context.body()->renderToString());
@@ -555,11 +530,9 @@ TEST_F(CCodeGenTests, AtomicExpressionAsStatement) {
 
     node->codeGen(context);
 
-    EXPECT_EQ("#include <three/runtime/atomic.h>\n"
-              "#include <three/runtime/types.h>\n\n"
+    EXPECT_EQ("#include <three/runtime/atomic.h>\n\n"
               "THREE_CHECK_ATOMIC(int);\n", context.declarations()->renderToString());
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n"
               "    atomic_fetch_add_explicit((_Atomic(int)*)&x, 1, memory_order_seq_cst);\n"
               "}\n\n", context.body()->renderToString());
@@ -578,10 +551,9 @@ TEST_F(CCodeGenTests, ReturnStatementInAtomic) {
     node->codeGen(context);
 
     EXPECT_EQ("#include <assert.h>\n"
-              "#include <three/runtime/transactional_memory.h>\n"
-              "#include <three/runtime/types.h>\n\n", context.declarations()->renderToString());
+              "#include <three/runtime/transactional_memory.h>\n\n", context.declarations()->renderToString());
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n"
               "    three_transaction_t tx1 = THREE_MAKE_DEFAULT_TRANSACTION();\n"
               "    if (three_transaction_begin(&tx1)) {\n"
@@ -611,7 +583,6 @@ TEST_F(CCodeGenTests, IfStatementWithElse) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n"
               "    if (x > 0) {\n"
               "        x = 1;\n"
@@ -633,7 +604,6 @@ TEST_F(CCodeGenTests, IfStatementWithNonParenthesisConditional) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n"
               "    if (x) {\n"
               "        x = 2;\n"
@@ -652,7 +622,7 @@ TEST_F(CCodeGenTests, NamespacedFunction) {
     node->codeGen(context);
 
     EXPECT_EQ("void Foo_3_test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void Foo_3_test(int x) {\n"
               "}\n\n", context.body()->renderToString());
 }
@@ -667,7 +637,6 @@ TEST_F(CCodeGenTests, NullLiteral) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(int* x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int* x) {\n"
               "    x = NULL;\n"
               "}\n\n", context.body()->renderToString());
@@ -684,7 +653,6 @@ TEST_F(CCodeGenTests, BooleanLiteral) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(bool x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(bool x) {\n"
               "    x = true;\n"
               "    x = false;\n"
@@ -701,7 +669,6 @@ TEST_F(CCodeGenTests, Sizeof) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(int x) {\n"
               "    x = sizeof(int);\n"
               "}\n\n", context.body()->renderToString());
@@ -719,7 +686,6 @@ TEST_F(CCodeGenTests, BreakStatement) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(void);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(void) {\n"
               "    for (;;) {\n"
               "        break;\n"
@@ -739,7 +705,6 @@ TEST_F(CCodeGenTests, ContinueStatement) {
     node->codeGen(context);
 
     EXPECT_EQ("void test(void);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(void) {\n"
               "    for (;;) {\n"
               "        continue;\n"
@@ -755,9 +720,9 @@ TEST_F(CCodeGenTests, FunctionWithClosureArgument) {
 
     node->codeGen(context);
 
-    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.declarations()->renderToString());
+    EXPECT_EQ("", context.declarations()->renderToString());
     EXPECT_EQ("void test(three_closure_t closure);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(three_closure_t closure) {\n"
               "}\n\n", context.body()->renderToString());
 }
@@ -775,8 +740,7 @@ TEST_F(CCodeGenTests, CreateClosure) {
 
     node->codeGen(context);
 
-    EXPECT_EQ("#include <three/runtime/types.h>\n\n"
-              "struct test_closure_1_env {\n"
+    EXPECT_EQ("struct test_closure_1_env {\n"
               "    int x;\n"
               "};\n"
               "static void test_closure_1(struct test_closure_1_env* self_env, int arg1) {\n"
@@ -784,7 +748,7 @@ TEST_F(CCodeGenTests, CreateClosure) {
               "}\n"
               "THREE_CHECK_CLOSURE_FUNCTION(test_closure_1);\n\n", context.declarations()->renderToString());
     EXPECT_EQ("void test(void);\n", context.internalDeclarations()->renderToString());
-    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
     EXPECT_EQ("void test(void) {\n"
               "    int x = 0;\n"
               "    THREE_CAPTURE_ENV(test_closure_1_env, x);\n"

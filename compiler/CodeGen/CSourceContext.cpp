@@ -10,7 +10,8 @@ namespace Three {
         _declarationSource = new CSource();
         _bodySource = new CSource();
 
-        _declarationSource->addHeader(false, "three/runtime/types.h");
+        // _declarationSource->addHeader(false, "three/runtime/types.h");
+        _externalDeclarationSource->addHeader(false, "three/runtime/types.h");
 
         this->setCurrent(_bodySource);
     }
