@@ -56,6 +56,17 @@ namespace Three {
     void VariableNode::codeGen(CSourceContext& context) {
         assert(this->_variable);
 
+        if (this->_referenced) {
+            assert(!this->_closed);
+            context << "*(self_env->" << this->_variable->name() << ")";
+            return;
+        }
+
+        if (this->_closed) {
+            context << "(self_env->" << this->_variable->name() << ")";
+            return;
+        }
+
         context << this->_variable->name();
     }
 }

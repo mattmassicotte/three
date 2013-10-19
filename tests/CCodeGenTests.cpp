@@ -746,3 +746,49 @@ TEST_F(CCodeGenTests, ContinueStatement) {
               "    }\n"
               "}\n\n", context.body()->renderToString());
 }
+
+TEST_F(CCodeGenTests, FunctionWithClosureArgument) {
+    ASTNode* node = this->parse("def test({} closure)\n"
+                                "end\n");
+
+    CSourceContext context;
+
+    node->codeGen(context);
+
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.declarations()->renderToString());
+    EXPECT_EQ("void test(three_closure_t closure);\n", context.internalDeclarations()->renderToString());
+    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("void test(three_closure_t closure) {\n"
+              "}\n\n", context.body()->renderToString());
+}
+
+TEST_F(CCodeGenTests, CreateClosure) {
+    ASTNode* node = this->parse("def test()\n"
+                                "  Int x = 0\n"
+                                "  {Int} closure = do (Int arg1) {\n"
+                                "    x = 5\n"
+                                "  }\n"
+                                "  closure(1)\n"
+                                "end\n");
+
+    CSourceContext context;
+
+    node->codeGen(context);
+
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n"
+              "struct test_closure_1_env {\n"
+              "    int x;\n"
+              "};\n"
+              "static void test_closure_1(struct test_closure_1_env* self_env, int arg1) {\n"
+              "    (self_env->x) = 5;\n"
+              "}\n"
+              "THREE_CHECK_CLOSURE_FUNCTION(test_closure_1);\n\n", context.declarations()->renderToString());
+    EXPECT_EQ("void test(void);\n", context.internalDeclarations()->renderToString());
+    EXPECT_EQ("", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("void test(void) {\n"
+              "    int x = 0;\n"
+              "    THREE_CAPTURE_ENV(test_closure_1_env, x);\n"
+              "    three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1);\n"
+              "    THREE_CALL_CLOSURE(void (*)(void*, int), closure, 1);\n"
+              "}\n\n", context.body()->renderToString());
+}

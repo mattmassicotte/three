@@ -35,8 +35,6 @@ namespace Three {
         void codeGenCSourceFunctionType(CSource* source, const std::string& variableName) const;
         void codeGenCSource(CSource* source, const std::string& variableName) const;
         void codeGen(CSourceContext& context, const std::string& variableName = std::string()) const;
-
-    protected:
         void codeGenFunction(CSourceContext& context, const std::string& variableName) const;
 
     private:
