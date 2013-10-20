@@ -257,6 +257,21 @@ TEST_F(CCodeGenTests, StructMemberWithUnaryOperators) {
     EXPECT_EQ("void test(Foo** f) {\n    f = (&(*f)->a);\n}\n\n", context.body()->renderToString());
 }
 
+TEST_F(CCodeGenTests, TernaryConditionalOperator) {
+    ASTNode* node = this->parse("def test(Int x)\n"
+                                "  x = x ? 0 : 1\n"
+                                "end\n");
+
+    CSourceContext context;
+
+    node->codeGen(context);
+
+    EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
+    EXPECT_EQ("void test(int x) {\n"
+              "    x = x ? 0 : 1;\n"
+              "}\n\n", context.body()->renderToString()); 
+}
+
 TEST_F(CCodeGenTests, InfiniteLoop) {
     ASTNode* node = this->parse("def test()\n"
                                 "  loop\n"

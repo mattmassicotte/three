@@ -6,8 +6,15 @@ namespace Three {
     void TernaryOperatorNode::codeGen(CSourceContext& context) {
         assert(this->childCount() == 3);
 
-        this->childAtIndex(0)->codeGen(context);
-        context << " " << this->op() << " ";
-        this->childAtIndex(1)->codeGen(context);
+        if (this->op() == "?") {
+            this->childAtIndex(0)->codeGen(context);
+            context << " ? ";
+            this->childAtIndex(1)->codeGen(context);
+            context << " : ";
+            this->childAtIndex(2)->codeGen(context);
+            return;
+        }
+
+        assert(0 && "codegen for ternary operator not supported");
     }
 }
