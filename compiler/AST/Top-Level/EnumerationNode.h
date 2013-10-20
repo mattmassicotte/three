@@ -1,11 +1,12 @@
 #pragma once
 
-#include "../ASTNode.h"
+#include "DefinitionNode.h"
+#include "../../Constructs/DataType.h"
 
 #include <vector>
 
 namespace Three {
-    class EnumerationNode : public ASTNode {
+    class EnumerationNode : public DefinitionNode {
     public:
         static EnumerationNode* parse(Parser& parser);
 
@@ -14,8 +15,11 @@ namespace Three {
 
         std::string structureName() const;
 
+        void codeGen(CSourceContext& context);
+
     private:
         std::string _name;
         std::vector<std::string> _identifiers;
+        DataType* _type;
     };
 }

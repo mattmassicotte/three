@@ -172,6 +172,10 @@ namespace Three {
         // TODO: this is wack
         _module->addConstant(name, name);
     }
+
+    void CSourceIndexer::addConstant(const std::string& name) {
+        _module->addConstant(name, name);
+    }
 }
 
 static int abortQuery(CXClientData clientData, void* reserved) {
@@ -215,6 +219,9 @@ static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declI
     switch(declInfo->entityInfo->kind) {
         case CXIdxEntity_Typedef:
             index->addType(name, Three::DataType::Flavor::Scalar);
+            break;
+        case CXIdxEntity_EnumConstant:
+            index->addConstant(name);
             break;
         case CXIdxEntity_Function:
             index->addFunction(name);

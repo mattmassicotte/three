@@ -11,6 +11,7 @@ namespace Three {
         assert(parser.peek().type() == Token::Type::Identifier);
 
         node->_name = parser.next().str();
+        node->setVisibility(parser.context()->visibility());
 
         parser.parseNewline();
 
@@ -18,6 +19,7 @@ namespace Three {
             assert(parser.peek().type() == Token::Type::Identifier);
 
             std::string identifier = parser.next().str();
+            node->_identifiers.push_back(identifier);
 
             if (parser.nextIf("=")) {
                 ASTNode* expression = parser.parseExpression();
@@ -30,6 +32,13 @@ namespace Three {
 
         parser.parseNewline();
 
+        DataType* type = new DataType(DataType::Flavor::Enumeration, node->_name);
+        type->setNamespace(parser.currentScope()->fullNamespace());
+
+        node->_type = type;
+
+        parser.currentModule()->addDataType(type);
+
         return node;
     }
 
@@ -41,7 +50,26 @@ namespace Three {
         return _name;
     }
 
-    // void EnumerationNode::codeGen(CSourceContext& context) {
+    void EnumerationNode::codeGen(CSourceContext& context) {
+        context.adjustCurrentForVisibility(this->visibility(), [&] (CSource* source) {
+            source->printLineAndIndent("enum {");
+
+            for (uint32_t i = 0; i < this->_identifiers.size(); ++i) {
+                *source << this->_type->fullyQualifiedName() << "_3_" << this->_identifiers.at(i);
+
+                if (i < this->_identifiers.size() - 1) {
+                    *source << ",";
+                }
+                source->printLine("");
+            }
+
+            source->outdentAndPrintLine("};");
+            *source << "typedef uint32_t " << this->_type->fullyQualifiedName();
+            source->printLine(";");
+            source->printLine("");
+        });
+    }
+    
     //     context.current()->printLineAndIndent("typedef enum {");
     // 
     //     for (uint32_t i = 0; i < _identifiers.size(); ++i) {

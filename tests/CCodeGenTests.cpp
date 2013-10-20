@@ -162,6 +162,26 @@ TEST_F(CCodeGenTests, PackedStructure) {
     EXPECT_EQ("", context.body()->renderToString());
 }
 
+TEST_F(CCodeGenTests, NamespacedEnumeration) {
+    ASTNode* node = this->parse("namespace Foo\n"
+                                "  enum Bar\n"
+                                "    A\n"
+                                "    B\n"
+                                "  end\n"
+                                "end\n");
+
+    CSourceContext context;
+
+    node->codeGen(context);
+
+    EXPECT_EQ("enum {\n"
+              "    Foo_3_Bar_3_A,\n"
+              "    Foo_3_Bar_3_B\n"
+              "};\n"
+              "typedef uint32_t Foo_3_Bar;\n\n", context.internalDeclarations()->renderToString());
+    EXPECT_EQ("", context.body()->renderToString());
+}
+
 TEST_F(CCodeGenTests, SimpleGlobalVariable) {
     ASTNode* node = this->parse("Int a\n");
 
@@ -239,6 +259,21 @@ TEST_F(CCodeGenTests, StructMemberWithUnaryOperators) {
 
     EXPECT_EQ("typedef struct Foo {\n    int a;\n} Foo;\n\nvoid test(Foo** f);\n", context.internalDeclarations()->renderToString());
     EXPECT_EQ("void test(Foo** f) {\n    f = (&(*f)->a);\n}\n\n", context.body()->renderToString());
+}
+
+TEST_F(CCodeGenTests, TernaryConditionalOperator) {
+    ASTNode* node = this->parse("def test(Int x)\n"
+                                "  x = x ? 0 : 1\n"
+                                "end\n");
+
+    CSourceContext context;
+
+    node->codeGen(context);
+
+    EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
+    EXPECT_EQ("void test(int x) {\n"
+              "    x = x ? 0 : 1;\n"
+              "}\n\n", context.body()->renderToString()); 
 }
 
 TEST_F(CCodeGenTests, InfiniteLoop) {
