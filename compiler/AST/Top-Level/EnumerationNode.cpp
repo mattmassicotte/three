@@ -15,6 +15,12 @@ namespace Three {
 
         parser.parseNewline();
 
+        std::string identifierPrefix = parser.currentScope()->fullNamespace();
+        if (identifierPrefix.length() > 0) {
+            identifierPrefix += "_3_";
+        }
+        identifierPrefix += node->_name + "_3_";
+
         parser.parseUntilEnd([&] () {
             assert(parser.peek().type() == Token::Type::Identifier);
 
@@ -27,7 +33,7 @@ namespace Three {
 
             parser.parseNewline();
 
-            // TODO: the constant needs to actually be defined here
+            parser.currentModule()->addConstant(identifierPrefix + identifier, identifier);
         });
 
         parser.parseNewline();

@@ -27,6 +27,6 @@ namespace Three {
         std::string _name;
         std::string _environmentName;
         std::vector<Variable*> _referencedVariables;
-        std::vector<Variable*> _capturedVariables;
+        std::set<Variable*> _capturedVariables;
     };
 }

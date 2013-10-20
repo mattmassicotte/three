@@ -787,7 +787,66 @@ TEST_F(CCodeGenTests, CreateClosure) {
     EXPECT_EQ("void test(void) {\n"
               "    int x = 0;\n"
               "    THREE_CAPTURE_ENV(test_closure_1_env, x);\n"
-              "    three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1);\n"
+              "    three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_DEFAULT);\n"
               "    THREE_CALL_CLOSURE(void (*)(void*, int), closure, 1);\n"
+              "}\n\n", context.body()->renderToString());
+}
+
+TEST_F(CCodeGenTests, ClosureVariableCapture) {
+    ASTNode* node = this->parse("def test()\n"
+                                "  Int x = 0\n"
+                                "  Int y = 0\n"
+                                "  {Int} closure = do (Int arg1) {\n"
+                                "    x = x + y\n"
+                                "  }\n"
+                                "end\n");
+
+    CSourceContext context;
+
+    node->codeGen(context);
+
+    EXPECT_EQ("struct test_closure_1_env {\n"
+              "    int x;\n"
+              "    int y;\n"
+              "};\n"
+              "static void test_closure_1(struct test_closure_1_env* self_env, int arg1) {\n"
+              "    (self_env->x) = (self_env->x) + (self_env->y);\n"
+              "}\n"
+              "THREE_CHECK_CLOSURE_FUNCTION(test_closure_1);\n\n", context.declarations()->renderToString());
+    EXPECT_EQ("void test(void);\n", context.internalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("void test(void) {\n"
+              "    int x = 0;\n"
+              "    int y = 0;\n"
+              "    THREE_CAPTURE_ENV(test_closure_1_env, x, y);\n"
+              "    three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_DEFAULT);\n"
+              "}\n\n", context.body()->renderToString());
+}
+
+TEST_F(CCodeGenTests, ClosureVariableCaptureWithReference) {
+    ASTNode* node = this->parse("def test()\n"
+                                "  Int x = 0\n"
+                                "  {Int} closure = do (Int arg1; Void; x) {\n"
+                                "    x = 5\n"
+                                "  }\n"
+                                "end\n");
+
+    CSourceContext context;
+
+    node->codeGen(context);
+
+    EXPECT_EQ("struct test_closure_1_env {\n"
+              "    int* x;\n"
+              "};\n"
+              "static void test_closure_1(struct test_closure_1_env* self_env, int arg1) {\n"
+              "    *(self_env->x) = 5;\n"
+              "}\n"
+              "THREE_CHECK_CLOSURE_FUNCTION(test_closure_1);\n\n", context.declarations()->renderToString());
+    EXPECT_EQ("void test(void);\n", context.internalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("void test(void) {\n"
+              "    int x = 0;\n"
+              "    THREE_CAPTURE_ENV(test_closure_1_env, &x);\n"
+              "    three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_HAS_REFERENCES);\n"
               "}\n\n", context.body()->renderToString());
 }
