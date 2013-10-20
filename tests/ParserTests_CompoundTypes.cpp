@@ -12,6 +12,20 @@ TEST_F(ParserTest_CompoundTypes, EnumWithValues) {
     ASSERT_EQ("Enumeration", node->nodeName());
 }
 
+TEST_F(ParserTest_CompoundTypes, UsingEnumAsType) {
+    ASTNode* node;
+
+    node = this->parse("enum MyEnum\n"
+                       "  value\n"
+                       "end\n"
+                       "def test(MyEnum x)\n"
+                       "end\n");
+
+    Three::FunctionDefinitionNode* defNode = dynamic_cast<Three::FunctionDefinitionNode*>(node->childAtIndex(1));
+
+    ASSERT_VARIABLE("MyEnum", 0, "x", defNode->function()->parameterAtIndex(0));
+}
+
 TEST_F(ParserTest_CompoundTypes, TypeOfUnaryAddressOfMemberAccess) {
     ASTNode* node;
 

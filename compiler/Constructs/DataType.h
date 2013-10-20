@@ -14,6 +14,7 @@ namespace Three {
         typedef enum {
             Undefined,
             Scalar,
+            Enumeration,
             Structure,
             Union,
             Function,

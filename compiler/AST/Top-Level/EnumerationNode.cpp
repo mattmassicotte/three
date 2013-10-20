@@ -30,6 +30,11 @@ namespace Three {
 
         parser.parseNewline();
 
+        DataType* type = new DataType(DataType::Flavor::Enumeration, node->_name);
+        type->setNamespace(parser.currentScope()->fullNamespace());
+
+        parser.currentModule()->addDataType(type);
+
         return node;
     }
 
