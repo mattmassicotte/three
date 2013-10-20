@@ -148,10 +148,21 @@ TEST_F(ParserTest_Modules, NestedNamespaceRecursiveStruct) {
     Three::ASTNode* node;
 
     node = this->parse("namespace Foo\nnamespace Bar\nstruct MyStruct\n*MyStruct item\nend\nend\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0)->childAtIndex(0);
 
-    // TODO: fill this in
+    ASSERT_STRUCT("Foo_3_Bar_3_MyStruct", 0, node);
 }
-    
+
+TEST_F(ParserTest_Modules, QualifiedNamespace) {
+    Three::ASTNode* node;
+
+    node = this->parse("namespace Foo::Bar\ndef test()\nend\nend\n");
+    node = node->childAtIndex(0);
+
+    Three::FunctionDefinitionNode* defNode = dynamic_cast<Three::FunctionDefinitionNode*>(node->childAtIndex(0));
+    ASSERT_FUNCTION_DEFINITION("Foo_3_Bar_3_test", defNode);
+}
+
 TEST_F(ParserTest_Modules, NamespacedStructUsedInMethod) {
     Three::ASTNode* node;
 
