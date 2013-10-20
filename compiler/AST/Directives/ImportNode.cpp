@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <sstream>
+#include <unistd.h>
 
 namespace Three {
     ImportNode* ImportNode::parse(Parser& parser) {
@@ -51,9 +52,22 @@ namespace Three {
     }
 
     std::string ImportNode::resolvedFilePath() const {
-        std::string filePath = this->path() + ".h";
+        std::stringstream s;
 
-        return filePath;
+        // determine our current working directory
+        size_t size = pathconf(".", _PC_PATH_MAX);
+        char*  buf  = (char*)malloc(size);
+        char*  path = getcwd(buf, size);
+
+        s << path;
+
+        free(buf);
+
+        s << "/";
+        s << this->path();
+        s << ".h";
+
+        return s.str();
     }
 
     Three::Module* ImportNode::module() const {

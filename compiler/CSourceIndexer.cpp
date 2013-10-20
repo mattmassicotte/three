@@ -69,7 +69,7 @@ namespace Three {
         return partialPath;
     }
 
-    CSourceIndexer::CSourceIndexer() {
+    CSourceIndexer::CSourceIndexer() : verbose(false) {
         _module = new Three::Module();
     }
 
@@ -93,8 +93,6 @@ namespace Three {
 
         assert(path.length() > 0);
 
-        std::string fullPath = CSourceIndexer::resolveCHeaderPath(path);
-
         std::vector<std::string> arguments = CSourceIndexer::defaultCCompilerArguments();
         unsigned argCount = arguments.size();
         
@@ -109,7 +107,7 @@ namespace Three {
                                            &callbacks,
                                            sizeof(IndexerCallbacks),
                                            CXIndexOpt_SuppressRedundantRefs,
-                                           fullPath.c_str(),
+                                           path.c_str(),
                                            args,
                                            argCount,
                                            NULL,
@@ -140,6 +138,10 @@ namespace Three {
 
     void CSourceIndexer::addType(const std::string& name, DataType::Flavor flavor) {
         DataType* type;
+
+        if (verbose) {
+            std::cout << "[Indexer] creating type '" << name << "'" << std::endl;
+        }
 
         // first, check to see if we've already defined a type with this name
         type = _module->dataTypeForName(name);

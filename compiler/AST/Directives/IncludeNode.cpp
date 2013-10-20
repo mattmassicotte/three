@@ -20,8 +20,10 @@ namespace Three {
 
         CSourceIndexer index;
 
-        if (!index.indexFileAtPath(node->_headerName)) {
-            std::cout << "Unable to index c header '" << node->_headerName << "'" << std::endl;
+        std::string fullPath = CSourceIndexer::resolveCHeaderPath(node->_headerName);
+        
+        if (!index.indexFileAtPath(fullPath)) {
+            std::cout << "Unable to index c header '" << node->_headerName << "' => '" << fullPath << "'" << std::endl;
             assert(0);
         }
 

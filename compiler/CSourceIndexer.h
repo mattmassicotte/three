@@ -24,6 +24,9 @@ namespace Three {
 
         Module* module() const;
 
+    public:
+        bool verbose;
+
     private:
         Module* _module;
     };
