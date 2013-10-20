@@ -174,10 +174,11 @@ TEST_F(CCodeGenTests, NamespacedEnumeration) {
 
     node->codeGen(context);
 
-    EXPECT_EQ("typedef enum Foo_3_Bar {\n"
+    EXPECT_EQ("enum {\n"
               "    Foo_3_Bar_3_A,\n"
               "    Foo_3_Bar_3_B\n"
-              "} Foo_3_Bar;\n\n", context.internalDeclarations()->renderToString());
+              "};\n"
+              "typedef uint32_t Foo_3_Bar;\n\n", context.internalDeclarations()->renderToString());
     EXPECT_EQ("", context.body()->renderToString());
 }
 

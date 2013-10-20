@@ -52,8 +52,7 @@ namespace Three {
 
     void EnumerationNode::codeGen(CSourceContext& context) {
         context.adjustCurrentForVisibility(this->visibility(), [&] (CSource* source) {
-            *source << "typedef enum " << this->_type->fullyQualifiedName();
-            source->printLineAndIndent(" {");
+            source->printLineAndIndent("enum {");
 
             for (uint32_t i = 0; i < this->_identifiers.size(); ++i) {
                 *source << this->_type->fullyQualifiedName() << "_3_" << this->_identifiers.at(i);
@@ -64,8 +63,8 @@ namespace Three {
                 source->printLine("");
             }
 
-            source->decreaseIndentation();
-            *source << "} " << this->_type->fullyQualifiedName();
+            source->outdentAndPrintLine("};");
+            *source << "typedef uint32_t " << this->_type->fullyQualifiedName();
             source->printLine(";");
             source->printLine("");
         });
