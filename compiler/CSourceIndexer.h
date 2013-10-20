@@ -21,6 +21,7 @@ namespace Three {
         void addFunction(const std::string& name);
         void addType(const std::string& name, DataType::Flavor flavor);
         void addVariable(const std::string& name);
+        void addConstant(const std::string& name);
 
         Module* module() const;
 

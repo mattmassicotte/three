@@ -52,14 +52,21 @@ namespace Three {
 
     void EnumerationNode::codeGen(CSourceContext& context) {
         context.adjustCurrentForVisibility(this->visibility(), [&] (CSource* source) {
-            *source << "typedef uint32_t " << this->_type->fullyQualifiedName();
-            source->printLine(";");
+            *source << "typedef enum " << this->_type->fullyQualifiedName();
+            source->printLineAndIndent(" {");
 
             for (uint32_t i = 0; i < this->_identifiers.size(); ++i) {
-                *source << "#define " << this->_identifiers.at(i) << " ((uint32_t)" << std::to_string(i);
-                source->printLine(")");
+                *source << this->_type->fullyQualifiedName() << "_3_" << this->_identifiers.at(i);
+
+                if (i < this->_identifiers.size() - 1) {
+                    *source << ",";
+                }
+                source->printLine("");
             }
 
+            source->decreaseIndentation();
+            *source << "} " << this->_type->fullyQualifiedName();
+            source->printLine(";");
             source->printLine("");
         });
     }

@@ -162,19 +162,22 @@ TEST_F(CCodeGenTests, PackedStructure) {
     EXPECT_EQ("", context.body()->renderToString());
 }
 
-TEST_F(CCodeGenTests, Enumeration) {
-    ASTNode* node = this->parse("enum Foo\n"
-                                "  A = 0\n"
-                                "  B = 1\n"
+TEST_F(CCodeGenTests, NamespacedEnumeration) {
+    ASTNode* node = this->parse("namespace Foo\n"
+                                "  enum Bar\n"
+                                "    A\n"
+                                "    B\n"
+                                "  end\n"
                                 "end\n");
 
     CSourceContext context;
 
     node->codeGen(context);
 
-    EXPECT_EQ("typedef uint32_t Foo;\n"
-              "#define A ((uint32_t)0)\n"
-              "#define B ((uint32_t)1)\n\n", context.internalDeclarations()->renderToString());
+    EXPECT_EQ("typedef enum Foo_3_Bar {\n"
+              "    Foo_3_Bar_3_A,\n"
+              "    Foo_3_Bar_3_B\n"
+              "} Foo_3_Bar;\n\n", context.internalDeclarations()->renderToString());
     EXPECT_EQ("", context.body()->renderToString());
 }
 
