@@ -138,7 +138,7 @@ namespace Three {
         }
 
         // this variable is closed
-        _closedVariables.push_back(this->variableForName(name));
+        _closedVariables.insert(this->variableForName(name));
 
         return true;
     }

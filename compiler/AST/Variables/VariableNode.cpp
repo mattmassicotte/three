@@ -36,23 +36,6 @@ namespace Three {
         _variable = var;
     }
 
-    // void VariableNode::codeGenCSource(CSourceContext& context) {
-    //     assert(this->_variable);
-    // 
-    //     if (this->_referenced) {
-    //         assert(!this->_closed);
-    //         context << "*(self_env->" << this->_variable->name() << ")";
-    //         return;
-    //     }
-    // 
-    //     if (this->_closed) {
-    //         context << "(self_env->" << this->_variable->name() << ")";
-    //         return;
-    //     }
-    // 
-    //     context << this->_variable->name();
-    // }
-
     void VariableNode::codeGen(CSourceContext& context) {
         assert(this->_variable);
 

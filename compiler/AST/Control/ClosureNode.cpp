@@ -121,10 +121,11 @@ namespace Three {
             func(v, true, i == (refSize - 1) && closedSize == 0);
         }
 
-        for (uint32_t i = 0; i < closedSize; ++i) {
-            Variable* v = this->_capturedVariables.at(i);
+        uint32_t i = 0;
+        for (Variable* v : this->_capturedVariables) {
 
             func(v, false, i == (closedSize - 1));
+            i += 1;
         }
     }
 
@@ -142,7 +143,15 @@ namespace Three {
 
         this->codeGenEnvironmentCapture(context);
 
-        context << "THREE_MAKE_CLOSURE(" << this->_name << ")";
+        context << "THREE_MAKE_CLOSURE(" << this->_name << ", ";
+
+        if (_referencedVariables.size() > 0) {
+            context << "THREE_CLOSURE_FLAGS_HAS_REFERENCES";
+        } else {
+            context << "THREE_CLOSURE_FLAGS_DEFAULT";
+        }
+
+        context << ")";
     }
 
     void ClosureNode::codeGenEnvironmentStructure(CSourceContext& context) const {

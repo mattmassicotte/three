@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <set>
 
 namespace Three {
     class Scope {
@@ -39,7 +40,7 @@ namespace Three {
         void addAnnotation(Annotation* annotation);
         void clearAnnotations();
 
-        std::vector<Variable*> _closedVariables; // TODO: this is not right
+        std::set<Variable*> _closedVariables; // TODO: this is not right
 
     private:
         std::map<std::string, Variable*> _variables;
