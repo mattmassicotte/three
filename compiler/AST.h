@@ -14,6 +14,7 @@
 #include "AST/Control/ReturnNode.h"
 #include "AST/Control/ClosureNode.h"
 #include "AST/Directives/ImportNode.h"
+#include "AST/Directives/ModuleImportNode.h"
 #include "AST/Directives/IncludeNode.h"
 #include "AST/Directives/LinkageNode.h"
 #include "AST/Literals/BooleanLiteralNode.h"

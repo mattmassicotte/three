@@ -181,6 +181,7 @@ TEST_F(ParserTest_Modules, NamespacedFunctionUsedInFunction) {
     ASSERT_FUNCTION_DEFINITION("out", node);
     ASSERT_FUNCTION_CALL("Foo_3_in", node->childAtIndex(0));
 }
+
 TEST_F(ParserTest_Modules, NestedNamespacedFunctionUsedInFunction) {
     Three::ASTNode* node;
 
@@ -191,3 +192,18 @@ TEST_F(ParserTest_Modules, NestedNamespacedFunctionUsedInFunction) {
     ASSERT_FUNCTION_CALL("Foo_3_Bar_3_in", node->childAtIndex(0));
 }
 
+TEST_F(ParserTest_Modules, ModuleWithImports) {
+    Three::ASTNode* node;
+
+    node = this->parse("module Foo::Bar\n"
+                       "    import Baz\n"
+                       "end\n");
+
+    node = node->childAtIndex(0);
+
+    ASSERT_MODULE("Foo_3_Bar", node);
+
+    Three::ModuleImportNode* import = dynamic_cast<Three::ModuleImportNode*>(node->childAtIndex(0));
+    ASSERT_EQ("ModuleImport", import->nodeName());
+    ASSERT_EQ("Baz", import->path());
+}

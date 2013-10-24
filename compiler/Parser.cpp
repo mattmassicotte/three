@@ -304,7 +304,7 @@ namespace Three {
         });
     }
 
-    std::string Parser::parseQualifiedIdentifier() {
+    std::string Parser::parseQualifiedIdentifier(const std::string& seperator) {
         std::stringstream s;
 
         // Identifier::Identifier...
@@ -322,9 +322,7 @@ namespace Three {
             this->next();
             assert(this->peek().type() == Token::Type::Identifier);
 
-            // this is a bit of hack to get namespaces work in a way that is
-            // identifier-compatible with C
-            s << "_3_" << this->next().str();
+            s << seperator << this->next().str();
         }
 
         return s.str();

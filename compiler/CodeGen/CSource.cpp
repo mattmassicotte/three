@@ -125,12 +125,9 @@ namespace Three {
         // #pragma once is a way, way better construct.  However, due to a bug in
         // clang, you cannot suppress that warning.
 
-        s << "#ifndef " << name << std::endl;
-        s << "#define " << name << std::endl << std::endl;
+        s << "#pragma once" << std::endl << std::endl;
 
         s << this->renderToString();
-
-        s << std::endl << "#endif" << std::endl;
 
         return s.str();
     }

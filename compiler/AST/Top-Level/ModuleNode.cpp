@@ -3,7 +3,7 @@
 #include "../Directives/LinkageNode.h"
 #include "VisibilityNode.h"
 #include "DefinitionNode.h"
-#include "../Directives/ImportNode.h"
+#include "../Directives/ModuleImportNode.h"
 #include "StructureNode.h"
 #include "../../Parser.h"
 
@@ -17,10 +17,10 @@ namespace Three {
 
         node->_name = parser.parseQualifiedIdentifier();
         assert(node->_name.length() > 0);
+        parser.currentModule()->name = node->_name;
 
-        node->_module = new Module();
-
-        parser.context()->pushModule(node->_module);
+        parser.pushScope(new Scope(node->_name));
+        parser.currentScope()->setNamespace(node->_name);
 
         parser.parseNewline();
 
@@ -28,7 +28,7 @@ namespace Three {
             node->addChild(ModuleNode::parseSubmoduleStatement(parser));
         });
 
-        parser.context()->popModule();
+        parser.popScope();
 
         return node;
     }
@@ -38,7 +38,7 @@ namespace Three {
             case Token::Type::KeywordDef:
                 return DefinitionNode::parse(parser, true);
             case Token::Type::KeywordImport:
-                return ImportNode::parse(parser);
+                return ModuleImportNode::parse(parser);
             case Token::Type::Identifier:
                 if (parser.peek().str() == "public") {
                     return VisibilityNode::parse(parser);

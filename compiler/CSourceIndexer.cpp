@@ -188,9 +188,18 @@ static void diagnostic(CXClientData clientData, CXDiagnosticSet diagnosticSet, v
     for (unsigned i = 0; i < diagnosticCount; ++i) {
         CXDiagnostic diagnostic = clang_getDiagnosticInSet(diagnosticSet, i);
 
-        CXString string = clang_formatDiagnostic(diagnostic, clang_defaultDiagnosticDisplayOptions());
+        CXString cxstring = clang_formatDiagnostic(diagnostic, clang_defaultDiagnosticDisplayOptions());
 
-        std::cout << "C parse error: " << clang_getCString(string) << std::endl;
+        std::string string = std::string(clang_getCString(cxstring));
+
+        clang_disposeString(cxstring);
+
+        // This works around an annoying clang bug that will warn, unnecessarily, when using "#pragma once"
+        if (string.find("#pragma once in main file", 0, 25) != std::string::npos) {
+            continue;
+        }
+
+        std::cout << "C parse error: " << string << std::endl;
     }
 }
 
