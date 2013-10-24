@@ -24,7 +24,7 @@ typedef struct {
 
 #define THREE_CHECK_CLOSURE_FUNCTION(func) _Static_assert(THREE_CHECK_SIZEALIGN(__typeof__(func)*, three_closure_function_t), "Closure function must be compatiable")
 
-static int three_closure_get_size(three_closure_t closure) {
+static size_t three_closure_get_size(three_closure_t closure) {
     return sizeof(three_closure_t) + closure.env_size;
 }
 
