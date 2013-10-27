@@ -207,9 +207,12 @@ int buildExecutable(build_options_t* options, const std::string& inputFile, Thre
 }
 
 bool buildLibrary(const std::vector<std::string>& inputs, const std::string& outputPath) {
+    // The output needs to be removed first
+    unlink(outputPath.c_str());
+
     std::stringstream s;
 
-    s << "ar rs";
+    s << "ar crs";
     s << " '" << outputPath << "'";
 
     for (const std::string& string : inputs) {
