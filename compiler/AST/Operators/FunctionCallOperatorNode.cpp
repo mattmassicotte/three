@@ -38,10 +38,25 @@ namespace Three {
         return _receiver;
     }
 
-    void FunctionCallOperatorNode::codeGen(CSourceContext& context) {
-        this->_receiver->codeGen(context);
+    bool FunctionCallOperatorNode::receiverIsClosure() const {
+        assert(_receiver);
+        return _receiver->nodeType().referencedType()->flavor() == DataType::Flavor::Closure;
+    }
 
-        context << "(";
+    void FunctionCallOperatorNode::codeGen(CSourceContext& context) {
+        if (this->receiverIsClosure()) {
+            context << "THREE_CALL_CLOSURE(";
+            this->_receiver->nodeType().codeGenFunction(context, "");
+            context << ", ";
+            this->_receiver->codeGen(context);
+
+            if (this->childCount() > 0) {
+                context << ", ";
+            }
+        } else {
+            this->_receiver->codeGen(context);
+            context << "(";
+        }
 
         this->eachChildWithLast([=, &context] (ASTNode* node, bool last) {
             node->codeGen(context);

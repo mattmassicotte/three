@@ -42,6 +42,28 @@ TEST_F(ParserTest_Functions, ClosureWithLabelledParameterInFunctionSignature) {
     // TODO
 }
 
+TEST_F(ParserTest_Functions, InvokeClosurePointer) {
+    Three::ASTNode* node;
+
+    node = this->parse("def test(*{Int value} closure)\n(*closure)(1)\nend\n");
+
+    Three::FunctionDefinitionNode* defNode = dynamic_cast<Three::FunctionDefinitionNode*>(node->childAtIndex(0));
+
+    ASSERT_FUNCTION_DEFINITION("test", defNode);
+    ASSERT_EQ(1, defNode->function()->parameterAtIndex(0)->type().indirectionDepth());
+    ASSERT_EQ(Three::DataType::Flavor::Closure, defNode->function()->parameterAtIndex(0)->type().referencedType()->flavor());
+
+    Three::FunctionCallOperatorNode* callNode = dynamic_cast<Three::FunctionCallOperatorNode*>(defNode->childAtIndex(0));
+    ASSERT_OPERATOR("()", callNode);
+    ASSERT_INTEGER_LITERAL_NODE(1, callNode->childAtIndex(0));
+
+    node = callNode->receiver();
+    ASSERT_OPERATOR("*", node);
+
+    // TODO: Closure types don't have names at the moment
+    ASSERT_VARIABLE_NODE("", 1, "closure", node->childAtIndex(0));
+}
+
 TEST_F(ParserTest_Functions, MethodDefinition) {
     Three::ASTNode* node;
 

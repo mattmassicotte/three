@@ -26,6 +26,7 @@
 #include "AST/Operators/OperatorNode.h"
 #include "AST/Operators/MemberAccessNode.h"
 #include "AST/Operators/FunctionCallNode.h"
+#include "AST/Operators/FunctionCallOperatorNode.h"
 #include "AST/RootNode.h"
 #include "AST/Top-Level/FunctionDeclarationNode.h"
 #include "AST/Top-Level/FunctionDefinitionNode.h"

@@ -13,6 +13,9 @@ namespace Three {
         void codeGen(CSourceContext& context);
 
     private:
+        bool receiverIsClosure() const;
+
+    private:
         ASTNode* _receiver;
     };
 }

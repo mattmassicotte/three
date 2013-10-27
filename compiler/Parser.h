@@ -37,6 +37,11 @@ namespace Three {
         bool     parseUntilEnd(std::function<void (void)> func);
         std::string parseQualifiedIdentifier();
 
+        bool peekTypePrefixes(unsigned int* peekDepth);
+        bool peekNonFunctionType(unsigned int* peekDepth);
+        bool peekFunctionType(unsigned int* peekDepth);
+        bool peekType(unsigned int* peekDepth);
+
         bool isAtType();
         TypeReference parseType();
         TypeReference parseFunctionType(uint32_t depth, std::vector<std::string>* params, std::vector<std::string>* references);
