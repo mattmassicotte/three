@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <sstream>
 #include <unistd.h>
+#include <fstream>
 
 namespace Three {
     ImportNode* ImportNode::parse(Parser& parser) {
@@ -12,7 +13,7 @@ namespace Three {
 
         assert(parser.next().type() == Token::Type::KeywordImport);
 
-        node->setPath(parser.parseQualifiedIdentifier());
+        node->setPath(parser.parseQualifiedIdentifier("/"));
         assert(node->_path.length() > 0);
         node->_visibility = parser.context()->visibility();
 

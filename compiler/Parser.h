@@ -35,7 +35,7 @@ namespace Three {
         bool     parseNewline(bool multipleAllowed=true);
         bool     parseUntil(bool advanceOnStop, std::function<bool (const Token& token)> func);
         bool     parseUntilEnd(std::function<void (void)> func);
-        std::string parseQualifiedIdentifier();
+        std::string parseQualifiedIdentifier(const std::string& seperator = std::string("_3_"));
 
         bool peekTypePrefixes(unsigned int* peekDepth);
         bool peekNonFunctionType(unsigned int* peekDepth);

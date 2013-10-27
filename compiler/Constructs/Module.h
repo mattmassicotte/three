@@ -31,8 +31,8 @@ namespace Three {
         void eachCIncludePath(std::function<void (const std::string&)> func) const;
         void addLibraryDependency(const std::string& name);
 
-        Module* importModule(const std::string& name, const std::vector<std::string>& searchPaths);
-        void    addModule(const std::string& name, Module* module);
+        void importModule(const std::string& name);
+        void addModule(const std::string& name, Module* module);
 
         void addFunction(const std::string& name, Function* func);
         Function* functionForName(const std::string& name);
@@ -48,8 +48,12 @@ namespace Three {
         std::string constantForName(const std::string& name);
         bool definesConstant(const std::string& name);
 
+        // TODO: not quite right
+        std::vector<std::string> importedModules;
+        std::string name;
+
     private:
-        std::vector<Module*> _importedModules;
+        std::vector<Module*> _referencedModules;
         Module* _parentModule;
 
         std::vector<std::string> _cIncludePaths;

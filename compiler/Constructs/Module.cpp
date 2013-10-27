@@ -72,7 +72,7 @@ namespace Three {
             func(path);
         }
 
-        for (const Module* m : _importedModules) {
+        for (const Module* m : _referencedModules) {
             m->eachCIncludePath(func);
         }
     }
@@ -81,18 +81,8 @@ namespace Three {
         _libraries.push_back(name);
     }
 
-    Module* Module::importModule(const std::string& name, const std::vector<std::string>& searchPaths) {
-        Module* m = Module::loadModule(this, name, searchPaths);
-
-        if (!m) {
-            std::cout << "Failed to load Module: '" << name << "'" << std::endl;
-
-            return m;
-        }
-
-        this->addModule(name, m);
-
-        return m;
+    void Module::importModule(const std::string& name) {
+        importedModules.push_back(name);
     }
 
     void Module::addModule(const std::string& name, Module* module) {
@@ -100,7 +90,7 @@ namespace Three {
 
         // TODO: should make sure it isn't already defined or loaded
 
-        _importedModules.push_back(module);
+        _referencedModules.push_back(module);
     }
 
     void Module::addFunction(const std::string& name, Function* func) {
@@ -116,7 +106,7 @@ namespace Three {
         Function* f;
 
         // recursively search through our imported modules
-        for (Module* m : _importedModules) {
+        for (Module* m : _referencedModules) {
             f = m->functionForName(name);
 
             if (f) {
@@ -162,7 +152,7 @@ namespace Three {
         DataType* type;
 
         // first, recursively search through our imported modules
-        for (Module* m : _importedModules) {
+        for (Module* m : _referencedModules) {
             type = m->dataTypeForName(name);
 
             if (type) {
@@ -215,7 +205,7 @@ namespace Three {
     }
 
     std::string Module::constantForName(const std::string& name) {
-        for (Module* m : _importedModules) {
+        for (Module* m : _referencedModules) {
             std::string constant = m->constantForName(name);
 
             if (constant.length() > 0) {
@@ -227,7 +217,7 @@ namespace Three {
     }
 
     bool Module::definesConstant(const std::string& name) {
-        for (Module* m : _importedModules) {
+        for (Module* m : _referencedModules) {
             if (m->definesConstant(name)) {
                 return true;
             }
