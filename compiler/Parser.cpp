@@ -330,50 +330,31 @@ namespace Three {
         return s.str();
     }
 
-    bool Parser::isAtType() {
-        // Possible forms of variable declarations are:
-        // QualifiedIdentifier identifier = <expression>
-        // QualifiedIdentifier:<number> identifier = <expression>
-        // {...closure type..} identifier = <expression>
-        // (function type) identifier = <expression>
-        //
-        // and each of these can be preceended by arbitrary pointers, arrays, and annotations
-        switch (this->peek().type()) {
-            case Token::Type::Operator:
-            case Token::Type::Identifier:
-            case Token::Type::PunctuationOpenParen:
-            case Token::Type::PunctuationOpenBrace:
-            case Token::Type::Annotation:
-                break;
-            default:
-                // if the character isn't one of those, we definitely do not have a type
-                return false;
-        }
-
-        int peekDepth = 1;
+    bool Parser::peekTypePrefixes(unsigned int* peekDepth) {
+        unsigned int originalDepth = *peekDepth;
 
         // Pointers, arrays, annotations could be intermixed.
-        while (1) {
-            Token t = this->peek(peekDepth);
+        for (;;) {
+            Token t = this->peek(*peekDepth);
 
             if (t.str() == "*") {
-                peekDepth += 1;
+                *peekDepth += 1;
                 continue;
             } else if (t.type() == Token::Type::Annotation) {
-                peekDepth += 1;
+                *peekDepth += 1;
                 continue;
             } else if (t.str() == "[") {
-                peekDepth += 1;
+                *peekDepth += 1;
 
-                if (this->peek(peekDepth).type() != Token::Type::NumericLiteral) {
+                if (this->peek(*peekDepth).type() != Token::Type::NumericLiteral) {
                     return false;
                 }
-                peekDepth += 1;
+                *peekDepth += 1;
 
-                if (this->peek(peekDepth).type() != Token::Type::PunctuationCloseBracket) {
+                if (this->peek(*peekDepth).type() != Token::Type::PunctuationCloseBracket) {
                     return false;
                 }
-                peekDepth += 1;
+                *peekDepth += 1;
 
                 continue;
             }
@@ -381,82 +362,154 @@ namespace Three {
             break; // finish the loop
         }
 
-        // check if we match:
-        // - "QualifiedIdentifier identifier"
-        // - "QualifiedIdentifier:<number> identifier"
-        while (true) {
-            if (this->peek(peekDepth).type() != Token::Type::Identifier) {
-                break;
-            }
+        // return true if we've advanced at all
+        return *peekDepth > originalDepth;
+    }
 
-            if (this->peek(peekDepth+1).type() != Token::Type::OperatorScope) {
-                break;
-            }
+    bool Parser::peekNonFunctionType(unsigned int* peekDepth) {
+        unsigned int originalDepth = *peekDepth;
 
-            peekDepth += 2;
+        // move past any type prefixes
+        this->peekTypePrefixes(peekDepth);
+
+#if DEBUG_PARSING
+        std::cout << "[Parser] peekNonFunctionType: " << this->peek(*peekDepth).str() << std::endl;
+#endif
+
+        // We have to lead with an identifier
+        if (this->peek(*peekDepth).type() != Token::Type::Identifier) {
+            return false;
         }
 
-        Token::Type closingPuntuation;
+        *peekDepth += 1;
 
-        switch (this->peek(peekDepth).type()) {
-            case Token::Type::Identifier:
-                // check if we match the "*Identifier identifier" pattern
-                if (this->peek(peekDepth+1).type() == Token::Type::Identifier) {
-                    return true;
-                }
+        // ::Identifier
+        for (;;) {
+            if (this->peek(*peekDepth).type() != Token::Type::OperatorScope) {
+                break;
+            }
 
-                // check if we match the "*Identifier:<number> identifier" pattern
-                if (this->peek(peekDepth+1).type() != Token::Type::PunctuationColon) {
-                    return false;
-                }
+            if (this->peek(*peekDepth+1).type() != Token::Type::Identifier) {
+                break;
+            }
 
-                if (this->peek(peekDepth+2).type() != Token::Type::NumericLiteral) {
-                    return false;
-                }
+            *peekDepth += 2;
+        }
 
-                return this->peek(peekDepth+3).type() == Token::Type::Identifier;
+        // :specifier
+        for (;;) {
+            if (this->peek(*peekDepth).type() != Token::Type::PunctuationColon) {
+                break;
+            }
+
+            if (this->peek(*peekDepth+1).type() == Token::Type::NumericLiteral) {
+                *peekDepth += 2;
+                continue;
+            }
+
+            // if we get here, we definitely don't have a specified type
+            return false;
+        }
+
+        return true;
+    }
+
+    bool Parser::peekFunctionType(unsigned int* peekDepth) {
+        Token::Type closingPunctuation;
+
+        // move past any type prefixes
+        this->peekTypePrefixes(peekDepth);
+
+#if DEBUG_PARSING
+        std::cout << "[Parser] peekFunctionType: " << this->peek(*peekDepth).str() << std::endl;
+#endif
+
+        // "{} Identifier"
+        // "() Identifier"
+        // "{; Type} Identifier"
+        // "(; Type) Identifier"
+        switch (this->peek(*peekDepth).type()) {
             case Token::Type::PunctuationOpenParen:
-                closingPuntuation = Token::Type::PunctuationCloseParen;
+                closingPunctuation = Token::Type::PunctuationCloseParen;
                 break;
             case Token::Type::PunctuationOpenBrace:
-                closingPuntuation = Token::Type::PunctuationCloseBrace;
+                closingPunctuation = Token::Type::PunctuationCloseBrace;
                 break;
             default:
                 return false;
         }
 
-        // Ok, still need to check for closure and function types
+        *peekDepth += 1;
 
-        // "{} Identifier"
-        // "() Identifier"
-        peekDepth += 1;
-
-        if (this->peek(peekDepth).type() == closingPuntuation) {
-            return this->peek(peekDepth+1).type() == Token::Type::Identifier;
+        // This part is tricky... we need to advance past the parameters
+        while (this->peekType(peekDepth)) {
+            if (this->peek(*peekDepth).str() == ",") {
+                *peekDepth += 1;
+            }
         }
 
-        // "{;...} Identifier"
-        // "(;...) Identifier"
-        if (this->peek(peekDepth).type() == Token::Type::PunctuationSemicolon) {
+#if DEBUG_PARSING
+        std::cout << "[Parser] peekFunctionType return: " << this->peek(*peekDepth).str() << std::endl;
+#endif
+
+        // here, we might have a return value
+        if (this->peek(*peekDepth).type() == Token::Type::PunctuationSemicolon) {
+            *peekDepth += 1;
+
+            // make sure the return type is specified
+            if (!this->peekType(peekDepth)) {
+                return false;
+            }
+        }
+
+        // now, just check to make sure the closing punctuation is correction
+        if (this->peek(*peekDepth).type() == closingPunctuation) {
+            *peekDepth += 1;
+
             return true;
         }
 
-        // "(Type...) Identifier"
-        // "{Type...} Identifier"
+        return false;
+    }
 
-        // TODO: this is not quite correct.  We need to check for all the possible leading
-        // values for a type, just like above
+    bool Parser::peekType(unsigned int* peekDepth) {
+#if DEBUG_PARSING
+        std::cout << "[Parser] peek type: " << this->peek().str() << std::endl;
+#endif
 
-        switch (this->peek(peekDepth).type()) {
-            case Token::Type::Identifier:
-                return true;
-            case Token::Type::Operator:
-                return this->peek(peekDepth).str() == "*";
-            default:
-                break;
+        if (this->peekNonFunctionType(peekDepth)) {
+#if DEBUG_PARSING
+            std::cout << "[Parser] peek type found non-function type" << std::endl;
+#endif
+            return true;
+        }
+
+        if (this->peekFunctionType(peekDepth)) {
+#if DEBUG_PARSING
+            std::cout << "[Parser] peek type found function type" << std::endl;
+#endif
+            return true;
         }
 
         return false;
+    }
+
+    bool Parser::isAtType() {
+        unsigned int peekDepth = 1;
+
+        // This function is really checking for a variable declaration, not just a type.  Variable
+        // declarations always have the following form:
+        // <Type> identifier
+        if (!this->peekType(&peekDepth)) {
+            return false;
+        }
+
+        // here, peekDepth has been advanced past the type
+#if DEBUG_PARSING
+        std::cout << "[Parser] Possible variable declaration found: " << this->peek(peekDepth).str() << std::endl;
+#endif
+
+        return this->peek(peekDepth).type() == Token::Type::Identifier;
     }
 
     TypeReference Parser::parseType() {

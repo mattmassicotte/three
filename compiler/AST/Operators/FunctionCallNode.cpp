@@ -88,34 +88,6 @@ namespace Three {
         return _functionType && _functionType->flavor() == DataType::Flavor::Closure;
     }
 
-    // void FunctionCallNode::codeGenCSource(CSourceContext& context) {
-    //     if (this->isClosure()) {
-    //         context << "THREE_CALL_CLOSURE(";
-    //         this->functionType().codeGenCSourceFunctionType(context.current(), "");
-    //         context << ", ";
-    //         context << this->functionName();
-    // 
-    //         if (this->childCount() > 0) {
-    //             context << ", ";
-    //         }
-    //     } else {
-    //         context << this->functionName() << "(";
-    //     }
-    // 
-    //     this->eachChild([=, &context] (ASTNode* node, uint32_t index) {
-    //         node->codeGenCSource(context);
-    //         if (index < this->childCount() - 1) {
-    //             context << ", ";
-    //         }
-    //     });
-    // 
-    //     context << ")";
-    // 
-    //     if (this->statement()) {
-    //         context << ";";
-    //     }
-    // }
-
     void FunctionCallNode::codeGen(CSourceContext& context) {
         if (this->isClosure()) {
             context << "THREE_CALL_CLOSURE(";

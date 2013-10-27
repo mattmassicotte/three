@@ -850,3 +850,20 @@ TEST_F(CCodeGenTests, ClosureVariableCaptureWithReference) {
               "    three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_HAS_REFERENCES);\n"
               "}\n\n", context.body()->renderToString());
 }
+
+TEST_F(CCodeGenTests, InvokeClosurePointer) {
+    ASTNode* node = this->parse("def test(*{Int value} closure)\n"
+                                "    (*closure)(1)\n"
+                                "end\n");
+
+    CSourceContext context;
+
+    node->codeGen(context);
+
+    EXPECT_EQ("", context.declarations()->renderToString());
+    EXPECT_EQ("void test(three_closure_t* closure);\n", context.internalDeclarations()->renderToString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", context.externalDeclarations()->renderToString());
+    EXPECT_EQ("void test(three_closure_t* closure) {\n"
+              "    THREE_CALL_CLOSURE(void (*)(void*, int), (*closure), 1);\n"
+              "}\n\n", context.body()->renderToString());
+}
