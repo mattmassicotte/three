@@ -3,16 +3,10 @@
 #ifndef __THREADS_H
 #define __THREADS_H
 
-// platform determination
-#if defined(__unix__) || defined(__unix) || defined(__APPLE__)
-#define USE_PTHREADS
-#else
-#error Not supported on this platform
-#endif
+#include "../platform.h"
 
+#if THREE_PLATFORM_POSIX
 #include <time.h>
-
-#if defined(USE_PTHREADS)
 #include <pthread.h>
 #include <sys/cdefs.h>
 
@@ -23,6 +17,8 @@ typedef pthread_mutex_t mtx_t;
 typedef pthread_once_t  once_flag;
 
 #define ONCE_FLAG_INIT PTHREAD_ONCE_INIT
+#else
+#error Not supported on this platform
 #endif
 
 typedef void (*tss_dtor_t)(void*);

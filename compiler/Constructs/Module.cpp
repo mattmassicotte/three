@@ -129,6 +129,15 @@ namespace Three {
         return _functions["main"] != nullptr;
     }
 
+    void Module::removeFunctionForName(const std::string& name) {
+        Function* f = _functions[name];
+
+        assert(f);
+
+        _functions[name] = nullptr;
+        delete f;
+    }
+
     void Module::addDataType(const std::string& name, DataType* type) {
         assert(type != NULL && "DataType should not be null");
         assert((this->dataTypeForName(name) == NULL) && "DataType should not already exist");

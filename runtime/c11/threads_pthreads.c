@@ -53,7 +53,11 @@ void thrd_sleep(const struct timespec* restrict time_point, struct timespec* rem
 }
 
 void thrd_yield(void) {
+#if defined(__APPLE__) && defined(__MACH__)
     pthread_yield_np();
+#else
+    pthread_yield();
+#endif
 }
 
 // mutual exclusion

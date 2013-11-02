@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "platform.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 

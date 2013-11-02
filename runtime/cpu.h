@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "platform.h"
+
 #include <stdbool.h>
 
 // CPU capabilities

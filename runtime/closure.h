@@ -1,5 +1,7 @@
 #pragma once
 
+#include "platform.h"
+
 #include <stddef.h>
 
 // closure types

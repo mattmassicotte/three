@@ -9,7 +9,7 @@ static int abortQuery(CXClientData clientData, void* reserved);
 static void diagnostic(CXClientData clientData, CXDiagnosticSet diagnosticSet, void* reserved);
 static CXIdxClientFile enteredMainFile(CXClientData client_data, CXFile mainFile, void *reserved);
 static CXIdxClientFile includedFile(CXClientData clientData, const CXIdxIncludedFileInfo* includedFileInfo);
-                                    
+
 static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declInfo);
 
 static std::string executeCommand(const char* cmd);
@@ -95,7 +95,7 @@ namespace Three {
 
         std::vector<std::string> arguments = CSourceIndexer::defaultCCompilerArguments();
         unsigned argCount = arguments.size();
-        
+
         const char** args = (const char**)malloc(argCount * sizeof(char*));
 
         for (int i = 0; i < argCount; ++i) {
@@ -129,6 +129,11 @@ namespace Three {
 
     void CSourceIndexer::addFunction(const std::string& name) {
         Function* fn;
+
+        if (_module->functionForName(name)) {
+            _module->removeFunctionForName(name);
+            std::cout << "[Indexer] Redefining function '" << name << "' " << std::endl;
+        }
 
         fn = new Function();
         fn->setName(name);

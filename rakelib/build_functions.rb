@@ -9,7 +9,7 @@ module BuildFunctions
   def self.compiler_for(source_file)
     case File.extname(source_file)
     when '.cpp', '.cc', '.hpp'
-      "clang++ -std=c++0x -stdlib=libc++ -I/usr/local/include"
+      "clang++ -std=c++11 -stdlib=libc++ -I/usr/local/include"
     when ".c", ".h"
       "clang -std=c11 -I/usr/local/include"
     else
@@ -34,7 +34,7 @@ module BuildFunctions
   def self.executable(inputs, output, libs=nil)
     self.log("link", output)
     inputs = inputs.join(" ")
-    Rake::sh("clang++ -std=gnu+11 -stdlib=libc++ #{libs} -o '#{output}' #{inputs}")
+    Rake::sh("clang++ -std=c++11 -stdlib=libc++ -o '#{output}' #{inputs} #{libs}")
   end
 
   def self.library(inputs, output)
