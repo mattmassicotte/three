@@ -40,7 +40,7 @@ namespace Three {
         void addAnnotation(Annotation* annotation);
         void clearAnnotations();
 
-        std::set<Variable*> _closedVariables; // TODO: this is not right
+        std::vector<Variable*> _closedVariables; // TODO: this is not right
 
     private:
         std::map<std::string, Variable*> _variables;

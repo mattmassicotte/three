@@ -137,8 +137,16 @@ namespace Three {
             return false;
         }
 
-        // this variable is closed
-        _closedVariables.insert(this->variableForName(name));
+        Variable* v = this->variableForName(name);
+
+        assert(v);
+
+        // this variable is closed, but make sure to only put it in once
+        if (std::find(_closedVariables.cbegin(), _closedVariables.cend(), v) != _closedVariables.cend()) {
+            return true;
+        }
+
+        _closedVariables.push_back(v);
 
         return true;
     }
