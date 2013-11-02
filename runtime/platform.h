@@ -19,7 +19,9 @@
 #define THREE_PLATFORM_LINUX defined(__linux__)
 #if THREE_PLATFORM_LINUX
 // Define the _GNU_SOURCE macro, so system headers define the expected things
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 #endif
 
 // Solaris

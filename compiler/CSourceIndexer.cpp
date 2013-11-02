@@ -1,4 +1,5 @@
 #include "CSourceIndexer.h"
+#include "runtime/platform.h"
 
 #include <assert.h>
 #include <clang-c/Index.h>
@@ -27,7 +28,7 @@ namespace Three {
         _includePaths->push_back("/usr/include");
         _includePaths->push_back("/usr/local/include");
 
-#if defined(__APPLE__)
+#if THREE_PLATFORM_DARWIN
         std::string xcodePath = executeCommand("xcrun --show-sdk-path");
 
         if (xcodePath.length() > 0) {
@@ -35,6 +36,10 @@ namespace Three {
             _includePaths->push_back(xcodePath + "/usr/include");
             _includePaths->push_back(xcodePath + "/usr/local/include");
         }
+#elif THREE_PLATFORM_LINUX
+        // TODO: both of these are pretty bogus, for a bunch of different reasons...
+        _includePaths->push_back("/usr/include/x86_64-linux-gnu");
+        _includePaths->push_back("/usr/local/bin/../lib/clang/3.3/include");
 #endif
 
         return _includePaths;
