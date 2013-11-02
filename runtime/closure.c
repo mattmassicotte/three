@@ -32,6 +32,6 @@ three_closure_t* three_closure_copy(three_closure_t closure) {
 
 void three_closure_release(three_closure_t* closure) {
     assert(closure);
-    free(copy->env);
+    free(closure->env);
     free(closure);
 }
