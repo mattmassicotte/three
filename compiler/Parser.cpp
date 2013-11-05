@@ -1,11 +1,11 @@
 #include "Parser.h"
-#include "Lexer.h"
 #include "AST.h"
 #include "Constructs/Annotation.h"
 #include "Constructs/Function.h"
 #include "Constructs/Scope.h"
 #include "Constructs/TranslationUnit.h"
 #include "Constructs/TypeReference.h"
+#include "Preprocessing/Preprocessor.h"
 
 #include <assert.h>
 #include <iostream>
@@ -19,7 +19,13 @@ namespace Three {
 
         std::ifstream inputFile(path);
 
-        Lexer lexer(&inputFile);
+        std::string processedString(Preprocessor::process(&inputFile));
+
+        std::cout << processedString << std::endl;
+
+        std::istringstream inputString(processedString);
+
+        NewLexer lexer(&inputString);
         Parser parser(&lexer);
 
         parser.parse(context);
@@ -27,7 +33,7 @@ namespace Three {
         return context;
     }
 
-    Parser::Parser(Lexer* lexer) : _lexer(lexer) {
+    Parser::Parser(NewLexer* lexer) : _lexer(lexer) {
     }
 
     Parser::~Parser() {
@@ -101,11 +107,12 @@ namespace Three {
                 node = BarrierNode::parse(*this);
                 node = IfNode::parseTailing(*this, node);
                 break;
-            case Token::Type::Annotation:
-                node = AnnotationNode::parse(*this);
-                break;
             default:
                 break;
+        }
+
+        if (!node && this->peek().isAnnotation()) {
+            node = AnnotationNode::parse(*this);
         }
 
         // Next, check for a possible variable declaration
@@ -159,9 +166,11 @@ namespace Three {
                 return this->parseSecondaryIdentifier();
             case Token::Type::KeywordClosure:
                 return ClosureNode::parse(*this);
-            case Token::Type::String:
+            case Token::Type::LiteralString:
                 return StringLiteralNode::parse(*this);
-            case Token::Type::NumericLiteral:
+            case Token::Type::LiteralInteger:
+            case Token::Type::LiteralHex:
+            case Token::Type::LiteralBinary:
                 return IntegerLiteralNode::parse(*this);
             case Token::Type::PunctuationOpenParen: {
                 this->next();
@@ -170,14 +179,14 @@ namespace Three {
                 assert(this->next().type() == Token::Type::PunctuationCloseParen);
                 return node;
             }
-            case Token::Type::TrueLiteral:
-            case Token::Type::FalseLiteral:
+            case Token::Type::LiteralTrue:
+            case Token::Type::LiteralFalse:
                 return BooleanLiteralNode::parse(*this);
-            case Token::Type::NullLiteral:
+            case Token::Type::LiteralNull:
                 return NullLiteralNode::parse(*this);
             case Token::Type::KeywordAtomic:
                 return AtomicExpressionNode::parse(*this, false);
-            case Token::Type::KeywordSizeof:
+            case Token::Type::MetafunctionSizeOf:
                 return SizeofNode::parse(*this);
             default:
                 break;
@@ -202,7 +211,7 @@ namespace Three {
             Token t = this->peek();
 
             // if we've gotten to the end of a statement, or do not have an operator
-            if (t.isStatementEnding() || t.type() != Token::Type::Operator) {
+            if (t.isStatementEnding() || !t.isOperator()) {
                 break;
             }
 
@@ -338,13 +347,13 @@ namespace Three {
             if (t.str() == "*") {
                 *peekDepth += 1;
                 continue;
-            } else if (t.type() == Token::Type::Annotation) {
+            } else if (t.isAnnotation()) {
                 *peekDepth += 1;
                 continue;
             } else if (t.str() == "[") {
                 *peekDepth += 1;
 
-                if (this->peek(*peekDepth).type() != Token::Type::NumericLiteral) {
+                if (this->peek(*peekDepth).type() != Token::Type::LiteralInteger) {
                     return false;
                 }
                 *peekDepth += 1;
@@ -400,7 +409,7 @@ namespace Three {
                 break;
             }
 
-            if (this->peek(*peekDepth+1).type() == Token::Type::NumericLiteral) {
+            if (this->peek(*peekDepth+1).type() == Token::Type::LiteralInteger) {
                 *peekDepth += 2;
                 continue;
             }
@@ -526,13 +535,13 @@ namespace Three {
                 continue;
             }
 
-            if (this->peek().type() == Token::Type::Annotation) {
+            if (this->peek().isAnnotation()) {
                 this->next();
                 continue;
             }
 
             if (this->nextIf("[")) {
-                assert(this->peek().type() == Token::Type::NumericLiteral);
+                assert(this->peek().type() == Token::Type::LiteralInteger);
                 dimensions.push_back(strtol(this->next().str().c_str(), NULL, 10));
                 assert(this->next().type() == Token::Type::PunctuationCloseBracket);
                 continue;
@@ -780,10 +789,6 @@ namespace Three {
                 return StructureNode::parse(*this);
             case Token::Type::KeywordEnumeration:
                 return EnumerationNode::parse(*this);
-            case Token::Type::Annotation:
-                node = AnnotationNode::parse(*this);
-                this->parseNewline();
-                return node;
             case Token::Type::KeywordLinkage:
                 return LinkageNode::parse(*this);
             case Token::Type::KeywordInclude:
@@ -800,6 +805,12 @@ namespace Three {
                 break;
             default:
                 break;
+        }
+
+        if (this->peek().isAnnotation()) {
+            node = AnnotationNode::parse(*this);
+            this->parseNewline();
+            return node;
         }
 
         if (this->isAtType()) {

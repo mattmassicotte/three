@@ -7,7 +7,7 @@ namespace Three {
     NullLiteralNode* NullLiteralNode::parse(Parser& parser) {
         NullLiteralNode* node = new NullLiteralNode();
 
-        assert(parser.next().type() == Token::Type::NullLiteral);
+        assert(parser.next().type() == Token::Type::LiteralNull);
 
         return node;
     }

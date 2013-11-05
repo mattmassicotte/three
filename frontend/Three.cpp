@@ -2,6 +2,7 @@
 #include "../compiler/CodeGen/CSourceContext.h"
 #include "../compiler/AST/ASTNode.h"
 #include "../compiler/CSourceIndexer.h"
+#include "REPL.h"
 
 #include <getopt.h>
 #include <iostream>
@@ -290,9 +291,7 @@ int main(int argc, char** argv) {
     argv += optind;
 
     if (argc == 0) {
-        // no input files, REPL should be kicked off here
-        std::cerr << "[Compile] No input files" << std::endl;
-        return 1;
+        return Three::REPL::start();
     }
 
     if (argc > 1) {

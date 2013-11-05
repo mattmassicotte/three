@@ -8,7 +8,15 @@ namespace Three {
     IntegerLiteralNode* IntegerLiteralNode::parse(Parser& parser) {
         IntegerLiteralNode* node = new IntegerLiteralNode();
 
-        assert(parser.peek().type() == Token::Type::NumericLiteral);
+        switch (parser.peek().type()) {
+            case Token::Type::LiteralInteger:
+            case Token::Type::LiteralBinary:
+            case Token::Type::LiteralHex:
+                break;
+            default:
+                assert(0);
+                break;
+        }
 
         node->setValue(integerValue(parser.next().str()));
 

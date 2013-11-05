@@ -662,7 +662,7 @@ TEST_F(CCodeGenTests, NamespacedFunction) {
               "}\n\n", context.body()->renderToString());
 }
 
-TEST_F(CCodeGenTests, NullLiteral) {
+TEST_F(CCodeGenTests, LiteralNull) {
     ASTNode* node = this->parse("def test(*Int x)\n"
                                 "  x = null\n"
                                 "end\n");

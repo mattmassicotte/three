@@ -24,7 +24,7 @@ protected:
         _stream = new std::istringstream(inputString);
 
         assert(!_lexer);
-        _lexer = new Three::Lexer(_stream);
+        _lexer = new Three::NewLexer(_stream);
 
         assert(!_parser);
         _parser = new Three::Parser(_lexer);
@@ -42,7 +42,7 @@ protected:
     }
 
     std::istringstream* _stream;
-    Three::Lexer*    _lexer;
-    Three::Parser*   _parser;
+    Three::NewLexer* _lexer;
+    Three::Parser* _parser;
     Three::ParsingContext* _context;
 };

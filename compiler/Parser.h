@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Lexer.h"
+#include "Lexer/NewLexer.h"
 #include "ParsingContext.h"
 
 #include <string>
@@ -20,7 +20,7 @@ namespace Three {
         static ParsingContext* contextFromFile(const std::string& path);
 
     public:
-        Parser(Lexer* lexer);
+        Parser(NewLexer* lexer);
         virtual ~Parser();
 
         RootNode* rootASTNode();
@@ -63,7 +63,7 @@ namespace Three {
         void   popScope();
 
     private:
-        Lexer* _lexer;
+        NewLexer* _lexer;
         ParsingContext* _context;
     };
 }

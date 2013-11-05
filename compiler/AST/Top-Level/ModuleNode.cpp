@@ -30,6 +30,8 @@ namespace Three {
 
         parser.popScope();
 
+        parser.parseNewline();
+
         return node;
     }
 

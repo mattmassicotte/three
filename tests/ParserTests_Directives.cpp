@@ -11,12 +11,3 @@ class ParserTest_Directives : public ParserTestBase {
 //
 //    ASSERT_EQ("Annotation", node->name());
 //}
-
-TEST_F(ParserTest_Directives, CNoTypedefAnnotation) {
-    ASTNode* node;
-
-    node = this->parse("@c(notypedef)\nstruct timespec\nInt:64 value\nend\n");
-    node = node->childAtIndex(0);
-
-    ASSERT_EQ("Annotation", node->name());
-}

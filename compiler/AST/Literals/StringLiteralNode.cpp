@@ -10,7 +10,7 @@ namespace Three {
 
         node = new StringLiteralNode();
 
-        assert(parser.peek().type() == Token::Type::String);
+        assert(parser.peek().type() == Token::Type::LiteralString);
         node->setStringValue(parser.next().str());
 
         return node;

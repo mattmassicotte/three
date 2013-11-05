@@ -14,7 +14,8 @@ namespace Three {
     ASTNode* OperatorNode::parse(Parser& parser, ASTNode* left, uint32_t precedence) {
         OperatorNode* node = nullptr;
 
-        assert(parser.peek().type() == Token::Type::Operator);
+        assert(parser.peek().isOperator());
+
         if (parser.peek().str() == "?" || parser.peek().str() == "cas") {
             node = new TernaryOperatorNode();
         } else {

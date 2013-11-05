@@ -8,10 +8,10 @@ namespace Three {
         BooleanLiteralNode* node = new BooleanLiteralNode();
 
         switch (parser.next().type()) {
-            case Token::Type::TrueLiteral:
+            case Token::Type::LiteralTrue:
                 node->_value = true;
                 break;
-            case Token::Type::FalseLiteral:
+            case Token::Type::LiteralFalse:
                 node->_value = false;
                 break;
             default:

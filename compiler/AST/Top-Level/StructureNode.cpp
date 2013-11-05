@@ -16,7 +16,7 @@ namespace Three {
         node->_packing = 0;
         if (parser.nextIf(":")) {
             // TODO: this needs to be more strict about the input types
-            assert(parser.peek().type() == Token::Type::NumericLiteral);
+            assert(parser.peek().type() == Token::Type::LiteralInteger);
 
             node->_packing = strtol(parser.next().str().c_str(), NULL, 10);
         }

@@ -189,7 +189,7 @@ TEST_F(ParserTest, OrAssignmentOperator) {
 TEST_F(ParserTest, Comment) {
     Three::ASTNode* node;
 
-    node = this->parse("def test()\n//Int a = 1\nreturn\nend\n");
+    node = this->parse("def test()\n# Int a = 1\nreturn\nend\n");
     node = node->childAtIndex(0);
 
     ASSERT_EQ(1, node->childCount());

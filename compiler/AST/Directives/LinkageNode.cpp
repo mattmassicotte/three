@@ -10,7 +10,7 @@ namespace Three {
         assert(parser.next().str() == "linkage");
         assert(parser.next().type() == Token::Type::PunctuationOpenParen);
         
-        assert(parser.peek().type() == Token::Type::String);
+        assert(parser.peek().type() == Token::Type::LiteralString);
         node->_libraryName = parser.next().str();
 
         assert(parser.next().type() == Token::Type::PunctuationCloseParen);

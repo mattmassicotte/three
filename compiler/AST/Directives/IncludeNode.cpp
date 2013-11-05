@@ -8,9 +8,9 @@ namespace Three {
     IncludeNode* IncludeNode::parse(Parser& parser) {
         IncludeNode* node = new IncludeNode();
 
-        assert(parser.next().str() == "include");
+        assert(parser.next().type() == Token::Type::KeywordInclude);
 
-        assert(parser.peek().type() == Token::Type::String);
+        assert(parser.peek().type() == Token::Type::LiteralString);
         node->_headerName = parser.next().str();
         node->_visibility = parser.context()->visibility();
 
