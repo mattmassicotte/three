@@ -1,38 +1,31 @@
 # Rakefile
 require 'rake/clean'
-require_relative 'rakelib/build_functions'
+require 'rake-compile'
 
 verbose(false) # keep the sh command quiet
 
-BUILD_DIR           = 'build'
-FRONTEND_EXECUTABLE = "#{BUILD_DIR}/three"
-RUNTIME_LIB         = "#{BUILD_DIR}/libthree_runtime.a"
-COMPILER_LIB        = "#{BUILD_DIR}/libthree_compiler.a"
-
+# main artifact locations
+BUILD_DIR         = 'build'
+VENDOR_DIR        = 'vendor'
 THREE_LIB_DIR     = '/usr/local/lib'
 THREE_BIN_DIR     = '/usr/local/bin'
 THREE_INCLUDE_DIR = '/usr/local/include/three'
 
-RAKE_FILES = FileList['Rakefile', 'rakelib/**/*.rake']
+#RAKE_FILES = FileList['Rakefile', 'rakelib/**/*.rake']
 
-CLOBBER.include(BUILD_DIR)
+# tasks for all artifact locations
 directory BUILD_DIR
-directory THREE_INCLUDE_DIR
+directory VENDOR_DIR
 directory THREE_LIB_DIR
+directory THREE_BIN_DIR
+directory THREE_INCLUDE_DIR
 
-desc "Run compiler:test"
+build_directory BUILD_DIR
+
+# define the default cpp flags for rake-compile
+base_cpp_flags("-std=c++11 -stdlib=libc++ -I#{File.dirname(__FILE__)}")
+base_cc_flags("-std=c11 -I#{File.dirname(__FILE__)}")
+
 task :default => 'compiler:test'
-
-desc "Build everything"
-task :build => ['compiler:test', 'compiler:frontend', 'runtime:build']
-
-desc "Install the compiler and runtime"
 task :install => ['compiler:install', 'runtime:install']
-
-desc "Uninstall the compiler and runtime"
 task :uninstall => ['compiler:uninstall', 'runtime:uninstall']
-
-desc "Reinstall both the compiler and runtime"
-task :reinstall => :uninstall do
-  Rake::task['install']
-end

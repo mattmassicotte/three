@@ -7,3 +7,4 @@ gtest
 llvm-*.src
 *.tmproj
 build
+vendor
