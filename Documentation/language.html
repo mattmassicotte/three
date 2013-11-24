@@ -424,9 +424,9 @@ y = <span class="literal">43</span>
 
 <span class="comment">// captures x by reference, y by value</span>
 closure = (<span class="entity">Int</span> a, <span class="entity">Int</span> b; <span class="entity">Int</span>; x) {
-    x = a + b + y
-    
-    <span class="keyword">return</span> a + b
+  x = a + b + y
+
+  <span class="keyword">return</span> a + b
 }
 
 foo(<span class="literal">4</span>, <span class="keyword">do</span> { <span class="keyword">return</span> <span class="literal">5</span> })
@@ -593,11 +593,11 @@ b = <span class="keyword">atomic</span>:<span class="keyword">ordered</span>(a <
 
 
 <span class="keyword">atomic</span>
-    a = foo()
-    <span class="keyword">atomic</span>
-        b = bar()
-        <span class="keyword">abort</span> <span class="keyword">if</span> b > 10
-    <span class="keyword">end</span>
+  a = foo()
+  <span class="keyword">atomic</span>
+    b = bar()
+    <span class="keyword">abort</span> <span class="keyword">if</span> b > 10
+  <span class="keyword">end</span>
 <span class="keyword">end</span>
                     </code></pre>
                 </td>
