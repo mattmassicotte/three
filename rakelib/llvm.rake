@@ -57,8 +57,13 @@ end
 directory LLVM_BUILD_DIR
 CLEAN.include(LLVM_LIB)
 
-file LIBCLANG_HEADER => 'llvm:download'
-file "#{LLVM_LIBS_PATH}/libclang.a" => 'llvm:build'
+file LIBCLANG_HEADER do
+  Rake::Task['llvm:download'].invoke
+end
+
+file "#{LLVM_LIBS_PATH}/libclang.a" do
+  Rake::Task['llvm:build'].invoke
+end
 
 file LLVM_LIB => ["#{LLVM_LIBS_PATH}/libclang.a", LLVM_BUILD_DIR] do
   # - break up all the llvm static libs we need into objects
