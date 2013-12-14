@@ -5,7 +5,8 @@ LLVM_BUILD_DIR  = "#{BUILD_DIR}/llvm"
 LLVM_LIB        = "#{BUILD_DIR}/libllvm.a"
 LLVM_LIBS_PATH  = "#{LLVM_DIR}/Release+Asserts/lib"
 
-LIBCLANG_HEADER = "#{LLVM_TOOLS_PATH}/clang/include/clang-c/Index.h"
+LIBCLANG_INCLUDE_PATH = "#{LLVM_TOOLS_PATH}/clang/include"
+LIBCLANG_HEADER       = "#{LIBCLANG_INCLUDE_PATH}/clang-c/Index.h"
 
 namespace :llvm do
   desc 'Removes the llvm/clang sources'

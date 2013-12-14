@@ -25,6 +25,7 @@ namespace :compiler do
     #Rake::Task[LLVM_LIB].invoke
 
     pch COMPILER_PCH
+    cpp_flags "-I#{LIBCLANG_INCLUDE_PATH}"
     static_library COMPILER_LIB do |target|
       target.add_objects_from_sources COMPILER_SOURCES
     end
