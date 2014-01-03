@@ -4,6 +4,7 @@
 #include "../compiler/CSourceIndexer.h"
 #include "REPL.h"
 
+#include <algorithm>
 #include <getopt.h>
 #include <iostream>
 #include <fstream>

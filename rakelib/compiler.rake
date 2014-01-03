@@ -35,12 +35,14 @@ namespace :compiler do
     link_library COMPILER_LIB
     link_library GTEST_LIB
     link_library LLVM_LIB
+    ld_flags '-lpthread -ldl'
     executable COMPILER_TEST_BIN do |target|
       target.add_objects_from_sources COMPILER_TEST_SOURCES
     end
 
     link_library COMPILER_LIB
     link_library LLVM_LIB
+    ld_flags '-lpthread -ldl'
     executable FRONTEND_BIN do |target|
       target.add_objects_from_sources FRONTEND_SOURCES
     end
