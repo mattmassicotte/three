@@ -26,7 +26,7 @@ ASSERT_EQ(num_value, tmp->value()); \
 #define ASSERT_BOOLEAN_LITERAL_NODE(bool_value, node) do { \
 Three::BooleanLiteralNode* tmp = dynamic_cast<Three::BooleanLiteralNode*>(node); \
 ASSERT_EQ("BooleanLiteral", tmp->name()); \
-ASSERT_EQ(bool_value, tmp->value()); \
+ASSERT_TRUE(bool_value == tmp->value()); \
 } while(0)
 
 #define ASSERT_RETURN_NODE(node) do {\
