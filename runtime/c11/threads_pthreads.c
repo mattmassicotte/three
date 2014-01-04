@@ -40,7 +40,7 @@ int thrd_join(thrd_t thr, int *res) {
     }
     
     if (res) {
-        *res = (int)code;
+        *res = (intptr_t)code;
     }
     
     return thrd_success;

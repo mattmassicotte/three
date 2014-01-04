@@ -3,7 +3,7 @@
 #ifndef __THREADS_H
 #define __THREADS_H
 
-#include "../platform.h"
+#include "three/runtime/platform.h"
 
 #if THREE_PLATFORM_POSIX
 #include <time.h>

@@ -21,8 +21,6 @@ namespace Three {
 
         std::string processedString(Preprocessor::process(&inputFile));
 
-        std::cout << processedString << std::endl;
-
         std::istringstream inputString(processedString);
 
         NewLexer lexer(&inputString);
