@@ -1,0 +1,17 @@
+#define _Atomic(x) volatile x
+
+#define __c11_atomic_init(obj, value) obj = value
+
+#define __c11_atomic_thread_fence __atomic_thread_fence
+#define __c11_atomic_signal_fence __atomic_signal_fence
+
+#define __c11_atomic_store __atomic_store_n
+#define __c11_atomic_load __atomic_load_n
+#define __c11_atomic_exchange __atomic_exchange_n
+#define __c11_atomic_compare_exchange_strong __atomic_compare_exchange_n
+#define __c11_atomic_compare_exchange_weak __atomic_compare_exchange_n
+#define __c11_atomic_fetch_add __atomic_fetch_add
+#define __c11_atomic_fetch_sub __atomic_fetch_sub
+#define __c11_atomic_fetch_or __atomic_fetch_or
+#define __c11_atomic_fetch_xor __atomic_fetch_xor
+#define __c11_atomic_fetch_and __atomic_fetch_and

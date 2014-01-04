@@ -18,6 +18,7 @@ typedef struct {
     bool trace;
 
     std::string outputFile;
+    std::string compilerPath;
 } build_options_t;
 
 void getOptions(build_options_t* options, int argc, char** argv) {
@@ -26,6 +27,7 @@ void getOptions(build_options_t* options, int argc, char** argv) {
     static struct option longopts[] = {
         { "debug",     no_argument,       NULL, 'd' },
         { "help",      no_argument,       NULL, 'h' },
+        { "compiler",  required_argument, NULL, 'm' },
         { "output",    required_argument, NULL, 'o' },
         { "print",     no_argument,       NULL, 'p' },
         { "trace",     no_argument,       NULL, 't' },
@@ -36,11 +38,15 @@ void getOptions(build_options_t* options, int argc, char** argv) {
     options->debug    = false;
     options->printAST = false;
     options->trace    = false;
+    options->compilerPath = std::string("clang");
 
-    while ((c = getopt_long(argc, argv, "dho:ptv", longopts, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "dhm:o:ptv", longopts, NULL)) != -1) {
         switch (c) {
             case 'd':
                 options->debug = true;
+                break;
+            case 'm':
+                options->compilerPath = std::string(optarg);
                 break;
             case 'o':
                 options->outputFile = std::string(optarg);
@@ -61,6 +67,7 @@ void getOptions(build_options_t* options, int argc, char** argv) {
                 printf("\n");
                 printf("  -d (--debug)      disable optimizations\n");
                 printf("  -h (--help)       print this help message and exit\n");
+                printf("  -m (--compiler)   path to C compiler (default: clang)\n");
                 printf("  -o (--output)     name of output file\n");
                 printf("  -p (--print)      print out the AST representation for the input file\n");
                 printf("  -t (--trace)      trace compilation steps\n");
@@ -147,10 +154,11 @@ bool createPath(const std::string& path) {
     return true;
 }
 
-bool compileCSource(const std::string& cSourcePath, const std::string& outputPath) {
+bool compileCSource(const std::string& cCompilerPath, const std::string& cSourcePath, const std::string& outputPath) {
     std::stringstream s;
 
-    s << "clang -std=c11";
+    s << cCompilerPath;
+    s << " -std=c11";
     s << " -o '" << outputPath << "'" ;
 
     s << " -I.";
@@ -186,11 +194,11 @@ int buildCSources(const std::string& inputFile) {
     return 0;
 }
 
-int linkExecutable(const std::string& inputFile, const std::string& outputPath) {
+int linkExecutable(const std::string& linkerPath, const std::string& inputFile, const std::string& outputPath) {
     std::stringstream s;
 
-    s << "clang ";
-    s << "-L/usr/local/lib -lthree_runtime";
+    s << linkerPath;
+    s << " -L/usr/local/lib -lthree_runtime";
 
     s << " -o '" << outputPath << "'" ;
 
@@ -201,9 +209,9 @@ int linkExecutable(const std::string& inputFile, const std::string& outputPath) 
 
 int buildExecutable(build_options_t* options, const std::string& inputFile, Three::ParsingContext* context) {
     createCOutputs(context, options->outputFile);
-    compileCSource(options->outputFile + ".c", options->outputFile + ".o");
+    compileCSource(options->compilerPath, options->outputFile + ".c", options->outputFile + ".o");
 
-    linkExecutable(options->outputFile + ".o", options->outputFile);
+    linkExecutable(options->compilerPath, options->outputFile + ".o", options->outputFile);
 
     return 1;
 }
@@ -242,7 +250,7 @@ int buildModule(build_options_t* options, Three::ParsingContext* context) {
         std::cout << "[Compile] building subcomponent '" << submodule << "'" << std::endl;
 
         buildCSources(submodule + ".3");
-        compileCSource(submodule + ".c", submodule + ".o");
+        compileCSource(options->compilerPath, submodule + ".c", submodule + ".o");
     }
 
     std::vector<std::string> objects;

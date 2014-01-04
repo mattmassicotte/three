@@ -6,6 +6,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#if defined(__GNUC__)
+#include "stdatomic_gcc.h"
+#endif
+
 #define ATOMIC_BOOL_LOCK_FREE       __GCC_ATOMIC_BOOL_LOCK_FREE
 #define ATOMIC_CHAR_LOCK_FREE       __GCC_ATOMIC_CHAR_LOCK_FREE
 #define ATOMIC_CHAR16_T_LOCK_FREE   __GCC_ATOMIC_CHAR16_T_LOCK_FREE
@@ -18,7 +22,7 @@
 #define ATOMIC_POINTER_T_LOCK_FREE  __GCC_ATOMIC_POINTER_T_LOCK_FREE
 
 #define ATOMIC_VAR_INIT(value) (value)
-#define atomic_init            __c11_atomic_init
+#define atomic_init __c11_atomic_init
 
 enum memory_order {
     memory_order_relaxed = __ATOMIC_RELAXED,
@@ -34,7 +38,7 @@ enum memory_order {
 #define atomic_thread_fence __c11_atomic_thread_fence
 #define atomic_signal_fence __c11_atomic_signal_fence
 
-#define atomic_is_lock_free(obj)   __atomic_is_lock_free(sizeof(sizeof(*obj))
+#define atomic_is_lock_free(obj) __atomic_is_lock_free(sizeof(sizeof(*obj))
 
 #ifdef __cplusplus
 typedef _Atomic(bool)               atomic_bool;
