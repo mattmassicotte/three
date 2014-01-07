@@ -3,9 +3,6 @@
 #ifndef __THREADS_H
 #define __THREADS_H
 
-#include "three/runtime/platform.h"
-
-#if THREE_PLATFORM_POSIX
 #include <time.h>
 #include <pthread.h>
 #include <sys/cdefs.h>
@@ -17,9 +14,6 @@ typedef pthread_mutex_t mtx_t;
 typedef pthread_once_t  once_flag;
 
 #define ONCE_FLAG_INIT PTHREAD_ONCE_INIT
-#else
-#error Not supported on this platform
-#endif
 
 typedef void (*tss_dtor_t)(void*);
 typedef int (*thrd_start_t)(void*);

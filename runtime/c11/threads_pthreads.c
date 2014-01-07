@@ -1,4 +1,5 @@
 #include "threads.h"
+#include "runtime/platform.h"
 
 #include <assert.h>
 #include <errno.h>
