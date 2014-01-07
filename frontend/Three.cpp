@@ -38,7 +38,7 @@ void getOptions(build_options_t* options, int argc, char** argv) {
     options->debug    = false;
     options->printAST = false;
     options->trace    = false;
-    options->compilerPath = std::string("clang");
+    options->compilerPath = std::string("cc");
 
     while ((c = getopt_long(argc, argv, "dhm:o:ptv", longopts, NULL)) != -1) {
         switch (c) {
@@ -67,7 +67,7 @@ void getOptions(build_options_t* options, int argc, char** argv) {
                 printf("\n");
                 printf("  -d (--debug)      disable optimizations\n");
                 printf("  -h (--help)       print this help message and exit\n");
-                printf("  -m (--compiler)   path to C compiler (default: clang)\n");
+                printf("  -m (--compiler)   path to C compiler (default: cc)\n");
                 printf("  -o (--output)     name of output file\n");
                 printf("  -p (--print)      print out the AST representation for the input file\n");
                 printf("  -t (--trace)      trace compilation steps\n");
