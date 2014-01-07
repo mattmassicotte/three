@@ -256,6 +256,9 @@ static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declI
             }
             break;
         case CXIdxEntity_Union:
+            if (name.length() > 0) {
+                index->addType(name, Three::DataType::Flavor::Union);
+            }
             break;
         default:
             break;
