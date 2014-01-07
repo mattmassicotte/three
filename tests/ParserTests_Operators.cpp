@@ -227,3 +227,13 @@ TEST_F(ParserTest_Operators, PrecedenceTest) {
     ASSERT_INTEGER_LITERAL_NODE(4, node->childAtIndex(0));
     ASSERT_INTEGER_LITERAL_NODE(5, node->childAtIndex(1));
 }
+
+TEST_F(ParserTest_Operators, OrAssignmentOperator) {
+    Three::ASTNode* node;
+
+    node = this->parse("def test(Int a)\na ||= 1\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_OPERATOR("||=", node);
+    ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
+}

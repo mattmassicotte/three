@@ -83,3 +83,21 @@ TEST_F(ParserTest_Variables, ArrayDeclaration) {
     ASSERT_TRUE(varNode->variable()->type().isArray());
     ASSERT_EQ(3, varNode->variable()->type().arrayDimensions().at(0));
 }
+
+TEST_F(ParserTest_Variables, PointerVariableDefinition) {
+    Three::ASTNode* node;
+
+    node = this->parse("def test()\n*Char a\nend\n");
+    node = node->childAtIndex(0);
+
+    ASSERT_VARIABLE_DECLARATION("Char",  1, "a", node->childAtIndex(0));
+}
+
+TEST_F(ParserTest_Variables, MultiplePointerVariableDefinition) {
+    Three::ASTNode* node;
+
+    node = this->parse("def test()\n***Char a\nend\n");
+    node = node->childAtIndex(0);
+
+    ASSERT_VARIABLE_DECLARATION("Char",  3, "a", node->childAtIndex(0));
+}

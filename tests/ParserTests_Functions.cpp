@@ -117,6 +117,26 @@ TEST_F(ParserTest_Functions, InvokeVariableAsFunction) {
     Three::ASTNode* node;
 
     node = this->parse("def test()\n(Int) func\n func(1)\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(1);
 
-    // TODO: fill this in
+    Three::FunctionCallNode* callNode;
+
+    callNode = dynamic_cast<Three::FunctionCallNode*>(node);
+
+    ASSERT_EQ("FunctionCall", callNode->name());
+    ASSERT_EQ("func", callNode->functionName());
+}
+
+TEST_F(ParserTest_Functions, FunctionCallDereference) {
+    Three::ASTNode* node;
+
+    node = this->parse("def foo(;*Int)\nreturn null\nend\ndef test()\n*foo() = 1\nend\n");
+    node = node->childAtIndex(1)->childAtIndex(0);
+
+    ASSERT_OPERATOR("=", node);
+    ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
+
+    node = node->childAtIndex(0);
+    ASSERT_OPERATOR("*", node);
+    ASSERT_EQ("FunctionCall", node->childAtIndex(0)->nodeName());
 }
