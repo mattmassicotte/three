@@ -37,8 +37,12 @@ namespace Three {
             _includePaths->push_back(xcodePath + "/usr/local/include");
         }
 #elif THREE_PLATFORM_LINUX
-        // TODO: both of these are pretty bogus, for a bunch of different reasons...
+        // TODO: bogus include paths for gcc 4.8
         _includePaths->push_back("/usr/include/x86_64-linux-gnu");
+        _includePaths->push_back("/usr/lib/gcc/x86_64-linux-gnu/4.8/include");
+        _includePaths->push_back("/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed");
+
+        // and for clang 3.3
         _includePaths->push_back("/usr/local/bin/../lib/clang/3.3/include");
 #endif
 

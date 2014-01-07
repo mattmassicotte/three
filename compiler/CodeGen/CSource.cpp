@@ -1,4 +1,5 @@
 #include "CSource.h"
+#include "runtime/platform.h"
 
 #include <assert.h>
 #include <iostream>
@@ -155,6 +156,14 @@ namespace Three {
         // clang, you cannot suppress that warning.
 
         s << "#pragma once" << std::endl << std::endl;
+
+        // The feature flags in the linux headers need to be correctly activated
+        // for all C sources.  This is one easy way to do it.
+#if THREE_PLATFORM_LINUX
+        s << "#ifndef _GNU_SOURCE" << std::endl;
+        s << "#define _GNU_SOURCE" << std::endl;
+        s << "#endif" << std::endl << std::endl;
+#endif
 
         s << this->renderToString();
 
