@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <set>
+#include <vector>
 
 namespace Three {
     class CSource {
@@ -27,6 +28,11 @@ namespace Three {
 
         void addHeader(bool relative, const std::string& header);
 
+        void insertLine(const std::string& str);
+        uint32_t linePosition() const;
+        void setLinePosition(uint32_t pos);
+        void setLinePositionToEnd();
+
         std::string renderToString();
         std::string renderToStringWithIncludeGuard(const std::string& name);
 
@@ -37,7 +43,9 @@ namespace Three {
         std::set<std::string> _relativeHeaders;
         std::set<std::string> _headers;
 
-        std::stringstream _stream;
+        std::vector<std::string> _lines;
+        uint32_t _linePosition;
+
         std::stringstream _lineStream;
         uint32_t          _indentationLevel;
     };

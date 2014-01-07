@@ -21,7 +21,7 @@ namespace Three {
 
         parser.parseNewline();
 
-        parser.pushScope(new Scope("atomic"));
+        parser.pushScope(new Scope());
         parser.currentScope()->setTransactional(true);
 
         parser.parseUntil(false, [&] (const Token& token) {
@@ -47,7 +47,7 @@ namespace Three {
 
         node->_elseNode = new ElseNode();
 
-        parser.pushScope(new Scope("atomic-else"));
+        parser.pushScope(new Scope());
 
         assert(parser.next().type() == Token::Type::KeywordElse);
         parser.parseNewline();

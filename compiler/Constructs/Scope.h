@@ -14,6 +14,7 @@ namespace Three {
         static Scope* createRootScope();
 
     public:
+        Scope();
         Scope(const std::string& name);
         virtual ~Scope();
 

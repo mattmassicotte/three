@@ -24,7 +24,7 @@ namespace Three {
 
         // Closure can capture two different kinds of variables - references and values.  They
         // are both handled differently.  And, they affect the scoping rules as well.
-        parser.pushScope(new Scope(node->_name));
+        parser.pushScope(new Scope());
         parser.currentScope()->setClosingScope(true);
 
         // First, look up the referenced variables.  Since they have to be 
@@ -191,13 +191,9 @@ namespace Three {
     }
 
     void ClosureNode::codeGenEnvironmentCapture(CSourceContext& context) const {
-        // struct main_closure_1_env main_closure_1_env_value = (struct main_closure_1_env){&x, y};
         // THREE_CAPTURE_ENV(main_closure_1_env, &x, y);
         std::stringstream stream;
 
-        // stream << "struct " << this->_environmentName << " ";
-        // stream << this->_environmentName << "_value";
-        // stream << " = (struct " << this->_environmentName << "){";
         stream << "THREE_CAPTURE_ENV(" << this->_environmentName;
 
         this->eachCapturedVariable([=, &context, &stream] (Variable* v, bool ref, bool last) {

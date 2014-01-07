@@ -6,9 +6,15 @@
 
 namespace Three {
     Scope* Scope::createRootScope() {
-        Scope* scope = new Scope("top_level_scope");
+        Scope* scope = new Scope();
 
         return scope;
+    }
+
+    Scope::Scope() : _scopeNameCount(1) {
+        _transactional = false;
+        _closesVariables = false;
+        _parent = NULL;
     }
 
     Scope::Scope(const std::string& name) : _scopedName(name), _scopeNameCount(1) {
@@ -45,6 +51,10 @@ namespace Three {
     }
 
     std::string Scope::makeScopedName(const std::string& string) {
+        if (_scopedName.length() == 0) {
+            assert(_parent && "If a scope does not have name, it must have a parent");
+            return _parent->makeScopedName(string);
+        }
         std::stringstream s;
 
         s << _scopedName << "_" << string << "_" << _scopeNameCount;

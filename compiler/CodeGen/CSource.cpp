@@ -4,7 +4,7 @@
 #include <iostream>
 
 namespace Three {
-    CSource::CSource() : _indentationLevel(0) {
+    CSource::CSource() : _indentationLevel(0), _linePosition(0) {
     }
 
     void CSource::print(const char* string) {
@@ -33,8 +33,12 @@ namespace Three {
     }
 
     void CSource::printPreviousLine(const std::string& string) {
-        _stream << std::string(_indentationLevel*4, ' ');
-        _stream << string << std::endl;
+        std::stringstream s;
+
+        s << std::string(_indentationLevel*4, ' ');
+        s << string << std::endl;
+
+        this->insertLine(s.str());
     }
 
     void CSource::printLine(const std::string& string) {
@@ -82,18 +86,41 @@ namespace Three {
         // std::cout << "flushing line buffer '" << _lineStream.str() << "'" << std::endl;
 
         // commit the current line
-        _stream << std::string(_indentationLevel*4, ' ');
-        _stream << _lineStream.str();
+        this->insertLine(std::string(_indentationLevel*4, ' ') + _lineStream.str());
 
         _lineStream.str(""); // reset the line buffer
         _lineStream.clear(); // reset errors (not content)
+    }
+
+    void CSource::insertLine(const std::string& str) {
+        _lines.insert(_lines.begin() + _linePosition, str);
+        _linePosition++;
+    }
+
+    uint32_t CSource::linePosition() const {
+        return _linePosition;
+    }
+
+    void CSource::setLinePosition(uint32_t pos) {
+        _linePosition = pos;
+        assert(_linePosition < _lines.size());
+    }
+
+    void CSource::setLinePositionToEnd() {
+        _linePosition = _lines.size() - 1;
     }
 
     std::string CSource::renderToString() {
         this->flushLineBuffer();
 
         if (_headers.size() == 0 && _relativeHeaders.size() == 0) {
-            return _stream.str();
+            std::stringstream s;
+
+            for (const std::string& str : _lines) {
+                s << str;
+            }
+
+            return s.str();
         }
 
         std::stringstream s;
@@ -114,7 +141,9 @@ namespace Three {
             s << std::endl;
         }
 
-        s << _stream.str();
+        for (const std::string& str : _lines) {
+            s << str;
+        }
 
         return s.str();
     }
