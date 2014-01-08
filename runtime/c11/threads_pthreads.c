@@ -1,5 +1,6 @@
-#include "threads.h"
+// pull in platform before threads.h
 #include "runtime/platform.h"
+#include "threads.h"
 
 #include <assert.h>
 #include <errno.h>
