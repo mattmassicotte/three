@@ -13,6 +13,7 @@ static CXIdxClientFile includedFile(CXClientData clientData, const CXIdxIncluded
 
 static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declInfo);
 
+static Three::CompoundField FieldFromIndex(const std::string& name, const CXIdxDeclInfo* declInfo);
 static std::string executeCommand(const char* cmd);
 
 static std::vector<std::string>* _includePaths = NULL;
@@ -78,8 +79,12 @@ namespace Three {
         return partialPath;
     }
 
-    CSourceIndexer::CSourceIndexer() : verbose(false) {
+    CSourceIndexer::CSourceIndexer() : verbose(false) , _currentCompoundType(NULL) {
         _module = new Three::Module();
+
+        _module->addDataType(new DataType(DataType::Flavor::Scalar, "Void"));
+        _module->addDataType(new DataType(DataType::Flavor::Scalar, "Int"));
+        _module->addDataType(new DataType(DataType::Flavor::Scalar, "Char"));
     }
 
     CSourceIndexer::~CSourceIndexer() {
@@ -139,6 +144,9 @@ namespace Three {
     void CSourceIndexer::addFunction(const std::string& name) {
         Function* fn;
 
+        _currentCompoundType = nullptr;
+        _fields.clear();
+
         if (_module->functionForName(name)) {
             _module->removeFunctionForName(name);
             std::cout << "[Indexer] Redefining function '" << name << "' " << std::endl;
@@ -175,6 +183,18 @@ namespace Three {
         // everything is good to define a new type
         type = new DataType(flavor, name);
 
+        if (type->isCompound()) {
+            _currentCompoundType = type;
+
+            for (const CompoundField& field : _fields) {
+                type->addChild(TypeReference(type, field.indirection, field.dimensions), field.name);
+            }
+        } else {
+            _currentCompoundType = nullptr;
+        }
+
+        _fields.clear(); // remove all buffered fields in both cases
+
         if (flavor == DataType::Flavor::Structure) {
             type->setCSourcePrependStructKeyword(true);
         }
@@ -183,12 +203,36 @@ namespace Three {
     }
 
     void CSourceIndexer::addVariable(const std::string& name) {
+        _currentCompoundType = nullptr;
+        _fields.clear();
+
         // TODO: this is wack
         _module->addConstant(name, name);
     }
 
     void CSourceIndexer::addConstant(const std::string& name) {
+        _currentCompoundType = nullptr;
+        _fields.clear();
+
         _module->addConstant(name, name);
+    }
+
+    void CSourceIndexer::addField(const CompoundField& field) {
+        if (!_currentCompoundType) {
+            _fields.push_back(field);
+            return;
+        }
+
+        DataType* type;
+
+        type = _module->dataTypeForName(field.typeName);
+
+        if (!type) {
+            std::cout << "[Indexer] unable to look up field '" << field.name << "' type '" << field.typeName << "'" << std::endl;
+            return;
+        }
+
+        _currentCompoundType->addChild(TypeReference(type, field.indirection, field.dimensions), field.name);
     }
 }
 
@@ -264,9 +308,31 @@ static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declI
                 index->addType(name, Three::DataType::Flavor::Union);
             }
             break;
+        case CXIdxEntity_Field:
+            index->addField(FieldFromIndex(name, declInfo));
+            break;
         default:
             break;
     }
+}
+
+static Three::CompoundField FieldFromIndex(const std::string& name, const CXIdxDeclInfo* declInfo) {
+    CXType type = clang_getCursorType(declInfo->cursor);
+
+    uint32_t indirection;
+
+    // TODO: this isn't right
+    indirection = type.kind == CXType_Pointer ? 1 : 0;
+
+    // clang_getCString(clang_getTypeSpelling(type))
+
+    Three::CompoundField field;
+
+    field.name = name;
+    field.typeName = std::string("Int");
+    field.indirection = indirection;
+
+    return field;
 }
 
 std::string executeCommand(const char* cmd) {

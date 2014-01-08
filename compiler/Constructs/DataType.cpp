@@ -134,6 +134,7 @@ namespace Three {
             }
         }
 
+        std::cout << "Unable to find " << name << " in " << this->fullyQualifiedName() << std::endl;
         assert(0 && "Child name not found for DataType");
 
         return TypeReference();
@@ -141,6 +142,10 @@ namespace Three {
 
     bool DataType::isCallable() const {
         return _type == Flavor::Function || _type == Flavor::Closure;
+    }
+
+    bool DataType::isCompound() const {
+        return _type == Flavor::Structure || _type == Flavor::Union;
     }
 
     TypeReference DataType::returnType() const {

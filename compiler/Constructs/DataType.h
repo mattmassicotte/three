@@ -41,6 +41,7 @@ namespace Three {
         void eachChild(std::function<void (const TypeReference&, const std::string&, uint32_t)> func) const;
         
         bool isCallable() const;
+        bool isCompound() const;
 
         TypeReference returnType() const;
         void          setReturnType(const TypeReference& value);

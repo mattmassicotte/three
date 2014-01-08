@@ -5,8 +5,16 @@
 #include <string>
 #include <map>
 #include <functional>
+#include <vector>
 
 namespace Three {
+    struct CompoundField {
+        std::string name;
+        std::string typeName;
+        uint32_t indirection;
+        std::vector<uint32_t> dimensions;
+    };
+
     class CSourceIndexer {
     public:
         static std::vector<std::string>* defaultCIncludePaths();
@@ -22,6 +30,7 @@ namespace Three {
         void addType(const std::string& name, DataType::Flavor flavor);
         void addVariable(const std::string& name);
         void addConstant(const std::string& name);
+        void addField(const CompoundField& field);
 
         Module* module() const;
 
@@ -30,5 +39,7 @@ namespace Three {
 
     private:
         Module* _module;
+        DataType* _currentCompoundType;
+        std::vector<CompoundField> _fields;
     };
 }
