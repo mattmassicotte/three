@@ -38,6 +38,20 @@ namespace Three {
         return _receiver;
     }
 
+    TypeReference FunctionCallOperatorNode::receiverNodeType() const {
+        if (this->receiverIsClosure()) {
+            // TODO: this is a crazy hack to make sure that
+            // our indirection level is correct for calling closures
+            TypeReference ref = _receiver->nodeType();
+
+            ref.incrementIndirectionDepth();
+
+            return ref;
+        }
+
+        return _receiver->nodeType();
+    }
+
     bool FunctionCallOperatorNode::receiverIsClosure() const {
         assert(_receiver);
         return _receiver->nodeType().referencedType()->flavor() == DataType::Flavor::Closure;

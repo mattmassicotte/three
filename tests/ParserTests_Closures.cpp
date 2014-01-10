@@ -54,3 +54,25 @@ TEST_F(ParserTest_Closures, ClosureInFunction) {
     Three::ClosureNode* closure = dynamic_cast<Three::ClosureNode*>(node->childAtIndex(5)->childAtIndex(1));
     ASSERT_EQ("Closure", closure->name());
 }
+
+TEST_F(ParserTest_Closures, ClosureParameterCapturedInClosure) {
+    Three::ASTNode* node = this->parse("def foo({Int value} closure)\n"
+                                       "end\n"
+                                       "def test({} closure)\n"
+                                       "  Int a\n"
+                                       "  foo(do () {\n"
+                                       "    closure(a)\n"
+                                       "  })\n"
+                                       "end\n");
+
+    ASSERT_EQ(2, node->childCount());
+    node = node->childAtIndex(1); // def test
+    node = node->childAtIndex(1); //   foo(...
+
+    Three::ClosureNode* closure = dynamic_cast<Three::ClosureNode*>(node = node->childAtIndex(0));
+
+    ASSERT_EQ("Closure", closure->nodeName());
+
+    ASSERT_VARIABLE("", 0, "closure", closure->capturedVariables().at(0));
+    ASSERT_VARIABLE("Int", 0, "a", closure->capturedVariables().at(1));
+}

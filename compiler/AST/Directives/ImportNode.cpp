@@ -29,6 +29,15 @@ namespace Three {
 
         parser.currentModule()->addModule(node->resolvedFilePath(), index.module());
 
+        index.module()->eachFunction([&] (const Function* function) {
+            Variable* var = new Variable();
+
+            var->setName(function->fullyQualifiedName());
+            var->setType(TypeReference(function->createType(), 1));
+
+            parser.currentScope()->addVariable(function->fullyQualifiedName(), var);
+        });
+
         return node;
     }
 

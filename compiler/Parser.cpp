@@ -246,9 +246,9 @@ namespace Three {
 
         std::string identifier = this->parseQualifiedIdentifier();
 
-        if (this->peek().type() == Token::Type::PunctuationOpenParen) {
-            return FunctionCallNode::parse(*this, identifier, NULL);
-        }
+        //if (this->peek().type() == Token::Type::PunctuationOpenParen) {
+        //    return FunctionCallNode::parse(*this, identifier, NULL);
+        //}
 
         if (this->currentModule()->definesConstant(identifier)) {
             return new ValueNode(identifier);

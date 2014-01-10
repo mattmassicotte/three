@@ -14,6 +14,7 @@ namespace Three {
 
     private:
         bool receiverIsClosure() const;
+        TypeReference receiverNodeType() const;
 
     private:
         ASTNode* _receiver;

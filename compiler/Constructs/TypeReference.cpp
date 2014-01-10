@@ -152,7 +152,9 @@ namespace Three {
         // return (*varName)(param1, param2);
         _type->returnType().codeGen(context);
         context << " (";
-        context << std::string(this->indirectionDepth(), '*');
+
+        // This is super-subtle.  It does not make sense to generate a function type without at least one star.
+        context << std::string(std::max((uint32_t)1, this->indirectionDepth()), '*');
 
         if (variableName.size() > 0) {
             context << variableName;

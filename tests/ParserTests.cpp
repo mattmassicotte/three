@@ -29,7 +29,8 @@ TEST_F(ParserTest, SimpleHelloWorldProgram) {
     // ASSERT_DATA_TYPE("Int",  0, defNode->function()->returnType());
 
     node = defNode->childAtIndex(0);
-    ASSERT_FUNCTION_CALL("printf", node);
+    ASSERT_OPERATOR("()", node);
+    // ASSERT_FUNCTION_CALL("printf", node);
     ASSERT_EQ(1, node->childCount());
 
     ASSERT_STRING_LITERAL_NODE("hello world", node->childAtIndex(0));

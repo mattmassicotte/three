@@ -143,13 +143,10 @@ namespace Three {
             return false;
         }
 
-        if (this->variableForName(name) == NULL) {
+        Variable* v = this->variableForName(name);
+        if (v == NULL) {
             return false;
         }
-
-        Variable* v = this->variableForName(name);
-
-        assert(v);
 
         // this variable is closed, but make sure to only put it in once
         if (std::find(_closedVariables.cbegin(), _closedVariables.cend(), v) != _closedVariables.cend()) {

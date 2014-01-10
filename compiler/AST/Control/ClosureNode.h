@@ -12,6 +12,8 @@ namespace Three {
     public:
         virtual std::string name() const;
 
+        std::vector<Variable*> capturedVariables() const;
+        std::vector<Variable*> referencedVariables() const;
         void eachCapturedVariable(std::function<void (Variable*, bool, bool)> func) const;
 
         void codeGen(CSourceContext& context);
@@ -28,5 +30,7 @@ namespace Three {
         std::string _environmentName;
         std::vector<Variable*> _referencedVariables;
         std::vector<Variable*> _capturedVariables;
+
+        uint32_t _savedCSourceLocation;
     };
 }

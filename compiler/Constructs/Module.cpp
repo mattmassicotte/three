@@ -138,6 +138,12 @@ namespace Three {
         delete f;
     }
 
+    void Module::eachFunction(std::function<void (const Function* func)> func) const {
+        std::for_each(_functions.cbegin(), _functions.cend(), [&] (const std::pair<std::string, Function*>& n) {
+            func(n.second);
+        });
+    }
+
     void Module::addDataType(const std::string& name, DataType* type) {
         assert(type != NULL && "DataType should not be null");
         assert((this->dataTypeForName(name) == NULL) && "DataType should not already exist");

@@ -12,7 +12,6 @@ static CXIdxClientFile enteredMainFile(CXClientData client_data, CXFile mainFile
 static CXIdxClientFile includedFile(CXClientData clientData, const CXIdxIncludedFileInfo* includedFileInfo);
 
 static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declInfo);
-
 static Three::CompoundField FieldFromIndex(const std::string& name, const CXIdxDeclInfo* declInfo);
 static std::string executeCommand(const char* cmd);
 
@@ -127,7 +126,7 @@ namespace Three {
                                            NULL,
                                            0,
                                            NULL,
-                                           0);
+                                           CXTranslationUnit_DetailedPreprocessingRecord);
 
         free(args);
 
@@ -154,6 +153,9 @@ namespace Three {
 
         fn = new Function();
         fn->setName(name);
+
+        // TODO: this is bogus!!! But, all functions need a return type at minimum.
+        fn->setReturnType(TypeReference::ref(_module, "Void", 0));
 
         _module->addFunction(name, fn);
     }

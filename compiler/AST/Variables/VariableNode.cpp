@@ -9,9 +9,21 @@ namespace Three {
 
         // TODO: a VariableReference type could help simply this significantly
         // TODO: this is not really a parse...
-        node->_variable   = parser.currentScope()->variableForName(identifier);
-        node->_referenced = parser.currentScope()->referencedVariable(identifier);
-        node->_closed     = parser.currentScope()->closedVariable(identifier);
+
+        // TODO: here, we dynamically generate a variable. This is hidious, but
+        // the rest of the infrastruture doesn't create variables for functions...
+        Function* func = parser.currentModule()->functionForName(identifier);
+        if (func) {
+            Variable* var = new Variable();
+            var->setName(func->fullyQualifiedName());
+            var->setType(TypeReference(func->createType(), 1));
+
+            node->_variable = var;
+        } else {
+            node->_variable   = parser.currentScope()->variableForName(identifier);
+            node->_referenced = parser.currentScope()->referencedVariable(identifier);
+            node->_closed     = parser.currentScope()->closedVariable(identifier);
+        }
 
         return node;
     }

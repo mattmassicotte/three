@@ -103,10 +103,3 @@ ASSERT_TRUE(tmp != NULL); \
 ASSERT_EQ("FunctionDefinition", tmp->nodeName()); \
 ASSERT_EQ(name, tmp->function()->fullyQualifiedName()); \
 } while(0)
-
-#define ASSERT_FUNCTION_CALL(name, obj) do { \
-Three::FunctionCallNode* tmp = dynamic_cast<Three::FunctionCallNode*>(obj); \
-ASSERT_TRUE(tmp != NULL); \
-ASSERT_EQ("FunctionCall", tmp->nodeName()); \
-ASSERT_EQ(name, tmp->functionName()); \
-} while(0)

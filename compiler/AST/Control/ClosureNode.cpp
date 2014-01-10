@@ -111,6 +111,14 @@ namespace Three {
         return "Closure";
     }
 
+    std::vector<Variable*> ClosureNode::capturedVariables() const {
+        return _capturedVariables;
+    }
+
+    std::vector<Variable*> ClosureNode::referencedVariables() const {
+        return _referencedVariables;
+    }
+
     void ClosureNode::eachCapturedVariable(std::function<void (Variable*, bool, bool)> func) const {
         uint32_t refSize    = this->_referencedVariables.size();
         uint32_t closedSize = this->_capturedVariables.size();
