@@ -54,6 +54,8 @@ namespace Three {
 
     bool FunctionCallOperatorNode::receiverIsClosure() const {
         assert(_receiver);
+        assert(_receiver->nodeType().referencedType());
+
         return _receiver->nodeType().referencedType()->flavor() == DataType::Flavor::Closure;
     }
 

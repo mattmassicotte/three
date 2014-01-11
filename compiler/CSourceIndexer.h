@@ -25,6 +25,7 @@ namespace Three {
         CSourceIndexer();
         virtual ~CSourceIndexer();
 
+        bool indexFileAtUnresolvedPath(const std::string& path);
         bool indexFileAtPath(const std::string& path);
         void addFunction(const std::string& name);
         void addType(const std::string& name, DataType::Flavor flavor);

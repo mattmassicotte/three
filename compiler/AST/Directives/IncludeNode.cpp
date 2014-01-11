@@ -30,6 +30,8 @@ namespace Three {
         parser.currentModule()->addModule(node->_headerName, index.module());
 
         index.module()->eachFunction([&] (const Function* function) {
+            assert(function);
+
             // define a variable for the function, so it can be referred to
             // TODO: copied right from FunctionDefinitionNode.cpp
             Variable* var = new Variable();

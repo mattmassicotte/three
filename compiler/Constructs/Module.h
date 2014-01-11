@@ -49,6 +49,7 @@ namespace Three {
         void addConstant(const std::string& name, const std::string& value);
         std::string constantForName(const std::string& name);
         bool definesConstant(const std::string& name);
+        void removeConstant(const std::string& name);
 
         // TODO: not quite right
         std::vector<std::string> importedModules;

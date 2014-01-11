@@ -140,7 +140,10 @@ namespace Three {
 
     void Module::eachFunction(std::function<void (const Function* func)> func) const {
         std::for_each(_functions.cbegin(), _functions.cend(), [&] (const std::pair<std::string, Function*>& n) {
-            func(n.second);
+            // nulls can sneak in because of the stupid way the std::containers work
+            if (n.second != nullptr) {
+                func(n.second);
+            }
         });
     }
 
@@ -239,5 +242,11 @@ namespace Three {
         }
 
         return _constants.find(name) != _constants.end();
+    }
+
+    void Module::removeConstant(const std::string& name) {
+        assert(name.length() > 0 && "Name should not be blank");
+
+        _constants.erase(name);
     }
 }

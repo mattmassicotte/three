@@ -6,15 +6,21 @@
 #include <iostream>
 #include <fstream>
 
+// index callbacks
 static int abortQuery(CXClientData clientData, void* reserved);
 static void diagnostic(CXClientData clientData, CXDiagnosticSet diagnosticSet, void* reserved);
 static CXIdxClientFile enteredMainFile(CXClientData client_data, CXFile mainFile, void *reserved);
 static CXIdxClientFile includedFile(CXClientData clientData, const CXIdxIncludedFileInfo* includedFileInfo);
-
 static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declInfo);
+
+// visitor callback
+static enum CXChildVisitResult VisitorCallback(CXCursor cursor, CXCursor parent, CXClientData clientData);
+
+// helpers
 static Three::CompoundField FieldFromIndex(const std::string& name, const CXIdxDeclInfo* declInfo);
 static std::string executeCommand(const char* cmd);
 
+// globals
 static std::vector<std::string>* _includePaths = NULL;
 
 namespace Three {
@@ -36,6 +42,8 @@ namespace Three {
             _includePaths->push_back(xcodePath + "/usr/include");
             _includePaths->push_back(xcodePath + "/usr/local/include");
         }
+
+        _includePaths->push_back("/Library/Developer/CommandLineTools/usr/lib/clang/5.0/include");
 #elif THREE_PLATFORM_LINUX
         // TODO: bogus include paths for gcc 4.8
         _includePaths->push_back("/usr/include/x86_64-linux-gnu");
@@ -89,6 +97,10 @@ namespace Three {
     CSourceIndexer::~CSourceIndexer() {
     }
 
+    bool CSourceIndexer::indexFileAtUnresolvedPath(const std::string& path) {
+        return this->indexFileAtPath(CSourceIndexer::resolveCHeaderPath(path));
+    }
+
     bool CSourceIndexer::indexFileAtPath(const std::string& path) {
         CXIndex       index  = clang_createIndex(1, 0);
         CXIndexAction action = clang_IndexAction_create(index);
@@ -115,6 +127,8 @@ namespace Three {
             args[i] = arguments.at(i).c_str();
         }
 
+        CXTranslationUnit unit;
+
         int result = clang_indexSourceFile(action,
                                            this,
                                            &callbacks,
@@ -125,10 +139,14 @@ namespace Three {
                                            argCount,
                                            NULL,
                                            0,
-                                           NULL,
-                                           CXTranslationUnit_DetailedPreprocessingRecord);
+                                           &unit,
+                                           CXTranslationUnit_DetailedPreprocessingRecord | CXTranslationUnit_SkipFunctionBodies);
 
         free(args);
+
+        clang_visitChildren(clang_getTranslationUnitCursor(unit), VisitorCallback, this);
+
+        clang_disposeTranslationUnit(unit);
 
         clang_IndexAction_dispose(action);
         clang_disposeIndex(index);
@@ -215,6 +233,18 @@ namespace Three {
     void CSourceIndexer::addConstant(const std::string& name) {
         _currentCompoundType = nullptr;
         _fields.clear();
+
+        // If the module already defines a function with that name, skip. This is rather common
+        // in C headers, especially for the standard library.
+        if (_module->functionForName(name)) {
+            return;
+        }
+
+        if (_module->definesConstant(name)) {
+            _module->removeConstant(name);
+
+            std::cout << "[Indexer] Redefining constant '" << name << "'" << std::endl;
+        }
 
         _module->addConstant(name, name);
     }
@@ -316,6 +346,21 @@ static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declI
         default:
             break;
     }
+}
+
+static enum CXChildVisitResult VisitorCallback(CXCursor cursor, CXCursor parent, CXClientData clientData) {
+    Three::CSourceIndexer* index = static_cast<Three::CSourceIndexer*>(clientData);
+
+    switch (clang_getCursorKind(cursor)) {
+        case CXCursor_MacroDefinition:
+            index->addConstant(std::string(clang_getCString(clang_getCursorDisplayName(cursor))));
+            break;
+        default:
+            break;
+    }
+
+    // I don't believe we need to recurse at any point if we're just trying to grab macro definitions
+    return CXChildVisit_Continue;
 }
 
 static Three::CompoundField FieldFromIndex(const std::string& name, const CXIdxDeclInfo* declInfo) {
