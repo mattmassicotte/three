@@ -85,3 +85,27 @@ TEST_F(ParserTest_Loops, ContinueStatement) {
 
     ASSERT_EQ("Continue", loop->childAtIndex(0)->nodeName());
 }
+
+TEST_F(ParserTest_Loops, ContinueStatementWithTailingIf) {
+    ASTNode* node;
+
+    node = this->parse("def test(Int a)\nloop a\ncontinue if false\nend\nend\n");
+    node = node->childAtIndex(0); // def test
+    node = node->childAtIndex(0); // loop a
+    node = node->childAtIndex(0); // if false
+
+    ASSERT_EQ("If", node->nodeName());
+    ASSERT_EQ("Continue", node->childAtIndex(0)->nodeName());
+}
+
+TEST_F(ParserTest_Loops, BreakWithTailingIf) {
+    ASTNode* node;
+
+    node = this->parse("def test(Int a)\nloop a\nbreak if true\nend\nend\n");
+    node = node->childAtIndex(0); // def test
+    node = node->childAtIndex(0); // loop a
+    node = node->childAtIndex(0); // if true
+
+    ASSERT_EQ("If", node->nodeName());
+    ASSERT_EQ("Break", node->childAtIndex(0)->nodeName());
+}

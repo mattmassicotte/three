@@ -87,9 +87,11 @@ namespace Three {
                 break;
             case Token::Type::KeywordBreak:
                 node = BreakNode::parse(*this);
+                node = IfNode::parseTailing(*this, node);
                 break;
             case Token::Type::KeywordContinue:
                 node = ContinueNode::parse(*this);
+                node = IfNode::parseTailing(*this, node);
                 break;
             case Token::Type::KeywordSwitch:
                 node = SwitchNode::parse(*this);
