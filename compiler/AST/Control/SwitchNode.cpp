@@ -1,6 +1,7 @@
 #include "SwitchNode.h"
 #include "CaseNode.h"
 #include "../../Parser.h"
+#include "ElseNode.h"
 
 #include <assert.h>
 
@@ -11,11 +12,23 @@ namespace Three {
         assert(parser.next().type() == Token::Type::KeywordSwitch);
 
         node->_argumentNode = parser.parseExpression();
+        node->_elseNode = nullptr;
         parser.parseNewline();
 
-        parser.parseUntilEnd([&] () {
-            node->addChild(CaseNode::parse(parser));
+        parser.parseUntil(false, [&] (const Token& token) {
+            switch (token.type()) {
+                case Token::Type::KeywordEnd:
+                    return true;
+                case Token::Type::KeywordElse:
+                    node->_elseNode = ElseNode::parse(parser);
+                    return true;
+                default:
+                    node->addChild(CaseNode::parse(parser));
+                    return false;
+                }
         });
+
+        parser.nextIf("end");
 
         return node;
     }
@@ -44,11 +57,17 @@ namespace Three {
 
             caseNode->codeGen(context);
 
-            if (index == this->childCount() - 1) {
-                context.current()->outdentAndPrintLine("}");
-            } else {
-                context.current()->decreaseIndentation();
-            }
+            context.current()->decreaseIndentation();
         });
+
+        if (_elseNode) {
+            context.current()->printLineAndIndent("} else {");
+
+            _elseNode->codeGenChildren(context);
+
+            context.current()->decreaseIndentation();
+        }
+
+        context.current()->printLine("}");
     }
 }

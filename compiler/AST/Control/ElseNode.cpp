@@ -11,15 +11,9 @@ namespace Three {
         parser.parseNewline();
 
         // parse the body
-        while (true) {
-            if (parser.peek().type() == Token::Type::KeywordEnd) {
-                break;
-            }
-
+        parser.parseUntilEnd([&] () {
             node->addChild(parser.parseStatement());
-        }
-
-        assert(parser.next().type() == Token::Type::KeywordEnd);
+        });
 
         return node;
     }

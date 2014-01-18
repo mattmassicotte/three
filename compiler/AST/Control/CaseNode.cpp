@@ -12,17 +12,17 @@ namespace Three {
         node->_argumentNode = parser.parseExpression();
         parser.parseNewline();
 
-        while (true) {
-            if (parser.peek().type() == Token::Type::KeywordCase) {
-                break;
-            }
-
-            if (parser.peek().type() == Token::Type::KeywordEnd) {
-                break;
-            }
-
-            node->addChild(parser.parseStatement());
-        }
+        parser.parseUntil(false, [&] (const Token& token) {
+            switch (token.type()) {
+                case Token::Type::KeywordEnd:
+                case Token::Type::KeywordCase:
+                case Token::Type::KeywordElse:
+                    return true;
+                default:
+                    node->addChild(parser.parseStatement());
+                    return false;
+                }
+        });
 
         return node;
     }

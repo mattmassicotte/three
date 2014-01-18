@@ -98,6 +98,30 @@ TEST_F(CCodeGenTests, SwitchStatement) {
     EXPECT_EQ("void test(int x) {\n    if (x == 1) {\n        x = 5;\n    } else if (x == 2) {\n        x = 6;\n    }\n}\n\n", context.body()->renderToString());
 }
 
+TEST_F(CCodeGenTests, SwitchStatementWithElse) {
+    ASTNode* node = this->parse("def test(Int x)\n"
+                                "  switch x\n"
+                                "  case 1\n"
+                                "    x = 5\n"
+                                "  else\n"
+                                "    x = 6\n"
+                                "  end\n"
+                                "end\n");
+
+    CSourceContext context;
+
+    node->codeGen(context);
+
+    EXPECT_EQ("void test(int x);\n", context.internalDeclarations()->renderToString());
+    EXPECT_EQ("void test(int x) {\n"
+              "    if (x == 1) {\n"
+              "        x = 5;\n"
+              "    } else {\n"
+              "        x = 6;\n"
+              "    }\n"
+              "}\n\n", context.body()->renderToString());
+}
+
 TEST_F(CCodeGenTests, Structure) {
     ASTNode* node = this->parse("struct Foo\n"
                                 "  Int x\n"

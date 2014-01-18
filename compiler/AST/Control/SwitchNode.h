@@ -16,5 +16,6 @@ namespace Three {
 
     private:
         ASTNode* _argumentNode;
+        ASTNode* _elseNode;
     };
 }
