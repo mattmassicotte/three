@@ -206,6 +206,17 @@ TEST_F(ParserTest_Operators, CompoundAdditionAssignmentOperator) {
     ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
 }
 
+TEST_F(ParserTest_Operators, CompoundBitwiseOrAssignmentOperator) {
+    Three::ASTNode* node;
+
+    node = this->parse("def test()\nInt a\na |= 1\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(1);
+
+    ASSERT_OPERATOR("|=", node);
+    ASSERT_VARIABLE_NODE("Int",  0, "a", node->childAtIndex(0));
+    ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
+}
+
 TEST_F(ParserTest_Operators, PrecedenceTest) {
     Three::ASTNode* node;
 

@@ -55,12 +55,18 @@ namespace Three {
             case OperatorQuestionMark:   return 6;
             case OperatorCAS:            return 6;
 
-            case OperatorAssign:         return 5;
-            case OperatorAddAssign:      return 5;
-            case OperatorSubtractAssign: return 5;
-            case OperatorMultiplyAssign: return 5;
-            case OperatorDivideAssign:   return 5;
-            case OperatorLogicalOrAssign: return 5;
+            case OperatorAssign:           return 5;
+            case OperatorAddAssign:        return 5;
+            case OperatorSubtractAssign:   return 5;
+            case OperatorMultiplyAssign:   return 5;
+            case OperatorDivideAssign:     return 5;
+            case OperatorModAssign:        return 5;
+            case OperatorBitwiseAndAssign: return 5;
+            case OperatorBitwiseOrAssign:  return 5;
+            case OperatorBitwiseXorAssign: return 5;
+            case OperatorLeftShiftAssign:  return 5;
+            case OperatorRightShiftAssign: return 5;
+            case OperatorLogicalOrAssign:  return 5;
             case OperatorLogicalAndAssign: return 5;
 
             default: break;

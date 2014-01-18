@@ -276,6 +276,19 @@ TEST_F(CCodeGenTests, TernaryConditionalOperator) {
               "}\n\n", context.body()->renderToString()); 
 }
 
+TEST_F(CCodeGenTests, CompoundAssignOperator) {
+    ASTNode* node = this->parse("def test(Int a)\n"
+                                "  a |= 5\n"
+                                "end\n");
+
+    CSourceContext context;
+
+    node->codeGen(context);
+
+    EXPECT_EQ("void test(int a);\n", context.internalDeclarations()->renderToString());
+    EXPECT_EQ("void test(int a) {\n    a |= 5;\n}\n\n", context.body()->renderToString());
+}
+
 TEST_F(CCodeGenTests, InfiniteLoop) {
     ASTNode* node = this->parse("def test()\n"
                                 "  loop\n"
