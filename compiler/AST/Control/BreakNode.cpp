@@ -17,6 +17,10 @@ namespace Three {
         return "Break";
     }
 
+    void BreakNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     void BreakNode::codeGen(CSourceContext& context) {
         context << "break";
     }

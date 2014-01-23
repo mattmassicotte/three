@@ -68,116 +68,68 @@ namespace Three {
         return _arrayDimensions;
     }
 
-    void TypeReference::codeGenCSourceFunctionType(CSource* source, const std::string& variableName) const {
-        assert(!_prependsStructKeyword);
-
-        // return (*varName)(param1, param2);
-        _type->returnType().codeGenCSource(source, "");
-        source->print(" (");
-        source->print(std::string(this->indirectionDepth(), '*'));
-        if (variableName.size() > 0) {
-            source->print(variableName);
-        }
-        source->print(")(");
-
-        // our environment pointer
-        if (_type->flavor() == DataType::Flavor::Closure) {
-            source->print("void*");
-            if (_type->childCount() > 0) {
-                source->print(", ");
-            }
-        }
-
-        // parameters
-        _type->eachParameterWithLast([=] (const TypeReference& param, const std::string& name, bool last) {
-            param.codeGenCSource(source, "");
-            if (!last) {
-                source->print(", ");
-            }
-        });
-
-        source->print(")");
-    }
-
-    void TypeReference::codeGenCSource(CSource* source, const std::string& variableName) const {
+    std::string TypeReference::codeGen(const std::string& variableName) const {
         // It seems like it would make more sense to do this for both functions and
         // closures.  However, closures are actually structures, and nearly all of the time
         // they have to be referenced like regular structure types.  In rare cases,
         // like invoking their functions, this method should not be used.  But, in pretty much
         // all other situations, this check is appropriate.
         if (_type->flavor() == DataType::Flavor::Function) {
-            this->codeGenCSourceFunctionType(source, variableName);
-            return;
+            return this->codeGenFunction(variableName);
         }
+
+        std::stringstream s;
 
         if (_prependsStructKeyword) {
-            source->print("struct ");
+            s << "struct ";
         }
 
-        source->print(_type->cSourceName());
-        source->print(std::string(this->indirectionDepth(), '*'));
+        s << _type->cSourceName();
+        s << std::string(this->indirectionDepth(), '*');
 
         if (variableName.size() > 0) {
-            source->print(" ");
-            source->print(variableName);
+            s << " " << variableName;
         }
+
+        return s.str();
     }
 
-    void TypeReference::codeGen(CSourceContext& context, const std::string& variableName) const {
-        // It seems like it would make more sense to do this for both functions and
-        // closures.  However, closures are actually structures, and nearly all of the time
-        // they have to be referenced like regular structure types.  In rare cases,
-        // like invoking their functions, this method should not be used.  But, in pretty much
-        // all other situations, this check is appropriate.
-        if (_type->flavor() == DataType::Flavor::Function) {
-            this->codeGenFunction(context, variableName);
-            return;
-        }
+    std::string TypeReference::codeGenFunction(const std::string& variableName) const {
+        std::stringstream s;
 
-        if (_prependsStructKeyword) {
-            context << "struct ";
-        }
-
-        context << _type->cSourceName();
-        context << std::string(this->indirectionDepth(), '*');
-
-        if (variableName.size() > 0) {
-            context << " " << variableName;
-        }
-    }
-
-    void TypeReference::codeGenFunction(CSourceContext& context, const std::string& variableName) const {
         assert(!_prependsStructKeyword);
 
         // return (*varName)(param1, param2);
-        _type->returnType().codeGen(context);
-        context << " (";
+        s << _type->returnType().codeGen();
+        s << " (";
 
         // This is super-subtle.  It does not make sense to generate a function type without at least one star.
-        context << std::string(std::max((uint32_t)1, this->indirectionDepth()), '*');
+        s << std::string(std::max((uint32_t)1, this->indirectionDepth()), '*');
 
         if (variableName.size() > 0) {
-            context << variableName;
+            s << variableName;
         }
 
-        context << ")(";
+        s << ")(";
 
         // our environment pointer
         if (_type->flavor() == DataType::Flavor::Closure) {
-            context << "void*";
+            s << "void*";
             if (_type->childCount() > 0) {
-                context << ", ";
+                s << ", ";
             }
         }
 
         // parameters
-        _type->eachParameterWithLast([&context] (const TypeReference& param, const std::string& name, bool last) {
-            param.codeGen(context);
+        _type->eachParameterWithLast([&s] (const TypeReference& param, const std::string& name, bool last) {
+            s << param.codeGen();
             if (!last) {
-                context << ", ";
+                s << ", ";
             }
         });
 
-        context << ")";
+        s << ")";
+
+        return s.str();
     }
 }

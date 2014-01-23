@@ -28,6 +28,10 @@ namespace Three {
         return s.str();
     }
 
+    void StringLiteralNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     void StringLiteralNode::setStringValue(const std::string& name) {
         _stringValue = name;
     }

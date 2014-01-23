@@ -18,6 +18,10 @@ namespace Three {
         return "AbortStatement";
     }
 
+    void AbortStatementNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     void AbortStatementNode::codeGen(CSourceContext& context) {
         context.declarations()->addHeader(false, "three/runtime/transactional_memory.h");
 

@@ -32,10 +32,8 @@ namespace Three {
         void setCSourcePrependStructKeyword(bool prepend);
         bool cSourcePrependStructKeyword() const;
 
-        void codeGenCSourceFunctionType(CSource* source, const std::string& variableName) const;
-        void codeGenCSource(CSource* source, const std::string& variableName) const;
-        void codeGen(CSourceContext& context, const std::string& variableName = std::string()) const;
-        void codeGenFunction(CSourceContext& context, const std::string& variableName) const;
+        std::string codeGen(const std::string& variableName = std::string()) const;
+        std::string codeGenFunction(const std::string& variableName) const;
 
     private:
         DataType* _type;

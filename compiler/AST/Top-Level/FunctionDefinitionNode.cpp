@@ -57,10 +57,6 @@ namespace Three {
         return "FunctionDefinition";
     }
 
-    Function* FunctionDefinitionNode::function() const {
-        return _function;
-    }
-
     std::string FunctionDefinitionNode::str() const {
         std::stringstream s;
 
@@ -69,14 +65,21 @@ namespace Three {
         return s.str();
     }
 
+    void FunctionDefinitionNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
+    Function* FunctionDefinitionNode::function() const {
+        return _function;
+    }
+
     void FunctionDefinitionNode::codeGen(CSourceContext& context) {
         context.adjustCurrentForVisibility(this->visibility(), [&] (CSource* source) {
-            this->function()->codeGen(context);
-
+            *source << this->function()->codeGen();
             source->printLine(";");
         });
 
-        this->function()->codeGen(context);
+        context << this->function()->codeGen();
         context.current()->printLineAndIndent(" {");
 
         this->codeGenChildren(context);

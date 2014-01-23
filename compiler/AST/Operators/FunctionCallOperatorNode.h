@@ -8,13 +8,13 @@ namespace Three {
         static FunctionCallOperatorNode* parse(Parser& parser, ASTNode* receiver);
 
     public:
+        void accept(ASTVisitor& visitor);
+
         ASTNode* receiver() const;
-
-        void codeGen(CSourceContext& context);
-
-    private:
         bool receiverIsClosure() const;
         TypeReference receiverNodeType() const;
+
+        void codeGen(CSourceContext& context);
 
     private:
         ASTNode* _receiver;

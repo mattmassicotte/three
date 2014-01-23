@@ -48,6 +48,10 @@ namespace Three {
         return "IntegerLiteral";
     }
 
+    void IntegerLiteralNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     void IntegerLiteralNode::setValue(uint64_t v) {
         _value = v;
     }

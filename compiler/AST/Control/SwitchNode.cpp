@@ -37,8 +37,16 @@ namespace Three {
         return "Switch";
     }
 
+    void SwitchNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     ASTNode* SwitchNode::argument() const {
-        return this->_argumentNode;
+        return _argumentNode;
+    }
+
+    ASTNode* SwitchNode::elseNode() const {
+        return _elseNode;
     }
 
     void SwitchNode::codeGen(CSourceContext& context) {

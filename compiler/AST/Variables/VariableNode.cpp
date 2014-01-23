@@ -39,6 +39,10 @@ namespace Three {
         return "Variable";
     }
 
+    void VariableNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     Variable* VariableNode::variable() const {
         return _variable;
     }
@@ -46,6 +50,14 @@ namespace Three {
     void VariableNode::setVariable(Variable* var) {
         assert(var);
         _variable = var;
+    }
+
+    bool VariableNode::closed() const {
+        return _closed;
+    }
+
+    bool VariableNode::referenced() const {
+        return _referenced;
     }
 
     void VariableNode::codeGen(CSourceContext& context) {

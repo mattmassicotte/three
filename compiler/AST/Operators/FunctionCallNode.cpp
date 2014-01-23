@@ -91,7 +91,7 @@ namespace Three {
     void FunctionCallNode::codeGen(CSourceContext& context) {
         if (this->isClosure()) {
             context << "THREE_CALL_CLOSURE(";
-            this->functionType().codeGenFunction(context, "");
+            context << this->functionType().codeGenFunction("");
             context << ", ";
             context << this->functionName();
 

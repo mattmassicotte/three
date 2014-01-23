@@ -67,6 +67,10 @@ namespace Three {
         return "For";
     }
 
+    void ForNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     ASTNode* ForNode::startExpression() const {
         return _startExpression;
     }

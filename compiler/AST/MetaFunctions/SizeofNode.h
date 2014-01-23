@@ -9,7 +9,10 @@ namespace Three {
         static SizeofNode* parse(Parser& parser);
 
     public:
-        virtual std::string name() const;
+        std::string name() const;
+        void accept(ASTVisitor& visitor);
+
+        TypeReference argument() const;
 
         void codeGen(CSourceContext& context);
 

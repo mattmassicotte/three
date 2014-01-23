@@ -3,6 +3,10 @@
 #include <assert.h>
 
 namespace Three {
+    void BinaryOperatorNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     void BinaryOperatorNode::codeGen(CSourceContext& context) {
         assert(this->childCount() == 2);
 

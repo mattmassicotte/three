@@ -57,6 +57,10 @@ namespace Three {
         return "If";
     }
 
+    void IfNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     ASTNode* IfNode::condition() const {
         return _conditionNode;
     }

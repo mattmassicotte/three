@@ -12,10 +12,15 @@ namespace Three {
         virtual ~VariableDeclarationNode();
 
         virtual std::string name() const;
+        TypeReference nodeType() const;
+        void accept(ASTVisitor& visitor);
+
         Variable* variable() const;
         ASTNode* initializerExpression() const;
 
         void codeGen(CSourceContext& context);
+
+        bool global;
 
     private:
         Variable* _variable;

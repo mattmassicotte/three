@@ -18,13 +18,21 @@ namespace Three {
     }
 
     std::string SizeofNode::name() const {
-        return "MetaFunction";
+        return "SizeOf";
+    }
+
+    void SizeofNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
+    TypeReference SizeofNode::argument() const {
+        return _typeArgument;
     }
 
     void SizeofNode::codeGen(CSourceContext& context) {
         context << "sizeof(";
 
-        _typeArgument.codeGen(context);
+        context << _typeArgument.codeGen();
 
         context << ")";
     }

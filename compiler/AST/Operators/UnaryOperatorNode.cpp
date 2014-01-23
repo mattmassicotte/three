@@ -11,4 +11,8 @@ namespace Three {
         this->childAtIndex(0)->codeGen(context);
         context << ")";
     }
+
+    void UnaryOperatorNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
 }

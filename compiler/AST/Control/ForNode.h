@@ -10,7 +10,8 @@ namespace Three {
 
     public:
         virtual ~ForNode();
-        virtual std::string name() const;
+        std::string name() const;
+        void accept(ASTVisitor& visitor);
 
         ASTNode* startExpression() const;
         ASTNode* condition() const;

@@ -13,6 +13,7 @@ namespace Three {
         IfNode();
 
         virtual std::string name() const;
+        void accept(ASTVisitor& visitor);
 
         ASTNode* condition() const;
         void     setCondition(ASTNode* node);

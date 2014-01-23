@@ -9,8 +9,10 @@ namespace Three {
 
     public:
         virtual std::string name() const;
+        void accept(ASTVisitor& visitor);
 
         ASTNode* argument() const;
+        ASTNode* elseNode() const;
 
         void codeGen(CSourceContext& context);
 

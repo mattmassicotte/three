@@ -18,6 +18,10 @@ namespace Three {
         return "Continue";
     }
 
+    void ContinueNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     void ContinueNode::codeGen(CSourceContext& context) {
         context << "continue";
     }

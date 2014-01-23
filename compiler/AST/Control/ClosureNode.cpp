@@ -111,6 +111,22 @@ namespace Three {
         return "Closure";
     }
 
+    std::string ClosureNode::closureName() const {
+        return _name;
+    }
+
+    Function* ClosureNode::function() const {
+        return _function;
+    }
+
+    bool ClosureNode::hasReferences() const {
+        return _referencedVariables.size() > 0;
+    }
+
+    void ClosureNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     std::vector<Variable*> ClosureNode::capturedVariables() const {
         return _capturedVariables;
     }
@@ -145,11 +161,11 @@ namespace Three {
         // - the actual closure creation
 
         context.adjustCurrent(context.declarations(), [&] (CSource* source) {
-            this->codeGenEnvironmentStructure(context);
+            context << this->codeGenEnvironmentStructure();
             this->codeGenBodyFunction(context);
         });
 
-        this->codeGenEnvironmentCapture(context);
+        context.current()->printPreviousLine(this->codeGenEnvironmentCapture());
 
         context << "THREE_MAKE_CLOSURE(" << this->_name << ", ";
 
@@ -162,11 +178,15 @@ namespace Three {
         context << ")";
     }
 
-    void ClosureNode::codeGenEnvironmentStructure(CSourceContext& context) const {
-        context.current()->printLineAndIndent("struct " + this->_environmentName + " {");
+    std::string ClosureNode::codeGenEnvironmentStructure() const {
+        std::stringstream s;
+
+        s << "struct " << this->_environmentName << " {" << std::endl;
 
         this->eachCapturedVariable([&] (Variable* v, bool ref, bool last) {
             TypeReference refType = v->type();
+
+            s << "    " << "const ";
 
             if (ref) {
                 // grab a copy of the referenced variable's type, bump up the indirection
@@ -174,17 +194,18 @@ namespace Three {
                 refType.incrementIndirectionDepth();
             }
 
-            refType.codeGen(context, v->name());
-            context.current()->printLine(";");
+            s << refType.codeGen(v->name()) << ";" << std::endl;
         });
 
-        context.current()->outdentAndPrintLine("};");
+        s << "};" << std::endl;
+
+        return s.str();
     }
 
     void ClosureNode::codeGenBodyFunction(CSourceContext& context) {
         context << "static ";
 
-        this->_function->codeGen(context);
+        context << this->_function->codeGen();
 
         context.current()->printLineAndIndent(" {");
 
@@ -198,13 +219,13 @@ namespace Three {
         context.current()->printLine("");
     }
 
-    void ClosureNode::codeGenEnvironmentCapture(CSourceContext& context) const {
+    std::string ClosureNode::codeGenEnvironmentCapture() const {
         // THREE_CAPTURE_ENV(main_closure_1_env, &x, y);
         std::stringstream stream;
 
         stream << "THREE_CAPTURE_ENV(" << this->_environmentName;
 
-        this->eachCapturedVariable([=, &context, &stream] (Variable* v, bool ref, bool last) {
+        this->eachCapturedVariable([&stream] (Variable* v, bool ref, bool last) {
             stream << ", ";
 
             if (ref) {
@@ -215,6 +236,7 @@ namespace Three {
         });
 
         stream << ");";
-        context.current()->printPreviousLine(stream.str());
+
+        return stream.str();
     }
 }

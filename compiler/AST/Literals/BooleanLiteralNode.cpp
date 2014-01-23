@@ -26,6 +26,10 @@ namespace Three {
         return "BooleanLiteral";
     }
 
+    void BooleanLiteralNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     bool BooleanLiteralNode::value() const {
         return _value;
     }
