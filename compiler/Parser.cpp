@@ -814,8 +814,10 @@ namespace Three {
         }
 
         if (this->isAtType()) {
+            // This is a global
             node = VariableDeclarationNode::parse(*this);
             node->setStatement(true);
+            dynamic_cast<VariableDeclarationNode*>(node)->global = true; // TODO: this should be improved
             this->parseNewline();
 
             return node;

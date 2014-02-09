@@ -64,6 +64,18 @@ namespace Three {
         return "AtomicStatement";
     }
 
+    void AtomicStatementNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
+    std::string AtomicStatementNode::transactionName() const {
+        return _transactionName;
+    }
+
+    ASTNode* AtomicStatementNode::elseClause() const {
+        return _elseNode;
+    }
+
     void AtomicStatementNode::codeGen(CSourceContext& context) {
         context.declarations()->addHeader(false, "three/runtime/transactional_memory.h");
 

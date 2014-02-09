@@ -2,6 +2,7 @@
 
 #include "../CodeGen/CSourceContext.h"
 #include "../Constructs/TypeReference.h"
+#include "ASTVisitor.h"
 
 #include <sstream>
 #include <string>
@@ -39,6 +40,9 @@ namespace Three {
         std::string nodeName() const;
         virtual std::string str() const;
         std::string recursiveStr(uint32_t depth = 0) const;
+
+        virtual void accept(ASTVisitor& visitor);
+        void acceptChildren(ASTVisitor& visitor);
 
         virtual void codeGen(CSourceContext& context);
         void codeGenChildren(CSourceContext& context);

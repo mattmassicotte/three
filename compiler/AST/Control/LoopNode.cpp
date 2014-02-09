@@ -46,6 +46,10 @@ namespace Three {
         return "Loop";
     }
 
+    void LoopNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     ASTNode* LoopNode::condition() const {
         return _condition;
     }

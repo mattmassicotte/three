@@ -68,6 +68,10 @@ namespace Three {
         return "Structure";
     }
 
+    void StructureNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     uint32_t StructureNode::packing() const {
         return _packing;
     }

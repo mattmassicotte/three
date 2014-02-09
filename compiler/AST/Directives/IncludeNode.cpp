@@ -49,8 +49,16 @@ namespace Three {
         return "Include";
     }
 
+    void IncludeNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     std::string IncludeNode::headerName() const {
         return _headerName;
+    }
+
+    TranslationUnit::Visibility IncludeNode::visibility() const {
+        return _visibility;
     }
 
     void IncludeNode::codeGen(CSourceContext& context) {

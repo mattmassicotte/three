@@ -1,4 +1,4 @@
-#include "ParserTestBase.h"
+#include "../ParserTestBase.h"
 
 class ParserTest_Operators : public ParserTestBase {
 };
@@ -101,7 +101,7 @@ TEST_F(ParserTest_Operators, SizeofOperator) {
     node = node->childAtIndex(0)->childAtIndex(0);
 
     ASSERT_OPERATOR("=", node);
-    ASSERT_EQ("MetaFunction", node->childAtIndex(1)->nodeName());
+    ASSERT_EQ("SizeOf", node->childAtIndex(1)->nodeName());
 }
 
 TEST_F(ParserTest_Operators, MemberAccessOperator) {

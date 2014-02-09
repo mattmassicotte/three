@@ -8,7 +8,8 @@ namespace Three {
         static BreakNode* parse(Parser& parser);
 
     public:
-        virtual std::string name() const;
+        std::string name() const;
+        void accept(ASTVisitor& visitor);
 
         void codeGen(CSourceContext& context);
     };

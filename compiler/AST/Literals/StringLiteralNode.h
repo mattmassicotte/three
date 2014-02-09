@@ -8,8 +8,9 @@ namespace Three {
         static StringLiteralNode* parse(Parser& parser);
 
     public:
-        virtual std::string name() const;
+        std::string name() const;
         std::string str() const;
+        void accept(ASTVisitor& visitor);
 
         void setStringValue(const std::string& name);
         std::string stringValue() const;

@@ -18,6 +18,10 @@ namespace Three {
         return "Barrier";
     }
 
+    void BarrierNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     void BarrierNode::codeGen(CSourceContext& context) {
         context.declarations()->addHeader(false, "three/runtime/atomic.h");
 

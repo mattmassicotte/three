@@ -95,6 +95,16 @@ namespace Three {
         return s.str();
     }
 
+    void ASTNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
+    void ASTNode::acceptChildren(ASTVisitor& visitor) {
+        this->eachChild([&] (ASTNode* child, uint32_t _) {
+            child->accept(visitor);
+        });
+    }
+
     void ASTNode::codeGen(CSourceContext& context) {
     }
 

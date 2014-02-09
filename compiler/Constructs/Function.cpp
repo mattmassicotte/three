@@ -107,23 +107,27 @@ namespace Three {
         }
     }
 
-    void Function::codeGen(CSourceContext& context) const {
-        this->returnType().codeGen(context);
-        context << " ";
-        context << this->fullyQualifiedName();
-        context << "(";
+    std::string Function::codeGen() const {
+        std::stringstream s;
+
+        s << this->returnType().codeGen();
+        s << " ";
+        s << this->fullyQualifiedName();
+        s << "(";
 
         if (this->parameterCount() == 0) {
-            context << "void";
+            s << "void";
         }
 
-        this->eachParameterWithLast([&context] (Variable* var, bool last) {
-            var->type().codeGen(context, var->name());
+        this->eachParameterWithLast([&s] (Variable* var, bool last) {
+            s << var->type().codeGen(var->name());
             if (!last) {
-                context << ", ";
+                s << ", ";
             }
         });
 
-        context << ")";
+        s << ")";
+
+        return s.str();
     }
 }

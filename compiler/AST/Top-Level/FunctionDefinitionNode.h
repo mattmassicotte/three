@@ -11,6 +11,7 @@ namespace Three {
     public:
         virtual std::string name() const;
         std::string str() const;
+        void accept(ASTVisitor& visitor);
 
         Function* function() const;
 

@@ -42,9 +42,17 @@ namespace Three {
         return "AtomicExpression";
     }
 
+    void AtomicExpressionNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
+    OperatorNode* AtomicExpressionNode::op() const {
+        return dynamic_cast<OperatorNode*>(this->childAtIndex(0));
+    }
+
     void AtomicExpressionNode::codeGenAtomicVariable(CSourceContext& context, OperatorNode* op) {
         context << "(_Atomic(";
-        op->nodeType().codeGen(context, "");
+        context << op->nodeType().codeGen();
         context << ")*)";
         context << "&";
 
@@ -58,11 +66,11 @@ namespace Three {
         // what code we actually need to emit
         assert(this->childCount() == 1);
 
-        OperatorNode* op = dynamic_cast<OperatorNode*>(this->childAtIndex(0));
+        OperatorNode* op = this->op();
 
         context.adjustCurrent(context.declarations(), [&] (CSource* source) {
             *source << "THREE_CHECK_ATOMIC(";
-            op->nodeType().codeGen(context);
+            *source << op->nodeType().codeGen();
             source->printLine(");");
         });
 

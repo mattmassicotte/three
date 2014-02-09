@@ -34,21 +34,15 @@ namespace Three {
         return node;
     }
 
+    void FunctionCallOperatorNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     ASTNode* FunctionCallOperatorNode::receiver() const {
         return _receiver;
     }
 
     TypeReference FunctionCallOperatorNode::receiverNodeType() const {
-        if (this->receiverIsClosure()) {
-            // TODO: this is a crazy hack to make sure that
-            // our indirection level is correct for calling closures
-            TypeReference ref = _receiver->nodeType();
-
-            ref.incrementIndirectionDepth();
-
-            return ref;
-        }
-
         return _receiver->nodeType();
     }
 
@@ -65,7 +59,7 @@ namespace Three {
     void FunctionCallOperatorNode::codeGen(CSourceContext& context) {
         if (this->receiverIsClosure()) {
             context << "THREE_CALL_CLOSURE(";
-            this->_receiver->nodeType().codeGenFunction(context, "");
+            context << this->_receiver->nodeType().codeGenFunction("");
             context << ", ";
             this->_receiver->codeGen(context);
 

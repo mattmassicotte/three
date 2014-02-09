@@ -22,6 +22,10 @@ namespace Three {
         return "Else";
     }
 
+    void ElseNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     void ElseNode::codeGen(CSourceContext& context) {
         assert(0 && "ElseNode cannot be codegen'ed to C directly");
     }

@@ -33,6 +33,10 @@ namespace Three {
         return "MemberAccess";
     }
 
+    void MemberAccessNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     std::string MemberAccessNode::memberName() const {
         return _memberName;
     }

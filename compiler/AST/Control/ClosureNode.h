@@ -11,17 +11,21 @@ namespace Three {
 
     public:
         virtual std::string name() const;
+        void accept(ASTVisitor& visitor);
 
         std::vector<Variable*> capturedVariables() const;
         std::vector<Variable*> referencedVariables() const;
         void eachCapturedVariable(std::function<void (Variable*, bool, bool)> func) const;
+        std::string closureName() const;
+        Function* function() const;
+        bool hasReferences() const;
 
         void codeGen(CSourceContext& context);
-
+        std::string codeGenEnvironmentStructure() const;
+        std::string codeGenEnvironmentCapture() const;
+        
     private:
-        void codeGenEnvironmentStructure(CSourceContext& context) const;
         void codeGenBodyFunction(CSourceContext& context);
-        void codeGenEnvironmentCapture(CSourceContext& context) const;
 
     private:
         Function*   _function;

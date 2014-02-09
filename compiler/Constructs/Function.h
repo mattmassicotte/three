@@ -32,7 +32,7 @@ namespace Three {
         Variable* parameterAtIndex(uint32_t index) const;
         void      eachParameterWithLast(std::function<void (Variable*, bool)> func) const;
 
-        void codeGen(CSourceContext& context) const;
+        std::string codeGen() const;
 
     private:
         TypeReference          _returnType;

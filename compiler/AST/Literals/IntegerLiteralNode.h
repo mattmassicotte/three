@@ -10,6 +10,7 @@ namespace Three {
 
     public:
         virtual std::string name() const;
+        void accept(ASTVisitor& visitor);
 
         void setValue(uint64_t v);
         uint64_t value() const;

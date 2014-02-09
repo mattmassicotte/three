@@ -12,8 +12,11 @@ namespace Three {
 
     public:
         virtual std::string name() const;
+        void accept(ASTVisitor& visitor);
 
         std::string structureName() const;
+        std::vector<std::string> identifiers() const;
+        DataType* type() const;
 
         void codeGen(CSourceContext& context);
 

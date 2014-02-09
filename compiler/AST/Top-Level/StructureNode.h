@@ -10,6 +10,7 @@ namespace Three {
 
     public:
         virtual std::string name() const;
+        void accept(ASTVisitor& visitor);
 
         uint32_t packing() const;
         std::string structureName() const;

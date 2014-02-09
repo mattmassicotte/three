@@ -9,7 +9,8 @@ namespace Three {
 
     public:
         virtual ~LoopNode();
-        virtual std::string name() const;
+        std::string name() const;
+        void accept(ASTVisitor& visitor);
 
         ASTNode* condition() const;
         bool evaluateConditionAtEnd() const;

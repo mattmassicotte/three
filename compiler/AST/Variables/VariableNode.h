@@ -12,10 +12,13 @@ namespace Three {
         VariableNode();
 
         virtual TypeReference nodeType() const;
-
         virtual std::string name() const;
+        void accept(ASTVisitor& visitor);
+
         Variable* variable() const;
         void setVariable(Variable* var);
+        bool closed() const;
+        bool referenced() const;
 
         void codeGen(CSourceContext& context);
 

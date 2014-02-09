@@ -16,6 +16,10 @@ namespace Three {
         return "NullLiteral";
     }
 
+    void NullLiteralNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     void NullLiteralNode::codeGen(CSourceContext& context) {
         context << "NULL";
     }

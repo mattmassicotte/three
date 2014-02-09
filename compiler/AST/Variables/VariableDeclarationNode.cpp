@@ -7,6 +7,7 @@ namespace Three {
     VariableDeclarationNode* VariableDeclarationNode::parse(Parser& parser, bool createVariable) {
         VariableDeclarationNode* node = new VariableDeclarationNode();
 
+        node->global = false;
         node->_variable = new Variable();
 
         node->_variable->setType(parser.parseType());
@@ -21,7 +22,7 @@ namespace Three {
         if (parser.nextIf("=")) {
             node->_initializerExpression = parser.parseExpression();
         } else {
-            node->_initializerExpression = NULL;
+            node->_initializerExpression = nullptr;
         }
 
         // TODO: this isn't quite right.  These aren't always statements.  So far,
@@ -41,6 +42,14 @@ namespace Three {
         return "VariableDeclaration";
     }
 
+    TypeReference VariableDeclarationNode::nodeType() const {
+        return _variable->type();
+    }
+
+    void VariableDeclarationNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     Variable* VariableDeclarationNode::variable() const {
         return this->_variable;
     }
@@ -50,7 +59,7 @@ namespace Three {
     }
 
     void VariableDeclarationNode::codeGen(CSourceContext& context) {
-        this->_variable->type().codeGen(context, this->_variable->name());
+        context << this->_variable->type().codeGen(this->_variable->name());
 
         if (this->initializerExpression()) {
             context << " = ";

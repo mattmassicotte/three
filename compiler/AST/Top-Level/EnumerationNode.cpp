@@ -52,8 +52,20 @@ namespace Three {
         return "Enumeration";
     }
 
+    void EnumerationNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     std::string EnumerationNode::structureName() const {
         return _name;
+    }
+
+    std::vector<std::string> EnumerationNode::identifiers() const {
+        return _identifiers;
+    }
+
+    DataType* EnumerationNode::type() const {
+        return _type;
     }
 
     void EnumerationNode::codeGen(CSourceContext& context) {
@@ -75,15 +87,4 @@ namespace Three {
             source->printLine("");
         });
     }
-    
-    //     context.current()->printLineAndIndent("typedef enum {");
-    // 
-    //     for (uint32_t i = 0; i < _identifiers.size(); ++i) {
-    //         context.current()->printLine(_identifiers.at(i));
-    //     }
-    // 
-    //     context.current()->outdentAndPrintLine("} " + this->structureName() + ";");
-    // 
-    //     context.setCurrent(CSourceContext::Section::Body);
-    // }
 }

@@ -8,7 +8,11 @@ namespace Three {
         static ASTNode* parse(Parser& parser);
 
     public:
-        virtual std::string name() const;
+        std::string name() const;
+        void accept(ASTVisitor& visitor);
+
+        std::string transactionName() const;
+        ASTNode* elseClause() const;
 
         void codeGen(CSourceContext& context);
 

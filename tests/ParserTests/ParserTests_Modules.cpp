@@ -1,4 +1,4 @@
-#include "ParserTestBase.h"
+#include "../ParserTestBase.h"
 
 class ParserTest_Modules : public ParserTestBase {
 };

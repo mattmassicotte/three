@@ -3,6 +3,10 @@
 #include <assert.h>
 
 namespace Three {
+    void TernaryOperatorNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     void TernaryOperatorNode::codeGen(CSourceContext& context) {
         assert(this->childCount() == 3);
 

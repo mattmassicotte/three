@@ -29,6 +29,14 @@ namespace Three {
         return "Return";
     }
 
+    void ReturnNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
+    bool ReturnNode::endsTransaction() const {
+        return _endsTransaction;
+    }
+
     void ReturnNode::codeGen(CSourceContext& context) {
         if (this->_endsTransaction) {
             context << "three_transaction_end(";

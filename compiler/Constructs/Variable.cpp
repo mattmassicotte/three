@@ -25,6 +25,6 @@ namespace Three {
     }
 
     void Variable::codeGenCSourceForDefinition(CSource* source) {
-        this->type().codeGenCSource(source, this->name());
+        source->print(this->type().codeGen(this->name()));
     }
 }

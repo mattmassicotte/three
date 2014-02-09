@@ -10,8 +10,10 @@ namespace Three {
 
     public:
         virtual std::string name() const;
+        virtual void accept(ASTVisitor& visitor);
 
         std::string headerName() const;
+        TranslationUnit::Visibility visibility() const;
 
         void codeGen(CSourceContext& context);
 
