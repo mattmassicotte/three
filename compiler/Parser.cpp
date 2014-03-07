@@ -188,6 +188,8 @@ namespace Three {
                 return AtomicExpressionNode::parse(*this, false);
             case Token::Type::MetafunctionSizeOf:
                 return SizeofNode::parse(*this);
+            case Token::Type::MetafunctionCast:
+                return CastNode::parse(*this);
             default:
                 break;
         }

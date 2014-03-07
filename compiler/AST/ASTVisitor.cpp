@@ -106,6 +106,10 @@ namespace Three {
         std::cout << "Visiting sizeof" << std::endl;
     }
 
+    void ASTVisitor::visit(class CastNode& node) {
+        std::cout << "Visiting cast" << std::endl;
+    }
+
     void ASTVisitor::visit(class AbortStatementNode& node) {
         std::cout << "Visiting abort" << std::endl;
     }

@@ -28,12 +28,4 @@ namespace Three {
     TypeReference SizeofNode::argument() const {
         return _typeArgument;
     }
-
-    void SizeofNode::codeGen(CSourceContext& context) {
-        context << "sizeof(";
-
-        context << _typeArgument.codeGen();
-
-        context << ")";
-    }
 }

@@ -4,9 +4,9 @@
 #include "../../Constructs/TypeReference.h"
 
 namespace Three {
-    class SizeofNode : public ASTNode {
+    class CastNode : public ASTNode {
     public:
-        static SizeofNode* parse(Parser& parser);
+        static CastNode* parse(Parser& parser);
 
     public:
         std::string name() const;

@@ -22,6 +22,7 @@
 #include "AST/Literals/IntegerLiteralNode.h"
 #include "AST/Literals/NullLiteralNode.h"
 #include "AST/Literals/StringLiteralNode.h"
+#include "AST/MetaFunctions/CastNode.h"
 #include "AST/MetaFunctions/SizeofNode.h"
 #include "AST/Operators/BinaryOperatorNode.h"
 #include "AST/Operators/IndexerNode.h"

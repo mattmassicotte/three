@@ -404,6 +404,18 @@ namespace Three {
         *_currentSource << ")";
     }
 
+    void CCodeGenVisitor::visit(CastNode& node) {
+        assert(node.childCount() == 1);
+
+        *_currentSource << "(";
+        *_currentSource << node.argument().codeGen();
+        *_currentSource << ")";
+
+        *_currentSource << "(";
+        node.childAtIndex(0)->accept(*this);
+        *_currentSource << ")";
+    }
+
     void CCodeGenVisitor::visit(AbortStatementNode& node) {
         this->prepareForTransactions();
 
@@ -431,7 +443,7 @@ namespace Three {
             *_currentSource << "(";
             this->atomicVariable(node.op());
             *_currentSource << ", ";
-            node.op()->childAtIndex(1)->accept(*this);;
+            node.op()->childAtIndex(1)->accept(*this);
             *_currentSource << ", ";
             *_currentSource << this->c11MemoryOrderString(node.ordering());
             *_currentSource << ")";

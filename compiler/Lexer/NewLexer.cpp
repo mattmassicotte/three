@@ -13,6 +13,7 @@ namespace Three {
         _keywordMap["cas"] = Token::Type::OperatorCAS;
 
         _keywordMap["sizeof"] = Token::Type::MetafunctionSizeOf;
+        _keywordMap["cast"] = Token::Type::MetafunctionCast;
         _keywordMap["cardinalityof"] = Token::Type::MetafunctionCardinalityof;
         _keywordMap["alignof"] = Token::Type::MetafunctionAlignof;
         _keywordMap["offsetof"] = Token::Type::MetafunctionOffsetof;

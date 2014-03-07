@@ -44,6 +44,7 @@ namespace Three {
         void visit(class BreakNode& node);
         void visit(class ContinueNode& node);
         void visit(class SizeofNode& node);
+        void visit(class CastNode& node);
         void visit(class AbortStatementNode& node);
         void visit(class AtomicExpressionNode& node);
         void visit(class AtomicStatementNode& node);

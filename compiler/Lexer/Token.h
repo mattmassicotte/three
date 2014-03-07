@@ -83,6 +83,7 @@ namespace Three {
             OperatorCAS,
 
             MetafunctionSizeOf,
+            MetafunctionCast,
             MetafunctionAlignof,
             MetafunctionOffsetof,
             MetafunctionTypeof,

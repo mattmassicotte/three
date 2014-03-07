@@ -467,6 +467,13 @@ TEST_F(LexerTest, MetafunctionSizeOf) {
     ASSERT_NEXT_TOKEN(Undefined, "");
 }
 
+TEST_F(LexerTest, MetafunctionCast) {
+    this->lex("cast");
+
+    ASSERT_NEXT_TOKEN(MetafunctionCast, "cast");
+    ASSERT_NEXT_TOKEN(Undefined, "");
+}
+
 TEST_F(LexerTest, MetafunctionAlignof) {
     this->lex("alignof");
 
