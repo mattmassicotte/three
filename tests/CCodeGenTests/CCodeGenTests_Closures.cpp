@@ -50,7 +50,7 @@ TEST_F(CCodeGenTests_Closures, ClosureVariableCaptureWithReference) {
 
     EXPECT_EQ("// test_closure_1\n"
               "struct test_closure_1_env {\n"
-              "    const int* x;\n"
+              "    int* x;\n"
               "};\n"
               "static void test_closure_1(struct test_closure_1_env* self_env, int arg1) {\n"
               "    *(self_env->x) = 5;\n"

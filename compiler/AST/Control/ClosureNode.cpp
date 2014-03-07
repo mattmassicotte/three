@@ -186,7 +186,14 @@ namespace Three {
         this->eachCapturedVariable([&] (Variable* v, bool ref, bool last) {
             TypeReference refType = v->type();
 
-            s << "    " << "const ";
+            s << "    ";
+
+            // TODO: make it const only if it's not a pointer. There might be
+            // other places where it should be const, but I can't figure that out
+            // right now.
+            if (refType.indirectionDepth() == 0 && !ref) {
+                s << "const ";
+            }
 
             if (ref) {
                 // grab a copy of the referenced variable's type, bump up the indirection
