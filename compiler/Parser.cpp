@@ -246,13 +246,9 @@ namespace Three {
 #if DEBUG_PARSING
         std::cout << "Parser: parseSecondaryIdentifier: '" << this->peek().str() << "'" << std::endl;
 #endif
-        // possible function call, variable, or constant
+        // possible variable or constant
 
         std::string identifier = this->parseQualifiedIdentifier();
-
-        //if (this->peek().type() == Token::Type::PunctuationOpenParen) {
-        //    return FunctionCallNode::parse(*this, identifier, NULL);
-        //}
 
         if (this->currentModule()->definesConstant(identifier)) {
             return new ValueNode(identifier);

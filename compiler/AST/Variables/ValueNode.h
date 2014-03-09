@@ -8,11 +8,10 @@ namespace Three {
         ValueNode(const std::string& value);
 
         virtual std::string name() const;
+        void accept(ASTVisitor& visitor);
 
         void setValue(const std::string& value);
         std::string value() const;
-
-        void codeGen(CSourceContext& context);
 
     private:
         std::string _value;

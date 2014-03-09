@@ -87,16 +87,17 @@ TEST_F(ParserTest_Functions, MethodInvocation) {
     node = this->parse("def Int.test(Int b)\nend\n def invoke(*Int a)\n a.test(5)\nend\n");
     ASSERT_EQ(2, node->childCount());
 
+    node = node->childAtIndex(1); // def invoke
+
     // grab a reference to the method invocation
-    Three::FunctionCallNode* callNode;
-
-    callNode = dynamic_cast<Three::FunctionCallNode*>(node->childAtIndex(1)->childAtIndex(0));
-
-    ASSERT_EQ("FunctionCall", callNode->name());
-    ASSERT_EQ("Int_3_test", callNode->functionName());
-    ASSERT_EQ(2, callNode->childCount());
-    ASSERT_VARIABLE_NODE("Int",  1, "a", callNode->childAtIndex(0));
+    Three::FunctionCallOperatorNode* callNode = dynamic_cast<Three::FunctionCallOperatorNode*>(node->childAtIndex(0));
+    ASSERT_OPERATOR("()", callNode);
+    ASSERT_VARIABLE_NODE("Int", 1, "a", callNode->childAtIndex(0));
     ASSERT_INTEGER_LITERAL_NODE(5, callNode->childAtIndex(1));
+
+    // Make sure the receiver is the right kind
+    // TODO: the generated type "test" for the function is a little funny...
+    ASSERT_VARIABLE_NODE("test", 1, "Int_3_test", callNode->receiver());
 }
 
 TEST_F(ParserTest_Functions, SelfInMethodDefinition) {

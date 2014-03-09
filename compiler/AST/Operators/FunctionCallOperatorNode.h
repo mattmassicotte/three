@@ -5,7 +5,7 @@
 namespace Three {
     class FunctionCallOperatorNode : public OperatorNode {
     public:
-        static FunctionCallOperatorNode* parse(Parser& parser, ASTNode* receiver);
+        static FunctionCallOperatorNode* parse(Parser& parser, ASTNode* receiver, ASTNode* firstArg=nullptr);
 
     public:
         void accept(ASTVisitor& visitor);

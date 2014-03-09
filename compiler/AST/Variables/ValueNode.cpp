@@ -8,15 +8,15 @@ namespace Three {
         return "Value";
     }
 
+    void ValueNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
+    }
+
     void ValueNode::setValue(const std::string& value) {
         _value = value;
     }
 
     std::string ValueNode::value() const {
         return _value;
-    }
-
-    void ValueNode::codeGen(CSourceContext& context) {
-        context << this->value();
     }
 }

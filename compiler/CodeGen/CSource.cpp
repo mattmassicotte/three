@@ -149,7 +149,7 @@ namespace Three {
         return s.str();
     }
 
-    std::string CSource::renderToStringWithIncludeGuard(const std::string& name) {
+    std::string CSource::includeGuard(const std::string& name) {
         std::stringstream s;
 
         // #pragma once is a way, way better construct.  However, due to a bug in
@@ -164,8 +164,6 @@ namespace Three {
         s << "#define _GNU_SOURCE" << std::endl;
         s << "#endif" << std::endl << std::endl;
 #endif
-
-        s << this->renderToString();
 
         return s.str();
     }

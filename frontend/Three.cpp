@@ -1,5 +1,5 @@
 #include "../compiler/Parser.h"
-#include "../compiler/CodeGen/CSourceContext.h"
+#include "../compiler/Operations/CCodeGenVisitor.h"
 #include "../compiler/AST/ASTNode.h"
 #include "../compiler/CSourceIndexer.h"
 #include "REPL.h"
@@ -79,28 +79,30 @@ void getOptions(build_options_t* options, int argc, char** argv) {
 }
 
 bool createCOutputs(Three::ParsingContext* context, const std::string& basePath) {
-    Three::CSourceContext outputContext;
+    Three::CCodeGenVisitor visitor;
 
-    context->rootNode()->codeGen(outputContext);
-    
+    context->rootNode()->accept(visitor);
+
     std::ofstream bodyFile(basePath + ".c");
 
     // make sure to import the headers
-    outputContext.internalDeclarations()->addHeader(true, basePath + ".h");
-    outputContext.declarations()->addHeader(true, basePath + "_internal.h");
+    visitor.addInternalHeader(true, basePath + ".h");
+    visitor.addDeclarationsHeader(true, basePath + "_internal.h");
 
     bodyFile << "// Declarations" << std::endl;
-    bodyFile << outputContext.declarations()->renderToString();
+    bodyFile << visitor.declarationsString();
     bodyFile << std::endl << "// Definitions" << std::endl;
-    bodyFile << outputContext.body()->renderToString();
+    bodyFile << visitor.bodyString();
 
     std::ofstream internalHeaderFile(basePath + "_internal.h");
 
-    internalHeaderFile << outputContext.internalDeclarations()->renderToStringWithIncludeGuard("__" + basePath + "_internal__");
+    internalHeaderFile << Three::CSource::includeGuard("");
+    internalHeaderFile << visitor.internalHeaderString();
 
     std::ofstream externalHeaderFile(basePath + ".h");
 
-    externalHeaderFile << outputContext.externalDeclarations()->renderToStringWithIncludeGuard("__" + basePath + "__");
+    externalHeaderFile << Three::CSource::includeGuard("");
+    externalHeaderFile << visitor.externalHeaderString();
 
     return true;
 }

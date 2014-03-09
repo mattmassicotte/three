@@ -5,7 +5,7 @@
 #include "BinaryOperatorNode.h"
 #include "TernaryOperatorNode.h"
 #include "FunctionCallOperatorNode.h"
-#include "FunctionCallNode.h"
+#include "../Variables/VariableNode.h"
 #include "../../Parser.h"
 
 #include <assert.h>
@@ -86,7 +86,13 @@ namespace Three {
         if (op == ".") {
             if (leftNode->nodeType().indirectionDepth() == 1) {
                 parser.next();
-                return FunctionCallNode::parseMethod(parser, leftNode);
+
+                assert(parser.peek().type() == Token::Type::Identifier);
+                std::string functionName = leftNode->nodeType().name() + "_3_" + parser.next().str();
+
+                VariableNode* receiver = VariableNode::parse(parser, functionName);
+
+                return FunctionCallOperatorNode::parse(parser, receiver, leftNode);
             }
         }
 

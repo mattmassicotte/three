@@ -8,6 +8,9 @@
 namespace Three {
     class CSource {
     public:
+        static std::string includeGuard(const std::string& name);
+
+    public:
         CSource();
 
         void print(const char* string);
@@ -34,7 +37,6 @@ namespace Three {
         void setLinePositionToEnd();
 
         std::string renderToString();
-        std::string renderToStringWithIncludeGuard(const std::string& name);
 
     protected:
         void flushLineBuffer();

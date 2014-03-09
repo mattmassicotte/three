@@ -124,4 +124,8 @@ namespace Three {
     void ASTVisitor::visit(class BarrierNode& node) {
         std::cout << "Visiting barrier" << std::endl;
     }
+
+    void ASTVisitor::visit(class ValueNode& node) {
+        std::cout << "Visiting value" << std::endl;
+    }
 }

@@ -4,13 +4,17 @@
 #include <assert.h>
 
 namespace Three {
-    FunctionCallOperatorNode* FunctionCallOperatorNode::parse(Parser& parser, ASTNode* receiver) {
+    FunctionCallOperatorNode* FunctionCallOperatorNode::parse(Parser& parser, ASTNode* receiver, ASTNode* firstArg) {
         FunctionCallOperatorNode* node = new FunctionCallOperatorNode();
 
         node->_receiver = receiver;
         node->setOp("()");
 
         assert(parser.next().type() == Token::Type::PunctuationOpenParen);
+
+        if (firstArg) {
+            node->addChild(firstArg);
+        }
 
         // now, we need to parse the arguments, each of which
         // is an expression

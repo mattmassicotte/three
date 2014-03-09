@@ -49,6 +49,7 @@ namespace Three {
         void visit(class AtomicExpressionNode& node);
         void visit(class AtomicStatementNode& node);
         void visit(class BarrierNode& node);
+        void visit(class ValueNode& node);
 
         void visitChildren(class ASTNode& node);
 
@@ -56,6 +57,9 @@ namespace Three {
         std::string internalHeaderString();
         std::string declarationsString();
         std::string bodyString();
+
+        void addInternalHeader(bool relative, const std::string& path);
+        void addDeclarationsHeader(bool relative, const std::string& path);
 
     private:
         void forCondition(class ForNode& node);

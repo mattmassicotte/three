@@ -504,12 +504,16 @@ namespace Three {
         _currentSource->outdentAndPrintLine("}");
     }
 
-    void CCodeGenVisitor::visit(class BarrierNode& node) {
+    void CCodeGenVisitor::visit(BarrierNode& node) {
         this->prepareForAtomicExpressions();
 
         *_currentSource << "atomic_thread_fence(";
         *_currentSource << this->c11MemoryOrderString(node.ordering());
         _currentSource->printLine(");");
+    }
+
+    void CCodeGenVisitor::visit(ValueNode& node) {
+        *_currentSource << node.value();
     }
 
     // For Loop Support
@@ -646,6 +650,14 @@ namespace Three {
 
     std::string CCodeGenVisitor::bodyString() {
         return _bodySource.renderToString();
+    }
+
+    void CCodeGenVisitor::addInternalHeader(bool relative, const std::string& path) {
+        _internalHeaderSource.addHeader(relative, path);
+    }
+
+    void CCodeGenVisitor::addDeclarationsHeader(bool relative, const std::string& path) {
+        _declaractionsSource.addHeader(relative, path);
     }
 
     void CCodeGenVisitor::sourceForVisibility(TranslationUnit::Visibility v, std::function<void (CSource&)> func) {
