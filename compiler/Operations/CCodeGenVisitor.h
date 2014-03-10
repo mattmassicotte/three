@@ -20,7 +20,7 @@ namespace Three {
 
     public:
         void visit(class ASTNode& node);
-        void visit(class IncludeNode& node);
+        void visit(class ExternalSourceNode& node);
         void visit(class FunctionDefinitionNode& node);
         void visit(class VariableDeclarationNode& node);
         void visit(class ClosureNode& node);

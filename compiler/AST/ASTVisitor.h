@@ -6,7 +6,7 @@ namespace Three {
         ASTVisitor();
 
         virtual void visit(class ASTNode& node);
-        virtual void visit(class IncludeNode& node);
+        virtual void visit(class ExternalSourceNode& node);
         virtual void visit(class FunctionDefinitionNode& node);
         virtual void visit(class VariableDeclarationNode& node);
         virtual void visit(class ClosureNode& node);

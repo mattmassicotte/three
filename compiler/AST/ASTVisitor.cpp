@@ -10,8 +10,8 @@ namespace Three {
         std::cout << "Visiting node" << std::endl;
     }
 
-    void ASTVisitor::visit(class IncludeNode& node) {
-        std::cout << "Visiting include" << std::endl;
+    void ASTVisitor::visit(class ExternalSourceNode& node) {
+        std::cout << "Visiting external source" << std::endl;
     }
 
     void ASTVisitor::visit(class FunctionDefinitionNode& node) {

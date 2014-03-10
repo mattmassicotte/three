@@ -1,24 +1,19 @@
 #pragma once
 
-#include "../ASTNode.h"
-#include "../../Constructs/TranslationUnit.h"
+#include "ExternalSourceNode.h"
 
 namespace Three {
-    class IncludeNode : public ASTNode {
+    class IncludeNode : public ExternalSourceNode {
     public:
         static IncludeNode* parse(Parser& parser);
 
     public:
-        virtual std::string name() const;
-        virtual void accept(ASTVisitor& visitor);
+        std::string name() const;
 
         std::string headerName() const;
-        TranslationUnit::Visibility visibility() const;
-
-        void codeGen(CSourceContext& context);
+        bool relative() const;
 
     private:
         std::string _headerName;
-        TranslationUnit::Visibility _visibility;
     };
 }

@@ -14,9 +14,9 @@ namespace Three {
         this->visitChildren(node);
     }
 
-    void CCodeGenVisitor::visit(IncludeNode& node) {
+    void CCodeGenVisitor::visit(ExternalSourceNode& node) {
         this->sourceForVisibility(node.visibility(), [&] (CSource& source) {
-            source.addHeader(false, node.headerName());
+            source.addHeader(node.relative(), node.headerName());
         });
     }
 

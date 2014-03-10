@@ -23,8 +23,8 @@ namespace Three {
         CSourceIndexer index;
 
         if (!index.indexFileAtPath(node->resolvedFilePath())) {
-            std::cout << "Unable to import '" << node->path() << "'" << std::endl;
-            assert(0);
+            std::cout << "[Warning] Unable to import '" << node->path() << "'" << std::endl;
+            return node;
         }
 
         parser.currentModule()->addModule(node->resolvedFilePath(), index.module());
@@ -51,6 +51,14 @@ namespace Three {
         s << this->name() << ": \"" << this->path() << "\"";
 
         return s.str();
+    }
+
+    std::string ImportNode::headerName() const {
+        return this->path() + ".h";
+    }
+
+    bool ImportNode::relative() const {
+        return true;
     }
 
     void ImportNode::setPath(const std::string& value) {
@@ -82,11 +90,5 @@ namespace Three {
 
     Three::Module* ImportNode::module() const {
         return this->_module;
-    }
-
-    void ImportNode::codeGen(CSourceContext& context) {
-        context.adjustCurrentForVisibility(this->_visibility, [&] (CSource* source) {
-            source->addHeader(true, this->path() + ".h");
-        });
     }
 }

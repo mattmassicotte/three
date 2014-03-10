@@ -25,3 +25,15 @@ TEST_F(CCodeGenTests_Includes, PublicIncludeNode) {
     EXPECT_EQ("#include <stdio.h>\n#include <three/runtime/types.h>\n\n", visitor.externalHeaderString());
     EXPECT_EQ("", visitor.bodyString());
 }
+
+TEST_F(CCodeGenTests_Includes, ImportNode) {
+    ASTNode* node = this->parse("import TestImport\n");
+
+    CCodeGenVisitor visitor;
+
+    node->accept(visitor);
+
+    EXPECT_EQ("#include \"TestImport.h\"\n\n", visitor.internalHeaderString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor.externalHeaderString());
+    EXPECT_EQ("", visitor.bodyString());
+}
