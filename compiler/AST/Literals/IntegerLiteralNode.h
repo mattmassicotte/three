@@ -11,6 +11,7 @@ namespace Three {
     public:
         virtual std::string name() const;
         void accept(ASTVisitor& visitor);
+        TypeReference nodeType() const;
 
         void setValue(uint64_t v);
         uint64_t value() const;
@@ -19,5 +20,6 @@ namespace Three {
 
     private:
         uint64_t _value;
+        TypeReference _type;
     };
 }

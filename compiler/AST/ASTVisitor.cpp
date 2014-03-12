@@ -1,4 +1,5 @@
 #include "ASTVisitor.h"
+#include "../AST.h"
 
 #include <iostream>
 
@@ -6,8 +7,14 @@ namespace Three {
     ASTVisitor::ASTVisitor() {
     }
 
+    void ASTVisitor::visitChildren(ASTNode& node) {
+        node.eachChild([&] (ASTNode* child, uint32_t _) {
+            child->accept(*this);
+        });
+    }
+
     void ASTVisitor::visit(class ASTNode& node) {
-        std::cout << "Visiting node" << std::endl;
+        this->visitChildren(node);
     }
 
     void ASTVisitor::visit(class ExternalSourceNode& node) {
@@ -54,8 +61,12 @@ namespace Three {
         std::cout << "Visiting switch" << std::endl;
     }
 
-    void ASTVisitor::visit(class IfNode& node) {
-        std::cout << "Visiting if" << std::endl;
+    void ASTVisitor::visit(IfNode& node) {
+        node.condition()->accept(*this);
+        this->visitChildren(node);
+        if (node.elseStatement()) {
+            this->visitChildren(*node.elseStatement());
+        }
     }
 
     void ASTVisitor::visit(class StructureNode& node) {

@@ -68,6 +68,7 @@ namespace Three {
         void prepareForAtomicExpressions();
         void prepareForTransactions();
         void transactionAllocation(const std::string& name);
+        void endCurrentTransaction();
         std::string c11MemoryOrderString(AtomicNode::Ordering order) const;
         void atomicVariable(class OperatorNode* op);
         std::string c11AtomicFunctionForFullOperation(const std::string& op);
@@ -82,5 +83,8 @@ namespace Three {
         CSource _bodySource;
 
         CSource* _currentSource;
+
+        ASTNode* _activeEnsureClause;
+        uint32_t _tmpReturnValueCounter;
     };
 }

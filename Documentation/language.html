@@ -387,6 +387,23 @@ x ? y : z
 
   vprintf(<span class="string">"%d %d\n"</span>, ap2)
 <span class="keyword">end</span>
+
+
+
+
+
+
+
+
+<span class="keyword">def</span> scoped_cleanup(; <span class="keyword">Int</span> x)
+  <span class="keyword">if</span> function()
+    <span class="keyword">return</span> <span class="literal">0</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">return</span> <span class="literal">5</span>
+<span class="keyword">ensure</span>
+  cleanup_function()
+<span class="keyword">end</span>
                     </code></pre>
                 </td>
                 <td>
@@ -411,6 +428,16 @@ x ? y : z
     <span class="directive">va_end</span>(ap2);
     
     <span class="directive">va_end</span>(ap);
+}
+
+<span class="entity">int</span> scoped_cleanup(<span class="entity">void</span>) {
+    <span class="keyword">if</span> (function()) {
+        cleanup_function()
+        <span class="keyword">return</span> <span class="literal">0</span>
+    }
+
+    cleanup_function()
+    <span class="keyword">return</span> <span class="literal">5</span>
 }
                     </code></pre>
                 </td>

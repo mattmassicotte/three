@@ -1,6 +1,7 @@
 #include "FunctionDefinitionNode.h"
 #include "../../Parser.h"
 #include "../../Constructs/Variable.h"
+#include "../Control/EnsureNode.h"
 
 #include <assert.h>
 #include <sstream>
@@ -9,6 +10,7 @@ namespace Three {
     FunctionDefinitionNode* FunctionDefinitionNode::parse(Parser& parser) {
         FunctionDefinitionNode* node = new FunctionDefinitionNode();
 
+        node->_ensureBlock = nullptr;
         node->setVisibility(parser.context()->visibility());
 
         // take (and then clear) current annotations
@@ -43,9 +45,25 @@ namespace Three {
             parser.currentScope()->addVariable(v->name(), v);
         });
 
-        parser.parseUntilEnd([&] () {
-            node->addChild(parser.parseStatement());
+        // parse until we find an end or an ensure
+        parser.parseUntil(false, [&] (const Token& token) {
+            switch (token.type()) {
+                case Token::Type::KeywordEnd:
+                    return true;
+                case Token::Type::KeywordEnsure:
+                    node->_ensureBlock = EnsureNode::parse(parser);
+                    return true;
+                default:
+                    node->addChild(parser.parseStatement());
+                    return false;
+            }
         });
+
+        if (!node->_ensureBlock) {
+            // the ensure parses the end, so we'll only have one if we didn't
+            // encounter an ensure
+            assert(parser.next().type() == Token::Type::KeywordEnd);
+        }
 
         parser.popScope();
         parser.parseNewline();
@@ -71,6 +89,10 @@ namespace Three {
 
     Function* FunctionDefinitionNode::function() const {
         return _function;
+    }
+
+    ASTNode* FunctionDefinitionNode::ensureClause() const {
+        return _ensureBlock;
     }
 
     void FunctionDefinitionNode::codeGen(CSourceContext& context) {

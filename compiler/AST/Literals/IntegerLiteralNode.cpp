@@ -20,6 +20,10 @@ namespace Three {
 
         node->setValue(integerValue(parser.next().str()));
 
+        // TODO: This is not *quite* right, as the literal could have a few
+        // different types other than Int
+        node->_type = parser.context()->refForName("Int", 0);
+
         return node;
     }
 
@@ -50,6 +54,10 @@ namespace Three {
 
     void IntegerLiteralNode::accept(ASTVisitor& visitor) {
         visitor.visit(*this);
+    }
+
+    TypeReference IntegerLiteralNode::nodeType() const {
+        return _type;
     }
 
     void IntegerLiteralNode::setValue(uint64_t v) {

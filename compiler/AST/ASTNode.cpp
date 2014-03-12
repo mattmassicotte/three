@@ -25,6 +25,9 @@ namespace Three {
         return _childNodes.at(i);
     }
 
+    ASTNode* ASTNode::lastChild() const {
+        return _childNodes.back();
+    }
     uint32_t ASTNode::childCount() const {
         return _childNodes.size();
     }
@@ -56,6 +59,7 @@ namespace Three {
     }
 
     TypeReference ASTNode::nodeType() const {
+        assert(0 && "Accessing an ASTNode with an undefined type");
         return TypeReference();
     }
 

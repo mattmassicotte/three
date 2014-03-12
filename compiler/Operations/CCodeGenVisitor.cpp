@@ -8,6 +8,8 @@ namespace Three {
         _externalHeaderSource.addHeader(false, "three/runtime/types.h");
 
         _currentSource = &_bodySource;
+
+        _activeEnsureClause = nullptr;
     }
 
     void CCodeGenVisitor::visit(ASTNode& node) {
@@ -21,6 +23,10 @@ namespace Three {
     }
 
     void CCodeGenVisitor::visit(FunctionDefinitionNode& node) {
+        // codegen state
+        _activeEnsureClause = node.ensureClause();
+        _tmpReturnValueCounter = 0;
+
         std::string functionString = node.function()->codeGen();
 
         // Function Prototype
@@ -37,8 +43,17 @@ namespace Three {
 
         this->visitChildren(node);
 
+        // This does not need to happen if the last node is a return
+        if (node.ensureClause() && node.lastChild()->nodeName() != "Return") {
+            _currentSource->printLine("// ensure clause");
+            this->visitChildren(*node.ensureClause());
+        }
+
         _currentSource->outdentAndPrintLine("}");
         _currentSource->printLine(""); // add an extra newline for separation
+
+        // codegen state
+        _activeEnsureClause = nullptr;
     }
 
     void CCodeGenVisitor::visit(VariableDeclarationNode& node) {
@@ -316,19 +331,57 @@ namespace Three {
     }
 
     void CCodeGenVisitor::visit(ReturnNode& node) {
-        if (node.endsTransaction()) {
-            *_currentSource << "three_transaction_end(";
-            *_currentSource << "&tx1"; // TODO: not right
-            _currentSource->printLine(");");
-        }
+        // codegen state
+        _tmpReturnValueCounter++;
 
-        *_currentSource << "return";
-
+        // we can have zero or one children, but nothing else
         assert(node.childCount() < 2);
-        if (node.childCount() == 1) {
-            *_currentSource << " "; // space between keyword and expression
-            node.childAtIndex(0)->accept(*this);
+
+        // this is the easy case - no children
+        if (node.childCount() == 0) {
+            if (node.endsTransaction()) {
+                this->endCurrentTransaction();
+            }
+
+            if (_activeEnsureClause) {
+                _currentSource->printLine("// ensure clause");
+                _activeEnsureClause->accept(*this);
+            }
+
+            *_currentSource << "return";
+            return;
         }
+
+        // This return node has an expression
+        if (!node.endsTransaction() && !_activeEnsureClause) {
+            *_currentSource << "return ";
+            node.childAtIndex(0)->accept(*this);
+            return;
+        }
+        
+        std::stringstream s;
+
+        s << "tmp_return_value_" << _tmpReturnValueCounter;
+
+        std::string varName = s.str();
+
+        // we need a temp variable
+        *_currentSource << node.childAtIndex(0)->nodeType().codeGen(varName);
+
+        *_currentSource << " = ";
+        node.childAtIndex(0)->accept(*this);
+        _currentSource->printLine(";");
+
+        if (node.endsTransaction()) {
+            this->endCurrentTransaction();
+        }
+
+        if (_activeEnsureClause) {
+            _currentSource->printLine("// ensure clause");
+            _activeEnsureClause->accept(*this);
+        }
+
+        *_currentSource << "return " << varName;
     }
 
     void CCodeGenVisitor::visit(NullLiteralNode& node) {
@@ -480,8 +533,10 @@ namespace Three {
 
         this->visitChildren(node);
 
-        *_currentSource << "three_transaction_end(&" << node.transactionName();
-        _currentSource->printLine(");");
+        // This is unnecessary when the last statement is a return
+        if (node.lastChild()->nodeName() != "Return") {
+            this->endCurrentTransaction();
+        }
 
         if (node.elseClause()) {
             _currentSource->outdentAndPrintLine("} else {");
@@ -576,6 +631,12 @@ namespace Three {
         *_currentSource << name;
         *_currentSource << " = THREE_MAKE_DEFAULT_TRANSACTION()";
         _currentSource->printLine(";");
+    }
+
+    void CCodeGenVisitor::endCurrentTransaction() {
+        *_currentSource << "three_transaction_end(";
+        *_currentSource << "&tx1"; // TODO: not right
+        _currentSource->printLine(");");
     }
 
     std::string CCodeGenVisitor::c11MemoryOrderString(AtomicNode::Ordering order) const {

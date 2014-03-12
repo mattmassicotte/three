@@ -24,6 +24,7 @@ namespace Three {
 
         void     addChild(ASTNode* node);
         ASTNode* childAtIndex(uint32_t i) const;
+        ASTNode* lastChild() const;
         uint32_t childCount() const;
         void     eachChild(std::function<void (ASTNode*, uint32_t)> func);
         void     eachChildWithLast(std::function<void (ASTNode*, bool)> func);

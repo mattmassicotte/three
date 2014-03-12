@@ -199,3 +199,34 @@ TEST_F(CCodeGenTests_Atomics, ReturnStatementInAtomic) {
               "    }\n"
               "}\n\n", visitor.bodyString());
 }
+
+TEST_F(CCodeGenTests_Atomics, ReturnStatementInAtomicWithEnsure) {
+    ASTNode* node = this->parse("def test(Int x)\n"
+                                "  atomic\n"
+                                "    x = 1\n"
+                                "    return x + 1\n"
+                                "  end\n"
+                                "ensure\n"
+                                "  x = 5\n"
+                                "end\n");
+
+    CCodeGenVisitor visitor;
+
+    node->accept(visitor);
+
+    EXPECT_EQ("void test(int x) {\n"
+              "    three_transaction_t tx1 = THREE_MAKE_DEFAULT_TRANSACTION();\n"
+              "    if (three_transaction_begin(&tx1)) {\n"
+              "        x = 1;\n"
+              "        int tmp_return_value_1 = x + 1;\n"
+              "        three_transaction_end(&tx1);\n"
+              "        // ensure clause\n"
+              "        x = 5;\n"
+              "        return tmp_return_value_1;\n"
+              "    } else {\n"
+              "        assert(0 && \"transaction 'tx1' failed without any fallback path\");\n"
+              "    }\n"
+              "    // ensure clause\n"
+              "    x = 5;\n"
+              "}\n\n", visitor.bodyString());
+}

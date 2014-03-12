@@ -5,6 +5,8 @@ namespace Three {
     public:
         ASTVisitor();
 
+        virtual void visitChildren(class ASTNode& node);
+
         virtual void visit(class ASTNode& node);
         virtual void visit(class ExternalSourceNode& node);
         virtual void visit(class FunctionDefinitionNode& node);

@@ -14,10 +14,12 @@ namespace Three {
         void accept(ASTVisitor& visitor);
 
         Function* function() const;
+        ASTNode* ensureClause() const;
 
         void codeGen(CSourceContext& context);
 
     private:
         Function* _function;
+        ASTNode* _ensureBlock;
     };
 }
