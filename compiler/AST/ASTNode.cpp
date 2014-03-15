@@ -26,6 +26,10 @@ namespace Three {
     }
 
     ASTNode* ASTNode::lastChild() const {
+        if (this->childCount() == 0) {
+            return nullptr;
+        }
+
         return _childNodes.back();
     }
     uint32_t ASTNode::childCount() const {
