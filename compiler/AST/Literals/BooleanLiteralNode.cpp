@@ -19,6 +19,8 @@ namespace Three {
                 break;
         }
 
+        node->_type = parser.context()->refForName("Bool", 0);
+
         return node;
     }
 
@@ -30,11 +32,11 @@ namespace Three {
         visitor.visit(*this);
     }
 
-    bool BooleanLiteralNode::value() const {
-        return _value;
+    TypeReference BooleanLiteralNode::nodeType() const {
+        return _type;
     }
 
-    void BooleanLiteralNode::codeGen(CSourceContext& context) {
-        context << (this->value() ? "true" : "false");
+    bool BooleanLiteralNode::value() const {
+        return _value;
     }
 }

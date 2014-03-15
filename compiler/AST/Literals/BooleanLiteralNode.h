@@ -10,12 +10,12 @@ namespace Three {
     public:
         std::string name() const;
         void accept(ASTVisitor& visitor);
+        TypeReference nodeType() const;
 
         bool value() const;
 
-        void codeGen(CSourceContext& context);
-
     private:
         bool _value;
+        TypeReference _type;
     };
 }
