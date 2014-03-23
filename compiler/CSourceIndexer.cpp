@@ -197,7 +197,6 @@ namespace Three {
 
             _module->removeDataTypeForName(name);
             std::cout << "[Indexer] Redefining type '" << name << "' " << flavor << std::endl;
-            //assert(0 && "Redefintion of type during indexing");
         }
 
         // everything is good to define a new type

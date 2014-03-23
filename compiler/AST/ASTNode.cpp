@@ -63,7 +63,10 @@ namespace Three {
     }
 
     TypeReference ASTNode::nodeType() const {
-        assert(0 && "Accessing an ASTNode with an undefined type");
+        std::cout << "Accessing an ASTNode with an undefined type: " << this->nodeName() << std::endl;
+
+        assert(0);
+
         return TypeReference();
     }
 

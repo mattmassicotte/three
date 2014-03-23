@@ -122,7 +122,7 @@ namespace Three {
         }
 
         std::cout << "Scope: asked for a variable that does not exist '" << name << "'" << std::endl;
-
+        assert(0);
         return NULL;
     }
 

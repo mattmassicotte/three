@@ -1,7 +1,11 @@
 #include "ValueNode.h"
 
 namespace Three {
-    ValueNode::ValueNode(const std::string& value) : _value(value) {
+    ValueNode::ValueNode(const std::string& value, const TypeReference& type) : _value(value), _type(type) {
+    }
+
+    TypeReference ValueNode::nodeType() const {
+        return _type;
     }
 
     std::string ValueNode::name() const {
