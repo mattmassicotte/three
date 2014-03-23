@@ -251,7 +251,21 @@ namespace Three {
     }
 
     void CCodeGenVisitor::visit(StructureNode& node) {
-        this->sourceForVisibility(node.visibility(), [&] (CSource& source) {
+        // TODO: this is not right, but it greatly simplifies the header management needed.
+
+        if (node.visibility() == TranslationUnit::Visibility::External) {
+            this->sourceForVisibility(TranslationUnit::Visibility::External, [&node] (CSource& source) {
+                // create an opaque structure declaration
+                source.print("typedef struct ");
+                source.print(node.structureName());
+                source.print(" ");
+                source.print(node.structureName());
+                source.printLine(";");
+                source.printLine(""); 
+            });
+        }
+
+        this->sourceForVisibility(TranslationUnit::Visibility::Internal, [&] (CSource& source) {
             if (node.packing() != 0) {
                 std::stringstream s;
 
@@ -328,6 +342,19 @@ namespace Three {
         }
 
         assert(0 && "codegen for ternary operator not supported");
+    }
+
+    void CCodeGenVisitor::visit(IndexerNode& node) {
+        assert(node.childCount() == 2);
+
+        node.childAtIndex(0)->accept(*this);
+
+        *_currentSource << "[";
+
+        // index expression
+        node.childAtIndex(1)->accept(*this);
+
+        *_currentSource << "]";
     }
 
     void CCodeGenVisitor::visit(ReturnNode& node) {

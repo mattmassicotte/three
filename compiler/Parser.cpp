@@ -251,7 +251,18 @@ namespace Three {
         std::string identifier = this->parseQualifiedIdentifier();
 
         if (this->currentModule()->definesConstant(identifier)) {
-            return new ValueNode(identifier);
+            // TODO: Need to know the type of this node
+            TypeReference type = TypeReference::ref(this->currentModule(), "Void", 0);
+            ASTNode* value = new ValueNode(identifier, type);
+
+            // Ok, this part is a little on the awful side. I cannot figure out how to 
+            // differentiate between value macros and function-like macros. So, we need to determine
+            // how they are being used in code.
+            if (this->peek().type() != Token::Type::PunctuationOpenParen) {
+                return value;
+            }
+
+            return OperatorNode::parseTailing(*this, value);
         }
 
         return VariableNode::parse(*this, identifier);

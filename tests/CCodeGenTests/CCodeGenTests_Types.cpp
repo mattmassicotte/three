@@ -29,12 +29,9 @@ TEST_F(CCodeGenTests_Types, PublicStructure) {
 
     node->accept(visitor);
 
-    EXPECT_EQ("", visitor.internalHeaderString());
+    EXPECT_EQ("typedef struct Foo {\n    int x;\n    int y;\n} Foo;\n\n", visitor.internalHeaderString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n"
-              "typedef struct Foo {\n"
-              "    int x;\n"
-              "    int y;\n"
-              "} Foo;\n\n", visitor.externalHeaderString());
+              "typedef struct Foo Foo;\n\n", visitor.externalHeaderString());
     EXPECT_EQ("", visitor.bodyString());
 }
 
@@ -48,8 +45,8 @@ TEST_F(CCodeGenTests_Types, PrivateStructure) {
 
     node->accept(visitor);
 
-    EXPECT_EQ("", visitor.internalHeaderString());
-    EXPECT_EQ("typedef struct Foo {\n    int x;\n} Foo;\n\n", visitor.declarationsString());
+    EXPECT_EQ("typedef struct Foo {\n    int x;\n} Foo;\n\n", visitor.internalHeaderString());
+    EXPECT_EQ("", visitor.declarationsString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor.externalHeaderString());
     EXPECT_EQ("", visitor.bodyString());
 }
