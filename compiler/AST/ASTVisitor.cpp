@@ -85,6 +85,10 @@ namespace Three {
         std::cout << "Visiting ternary operator" << std::endl;
     }
 
+    void ASTVisitor::visit(class IndexerNode& node) {
+        this->visitChildren(node);
+    }
+
     void ASTVisitor::visit(class ReturnNode& node) {
         std::cout << "Visiting return" << std::endl;
     }

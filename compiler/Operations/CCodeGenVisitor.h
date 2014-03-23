@@ -36,6 +36,7 @@ namespace Three {
         void visit(class EnumerationNode& node);
         void visit(class MemberAccessNode& node);
         void visit(class TernaryOperatorNode& node);
+        void visit(class IndexerNode& node);
         void visit(class ReturnNode& node);
         void visit(class NullLiteralNode& node);
         void visit(class BooleanLiteralNode& node);

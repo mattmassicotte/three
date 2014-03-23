@@ -8,8 +8,7 @@ namespace Three {
         static IndexerNode* parse(Parser& parser, ASTNode* operand);
 
     public:
-        virtual std::string name() const;
-
-        void codeGen(CSourceContext& context);
+        std::string name() const;
+        void accept(ASTVisitor& visitor);
     };
 }

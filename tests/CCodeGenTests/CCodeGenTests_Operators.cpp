@@ -84,3 +84,16 @@ TEST_F(CCodeGenTests_Operators, CompoundAssignOperator) {
     EXPECT_EQ("void test(int a);\n", visitor.internalHeaderString());
     EXPECT_EQ("void test(int a) {\n    a |= 5;\n}\n\n", visitor.bodyString());
 }
+
+TEST_F(CCodeGenTests_Operators, Indexer) {
+    ASTNode* node = this->parse("def test(*Int a)\n"
+                                "  a[0] = 5\n"
+                                "end\n");
+
+    CCodeGenVisitor visitor;
+
+    node->accept(visitor);
+
+    EXPECT_EQ("void test(int* a);\n", visitor.internalHeaderString());
+    EXPECT_EQ("void test(int* a) {\n    a[0] = 5;\n}\n\n", visitor.bodyString());
+}

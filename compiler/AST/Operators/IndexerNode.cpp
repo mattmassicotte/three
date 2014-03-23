@@ -21,14 +21,7 @@ namespace Three {
         return "Indexer";
     }
 
-    void IndexerNode::codeGen(CSourceContext& context) {
-        this->childAtIndex(0)->codeGen(context);
-
-        context << "[";
-
-        // index expression
-        this->childAtIndex(1)->codeGen(context);
-
-        context << "]";
+    void IndexerNode::accept(ASTVisitor& visitor) {
+        visitor.visit(*this);
     }
 }
