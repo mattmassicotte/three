@@ -97,3 +97,29 @@ TEST_F(CCodeGenTests_Operators, Indexer) {
     EXPECT_EQ("void test(int* a);\n", visitor.internalHeaderString());
     EXPECT_EQ("void test(int* a) {\n    a[0] = 5;\n}\n\n", visitor.bodyString());
 }
+
+TEST_F(CCodeGenTests_Operators, UnaryMinus) {
+    ASTNode* node = this->parse("def test(Int a)\n"
+                                "  a = -a\n"
+                                "end\n");
+
+    CCodeGenVisitor visitor;
+
+    node->accept(visitor);
+
+    EXPECT_EQ("void test(int a);\n", visitor.internalHeaderString());
+    EXPECT_EQ("void test(int a) {\n    a = (-a);\n}\n\n", visitor.bodyString());
+}
+
+TEST_F(CCodeGenTests_Operators, UnaryNot) {
+    ASTNode* node = this->parse("def test(Bool a)\n"
+                                "  a = !a\n"
+                                "end\n");
+
+    CCodeGenVisitor visitor;
+
+    node->accept(visitor);
+
+    EXPECT_EQ("void test(bool a);\n", visitor.internalHeaderString());
+    EXPECT_EQ("void test(bool a) {\n    a = (!a);\n}\n\n", visitor.bodyString());
+}

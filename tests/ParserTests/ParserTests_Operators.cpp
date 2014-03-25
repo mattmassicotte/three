@@ -248,3 +248,25 @@ TEST_F(ParserTest_Operators, OrAssignmentOperator) {
     ASSERT_OPERATOR("||=", node);
     ASSERT_INTEGER_LITERAL_NODE(1, node->childAtIndex(1));
 }
+
+TEST_F(ParserTest_Operators, UnaryMinusOperator) {
+    Three::ASTNode* node;
+
+    node = this->parse("def test(Int a)\na = -a\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_OPERATOR("=", node);
+    ASSERT_OPERATOR("-", node->childAtIndex(1));
+    ASSERT_VARIABLE_NODE("Int",  0, "a", node->childAtIndex(1)->childAtIndex(0));
+}
+
+TEST_F(ParserTest_Operators, UnaryNotOperator) {
+    Three::ASTNode* node;
+
+    node = this->parse("def test(Bool a)\na = !a\nend\n");
+    node = node->childAtIndex(0)->childAtIndex(0);
+
+    ASSERT_OPERATOR("=", node);
+    ASSERT_OPERATOR("!", node->childAtIndex(1));
+    ASSERT_VARIABLE_NODE("Bool",  0, "a", node->childAtIndex(1)->childAtIndex(0));
+}
