@@ -34,6 +34,7 @@ namespace Three {
         virtual void visit(class ContinueNode& node);
         virtual void visit(class SizeofNode& node);
         virtual void visit(class CastNode& node);
+        virtual void visit(class NextargNode& node);
         virtual void visit(class AbortStatementNode& node);
         virtual void visit(class AtomicExpressionNode& node);
         virtual void visit(class AtomicStatementNode& node);

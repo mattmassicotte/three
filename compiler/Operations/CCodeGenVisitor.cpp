@@ -496,6 +496,14 @@ namespace Three {
         *_currentSource << ")";
     }
 
+    void CCodeGenVisitor::visit(NextargNode& node) {
+        *_currentSource << "va_arg(";
+        node.childAtIndex(0)->accept(*this);
+        *_currentSource << ", ";
+        *_currentSource << node.argument().codeGen();
+        *_currentSource << ")";
+    }
+
     void CCodeGenVisitor::visit(AbortStatementNode& node) {
         this->prepareForTransactions();
 

@@ -78,6 +78,8 @@ namespace Three {
             return "bool";
         } else if (this->name() == "Void") {
             return "void";
+        } else if (this->name() == "Vararg") {
+            return "va_list";
         }
 
         return this->fullyQualifiedName();

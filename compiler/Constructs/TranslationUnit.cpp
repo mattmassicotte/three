@@ -29,6 +29,7 @@ namespace Three {
         module->addDataType(new DataType(DataType::Flavor::Scalar, "Natural:32"));
         module->addDataType(new DataType(DataType::Flavor::Scalar, "Char"));
         module->addDataType(new DataType(DataType::Flavor::Scalar, "Bool"));
+        module->addDataType(new DataType(DataType::Flavor::Structure, "Vararg"));
 
         // function type: (Void; Void)
         DataType* type;

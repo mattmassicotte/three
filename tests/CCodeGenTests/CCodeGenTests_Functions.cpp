@@ -87,3 +87,19 @@ TEST_F(CCodeGenTests_Functions, FunctionReferences) {
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor.externalHeaderString());
     EXPECT_EQ("void foo(void) {\n}\n\nvoid test(void) {\n    void* ptr = (&foo);\n}\n\n", visitor.bodyString());
 }
+
+TEST_F(CCodeGenTests_Functions, Varargs) {
+    ASTNode* node = this->parse("def test(Vararg ap)\n"
+                                "  Int a = nextarg(Int, ap)\n"
+                                "end\n");
+
+    CCodeGenVisitor visitor;
+
+    node->accept(visitor);
+
+    EXPECT_EQ("void test(va_list ap);\n", visitor.internalHeaderString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor.externalHeaderString());
+    EXPECT_EQ("void test(va_list ap) {\n"
+              "    int a = va_arg(ap, int);\n"
+              "}\n\n", visitor.bodyString());
+}

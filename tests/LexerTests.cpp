@@ -656,10 +656,10 @@ TEST_F(LexerTest, KeywordVararg) {
     ASSERT_NEXT_TOKEN(Undefined, "");
 }
 
-TEST_F(LexerTest, KeywordVarargNext) {
+TEST_F(LexerTest, MetafunctionNextarg) {
     this->lex("nextarg");
 
-    ASSERT_NEXT_TOKEN(KeywordVarargNext, "nextarg");
+    ASSERT_NEXT_TOKEN(MetafunctionNextarg, "nextarg");
     ASSERT_NEXT_TOKEN(Undefined, "");
 }
 

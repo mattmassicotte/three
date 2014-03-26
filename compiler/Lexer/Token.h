@@ -89,6 +89,7 @@ namespace Three {
             MetafunctionTypeof,
             MetafunctionNameof,
             MetafunctionCardinalityof,
+            MetafunctionNextarg,
 
             KeywordDef,
             KeywordEnd,
@@ -111,7 +112,6 @@ namespace Three {
             KeywordBarrier,
             KeywordAbort,
             KeywordVararg,
-            KeywordVarargNext,
             KeywordPublic,
             KeywordPrivate,
             KeywordNamespace,

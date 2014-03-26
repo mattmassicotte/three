@@ -19,6 +19,7 @@ namespace Three {
         _keywordMap["offsetof"] = Token::Type::MetafunctionOffsetof;
         _keywordMap["typeof"] = Token::Type::MetafunctionTypeof;
         _keywordMap["nameof"] = Token::Type::MetafunctionNameof;
+        _keywordMap["nextarg"] = Token::Type::MetafunctionNextarg;
 
         _keywordMap["def"] = Token::Type::KeywordDef;
         _keywordMap["end"] = Token::Type::KeywordEnd;
@@ -41,7 +42,6 @@ namespace Three {
         _keywordMap["barrier"] = Token::Type::KeywordBarrier;
         _keywordMap["abort"] = Token::Type::KeywordAbort;
         _keywordMap["Vararg"] = Token::Type::KeywordVararg;
-        _keywordMap["nextarg"] = Token::Type::KeywordVarargNext;
         _keywordMap["public"] = Token::Type::KeywordPublic;
         _keywordMap["private"] = Token::Type::KeywordPrivate;
         _keywordMap["namespace"] = Token::Type::KeywordNamespace;

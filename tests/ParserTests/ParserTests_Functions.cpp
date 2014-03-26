@@ -140,3 +140,19 @@ TEST_F(ParserTest_Functions, FunctionCallDereference) {
     ASSERT_OPERATOR("*", node);
     ASSERT_OPERATOR("()", node->childAtIndex(0));
 }
+
+TEST_F(ParserTest_Functions, Varargs) {
+    ASTNode* node = this->parse("def test(Vararg ap)\n"
+                                "  Int a\n"
+                                "  a = nextarg(Int, ap)\n"
+                                "end\n");
+
+    node = node->childAtIndex(0);
+    ASSERT_FUNCTION_DEFINITION("test", node);
+    // TODO: verify the function parameters
+
+    node = node->childAtIndex(1);
+    ASSERT_OPERATOR("=", node);
+
+    ASSERT_EQ("Nextarg", node->childAtIndex(1)->nodeName());
+}

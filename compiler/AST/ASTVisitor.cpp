@@ -125,6 +125,10 @@ namespace Three {
         std::cout << "Visiting cast" << std::endl;
     }
 
+    void ASTVisitor::visit(class NextargNode& node) {
+        this->visitChildren(node);
+    }
+
     void ASTVisitor::visit(class AbortStatementNode& node) {
         std::cout << "Visiting abort" << std::endl;
     }

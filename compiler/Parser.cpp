@@ -190,6 +190,8 @@ namespace Three {
                 return SizeofNode::parse(*this);
             case Token::Type::MetafunctionCast:
                 return CastNode::parse(*this);
+            case Token::Type::MetafunctionNextarg:
+                return NextargNode::parse(*this);
             default:
                 break;
         }
@@ -584,6 +586,10 @@ namespace Three {
                     std::cout << "[Parser] Unable to up look type '" << typeName << "' or '" << namespacedName << "'" << std::endl;
                 }
 
+                break;
+            case Token::Type::KeywordVararg:
+                this->next();
+                dataType = this->currentModule()->dataTypeForName("Vararg");
                 break;
             case Token::Type::PunctuationOpenBrace:
             case Token::Type::PunctuationOpenParen:
