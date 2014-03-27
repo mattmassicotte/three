@@ -90,3 +90,53 @@ TEST_F(CCodeGenTests_Types, NamespacedEnumeration) {
               "typedef uint32_t Foo_3_Bar;\n\n", visitor.internalHeaderString());
     EXPECT_EQ("", visitor.bodyString());
 }
+
+TEST_F(CCodeGenTests_Types, SimpleBooleans) {
+    ASTNode* node = this->parse("Bool value\n");
+
+    CCodeGenVisitor visitor;
+
+    node->accept(visitor);
+
+    EXPECT_EQ("bool value;\n", visitor.bodyString());
+}
+
+TEST_F(CCodeGenTests_Types, SimpleInteger) {
+    ASTNode* node = this->parse("Int value\n");
+
+    CCodeGenVisitor visitor;
+
+    node->accept(visitor);
+
+    EXPECT_EQ("int value;\n", visitor.bodyString());
+}
+
+TEST_F(CCodeGenTests_Types, SimpleNatural) {
+    ASTNode* node = this->parse("Natural value\n");
+
+    CCodeGenVisitor visitor;
+
+    node->accept(visitor);
+
+    EXPECT_EQ("unsigned int value;\n", visitor.bodyString());
+}
+
+TEST_F(CCodeGenTests_Types, SimpleFloat) {
+    ASTNode* node = this->parse("Float value\n");
+
+    CCodeGenVisitor visitor;
+
+    node->accept(visitor);
+
+    EXPECT_EQ("float value;\n", visitor.bodyString());
+}
+
+TEST_F(CCodeGenTests_Types, SimpleFloat64) {
+    ASTNode* node = this->parse("Float:64 value\n");
+
+    CCodeGenVisitor visitor;
+
+    node->accept(visitor);
+
+    EXPECT_EQ("double value;\n", visitor.bodyString());
+}

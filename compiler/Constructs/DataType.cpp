@@ -80,6 +80,10 @@ namespace Three {
             return "void";
         } else if (this->name() == "Vararg") {
             return "va_list";
+        } else if (this->name() == "Float") {
+            return "float";
+        } else if (this->name() == "Float:64") {
+            return "double";
         }
 
         return this->fullyQualifiedName();

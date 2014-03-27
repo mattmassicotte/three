@@ -27,6 +27,8 @@ namespace Three {
         module->addDataType(new DataType(DataType::Flavor::Scalar, "Int:64"));
         module->addDataType(new DataType(DataType::Flavor::Scalar, "Natural"));
         module->addDataType(new DataType(DataType::Flavor::Scalar, "Natural:32"));
+        module->addDataType(new DataType(DataType::Flavor::Scalar, "Float"));
+        module->addDataType(new DataType(DataType::Flavor::Scalar, "Float:64"));
         module->addDataType(new DataType(DataType::Flavor::Scalar, "Char"));
         module->addDataType(new DataType(DataType::Flavor::Scalar, "Bool"));
         module->addDataType(new DataType(DataType::Flavor::Structure, "Vararg"));
