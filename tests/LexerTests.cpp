@@ -1,4 +1,4 @@
-#include "compiler/Lexer/NewLexer.h"
+#include "compiler/Lexer/Lexer.h"
 
 #include <assert.h>
 #include <gtest/gtest.h>
@@ -28,7 +28,7 @@ protected:
         _stream = new std::istringstream(inputString);
 
         assert(!_lexer);
-        _lexer = new Three::NewLexer(_stream);
+        _lexer = new Three::Lexer(_stream);
     }
 
     Three::Token next() {
@@ -37,7 +37,7 @@ protected:
 
 private:
     std::istringstream* _stream;
-    Three::NewLexer* _lexer;
+    Three::Lexer* _lexer;
 };
 
 TEST_F(LexerTest, Comment) {

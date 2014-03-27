@@ -23,7 +23,7 @@ namespace Three {
 
         std::istringstream inputString(processedString);
 
-        NewLexer lexer(&inputString);
+        Lexer lexer(&inputString);
         Parser parser(&lexer);
 
         parser.parse(context);
@@ -31,7 +31,7 @@ namespace Three {
         return context;
     }
 
-    Parser::Parser(NewLexer* lexer) : _lexer(lexer) {
+    Parser::Parser(Lexer* lexer) : _lexer(lexer) {
     }
 
     Parser::~Parser() {

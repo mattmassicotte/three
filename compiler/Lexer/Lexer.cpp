@@ -1,9 +1,9 @@
-#include "NewLexer.h"
+#include "Lexer.h"
 
 #include <assert.h>
 
 namespace Three {
-    NewLexer::NewLexer(std::istream* stream) {
+    Lexer::Lexer(std::istream* stream) {
         _lexer = new SubtokenLexer(stream);
 
         _keywordMap["true"] = Token::Type::LiteralTrue;
@@ -77,19 +77,19 @@ namespace Three {
         _filterWhitespace = true;
     }
 
-    NewLexer::~NewLexer() {
+    Lexer::~Lexer() {
         delete _lexer;
     }
 
-    Subtoken NewLexer::subtokenPeek() {
+    Subtoken Lexer::subtokenPeek() {
         return _lexer->peek();
     }
 
-    Subtoken NewLexer::subtokenAdvance() {
+    Subtoken Lexer::subtokenAdvance() {
         return _lexer->next();
     }
 
-    bool NewLexer::subtokenAdvanceIfEqual(const std::string& value) {
+    bool Lexer::subtokenAdvanceIfEqual(const std::string& value) {
         if (this->subtokenPeek().str() == value) {
             this->subtokenAdvance();
             return true;
@@ -98,7 +98,7 @@ namespace Three {
         return false;
     }
 
-    Token NewLexer::next() {
+    Token Lexer::next() {
         Token tmp;
 
         _tokenBuffer.push_back(this->advance());
@@ -111,7 +111,7 @@ namespace Three {
         return tmp;
     }
 
-    bool NewLexer::nextIf(const std::string& value) {
+    bool Lexer::nextIf(const std::string& value) {
         if (this->peek().str() == value) {
             this->next();
             return true;
@@ -120,7 +120,7 @@ namespace Three {
         return false;
     }
 
-    bool NewLexer::nextIf(Token::Type type) {
+    bool Lexer::nextIf(Token::Type type) {
         if (this->peek().type() == type) {
             this->next();
             return true;
@@ -129,7 +129,7 @@ namespace Three {
         return false;
     }
 
-    Token NewLexer::peek(unsigned int distance) {
+    Token Lexer::peek(unsigned int distance) {
         assert(distance > 0);
 
         for (int i = (distance - _tokenBuffer.size()); i > 0; --i) {
@@ -139,21 +139,21 @@ namespace Three {
         return _tokenBuffer.at(distance - 1);
     }
 
-    bool NewLexer::atEnd() {
+    bool Lexer::atEnd() {
         Token t = this->peek();
 
         return t.type() == Token::Type::EndOfInput || t.type() == Token::Type::Undefined;
     }
 
-    bool NewLexer::filterWhitespace() const {
+    bool Lexer::filterWhitespace() const {
         return _filterWhitespace;
     }
 
-    void NewLexer::setFilterWhitespace(bool value) {
+    void Lexer::setFilterWhitespace(bool value) {
         _filterWhitespace = value;
     }
 
-    Token NewLexer::advance() {
+    Token Lexer::advance() {
         Subtoken t = this->subtokenPeek();
 
         // Move past whitespace, if needed
@@ -196,7 +196,7 @@ namespace Three {
         return Token();
     }
 
-    Token NewLexer::lexWord() {
+    Token Lexer::lexWord() {
         Token::Type type = Token::Type::Identifier;
         Subtoken t = this->subtokenAdvance();
 
@@ -219,7 +219,7 @@ namespace Three {
         return Token(type, t.str());
     }
 
-    Token NewLexer::lexNumber() {
+    Token Lexer::lexNumber() {
         std::stringstream s;
 
         s << this->subtokenAdvance().str();
@@ -239,7 +239,7 @@ namespace Three {
         return Token(Token::Type::LiteralInteger, s.str());
     }
 
-    Token NewLexer::lexPunctuation() {
+    Token Lexer::lexPunctuation() {
         Subtoken t = this->subtokenAdvance();
 
         // simple cases, that have no compounding
@@ -415,7 +415,7 @@ namespace Three {
         return Token();
     }
 
-    Token NewLexer::lexAnnotation() {
+    Token Lexer::lexAnnotation() {
         Token::Type type = Token::Type::Undefined;
 
         assert(this->subtokenAdvance().str() == "@");

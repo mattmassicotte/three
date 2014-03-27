@@ -7,10 +7,10 @@
 #include <map>
 
 namespace Three {
-    class NewLexer {
+    class Lexer {
     public:
-        NewLexer(std::istream* stream);
-        virtual ~NewLexer();
+        Lexer(std::istream* stream);
+        virtual ~Lexer();
 
     protected:
         // working with the input stream
