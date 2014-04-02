@@ -3,13 +3,8 @@
 #include <assert.h>
 
 namespace Three {
-    void UnaryOperatorNode::codeGen(CSourceContext& context) {
-        assert(this->childCount() == 1);
-
-        context << "(";
-        context << this->op();
-        this->childAtIndex(0)->codeGen(context);
-        context << ")";
+    std::string UnaryOperatorNode::nodeName() const {
+        return "Unary Operator";
     }
 
     void UnaryOperatorNode::accept(ASTVisitor& visitor) {

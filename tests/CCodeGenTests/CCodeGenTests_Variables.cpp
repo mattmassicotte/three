@@ -1,41 +1,43 @@
-#include "../ParserTestBase.h"
-#include "compiler/Operations/CCodeGenVisitor.h"
+#include "CCodeGenTestsBase.h"
 
-class CCodeGenTests_Variables : public ParserTestBase {
+class CCodeGenTests_Variables : public CCodeGenTestsBase {
 };
 
-
 TEST_F(CCodeGenTests_Variables, VariableDeclarationWithInitializer) {
-    ASTNode* node = this->parse("def test(Int a)\nInt b = a\nend\n");
+    Three::CCodeGenVisitor* visitor = this->visit("def test(Int a)\nInt b = a\nend\n");
 
-    CCodeGenVisitor visitor;
-
-    node->accept(visitor);
-
-    EXPECT_EQ("void test(int a);\n", visitor.internalHeaderString());
-    EXPECT_EQ("void test(int a) {\n    int b = a;\n}\n\n", visitor.bodyString());
+    EXPECT_EQ("void test(int a);\n", visitor->internalHeaderString());
+    EXPECT_EQ("void test(int a) {\n    int b = a;\n}\n\n", visitor->bodyString());
 }
 
 TEST_F(CCodeGenTests_Variables, SimpleGlobalVariable) {
-    ASTNode* node = this->parse("Int a\n");
+    Three::CCodeGenVisitor* visitor = this->visit("Int a = 0\n");
 
-    CCodeGenVisitor visitor;
+    EXPECT_EQ("extern int a;\n", visitor->internalHeaderString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
+    EXPECT_EQ("int a = 0;\n", visitor->bodyString());
+}
 
-    node->accept(visitor);
+TEST_F(CCodeGenTests_Variables, PrivateGlobalVariable) {
+    Three::CCodeGenVisitor* visitor = this->visit("private\nInt a\n");
 
-    EXPECT_EQ("extern int a;\n", visitor.internalHeaderString());
-    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor.externalHeaderString());
-    EXPECT_EQ("int a;\n", visitor.bodyString());
+    EXPECT_EQ("", visitor->internalHeaderString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
+    EXPECT_EQ("static int a;\n", visitor->bodyString());
+}
+
+TEST_F(CCodeGenTests_Variables, PublicGlobalVariable) {
+    Three::CCodeGenVisitor* visitor = this->visit("public\nInt a = 0\n");
+
+    EXPECT_EQ("", visitor->internalHeaderString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\nextern int a;\n", visitor->externalHeaderString());
+    EXPECT_EQ("int a = 0;\n", visitor->bodyString());
 }
 
 TEST_F(CCodeGenTests_Variables, FunctionPointerVariable) {
-    ASTNode* node = this->parse("*(*Void; *Void) fn_ptr\n");
+    Three::CCodeGenVisitor* visitor = this->visit("*(*Void; *Void) fn_ptr\n");
 
-    CCodeGenVisitor visitor;
-
-    node->accept(visitor);
-
-    EXPECT_EQ("extern void* (*fn_ptr)(void*);\n", visitor.internalHeaderString());
-    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor.externalHeaderString());
-    EXPECT_EQ("void* (*fn_ptr)(void*);\n", visitor.bodyString());
+    EXPECT_EQ("extern void* (*fn_ptr)(void*);\n", visitor->internalHeaderString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
+    EXPECT_EQ("void* (*fn_ptr)(void*);\n", visitor->bodyString());
 }

@@ -5,17 +5,17 @@
 namespace Three {
     class LoopNode : public ASTNode {
     public:
-        static LoopNode* parse(Parser& parser);
+        static LoopNode* parse(NewParser& parser);
 
     public:
         virtual ~LoopNode();
+
+        std::string nodeName() const;
         std::string name() const;
         void accept(ASTVisitor& visitor);
 
         ASTNode* condition() const;
         bool evaluateConditionAtEnd() const;
-
-        void codeGen(CSourceContext& context);
 
     private:
         ASTNode* _condition;

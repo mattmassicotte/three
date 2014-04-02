@@ -1,17 +1,18 @@
 #include "ForNode.h"
-#include "../../Parser.h"
 #include "../Variables/VariableDeclarationNode.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 
 namespace Three {
-    ForNode* ForNode::parse(Parser& parser) {
+    ForNode* ForNode::parse(NewParser& parser) {
+        assert(parser.helper()->nextIf(Token::Type::KeywordFor));
+
         ForNode* node = new ForNode();
 
-        assert(parser.next().type() == Token::Type::KeywordFor);
-        assert(parser.next().type() == Token::Type::PunctuationOpenParen);
-
-        node->_evaluateConditionAtEnd = false;
+        if (!parser.helper()->nextIf(Token::Type::PunctuationOpenParen)) {
+            assert(0 && "Message: for loop must start with an open-paren");
+        }
 
         bool foundVariable = parser.isAtType();
         if (foundVariable) {
@@ -21,28 +22,47 @@ namespace Three {
             node->_startExpression = parser.parseExpression();
         }
 
-        if (parser.nextIf("in")) {
-            node->_condition = NULL;
-            node->_loopExpression = NULL;
+        if (parser.helper()->nextIf("in")) {
+            node->_condition = nullptr;
+            node->_loopExpression = nullptr;
 
-            assert(foundVariable && "A ranged for loop must define a local variable");
+            if (!foundVariable) {
+                assert(0 && "Message: A ranged for loop must define a local variable");
+            }
 
             node->_rangeStartExpression = parser.parseExpression();
-            assert(parser.next().type() == Token::Type::PunctuationColon);
+
+            if (!parser.helper()->nextIf(Token::Type::PunctuationColon)) {
+                assert(0 && "Message: A range must be seperated by a colon");
+            }
+
             node->_rangeEndExpression = parser.parseExpression();
         } else {
-            node->_rangeStartExpression = NULL;
-            node->_rangeEndExpression = NULL;
-            assert(parser.next().type() == Token::Type::PunctuationSemicolon);
+            node->_rangeStartExpression = nullptr;
+            node->_rangeEndExpression = nullptr;
+
+            if (!parser.helper()->nextIf(Token::Type::PunctuationSemicolon)) {
+                assert(0 && "Message: for loop expected a semi-colon");
+            }
+
             node->_condition = parser.parseExpression();
-            assert(parser.next().type() == Token::Type::PunctuationSemicolon);
+
+            if (!parser.helper()->nextIf(Token::Type::PunctuationSemicolon)) {
+                assert(0 && "Message: for loop expected a semi-colon");
+            }
+
             node->_loopExpression = parser.parseExpression();
         }
 
-        assert(parser.next().type() == Token::Type::PunctuationCloseParen);
-        parser.parseNewline();
+        if (!parser.helper()->nextIf(Token::Type::PunctuationCloseParen)) {
+            assert(0 && "Message: for loop should finish with a close-paren");
+        }
 
-        parser.parseUntilEnd([&] () {
+        if (!parser.helper()->parseNewline()) {
+            assert(0 && "Message: for loop should end with a newline");
+        }
+
+        parser.helper()->parseUntilEnd([&] () {
             node->addChild(parser.parseStatement());
         });
 
@@ -61,6 +81,10 @@ namespace Three {
         if (_loopExpression) {
             delete _loopExpression;
         }
+    }
+
+    std::string ForNode::nodeName() const {
+        return "For";
     }
 
     std::string ForNode::name() const {
@@ -91,72 +115,7 @@ namespace Three {
         return _rangeEndExpression;
     }
 
-    Variable* ForNode::rangeLoopVariable() const {
+    NewVariable* ForNode::rangeLoopVariable() const {
         return dynamic_cast<VariableDeclarationNode*>(this->startExpression())->variable();
-    }
-
-    bool ForNode::evaluateConditionAtEnd() const {
-        return _evaluateConditionAtEnd;
-    }
-
-    void ForNode::codeGen(CSourceContext& context) {
-        context << "for (";
-
-        this->codeGenStartExpression(context);
-        context << "; ";
-
-        this->codeGenCondition(context);
-        context << "; ";
-
-        this->codeGenLoopExpression(context);
-
-        context.current()->printLineAndIndent(") {");
-        this->codeGenChildren(context);
-        context.current()->outdentAndPrintLine("}");
-    }
-
-    void ForNode::codeGenCondition(CSourceContext& context) const {
-        if (this->condition()) {
-            this->condition()->codeGen(context);
-            return;
-        }
-
-        assert(_rangeStartExpression && _rangeEndExpression);
-
-        context << "(";
-        context << this->rangeLoopVariable()->name();
-        context << " < ";
-
-        this->rangeEndExpression()->codeGen(context);
-
-        context << ") && (";
-
-        this->rangeStartExpression()->codeGen(context);
-
-        context << " < ";
-
-        this->rangeEndExpression()->codeGen(context);
-
-        context << ")";
-    }
-
-    void ForNode::codeGenStartExpression(CSourceContext& context) const {
-        this->startExpression()->codeGen(context);
-
-        if (_rangeStartExpression) {
-            context << " = ";
-            this->rangeStartExpression()->codeGen(context);
-        }
-    }
-
-    void ForNode::codeGenLoopExpression(CSourceContext& context) const {
-        if (this->loopExpression()) {
-            this->loopExpression()->codeGen(context);
-            return;
-        }
-
-        assert(_rangeStartExpression && _rangeEndExpression);
-
-        context << "++" << this->rangeLoopVariable()->name();
     }
 }

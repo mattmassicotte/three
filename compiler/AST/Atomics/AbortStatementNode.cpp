@@ -1,17 +1,24 @@
 #include "AbortStatementNode.h"
-#include "../../Parser.h"
+#include "compiler/Parser/NewParser.h"
+#include "compiler/constructs/NewScope.h"
 
 #include <assert.h>
 
 namespace Three {
-    AbortStatementNode* AbortStatementNode::parse(Parser& parser) {
+    AbortStatementNode* AbortStatementNode::parse(NewParser& parser) {
+        assert(parser.helper()->nextIf(Token::Type::KeywordAbort));
+
         AbortStatementNode* node = new AbortStatementNode();
 
-        assert(parser.next().type() == Token::Type::KeywordAbort);
-
         node->setStatement(true);
+        node->_transactionName = parser.context()->scope()->currentScopedName("tx");
+        assert(node->_transactionName.size() > 0 && "Message: abort must appear inside a transaction");
 
         return node;
+    }
+
+    std::string AbortStatementNode::nodeName() const {
+        return "Abort";
     }
 
     std::string AbortStatementNode::name() const {
@@ -22,12 +29,7 @@ namespace Three {
         visitor.visit(*this);
     }
 
-    void AbortStatementNode::codeGen(CSourceContext& context) {
-        context.declarations()->addHeader(false, "three/runtime/transactional_memory.h");
-
-        context << "three_transaction_abort(&";
-        // TODO: transaction name will need to tracked somehow
-        context << "tx1";
-        context << ")";
+    std::string AbortStatementNode::transactionName() const {
+        return _transactionName;
     }
 }

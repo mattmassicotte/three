@@ -6,9 +6,6 @@
 namespace Three {
     class DefinitionNode : public ASTNode {
     public:
-        static ASTNode* parse(Parser& parser, bool inModule);
-
-    public:
         DefinitionNode();
 
         void setVisibility(TranslationUnit::Visibility visibility);

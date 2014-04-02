@@ -1,13 +1,13 @@
 #include "BooleanLiteralNode.h"
-#include "../../Parser.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 
 namespace Three {
-    BooleanLiteralNode* BooleanLiteralNode::parse(Parser& parser) {
+    BooleanLiteralNode* BooleanLiteralNode::parse(NewParser& parser) {
         BooleanLiteralNode* node = new BooleanLiteralNode();
 
-        switch (parser.next().type()) {
+        switch (parser.helper()->next().type()) {
             case Token::Type::LiteralTrue:
                 node->_value = true;
                 break;
@@ -15,13 +15,17 @@ namespace Three {
                 node->_value = false;
                 break;
             default:
-                assert(0 && "Expected boolean literal");
+                assert(0 && "Message: Expected boolean literal");
                 break;
         }
 
-        node->_type = parser.context()->refForName("Bool", 0);
+        node->setDataType(parser.context()->typeKindWithName("Bool"));
 
         return node;
+    }
+
+    std::string BooleanLiteralNode::nodeName() const {
+        return "Boolean Literal";
     }
 
     std::string BooleanLiteralNode::name() const {
@@ -30,10 +34,6 @@ namespace Three {
 
     void BooleanLiteralNode::accept(ASTVisitor& visitor) {
         visitor.visit(*this);
-    }
-
-    TypeReference BooleanLiteralNode::nodeType() const {
-        return _type;
     }
 
     bool BooleanLiteralNode::value() const {

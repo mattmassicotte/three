@@ -1,39 +1,26 @@
-#include "../ParserTestBase.h"
-#include "compiler/Operations/CCodeGenVisitor.h"
+#include "CCodeGenTestsBase.h"
 
-class CCodeGenTests_Includes : public ParserTestBase {
+class CCodeGenTests_Includes : public CCodeGenTestsBase {
 };
 
 TEST_F(CCodeGenTests_Includes, IncludeNode) {
-    ASTNode* node = this->parse("include \"stdio.h\"\n");
+    Three::CCodeGenVisitor* visitor = this->visit("include <stdio.h>\n");
 
-    CCodeGenVisitor visitor;
-
-    node->accept(visitor);
-
-    EXPECT_EQ("#include <stdio.h>\n\n", visitor.internalHeaderString());
+    EXPECT_EQ("#include <stdio.h>\n\n", visitor->internalHeaderString());
 }
 
 TEST_F(CCodeGenTests_Includes, PublicIncludeNode) {
-    ASTNode* node = this->parse("public\ninclude \"stdio.h\"\n");
+    Three::CCodeGenVisitor* visitor = this->visit("public\ninclude <stdio.h>\n");
 
-    CCodeGenVisitor visitor;
-
-    node->accept(visitor);
-
-    EXPECT_EQ("", visitor.internalHeaderString());
-    EXPECT_EQ("#include <stdio.h>\n#include <three/runtime/types.h>\n\n", visitor.externalHeaderString());
-    EXPECT_EQ("", visitor.bodyString());
+    EXPECT_EQ("", visitor->internalHeaderString());
+    EXPECT_EQ("#include <stdio.h>\n#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
+    EXPECT_EQ("", visitor->bodyString());
 }
 
 TEST_F(CCodeGenTests_Includes, ImportNode) {
-    ASTNode* node = this->parse("import TestImport\n");
+    Three::CCodeGenVisitor* visitor = this->visit("import TestImport\n");
 
-    CCodeGenVisitor visitor;
-
-    node->accept(visitor);
-
-    EXPECT_EQ("#include \"TestImport.h\"\n\n", visitor.internalHeaderString());
-    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor.externalHeaderString());
-    EXPECT_EQ("", visitor.bodyString());
+    EXPECT_EQ("#include \"TestImport.h\"\n\n", visitor->internalHeaderString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
+    EXPECT_EQ("", visitor->bodyString());
 }

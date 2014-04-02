@@ -5,9 +5,12 @@
 namespace Three {
     class ImportNode : public ExternalSourceNode {
     public:
-        static ImportNode* parse(Parser& parser);
+        static ImportNode* parse(NewParser& parser);
 
     public:
+        std::string nodeName() const;
+        void accept(ASTVisitor& visitor);
+
         std::string name() const;
         std::string str() const;
 
@@ -16,10 +19,8 @@ namespace Three {
         void setPath(const std::string& value);
         std::string path() const;
         std::string resolvedFilePath() const;
-        Three::Module* module() const;
 
     private:
-        std::string    _path;
-        Three::Module* _module;
+        std::string _path;
     };
 }

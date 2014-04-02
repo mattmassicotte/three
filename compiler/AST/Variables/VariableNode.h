@@ -1,30 +1,32 @@
 #pragma once
 
 #include "../ASTNode.h"
-#include "../../Constructs/Variable.h"
+#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/NewVariable.h"
 
 namespace Three {
     class VariableNode : public ASTNode {
     public:
-        static VariableNode* parse(Parser& parser, const std::string& identifier);
+        static VariableNode* parse(NewParser& parser, const std::string& identifier);
 
     public:
         VariableNode();
 
-        virtual TypeReference nodeType() const;
-        virtual std::string name() const;
+        NewDataType dataType() const;
+        virtual std::string nodeName() const;
         void accept(ASTVisitor& visitor);
 
-        Variable* variable() const;
-        void setVariable(Variable* var);
+        std::string name() const;
+        std::string str() const;
+
+        NewVariable* newVariable() const;
         bool closed() const;
         bool referenced() const;
 
-        void codeGen(CSourceContext& context);
-
     private:
-        Variable* _variable;
+        NewVariable* _newVariable;
         bool      _referenced;
         bool      _closed;
+        std::string _name;
     };
 }

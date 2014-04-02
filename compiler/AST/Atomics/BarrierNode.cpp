@@ -1,13 +1,13 @@
 #include "BarrierNode.h"
-#include "../../Parser.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 
 namespace Three {
-    BarrierNode* BarrierNode::parse(Parser& parser) {
-        BarrierNode* node = new BarrierNode();
+    BarrierNode* BarrierNode::parse(NewParser& parser) {
+        assert(parser.helper()->nextIf(Token::Type::KeywordBarrier));
 
-        assert(parser.next().type() == Token::Type::KeywordBarrier);
+        BarrierNode* node = new BarrierNode();
 
         AtomicNode::parseOrdering(parser, node);
 
@@ -20,13 +20,5 @@ namespace Three {
 
     void BarrierNode::accept(ASTVisitor& visitor) {
         visitor.visit(*this);
-    }
-
-    void BarrierNode::codeGen(CSourceContext& context) {
-        context.declarations()->addHeader(false, "three/runtime/atomic.h");
-
-        context << "atomic_thread_fence(";
-        context << this->c11MemoryOrderString();
-        context.current()->printLine(");");
     }
 }

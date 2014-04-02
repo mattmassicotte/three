@@ -1,84 +1,177 @@
 #include "FunctionDefinitionNode.h"
-#include "../../Parser.h"
-#include "../../Constructs/Variable.h"
-#include "../Control/EnsureNode.h"
+#include "compiler/Parser/NewParser.h"
+#include "compiler/Lexer/Lexer.h"
+#include "compiler/constructs/NewScope.h"
+#include "compiler/AST/Atomics/AtomicNode.h"
 
 #include <assert.h>
 #include <sstream>
 
 namespace Three {
-    FunctionDefinitionNode* FunctionDefinitionNode::parse(Parser& parser) {
+    FunctionDefinitionNode* FunctionDefinitionNode::parse(NewParser& parser) {
+        assert(parser.helper()->nextIf(Token::Type::KeywordDef));
+
         FunctionDefinitionNode* node = new FunctionDefinitionNode();
 
-        node->_ensureBlock = nullptr;
         node->setVisibility(parser.context()->visibility());
+        node->namespaceComponents = parser.context()->scope()->fullNamespace();
 
-        // take (and then clear) current annotations
-        node->setAnnotations(parser.currentScope()->annotations());
-        parser.currentScope()->clearAnnotations();
-
-        node->_function = parser.parseFunctionSignature();
-        assert(node->_function);
-
-        parser.parseNewline();
-
-        // define the function in the current module
-        parser.currentModule()->addFunction(node->_function->fullyQualifiedName(), node->_function);
-
-        // define a variable for the function, so it can be referred to
-        Variable* var = new Variable();
-
-        // use the fullyQualifiedName here, so when it is codegen'ed, we get the
-        // right symbol
-        var->setName(node->_function->fullyQualifiedName());
-
-        // TODO: this createType usage is a leak
-        var->setType(TypeReference(node->_function->createType(), 1));
-
-        parser.currentScope()->addVariable(node->_function->fullyQualifiedName(), var);
-
-        // push in a new scope for the function body
-        parser.pushScope(new Scope(node->_function->fullyQualifiedName()));
-
-        // define new variables for all parameters
-        node->_function->eachParameterWithLast([&] (Variable* v, bool last) {
-            parser.currentScope()->addVariable(v->name(), v);
-        });
-
-        // parse until we find an end or an ensure
-        parser.parseUntil(false, [&] (const Token& token) {
-            switch (token.type()) {
-                case Token::Type::KeywordEnd:
-                    return true;
-                case Token::Type::KeywordEnsure:
-                    node->_ensureBlock = EnsureNode::parse(parser);
-                    return true;
-                default:
-                    node->addChild(parser.parseStatement());
-                    return false;
-            }
-        });
-
-        if (!node->_ensureBlock) {
-            // the ensure parses the end, so we'll only have one if we didn't
-            // encounter an ensure
-            assert(parser.next().type() == Token::Type::KeywordEnd);
+        if (parser.helper()->peek().type() != Token::Type::Identifier) {
+            assert(0 && "Message: Expected function name or method type");
         }
 
-        parser.popScope();
-        parser.parseNewline();
+        // we have a method
+        if (parser.helper()->peek(2).type() == Token::Type::OperatorDot) {
+            if (!parser.context()->definesTypeWithName(parser.helper()->peek().str())) {
+                assert(0 && "Message: Method found, but type not recognized");
+            }
+
+            node->_methodOnType = parser.context()->dataTypeForName(parser.helper()->nextStr());
+
+            assert(parser.helper()->nextIf(Token::Type::OperatorDot));
+        }
+
+        // sanity check the type we are at, and make sure we can actually
+        // use the name selected
+        assert(parser.helper()->peek().type() == Token::Type::Identifier);
+        if (!parser.isAtIdentifierAvailableForDefinition()) {
+            assert(0 && "Message: function name isn't avaiable for definition");
+        }
+
+        node->_name = parser.helper()->nextStr();
+
+        // parse signature
+        node->_functionType = parser.parseFunctionSignatureType();
+        node->_functionType.setLabel(node->fullName());
+        if (!parser.context()->defineFunctionForName(NewDataType(NewDataType::Kind::Function), node->_name)) {
+            assert(0 && "Message: function name already used");
+        }
+
+        if (!parser.helper()->parseNewline()) {
+            assert(0 && "Message: A newline should appear after a function definition signature");
+        }
+
+        if (!FunctionDefinitionNode::bufferFunctionBody(parser, node->_bodyString)) {
+            assert(0 && "Message: Unable to buffer function body");
+        }
+
+        if (!parser.helper()->nextIf(Token::Type::KeywordEnd)) {
+            assert(0 && "Message: A function must be closed with the end keyword");
+        }
+
+        if (!parser.helper()->parseNewline()) {
+            assert(0 && "Message: A newline should appear after end keyword");
+        }
+
+        parser.addFunctionForParsing(node);
 
         return node;
     }
 
+    bool FunctionDefinitionNode::bufferFunctionBody(NewParser& parser, std::stringstream& stream) {
+        parser.helper()->lexer()->setFilterWhitespace(false);
+
+        bool result = bufferOpenToCloseToken(parser, stream, Token::Type::KeywordEnd, false);
+
+        parser.helper()->lexer()->setFilterWhitespace(true);
+
+        return result;
+    }
+
+    // This is a really complex function. The idea here is to scan all the tokens inside a function body,
+    // making sure to detect the closing "end" statement. Some features of the language make this particularly
+    // hard.
+    //
+    // The basic idea is, buffer up tokens, and if you find a token that gets paired with an 'end',
+    // recurse and continue.
+    bool FunctionDefinitionNode::bufferOpenToCloseToken(NewParser& parser, std::stringstream& stream, Token::Type closingType, bool parseClosing) {
+        bool firstCall = !parseClosing;
+
+        for (;;) {
+            bool potentialFirstToken = scanToFirstToken(parser, stream, firstCall);
+
+            // can only be the first call once
+            if (firstCall) {
+                firstCall = false;
+            }
+
+            Token t = parser.helper()->peek();
+
+            // maybe we're done?
+            if (t.type() == closingType) {
+                if (parseClosing) {
+                    stream << parser.helper()->nextStr();
+                }
+
+                return true;
+            }
+
+            // are we starting a new block?
+            // Note that the atomic keyword is ambigious here, so we have to check for that more carefully
+            if (potentialFirstToken && t.isOpeningSpan() && !AtomicNode::isAtAtomicExpression(parser)) {
+                Token::Type nestedType = t.closingCounterpart();
+                if (nestedType == Token::Type::Undefined) {
+                    return false;
+                }
+
+                stream << parser.helper()->nextStr(); // move past the opening
+
+                // recurse!
+                if (!bufferOpenToCloseToken(parser, stream, nestedType, true)) {
+                    return false;
+                } else {
+                    continue; // restart the loop and keep going
+                }
+            }
+
+            // look for unexpected types that should cause us to stop
+            switch (t.type()) {
+                case Token::Type::KeywordDef:
+                case Token::Type::Undefined:
+                case Token::Type::EndOfInput:
+                    return false;
+                default:
+                    break;
+            }
+
+            // buffer and continue
+            stream << parser.helper()->nextStr();
+        }
+    }
+
+    bool FunctionDefinitionNode::scanToFirstToken(NewParser& parser, std::stringstream& stream, bool firstCall) {
+        // if firstCall is true, we've been called immediately after a function definition line,
+        // and there will be no newline
+        if (!firstCall) {
+            if (parser.helper()->peek().type() != Token::Type::Newline) {
+                return false;
+            }
+
+            stream << parser.helper()->nextStr();
+        }
+
+        // now, just scan for whitespace, and if we find any, we have a potential first token
+        bool potentialFirst = false;
+        while (parser.helper()->peek().type() == Token::Type::Whitespace) {
+            stream << parser.helper()->nextStr();
+            potentialFirst = true;
+        }
+
+        return potentialFirst;
+    }
+
+    std::string FunctionDefinitionNode::nodeName() const {
+        return "Function Definition";
+    }
+
     std::string FunctionDefinitionNode::name() const {
-        return "FunctionDefinition";
+        return _name;
     }
 
     std::string FunctionDefinitionNode::str() const {
         std::stringstream s;
 
-        s << this->name() << ": " << this->function()->str();
+        s << "Function: " << this->name();
 
         return s.str();
     }
@@ -87,26 +180,70 @@ namespace Three {
         visitor.visit(*this);
     }
 
-    Function* FunctionDefinitionNode::function() const {
-        return _function;
+    NewDataType FunctionDefinitionNode::functionType() const {
+        return _functionType;
     }
 
-    ASTNode* FunctionDefinitionNode::ensureClause() const {
-        return _ensureBlock;
+    NewDataType FunctionDefinitionNode::methodOnType() const {
+        return _methodOnType;
+    }
+    
+    bool FunctionDefinitionNode::isMethod() const {
+        return _methodOnType.kind() != NewDataType::Kind::Undefined;
     }
 
-    void FunctionDefinitionNode::codeGen(CSourceContext& context) {
-        context.adjustCurrentForVisibility(this->visibility(), [&] (CSource* source) {
-            *source << this->function()->codeGen();
-            source->printLine(";");
+    std::stringstream* FunctionDefinitionNode::bodyStream() {
+        return &_bodyString;
+    }
+
+    void FunctionDefinitionNode::defineParameterVariablesInScope(NewScope* scope) {
+        // create variables for all arguments in this scope, including the special self
+        // variable if this is a method
+        if (this->isMethod()) {
+            NewDataType selfType = NewDataType(NewDataType::Kind::Pointer);
+            selfType.addSubtype(_methodOnType);
+
+            scope->defineVariableTypeForName(selfType, "self");
+        }
+
+        _functionType.eachParameterWithLast([&] (const NewDataType& type, bool last) {
+            scope->defineVariableTypeForName(type, type.label());
         });
 
-        context << this->function()->codeGen();
-        context.current()->printLineAndIndent(" {");
+    }
 
-        this->codeGenChildren(context);
+    bool FunctionDefinitionNode::parseBody(NewParser& parser) {
+        parser.context()->pushScope();
+        parser.context()->scope()->setScopedBasename(this->name());
 
-        context.current()->outdentAndPrintLine("}");
-        context.current()->printLine(""); // add an extra newline for separation
+        this->defineParameterVariablesInScope(parser.context()->scope());
+
+        parser.helper()->parseUntil(false, [&] (const Token& token) {
+            ASTNode* node = parser.parseStatement();
+
+            if (!node) {
+                return true; // abort
+            }
+
+            this->addChild(node);
+
+            return false; // continue
+        });
+
+        parser.context()->popScope();
+
+        return true;
+    }
+
+    std::string FunctionDefinitionNode::fullName() const {
+        std::stringstream s;
+
+        for (const std::string& part : namespaceComponents) {
+            s << part << "_3_";
+        }
+
+        s << this->name();
+
+        return s.str();
     }
 }

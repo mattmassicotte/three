@@ -3,6 +3,7 @@ COMPILER_PCH = 'compiler/compiler_prefix.hpp'
 COMPILER_LIB = "#{BUILD_DIR}/libthree_compiler.a"
 
 COMPILER_TEST_SOURCES = FileList['tests/**/*.cpp']
+COMPILER_TEST_SOURCES.exclude('tests/CheckerTests/*.cpp')
 COMPILER_TEST_PCH = 'tests/test_prefix.hpp'
 COMPILER_TEST_BIN = "#{BUILD_DIR}/three_compiler_test"
 

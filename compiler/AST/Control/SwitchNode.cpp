@@ -1,36 +1,37 @@
 #include "SwitchNode.h"
 #include "CaseNode.h"
-#include "../../Parser.h"
 #include "ElseNode.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 
 namespace Three {
-    SwitchNode* SwitchNode::parse(Parser& parser) {
-        SwitchNode* node = new SwitchNode();
+    SwitchNode* SwitchNode::parse(NewParser& parser) {
+        assert(parser.helper()->nextIf(Token::Type::KeywordSwitch));
 
-        assert(parser.next().type() == Token::Type::KeywordSwitch);
+        SwitchNode* node = new SwitchNode();
 
         node->_argumentNode = parser.parseExpression();
         node->_elseNode = nullptr;
-        parser.parseNewline();
 
-        parser.parseUntil(false, [&] (const Token& token) {
-            switch (token.type()) {
-                case Token::Type::KeywordEnd:
-                    return true;
-                case Token::Type::KeywordElse:
-                    node->_elseNode = ElseNode::parse(parser);
-                    return true;
-                default:
-                    node->addChild(CaseNode::parse(parser));
-                    return false;
-                }
+        if (!parser.helper()->parseNewline()) {
+            assert(0 && "Message: switch argument must be followed by a newline");
+            return node;
+        }
+
+        bool success = parser.parseBodyWithElse("switch", &node->_elseNode, [&] () {
+            node->addChild(CaseNode::parse(parser));
         });
 
-        parser.nextIf("end");
+        if (!success) {
+            assert(0 && "Message: unable to parse switch body");
+        }
 
         return node;
+    }
+
+    std::string SwitchNode::nodeName() const {
+        return "Switch";
     }
 
     std::string SwitchNode::name() const {
@@ -47,35 +48,5 @@ namespace Three {
 
     ASTNode* SwitchNode::elseNode() const {
         return _elseNode;
-    }
-
-    void SwitchNode::codeGen(CSourceContext& context) {
-        this->eachChild([&] (ASTNode* child, uint32_t index) {
-            CaseNode* caseNode = dynamic_cast<CaseNode*>(child);
-
-            if (index != 0) {
-                context << "} else ";
-            }
-
-            context << "if (";
-            this->argument()->codeGen(context);
-            context << " == ";
-            caseNode->argument()->codeGen(context);
-            context.current()->printLineAndIndent(") {");
-
-            caseNode->codeGen(context);
-
-            context.current()->decreaseIndentation();
-        });
-
-        if (_elseNode) {
-            context.current()->printLineAndIndent("} else {");
-
-            _elseNode->codeGenChildren(context);
-
-            context.current()->decreaseIndentation();
-        }
-
-        context.current()->printLine("}");
     }
 }

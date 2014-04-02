@@ -5,7 +5,8 @@
 namespace Three {
     class IncludeNode : public ExternalSourceNode {
     public:
-        static IncludeNode* parse(Parser& parser);
+        static IncludeNode* parse(NewParser& parser);
+        static std::string parseSearchPathArgument(NewParser& parser);
 
     public:
         std::string name() const;
@@ -13,7 +14,10 @@ namespace Three {
         std::string headerName() const;
         bool relative() const;
 
+        bool useSearchPaths() const;
+
     private:
         std::string _headerName;
+        bool _useSearchPaths;
     };
 }

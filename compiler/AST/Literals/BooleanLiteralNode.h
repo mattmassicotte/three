@@ -1,21 +1,20 @@
 #pragma once
 
-#include "../ASTNode.h"
+#include "LiteralNode.h"
 
 namespace Three {
-    class BooleanLiteralNode : public ASTNode {
+    class BooleanLiteralNode : public LiteralNode {
     public:
-        static BooleanLiteralNode* parse(Parser& parser);
+        static BooleanLiteralNode* parse(NewParser& parser);
 
     public:
+        std::string nodeName() const;
         std::string name() const;
         void accept(ASTVisitor& visitor);
-        TypeReference nodeType() const;
 
         bool value() const;
 
     private:
         bool _value;
-        TypeReference _type;
     };
 }

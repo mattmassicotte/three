@@ -1,24 +1,29 @@
 #include "IndexerNode.h"
-#include "../../Parser.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 
 namespace Three {
-    IndexerNode* IndexerNode::parse(Parser& parser, ASTNode* operand) {
-        IndexerNode* node = new Three::IndexerNode();
+    IndexerNode* IndexerNode::parse(NewParser& parser, ASTNode* operand) {
+        if (!parser.helper()->nextIf(Token::Type::PunctuationOpenBracket)) {
+            assert(0 && "Message: Indexer should start with a [");
+            return nullptr;
+        }
 
-        assert(parser.next().str() == "[");
+        IndexerNode* node = new Three::IndexerNode();
 
         node->addChild(operand);
         node->addChild(parser.parseExpression());
 
-        assert(parser.next().type() == Token::Type::PunctuationCloseBracket);
+        if (!parser.helper()->nextIf(Token::Type::PunctuationCloseBracket)) {
+            assert(0 && "Message: Indexer should end with a ]");
+        }
 
         return node;
     }
-    
-    std::string IndexerNode::name() const {
-        return "Indexer";
+
+    std::string IndexerNode::nodeName() const {
+        return "Indexer Operator";
     }
 
     void IndexerNode::accept(ASTVisitor& visitor) {

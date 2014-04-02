@@ -5,14 +5,11 @@
 namespace Three {
     class NamespaceNode : public ASTNode {
     public:
-        static NamespaceNode* parse(Parser& parser);
+        static NamespaceNode* parse(NewParser& parser);
 
     public:
-        virtual std::string name() const;
-
-        std::string namespaceName() const;
-
-        void codeGen(CSourceContext& context);
+        std::string nodeName() const;
+        std::string name() const;
 
     private:
         std::string _name;

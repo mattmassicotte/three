@@ -31,6 +31,7 @@
 <span class="entity">Int</span>:32
 <span class="entity">Natural</span>:32
 <span class="entity">Float</span>:32
+<span class="entity">Real</span>
 <span class="entity">Void</span>
 <span class="entity">Natural</span>
 
@@ -47,6 +48,7 @@
 <span class="entity">int</span>
 <span class="entity">unsigned int</span>
 <span class="entity">float</span>
+<span class="entity">float</span> (with fast-math)
 <span class="entity">void</span>
 <span class="entity">uintptr_t</span>
 
@@ -144,10 +146,6 @@
             <tr>
                 <td>
                     <pre><code>
-<span class="keyword">def</span>:func foo(*<span class="entity">Int</span>:32 x, <span class="entity">Int</span>:32 y; <span class="entity">Int</span>:32)
-
-<span class="keyword">def</span>:type <span class="entity">MyType</span> <span class="entity">Natural</span>:64
-
 <span class="keyword">struct</span>:1 <span class="entity">MyStructure</span>
   <span class="entity">Int</span>        value1
   <span class="entity">Int</span>:32     value2
@@ -177,10 +175,6 @@ s->value1 = <span class="literal">5</span>
                 </td>
                 <td>
                     <pre><code>
-<span class="entity">int32_t</span> foo(<span class="entity">int32_t</span>* x, <span class="entity">int32_t</span> y);
-
-<span class="keyword">typedef</span> <span class="entity">uint64_t</span> <span class="entity">MyType</span>
-
 <span class="directive">#pragma pack(push)</span>
 <span class="directive">#pragma pack(1)</span>
 <span class="keyword">typedef struct</span> {
@@ -373,10 +367,27 @@ x ? y : z
             <tr>
                 <td>
                     <pre><code>
-<span class="keyword">def</span> foo(*<span class="entity">Int</span>:32 x, <span class="entity">Int</span>:32 y; <span class="entity">Int</span>:32)
+<span class="comment"># plain function</span>
+<span class="keyword">def</span> foo(*<span class="entity">Int</span> x, <span class="entity">Int</span> y; <span class="entity">Int</span>)
   <span class="keyword">return</span> *x + y
 <span class="keyword">end</span>
 
+<span class="comment"># multiple return values</span>
+<span class="keyword">def</span> foo(<span class="entity">Int</span> x, <span class="entity">Int</span> y; <span class="entity">Int</span>, <span class="entity">Int</span>)
+  <span class="keyword">return</span> x, y
+<span class="keyword">end</span>
+
+
+
+
+
+<span class="comment"># pre-defined locals for return values</span>
+<span class="keyword">def</span> foo(<span class="entity">Int</span> x; <span class="entity">Int</span> result)
+  result += x
+  <span class="keyword">return</span> result
+<span class="keyword">end</span>
+
+<span class="comment"># variadic functions</span>
 <span class="keyword">def</span> bar(*<span class="entity">Char</span> fmt, <span class="keyword">Vararg</span> ap)
   <span class="keyword">Vararg</span> ap2
 
@@ -387,29 +398,29 @@ x ? y : z
 
   vprintf(<span class="string">"%d %d\n"</span>, ap2)
 <span class="keyword">end</span>
-
-
-
-
-
-
-
-
-<span class="keyword">def</span> scoped_cleanup(; <span class="keyword">Int</span> x)
-  <span class="keyword">if</span> function()
-    <span class="keyword">return</span> <span class="literal">0</span>
-  <span class="keyword">end</span>
-
-  <span class="keyword">return</span> <span class="literal">5</span>
-<span class="keyword">ensure</span>
-  cleanup_function()
-<span class="keyword">end</span>
                     </code></pre>
                 </td>
                 <td>
                     <pre><code>
+
 <span class="entity">int32_t</span> foo(<span class="entity">int32_t</span>* x, <span class="entity">int32_t</span> y) {
     <span class="keyword">return</span> *x + y;
+}
+
+
+<span class="keyword">typedef</span> <span class="keyword">struct</span> {
+    <span class="entity">int</span> one,
+    <span class="entity">int</span> two
+} <span class="keyword">foo_return</span>;
+<span class="entity">foo_return</span> foo(<span class="entity">int</span> x, <span class="entity">int</span> y) {
+    <span class="keyword">return</span> (<span class="entity">foo_return</span>){x, y};
+}
+
+
+<span class="entity">int</span> foo(<span class="entity">int</span> x, <span class="entity">int</span> y) {
+    <span class="entity">int</span> result = 0;
+    result += x;
+    <span class="keyword">return</span> result;
 }
 
 <span class="entity">void</span> bar(<span class="entity">char</span> *fmt, ...) {
@@ -428,16 +439,6 @@ x ? y : z
     <span class="directive">va_end</span>(ap2);
     
     <span class="directive">va_end</span>(ap);
-}
-
-<span class="entity">int</span> scoped_cleanup(<span class="entity">void</span>) {
-    <span class="keyword">if</span> (function()) {
-        cleanup_function()
-        <span class="keyword">return</span> <span class="literal">0</span>
-    }
-
-    cleanup_function()
-    <span class="keyword">return</span> <span class="literal">5</span>
 }
                     </code></pre>
                 </td>

@@ -4,8 +4,6 @@
 
 namespace Three {
     class EnsureNode : public ASTNode {
-    public:
-        static EnsureNode* parse(Parser& parser);
 
     public:
         std::string name() const;

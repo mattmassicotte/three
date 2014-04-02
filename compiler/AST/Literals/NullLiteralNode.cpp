@@ -1,15 +1,24 @@
 #include "NullLiteralNode.h"
-#include "../../Parser.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 
 namespace Three {
-    NullLiteralNode* NullLiteralNode::parse(Parser& parser) {
+    NullLiteralNode* NullLiteralNode::parse(NewParser& parser) {
+        assert(parser.helper()->nextIf(Token::Type::LiteralNull));
+
         NullLiteralNode* node = new NullLiteralNode();
 
-        assert(parser.next().type() == Token::Type::LiteralNull);
+        NewDataType type = NewDataType(NewDataType::Kind::Pointer);
+        type.addSubtype(parser.context()->typeKindWithName("Void"));
+
+        node->setDataType(type);
 
         return node;
+    }
+
+    std::string NullLiteralNode::nodeName() const {
+        return "Null Literal";
     }
 
     std::string NullLiteralNode::name() const {
@@ -18,9 +27,5 @@ namespace Three {
 
     void NullLiteralNode::accept(ASTVisitor& visitor) {
         visitor.visit(*this);
-    }
-
-    void NullLiteralNode::codeGen(CSourceContext& context) {
-        context << "NULL";
     }
 }

@@ -1,38 +1,22 @@
 #include "AtomicNode.h"
-#include "../../Parser.h"
 #include "AtomicExpressionNode.h"
 #include "AtomicStatementNode.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 
 namespace Three {
-    ASTNode* AtomicNode::parse(Parser& parser, bool statement) {
-        assert(parser.peek().type() == Token::Type::KeywordAtomic);
-
-        // we need to check for an atomic statement
-        // case #1 "atomic (...)"
-        if (parser.peek(2).type() == Token::Type::PunctuationOpenParen) {
-            return AtomicExpressionNode::parse(parser, statement);
-        }
-
-        // case #1 "atomic:ordering (...)" where "ordering" != fallback
-        if (parser.peek(2).type() == Token::Type::PunctuationColon) {
-            if (parser.peek(3).str() != "fallback") {
-                return AtomicExpressionNode::parse(parser, statement);
-            }
-        }
-
-        return AtomicStatementNode::parse(parser);
-    }
-
-    void AtomicNode::parseOrdering(Parser& parser, AtomicNode* node) {
-        if (!parser.nextIf(":")) {
+    void AtomicNode::parseOrdering(NewParser& parser, AtomicNode* node) {
+        if (!parser.helper()->nextIf(Token::Type::PunctuationColon)) {
             node->_ordering = AtomicNode::Ordering::SequentiallyConsistent;
             return;
         }
 
-        assert(parser.peek().type() == Token::Type::Identifier);
-        std::string orderName = parser.next().str();
+        if (parser.helper()->peek().type() != Token::Type::Identifier) {
+            assert(0 && "Message: an atomic ordering should be an identifier");
+        }
+
+        std::string orderName = parser.helper()->nextStr();
 
         if (orderName == "ordered") {
             node->_ordering = AtomicNode::Ordering::SequentiallyConsistent;
@@ -40,8 +24,32 @@ namespace Three {
             node->_ordering = AtomicNode::Ordering::None;
         } else {
             node->_ordering = AtomicNode::Ordering::Undefined;
-            assert(0 && "Unrecognized memory ordering for atomic statement");
+            assert(0 && "Message: Unrecognized memory ordering for atomic statement");
         }
+    }
+
+    bool AtomicNode::isAtAtomicExpression(NewParser& parser) {
+        if (parser.helper()->peek().type() != Token::Type::KeywordAtomic) {
+            return false;
+        }
+
+        // It is important that this function work if whitespace filtering is off
+        uint32_t peekDepth = 2;
+        while (parser.helper()->peek(peekDepth).type() == Token::Type::Whitespace) {
+            peekDepth++;
+        }
+
+        // case #1 "atomic (...)"
+        if (parser.helper()->peek(peekDepth).type() == Token::Type::PunctuationOpenParen) {
+            return true;
+        }
+
+        // case #2 "atomic:ordering (...)" where "ordering" != fallback
+        if (parser.helper()->peek(peekDepth).type() != Token::Type::PunctuationColon) {
+            return false;
+        }
+
+        return parser.helper()->peek(3).str() != "fallback";
     }
 
     AtomicNode::Ordering AtomicNode::ordering() const {

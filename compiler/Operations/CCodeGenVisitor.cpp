@@ -1,5 +1,6 @@
 #include "CCodeGenVisitor.h"
 #include "compiler/AST.h"
+#include "compiler/CodeGen/CTypeCodeGenerator.h"
 
 #include <iostream>
 
@@ -8,8 +9,6 @@ namespace Three {
         _externalHeaderSource.addHeader(false, "three/runtime/types.h");
 
         _currentSource = &_bodySource;
-
-        _activeEnsureClause = nullptr;
     }
 
     void CCodeGenVisitor::visit(ASTNode& node) {
@@ -24,10 +23,9 @@ namespace Three {
 
     void CCodeGenVisitor::visit(FunctionDefinitionNode& node) {
         // codegen state
-        _activeEnsureClause = node.ensureClause();
         _tmpReturnValueCounter = 0;
 
-        std::string functionString = node.function()->codeGen();
+        std::string functionString = CTypeCodeGenerator::codeGen(node.functionType());
 
         // Function Prototype
         this->sourceForVisibility(node.visibility(), [&] (CSource& source) {
@@ -43,25 +41,25 @@ namespace Three {
 
         this->visitChildren(node);
 
-        // This does not need to happen if the last node is a return
-        if (node.ensureClause() && node.lastChild()->nodeName() != "Return") {
-            _currentSource->printLine("// ensure clause");
-            this->visitChildren(*node.ensureClause());
-        }
-
         _currentSource->outdentAndPrintLine("}");
         _currentSource->printLine(""); // add an extra newline for separation
-
-        // codegen state
-        _activeEnsureClause = nullptr;
     }
 
     void CCodeGenVisitor::visit(VariableDeclarationNode& node) {
-        std::string variableDeclString = node.nodeType().codeGen(node.variable()->name());
+        std::string variableDeclString = CTypeCodeGenerator::codeGen(node.dataType(), node.name());
 
+        // we only have to make a declaration if this is a global
         if (node.global) {
-            _internalHeaderSource << "extern " << variableDeclString;
-            _internalHeaderSource.printLine(";");
+            this->sourceForVisibility(node.visibility, [&] (CSource& source) {
+                // special-case, as none is defined differently
+                if (node.visibility == TranslationUnit::Visibility::None) {
+                    (*_currentSource) << "static ";
+                    return;
+                }
+
+                source << "extern " << variableDeclString;
+                source.printLine(";");
+            });
         }
 
         (*_currentSource) << variableDeclString;
@@ -86,13 +84,13 @@ namespace Three {
         dedicatedSource.printLine(node.closureName());
 
         // environment definition
-        dedicatedSource << node.codeGenEnvironmentStructure();
+        this->closureEnvironmentStructure(node, dedicatedSource);
 
         // closure body
         CSource* temp = _currentSource;
         _currentSource = &dedicatedSource;
 
-        (*_currentSource) << "static " << node.function()->codeGen();
+        (*_currentSource) << "static " << CTypeCodeGenerator::codeGen(node.dataType());
 
         _currentSource->printLineAndIndent(" {");
 
@@ -100,14 +98,14 @@ namespace Three {
 
         _currentSource->outdentAndPrintLine("}");
 
-        (*_currentSource) << "THREE_CHECK_CLOSURE_FUNCTION(" << node.function()->fullyQualifiedName();
+        (*_currentSource) << "THREE_CHECK_CLOSURE_FUNCTION(" << node.name();
         _currentSource->printLine(");");
         _currentSource->printLine("");
 
         _currentSource = temp;
 
-        // the closure instiantiation
-        _currentSource->printPreviousLine(node.codeGenEnvironmentCapture());
+        // the closure instantiation
+        _currentSource->printPreviousLine(this->closureEnvironmentCapture(node));
 
         (*_currentSource) << "THREE_MAKE_CLOSURE(" << node.closureName() << ", ";
 
@@ -140,23 +138,27 @@ namespace Three {
     }
 
     void CCodeGenVisitor::visit(VariableNode& node) {
-        if (node.referenced()) {
-            (*_currentSource) << "*(self_env->" << node.variable()->name() << ")";
-            return;
-        }
+        assert(node.newVariable());
 
-        if (node.closed()) {
-            (*_currentSource) << "(self_env->" << node.variable()->name() << ")";
-            return;
-        }
+        (*_currentSource) << node.newVariable()->name;
+    }
 
-        (*_currentSource) << node.variable()->name();
+    void CCodeGenVisitor::visit(CapturedVariableNode& node) {
+        assert(node.newVariable());
+
+        (*_currentSource) << "(self_env->" << node.newVariable()->name << ")";
+    }
+
+    void CCodeGenVisitor::visit(ReferencedVariableNode& node) {
+        assert(node.newVariable());
+
+        (*_currentSource) << "*(self_env->" << node.newVariable()->name << ")";
     }
 
     void CCodeGenVisitor::visit(FunctionCallOperatorNode& node) {
         if (node.receiverIsClosure()) {
             *_currentSource << "THREE_CALL_CLOSURE(";
-            *_currentSource << node.receiverNodeType().codeGenFunction("");
+            // *_currentSource << node.receiverNodeType().codeGenFunction("");
             *_currentSource << ", ";
             node.receiver()->accept(*this);
 
@@ -253,13 +255,13 @@ namespace Three {
     void CCodeGenVisitor::visit(StructureNode& node) {
         // TODO: this is not right, but it greatly simplifies the header management needed.
 
-        if (node.visibility() == TranslationUnit::Visibility::External) {
+        if (node.visibility == TranslationUnit::Visibility::External) {
             this->sourceForVisibility(TranslationUnit::Visibility::External, [&node] (CSource& source) {
                 // create an opaque structure declaration
                 source.print("typedef struct ");
-                source.print(node.structureName());
+                source.print(node.name());
                 source.print(" ");
-                source.print(node.structureName());
+                source.print(node.name());
                 source.printLine(";");
                 source.printLine(""); 
             });
@@ -277,15 +279,15 @@ namespace Three {
             }
 
             source.print("typedef struct ");
-            source.print(node.structureName());
+            source.print(node.name());
             source.printLineAndIndent(" {");
 
             CSource* oldSource = _currentSource;
             _currentSource = &source;
-            this->visitChildren(node);
+            this->visitChildren(node, true);
             _currentSource = oldSource;
 
-            source.outdentAndPrintLine("} " + node.structureName() + ";");
+            source.outdentAndPrintLine("} " + node.name() + ";");
 
             if (node.packing() != 0) {
                 source.printLine("#pragma pack(pop)");
@@ -296,22 +298,21 @@ namespace Three {
     }
 
     void CCodeGenVisitor::visit(EnumerationNode& node) {
-        this->sourceForVisibility(node.visibility(), [&] (CSource& source) {
+        this->sourceForVisibility(node.visibility, [&] (CSource& source) {
             source.printLineAndIndent("enum {");
 
-            std::vector<std::string> identifiers = node.identifiers();
+            node.eachMemberWithLast([&] (const std::string& memberName, bool last) {
+                source << node.name() << "_3_" << memberName;
 
-            for (uint32_t i = 0; i < identifiers.size(); ++i) {
-                source << node.type()->fullyQualifiedName() << "_3_" << identifiers.at(i);
-
-                if (i < identifiers.size() - 1) {
+                if (!last) {
                     source << ",";
                 }
+
                 source.printLine("");
-            }
+            });
 
             source.outdentAndPrintLine("};");
-            source << "typedef uint32_t " << node.type()->fullyQualifiedName();
+            source << "typedef uint32_t " << node.name();
             source.printLine(";");
             source.printLine("");
         });
@@ -367,12 +368,7 @@ namespace Three {
         // this is the easy case - no children
         if (node.childCount() == 0) {
             if (node.endsTransaction()) {
-                this->endCurrentTransaction();
-            }
-
-            if (_activeEnsureClause) {
-                _currentSource->printLine("// ensure clause");
-                _activeEnsureClause->accept(*this);
+                this->endCurrentTransaction(node.transactionName());
             }
 
             *_currentSource << "return";
@@ -380,12 +376,12 @@ namespace Three {
         }
 
         // This return node has an expression
-        if (!node.endsTransaction() && !_activeEnsureClause) {
+        if (!node.endsTransaction()) {
             *_currentSource << "return ";
             node.childAtIndex(0)->accept(*this);
             return;
         }
-        
+
         std::stringstream s;
 
         s << "tmp_return_value_" << _tmpReturnValueCounter;
@@ -393,19 +389,14 @@ namespace Three {
         std::string varName = s.str();
 
         // we need a temp variable
-        *_currentSource << node.childAtIndex(0)->nodeType().codeGen(varName);
+        *_currentSource << CTypeCodeGenerator::codeGen(node.childAtIndex(0)->dataType(), varName);
 
         *_currentSource << " = ";
         node.childAtIndex(0)->accept(*this);
         _currentSource->printLine(";");
 
         if (node.endsTransaction()) {
-            this->endCurrentTransaction();
-        }
-
-        if (_activeEnsureClause) {
-            _currentSource->printLine("// ensure clause");
-            _activeEnsureClause->accept(*this);
+            this->endCurrentTransaction(node.transactionName());
         }
 
         *_currentSource << "return " << varName;
@@ -480,7 +471,7 @@ namespace Three {
 
     void CCodeGenVisitor::visit(SizeofNode& node) {
         *_currentSource << "sizeof(";
-        *_currentSource << node.argument().codeGen();
+        *_currentSource << CTypeCodeGenerator::codeGen(node.dataTypeArgument);
         *_currentSource << ")";
     }
 
@@ -488,7 +479,7 @@ namespace Three {
         assert(node.childCount() == 1);
 
         *_currentSource << "(";
-        *_currentSource << node.argument().codeGen();
+        *_currentSource << CTypeCodeGenerator::codeGen(node.dataTypeArgument);
         *_currentSource << ")";
 
         *_currentSource << "(";
@@ -500,7 +491,7 @@ namespace Three {
         *_currentSource << "va_arg(";
         node.childAtIndex(0)->accept(*this);
         *_currentSource << ", ";
-        *_currentSource << node.argument().codeGen();
+        *_currentSource << CTypeCodeGenerator::codeGen(node.dataTypeArgument);
         *_currentSource << ")";
     }
 
@@ -508,8 +499,7 @@ namespace Three {
         this->prepareForTransactions();
 
         *_currentSource << "three_transaction_abort(&";
-        // TODO: transaction name will need to tracked somehow
-        *_currentSource << "tx1";
+        *_currentSource << node.transactionName();
         *_currentSource << ")";
     }
 
@@ -519,7 +509,7 @@ namespace Three {
         assert(node.childCount() == 1);
 
         _declaractionsSource << "THREE_CHECK_ATOMIC(";
-        _declaractionsSource << node.op()->nodeType().codeGen();
+        _declaractionsSource << CTypeCodeGenerator::codeGen(node.op()->dataType());
         _declaractionsSource.printLine(");");
 
         // we need to inspect the operation inside the expression to figure out
@@ -555,7 +545,6 @@ namespace Three {
         }
 
         assert(0 && "Atomic expression codegen failure");
-
     }
 
     void CCodeGenVisitor::visit(AtomicStatementNode& node) {
@@ -570,7 +559,7 @@ namespace Three {
 
         // This is unnecessary when the last statement is a return
         if (node.lastChild()->nodeName() != "Return") {
-            this->endCurrentTransaction();
+            this->endCurrentTransaction(node.transactionName());
         }
 
         if (node.elseClause()) {
@@ -585,7 +574,7 @@ namespace Three {
 
             _currentSource->increaseIndentation();
 
-            // assert(0 && "transaction 'tx1' failed without any fallback path");
+            // assert(0 && "transaction 'tx_1' failed without any fallback path");
             *_currentSource << "assert(0 && \"transaction '" << node.transactionName();
             *_currentSource << "' failed without any fallback path\"";
             _currentSource->printLine(");");
@@ -616,7 +605,7 @@ namespace Three {
         assert(node.rangeStartExpression() && node.rangeEndExpression());
 
         *_currentSource << "(";
-        *_currentSource << node.rangeLoopVariable()->name();
+        *_currentSource << node.rangeLoopVariable()->name;
         *_currentSource << " < ";
 
         node.rangeEndExpression()->accept(*this);
@@ -649,7 +638,7 @@ namespace Three {
 
         assert(node.rangeStartExpression() && node.rangeEndExpression());
 
-        *_currentSource << "++" << node.rangeLoopVariable()->name();
+        *_currentSource << "++" << node.rangeLoopVariable()->name;
     }
 
     // Transactions Support
@@ -668,9 +657,9 @@ namespace Three {
         _currentSource->printLine(";");
     }
 
-    void CCodeGenVisitor::endCurrentTransaction() {
+    void CCodeGenVisitor::endCurrentTransaction(const std::string& name) {
         *_currentSource << "three_transaction_end(";
-        *_currentSource << "&tx1"; // TODO: not right
+        *_currentSource << "&" << name;
         _currentSource->printLine(");");
     }
 
@@ -699,7 +688,7 @@ namespace Three {
 
     void CCodeGenVisitor::atomicVariable(OperatorNode* op) {
         *_currentSource << "(_Atomic(";
-        *_currentSource << op->nodeType().codeGen();
+        *_currentSource << CTypeCodeGenerator::codeGen(op->dataType());
         *_currentSource << ")*)";
         *_currentSource << "&";
 
@@ -721,11 +710,43 @@ namespace Three {
         return op == ">" || op == ">=" || op == "<" || op == "<=" || op == "==";
     }
 
+    void CCodeGenVisitor::closureEnvironmentStructure(ClosureNode& node, CSource& source) {
+        source << "struct " << node.name() << "_env";
+        source.printLineAndIndent(" {");
+
+        for (const NewDataType& type : node.environmentStructureType().subtypes) {
+            source << CTypeCodeGenerator::codeGen(type, type.label());
+            source.printLine(";");
+        }
+
+        source.outdentAndPrintLine("};");
+    }
+
+    std::string CCodeGenVisitor::closureEnvironmentCapture(ClosureNode& node) {
+        std::stringstream s;
+
+        s << "THREE_CAPTURE_ENV(" << node.name() << "_env";
+
+        node.eachCapturedVariable([&s] (NewVariable* v, bool ref, bool last) {
+            s << ", ";
+
+            if (ref) {
+                s << "&";
+            }
+
+            s << v->name;
+        });
+
+        s << ");";
+
+        return s.str();
+    }
+
     // Utilities
-    void CCodeGenVisitor::visitChildren(ASTNode& node) {
+    void CCodeGenVisitor::visitChildren(ASTNode& node, bool statements) {
         node.eachChild([&] (ASTNode* child, uint32_t _) {
             child->accept(*this);
-            if (child->statement()) {
+            if (statements || child->statement()) {
                 _currentSource->printLine(";");
             }
         });

@@ -1,23 +1,27 @@
 #include "LoopNode.h"
-#include "../../Parser.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 
 namespace Three {
-    LoopNode* LoopNode::parse(Parser& parser) {
+    LoopNode* LoopNode::parse(NewParser& parser) {
+        assert(parser.helper()->nextIf(Token::Type::KeywordLoop));
+
         LoopNode* node = new LoopNode();
 
-        assert(parser.next().type() == Token::Type::KeywordLoop);
-
         node->_evaluateConditionAtEnd = false;
+        node->_condition = nullptr;
 
-        switch (parser.peek().type()) {
+        switch (parser.helper()->peek().type()) {
             case Token::Type::Newline:
-                node->_condition = NULL;
+                node->_condition = nullptr;
                 break;
             case Token::Type::PunctuationColon:
-                parser.next();
-                assert(parser.next().str() == "after");
+                parser.helper()->next();
+                if (!parser.helper()->nextIf("after")) {
+                    assert(0 && "Message: loop can only have an after specifier");
+                }
+
                 node->_evaluateConditionAtEnd = true;
 
                 node->_condition = parser.parseExpression();
@@ -27,9 +31,12 @@ namespace Three {
                 break;
         }
 
-        parser.parseNewline();
+        if (!parser.helper()->parseNewline()) {
+            assert(0 && "Message: loop must be followed by a newline");
+            return node;
+        }
 
-        parser.parseUntilEnd([&] () {
+        parser.helper()->parseUntilEnd([&] () {
             node->addChild(parser.parseStatement());
         });
 
@@ -40,6 +47,10 @@ namespace Three {
         if (_condition) {
             delete _condition;
         }
+    }
+
+    std::string LoopNode::nodeName() const {
+        return "Loop";
     }
 
     std::string LoopNode::name() const {
@@ -56,40 +67,5 @@ namespace Three {
 
     bool LoopNode::evaluateConditionAtEnd() const {
         return _evaluateConditionAtEnd;
-    }
-
-    void LoopNode::codeGen(CSourceContext& context) {
-        // infinite loop
-        if (!this->condition()) {
-            context.current()->printLineAndIndent("for (;;) {");
-
-            this->codeGenChildren(context);
-
-            context.current()->outdentAndPrintLine("}");
-
-            return;
-        }
-
-        // do-while
-        if (this->evaluateConditionAtEnd()) {
-            context.current()->printLineAndIndent("do {");
-
-            this->codeGenChildren(context);
-
-            context.current()->print("} while (");
-            this->condition()->codeGen(context);
-            context.current()->outdentAndPrintLine(");");
-
-            return;
-        }
-
-        // regular while
-        context.current()->print("while (");
-        this->condition()->codeGen(context);
-        context.current()->printLineAndIndent(") {");
-
-        this->codeGenChildren(context);
-
-        context.current()->outdentAndPrintLine("}");
     }
 }

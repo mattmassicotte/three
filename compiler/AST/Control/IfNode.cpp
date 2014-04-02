@@ -1,45 +1,38 @@
 #include "IfNode.h"
-#include "../../Parser.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 
 namespace Three {
-    IfNode* IfNode::parse(Parser& parser) {
-        IfNode* node = new IfNode();
+    IfNode* IfNode::parse(NewParser& parser) {
+        assert(parser.helper()->nextIf(Token::Type::KeywordIf));
 
-        assert(parser.next().type() == Token::Type::KeywordIf);
+        IfNode* node = new IfNode();
 
         // parse the condition
         node->_conditionNode = parser.parseExpression();
-
-        parser.parseNewline();
-
-        // and now, parse the body
-        while (true) {
-            Token t = parser.peek();
-
-            if (t.type() == Token::Type::KeywordEnd || t.type() == Token::Type::KeywordElse) {
-                break;
-            }
-
-            node->addChild(parser.parseStatement());
+        if (!node->_conditionNode) {
+            assert(0 && "Message: failed to parse if condition");
+            return node;
         }
 
-        if (parser.peek().type() == Token::Type::KeywordElse) {
-            node->_elseNode = ElseNode::parse(parser);
-        } else {
-            assert(parser.next().type() == Token::Type::KeywordEnd);
+        if (!parser.helper()->parseNewline()) {
+            assert(0 && "Message: new line after if expected");
+            return node;
+        }
+
+        if (!parser.parseBodyWithElse(node, &node->_elseNode)) {
+            assert(0 && "Message: unable to parse if body");
+            return node;
         }
 
         return node;
     }
 
-    ASTNode* IfNode::parseTailing(Parser& parser, ASTNode* node) {
-        if (parser.peek().type() != Token::Type::KeywordIf) {
+    ASTNode* IfNode::parseTailing(NewParser& parser, ASTNode* node) {
+        if (!parser.helper()->nextIf(Token::Type::KeywordIf)) {
             return node;
         }
-
-        assert(parser.next().type() == Token::Type::KeywordIf);
 
         IfNode* ifNode = new IfNode();
 
@@ -50,7 +43,11 @@ namespace Three {
         return ifNode;
     }
 
-    IfNode::IfNode() : _elseNode(NULL) {
+    IfNode::IfNode() : _elseNode(nullptr) {
+    }
+
+    std::string IfNode::nodeName() const {
+        return "If";
     }
 
     std::string IfNode::name() const {
@@ -69,36 +66,7 @@ namespace Three {
         _conditionNode = node;
     }
 
-    ElseNode* IfNode::elseStatement() const {
+    ASTNode* IfNode::elseStatement() const {
         return _elseNode;
-    }
-
-    void IfNode::codeGen(CSourceContext& context) {
-        context << "if ";
-
-        // Some nodes need to add parentheses themselves to ensure
-        // the correct of evaluation
-        if (!this->condition()->includesParentheses()) {
-            context << "(";
-        }
-
-        this->condition()->codeGen(context);
-
-        if (!this->condition()->includesParentheses()) {
-            context << ")";
-        }
-
-        context.current()->printLineAndIndent(" {");
-
-        this->codeGenChildren(context);
-
-        if (this->elseStatement()) {
-            context.current()->outdentAndPrintLine("} else {");
-            context.current()->increaseIndentation();
-
-            this->elseStatement()->codeGenChildren(context);
-        }
-
-        context.current()->outdentAndPrintLine("}");
     }
 }

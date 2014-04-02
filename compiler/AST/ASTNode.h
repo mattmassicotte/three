@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../CodeGen/CSourceContext.h"
-#include "../Constructs/TypeReference.h"
 #include "ASTVisitor.h"
 
 #include <sstream>
@@ -9,10 +8,10 @@
 #include <vector>
 #include <functional>
 
-// forward declaration
+// forward declarations
 namespace Three {
-    class Parser;
-    class Annotation;
+    class NewParser;
+    class NewDataType;
 };
 
 namespace Three {
@@ -32,25 +31,18 @@ namespace Three {
         bool statement() const;
         void setStatement(bool value);
         virtual bool includesParentheses() const;
-        virtual TypeReference nodeType() const;
-
-        std::vector<Annotation*> annotations() const;
-        void setAnnotations(const std::vector<Annotation*>& annotations);
+        virtual NewDataType dataType() const;
 
         virtual std::string name() const = 0;
-        std::string nodeName() const;
+        virtual std::string nodeName() const;
         virtual std::string str() const;
         std::string recursiveStr(uint32_t depth = 0) const;
 
         virtual void accept(ASTVisitor& visitor);
         void acceptChildren(ASTVisitor& visitor);
 
-        virtual void codeGen(CSourceContext& context);
-        void codeGenChildren(CSourceContext& context);
-
     private:
-        std::vector<ASTNode*>    _childNodes;
-        bool                     _statement;
-        std::vector<Annotation*> _annotations;
+        std::vector<ASTNode*> _childNodes;
+        bool _statement;
     };
 }

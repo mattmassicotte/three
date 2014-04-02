@@ -1,28 +1,35 @@
 #include "IntegerLiteralNode.h"
-#include "../../Parser.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 #include <sstream>
 
 namespace Three {
-    IntegerLiteralNode* IntegerLiteralNode::parse(Parser& parser) {
-        IntegerLiteralNode* node = new IntegerLiteralNode();
-
-        switch (parser.peek().type()) {
+    IntegerLiteralNode* IntegerLiteralNode::parse(NewParser& parser) {
+        switch (parser.helper()->peek().type()) {
             case Token::Type::LiteralInteger:
             case Token::Type::LiteralBinary:
             case Token::Type::LiteralHex:
                 break;
             default:
-                assert(0);
+                assert(0 && "Expected integer literal token");
                 break;
         }
 
-        node->setValue(integerValue(parser.next().str()));
+        IntegerLiteralNode* node = new IntegerLiteralNode();
 
-        // TODO: This is not *quite* right, as the literal could have a few
-        // different types other than Int
-        node->_type = parser.context()->refForName("Int", 0);
+        node->setValue(integerValue(parser.helper()->nextStr()));
+
+        // here we have to check for type specifiers, but we could be at a range
+        if (parser.helper()->peek().type() == Token::Type::PunctuationColon) {
+            if (parser.helper()->peek(2).type() == Token::Type::Identifier) {
+                assert(parser.helper()->nextIf(Token::Type::PunctuationColon));
+                node->setDataType(parser.parseTypeWithoutAnnotations());
+                return node;
+            }
+        }
+
+        node->setDataType(parser.context()->typeKindWithName("Int"));
 
         return node;
     }
@@ -48,6 +55,10 @@ namespace Three {
         return strtol(cString, NULL, 10);
     }
 
+    std::string IntegerLiteralNode::nodeName() const {
+        return "Integer Literal";
+    }
+
     std::string IntegerLiteralNode::name() const {
         return "IntegerLiteral";
     }
@@ -56,24 +67,11 @@ namespace Three {
         visitor.visit(*this);
     }
 
-    TypeReference IntegerLiteralNode::nodeType() const {
-        return _type;
-    }
-
     void IntegerLiteralNode::setValue(uint64_t v) {
         _value = v;
     }
 
     uint64_t IntegerLiteralNode::value() const {
         return _value;
-    }
-
-    void IntegerLiteralNode::codeGen(CSourceContext& context) {
-        std::stringstream s;
-
-        // TODO: this is kinda stupid just to convert into a string...
-        s << this->value();
-
-        context << s.str();
     }
 }

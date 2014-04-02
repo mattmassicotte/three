@@ -12,6 +12,7 @@ namespace Three {
             Word,
             Number,
             String,
+            Character,
             Punctuation,
             Comment,
             Whitespace,
@@ -30,7 +31,6 @@ namespace Three {
 
         Subtoken::Type type() const;
         std::string str() const;
-        std::string stringValue() const;
 
     private:
         Subtoken::Type _type;

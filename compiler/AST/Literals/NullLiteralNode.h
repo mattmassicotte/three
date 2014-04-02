@@ -1,16 +1,15 @@
 #pragma once
 
-#include "../ASTNode.h"
+#include "LiteralNode.h"
 
 namespace Three {
-    class NullLiteralNode : public ASTNode {
+    class NullLiteralNode : public LiteralNode {
     public:
-        static NullLiteralNode* parse(Parser& parser);
+        static NullLiteralNode* parse(NewParser& parser);
 
     public:
+        std::string nodeName() const;
         std::string name() const;
         void accept(ASTVisitor& visitor);
-
-        void codeGen(CSourceContext& context);
     };
 }

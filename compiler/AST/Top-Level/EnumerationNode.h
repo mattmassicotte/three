@@ -1,28 +1,26 @@
 #pragma once
 
-#include "DefinitionNode.h"
-#include "../../Constructs/DataType.h"
+#include "CompositeTypeDefinitionNode.h"
 
 #include <vector>
 
 namespace Three {
-    class EnumerationNode : public DefinitionNode {
+    class EnumerationNode : public CompositeTypeDefinitionNode {
     public:
-        static EnumerationNode* parse(Parser& parser);
-
-    public:
-        virtual std::string name() const;
+        std::string nodeName() const;
         void accept(ASTVisitor& visitor);
 
-        std::string structureName() const;
         std::vector<std::string> identifiers() const;
-        DataType* type() const;
 
-        void codeGen(CSourceContext& context);
+        uint32_t size() const;
+
+        void eachMemberWithLast(std::function<void (const std::string&, bool)> func);
+
+    protected:
+        void setParsedIntegerSpecifier(NewParser& parser, uint32_t value);
 
     private:
-        std::string _name;
+        uint32_t _size;
         std::vector<std::string> _identifiers;
-        DataType* _type;
     };
 }

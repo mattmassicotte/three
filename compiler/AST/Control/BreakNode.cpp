@@ -1,16 +1,21 @@
 #include "BreakNode.h"
-#include "../../Parser.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 
 namespace Three {
-    BreakNode* BreakNode::parse(Parser& parser) {
+    BreakNode* BreakNode::parse(NewParser& parser) {
+        assert(parser.helper()->nextIf(Token::Type::KeywordBreak));
+
         BreakNode* node = new BreakNode();
 
-        assert(parser.next().type() == Token::Type::KeywordBreak);
         node->setStatement(true);
 
         return node;
+    }
+
+    std::string BreakNode::nodeName() const {
+        return "Break";
     }
 
     std::string BreakNode::name() const {
@@ -19,9 +24,5 @@ namespace Three {
 
     void BreakNode::accept(ASTVisitor& visitor) {
         visitor.visit(*this);
-    }
-
-    void BreakNode::codeGen(CSourceContext& context) {
-        context << "break";
     }
 }

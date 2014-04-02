@@ -1,20 +1,15 @@
 #pragma once
 
-#include "../ASTNode.h"
-#include "../../Constructs/TypeReference.h"
+#include "MetafunctionNode.h"
 
 namespace Three {
-    class NextargNode : public ASTNode {
+    class NextargNode : public MetafunctionNode {
     public:
-        static NextargNode* parse(Parser& parser);
+        static NextargNode* parse(NewParser& parser);
 
     public:
         std::string name() const;
+        std::string nodeName() const;
         void accept(ASTVisitor& visitor);
-
-        TypeReference argument() const;
-
-    private:
-        TypeReference _typeArgument;
     };
 }

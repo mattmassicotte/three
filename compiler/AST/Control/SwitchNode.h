@@ -5,16 +5,15 @@
 namespace Three {
     class SwitchNode : public ASTNode {
     public:
-        static SwitchNode* parse(Parser& parser);
+        static SwitchNode* parse(NewParser& parser);
 
     public:
+        std::string nodeName() const;
         virtual std::string name() const;
         void accept(ASTVisitor& visitor);
 
         ASTNode* argument() const;
         ASTNode* elseNode() const;
-
-        void codeGen(CSourceContext& context);
 
     private:
         ASTNode* _argumentNode;

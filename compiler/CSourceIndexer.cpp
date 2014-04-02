@@ -24,6 +24,20 @@ static std::string executeCommand(const char* cmd);
 static std::vector<std::string>* _includePaths = NULL;
 
 namespace Three {
+    bool CSourceIndexer::resolvePathAndIndex(const std::string& path, bool useSearchPaths, ParseContext* context) {
+        assert(context);
+
+        std::string fullPath(path);
+
+        if (useSearchPaths) {
+            fullPath = CSourceIndexer::resolveCHeaderPath(path);
+        }
+
+        CSourceIndexer indexer;
+
+        return indexer.indexFileAtPath(fullPath, context);
+    }
+
     std::vector<std::string>* CSourceIndexer::defaultCIncludePaths() {
         if (_includePaths) {
             return _includePaths;
@@ -86,22 +100,22 @@ namespace Three {
         return partialPath;
     }
 
-    CSourceIndexer::CSourceIndexer() : verbose(false) , _currentCompoundType(NULL) {
-        _module = new Three::Module();
-
-        _module->addDataType(new DataType(DataType::Flavor::Scalar, "Void"));
-        _module->addDataType(new DataType(DataType::Flavor::Scalar, "Int"));
-        _module->addDataType(new DataType(DataType::Flavor::Scalar, "Char"));
+    CSourceIndexer::CSourceIndexer() : verbose(false), _context(nullptr) {//, _currentCompoundType(NULL) {
+        // _module = new Three::Module();
+        // 
+        // _module->addDataType(new DataType(DataType::Flavor::Scalar, "Void"));
+        // _module->addDataType(new DataType(DataType::Flavor::Scalar, "Int"));
+        // _module->addDataType(new DataType(DataType::Flavor::Scalar, "Char"));
     }
 
     CSourceIndexer::~CSourceIndexer() {
     }
 
-    bool CSourceIndexer::indexFileAtUnresolvedPath(const std::string& path) {
-        return this->indexFileAtPath(CSourceIndexer::resolveCHeaderPath(path));
+    bool CSourceIndexer::indexFileAtUnresolvedPath(const std::string& path, ParseContext* context) {
+        return this->indexFileAtPath(CSourceIndexer::resolveCHeaderPath(path), context);
     }
 
-    bool CSourceIndexer::indexFileAtPath(const std::string& path) {
+    bool CSourceIndexer::indexFileAtPath(const std::string& path, ParseContext* context) {
         CXIndex       index  = clang_createIndex(1, 0);
         CXIndexAction action = clang_IndexAction_create(index);
 
@@ -129,6 +143,8 @@ namespace Three {
 
         CXTranslationUnit unit;
 
+        this->_context = context; // set the context before visiting
+
         int result = clang_indexSourceFile(action,
                                            this,
                                            &callbacks,
@@ -146,6 +162,8 @@ namespace Three {
 
         clang_visitChildren(clang_getTranslationUnitCursor(unit), VisitorCallback, this);
 
+        this->_context = nullptr; // and clear it immediately afterwards
+
         clang_disposeTranslationUnit(unit);
 
         clang_IndexAction_dispose(action);
@@ -154,116 +172,154 @@ namespace Three {
         return result == 0;
     }
 
-    Module* CSourceIndexer::module() const {
-        return _module;
-    }
+    void CSourceIndexer::addFunction(const std::string& name, const void* declInfoPtr) {
+        const CXIdxDeclInfo* declInfo = static_cast<const CXIdxDeclInfo*>(declInfoPtr);
 
-    void CSourceIndexer::addFunction(const std::string& name) {
-        Function* fn;
+        NewDataType functionType(NewDataType::Kind::CFunction);
 
-        _currentCompoundType = nullptr;
-        _fields.clear();
-
-        if (_module->functionForName(name)) {
-            _module->removeFunctionForName(name);
-            std::cout << "[Indexer] Redefining function '" << name << "' " << std::endl;
+        // std::cout << "defining function " << name << std::endl;
+        if (!_context->defineFunctionForName(functionType, name)) {
+            std::cout << "Failed to define C function '" << name << "'" << std::endl;
         }
 
-        fn = new Function();
-        fn->setName(name);
-
-        // TODO: this is bogus!!! But, all functions need a return type at minimum.
-        fn->setReturnType(TypeReference::ref(_module, "Void", 0));
-
-        _module->addFunction(name, fn);
+        // Function* fn;
+        // 
+        // _currentCompoundType = nullptr;
+        // _fields.clear();
+        // 
+        // if (_module->functionForName(name)) {
+        //     _module->removeFunctionForName(name);
+        //     std::cout << "[Indexer] Redefining function '" << name << "' " << std::endl;
+        // }
+        // 
+        // fn = new Function();
+        // fn->setName(name);
+        // 
+        // // TODO: this is bogus!!! But, all functions need a return type at minimum.
+        // fn->setReturnType(TypeReference::ref(_module, "Void", 0));
+        // 
+        // _module->addFunction(name, fn);
     }
 
-    void CSourceIndexer::addType(const std::string& name, DataType::Flavor flavor) {
-        DataType* type;
+    void CSourceIndexer::addType(const std::string& name, const void* declInfoPtr) {
+        const CXIdxDeclInfo* declInfo = static_cast<const CXIdxDeclInfo*>(declInfoPtr);
 
         if (verbose) {
             std::cout << "[Indexer] creating type '" << name << "'" << std::endl;
         }
 
-        // first, check to see if we've already defined a type with this name
-        type = _module->dataTypeForName(name);
-        if (type) {
-            // now, if this type is just the struct version of a scalar, we can ignore it safely
-            // If we are now defining a new type with a struct prefix, then we can just remove
-            // the existing type
-            if (!type->cSourcePrependStructKeyword() && flavor == DataType::Flavor::Structure) {
+        CXType cType = clang_getCursorType(declInfo->cursor);
+
+        // resolve to underlying type, if we are at a typedef
+        if (cType.kind == CXType_Typedef) {
+            cType = clang_getTypedefDeclUnderlyingType(declInfo->cursor);
+        }
+
+        NewDataType type;
+
+        switch (cType.kind) {
+            case CXType_Int:
+                type.setKind(NewDataType::Kind::CInt);
+                break;
+            default:
+                // std::cout << "What do we do about " << clang_getCString(clang_getTypeKindSpelling(cType.kind)) << std::endl;
                 return;
-            }
-
-            _module->removeDataTypeForName(name);
-            std::cout << "[Indexer] Redefining type '" << name << "' " << flavor << std::endl;
         }
 
-        // everything is good to define a new type
-        type = new DataType(flavor, name);
-
-        if (type->isCompound()) {
-            _currentCompoundType = type;
-
-            for (const CompoundField& field : _fields) {
-                type->addChild(TypeReference(type, field.indirection, field.dimensions), field.name);
-            }
-        } else {
-            _currentCompoundType = nullptr;
+        if (type.kind() == NewDataType::Kind::Undefined) {
+            std::cout << "Unable to map C type '" << name << "' to 3 type" << std::endl;
+            return;
         }
 
-        _fields.clear(); // remove all buffered fields in both cases
-
-        if (flavor == DataType::Flavor::Structure) {
-            type->setCSourcePrependStructKeyword(true);
+        if (!_context) {
+            std::cout << "null?" << std::endl;
+            return;
         }
 
-        _module->addDataType(type);
+        if (!_context->defineTypeForName(type, name)) {
+            std::cout << "Failed to define C type '" << name << "'" << std::endl;
+            return;
+        }
+
+        // // first, check to see if we've already defined a type with this name
+        // type = _module->dataTypeForName(name);
+        // if (type) {
+        //     // now, if this type is just the struct version of a scalar, we can ignore it safely
+        //     // If we are now defining a new type with a struct prefix, then we can just remove
+        //     // the existing type
+        //     if (!type->cSourcePrependStructKeyword() && flavor == DataType::Flavor::Structure) {
+        //         return;
+        //     }
+        // 
+        //     _module->removeDataTypeForName(name);
+        //     std::cout << "[Indexer] Redefining type '" << name << "' " << flavor << std::endl;
+        // }
+        // 
+        // // everything is good to define a new type
+        // type = new DataType(flavor, name);
+        // 
+        // if (type->isCompound()) {
+        //     _currentCompoundType = type;
+        // 
+        //     for (const CompoundField& field : _fields) {
+        //         type->addChild(TypeReference(type, field.indirection, field.dimensions), field.name);
+        //     }
+        // } else {
+        //     _currentCompoundType = nullptr;
+        // }
+        // 
+        // _fields.clear(); // remove all buffered fields in both cases
+        // 
+        // if (flavor == DataType::Flavor::Structure) {
+        //     type->setCSourcePrependStructKeyword(true);
+        // }
+        // 
+        // _module->addDataType(type);
     }
 
     void CSourceIndexer::addVariable(const std::string& name) {
-        _currentCompoundType = nullptr;
-        _fields.clear();
+        // _currentCompoundType = nullptr;
+        // _fields.clear();
 
         // TODO: this is wack
-        _module->addConstant(name, name);
+        // _module->addConstant(name, name);
     }
 
     void CSourceIndexer::addConstant(const std::string& name) {
-        _currentCompoundType = nullptr;
-        _fields.clear();
-
-        // If the module already defines a function with that name, skip. This is rather common
-        // in C headers, especially for the standard library.
-        if (_module->functionForName(name)) {
-            return;
-        }
-
-        if (_module->definesConstant(name)) {
-            _module->removeConstant(name);
-
-            std::cout << "[Indexer] Redefining constant '" << name << "'" << std::endl;
-        }
-
-        _module->addConstant(name, name);
+        // _currentCompoundType = nullptr;
+        // _fields.clear();
+        // 
+        // // If the module already defines a function with that name, skip. This is rather common
+        // // in C headers, especially for the standard library.
+        // if (_module->functionForName(name)) {
+        //     return;
+        // }
+        // 
+        // if (_module->definesConstant(name)) {
+        //     _module->removeConstant(name);
+        // 
+        //     std::cout << "[Indexer] Redefining constant '" << name << "'" << std::endl;
+        // }
+        // 
+        // _module->addConstant(name, name);
     }
 
     void CSourceIndexer::addField(const CompoundField& field) {
-        if (!_currentCompoundType) {
-            _fields.push_back(field);
-            return;
-        }
-
-        DataType* type;
-
-        type = _module->dataTypeForName(field.typeName);
-
-        if (!type) {
-            std::cout << "[Indexer] unable to look up field '" << field.name << "' type '" << field.typeName << "'" << std::endl;
-            return;
-        }
-
-        _currentCompoundType->addChild(TypeReference(type, field.indirection, field.dimensions), field.name);
+        // if (!_currentCompoundType) {
+        //     _fields.push_back(field);
+        //     return;
+        // }
+        // 
+        // DataType* type;
+        // 
+        // type = _module->dataTypeForName(field.typeName);
+        // 
+        // if (!type) {
+        //     std::cout << "[Indexer] unable to look up field '" << field.name << "' type '" << field.typeName << "'" << std::endl;
+        //     return;
+        // }
+        // 
+        // _currentCompoundType->addChild(TypeReference(type, field.indirection, field.dimensions), field.name);
     }
 }
 
@@ -316,13 +372,13 @@ static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declI
 
     switch(declInfo->entityInfo->kind) {
         case CXIdxEntity_Typedef:
-            index->addType(name, Three::DataType::Flavor::Scalar);
+            index->addType(name, declInfo);
             break;
         case CXIdxEntity_EnumConstant:
             index->addConstant(name);
             break;
         case CXIdxEntity_Function:
-            index->addFunction(name);
+            index->addFunction(name, declInfo);
             break;
         case CXIdxEntity_Variable:
             index->addVariable(name);
@@ -330,14 +386,14 @@ static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declI
         case CXIdxEntity_Enum:
             break;
         case CXIdxEntity_Struct:
-            if (name.length() > 0) {
-                index->addType(name, Three::DataType::Flavor::Structure);
-            }
+            // if (name.length() > 0) {
+            //     index->addType(name, Three::DataType::Flavor::Structure);
+            // }
             break;
         case CXIdxEntity_Union:
-            if (name.length() > 0) {
-                index->addType(name, Three::DataType::Flavor::Union);
-            }
+            // if (name.length() > 0) {
+            //     index->addType(name, Three::DataType::Flavor::Union);
+            // }
             break;
         case CXIdxEntity_Field:
             index->addField(FieldFromIndex(name, declInfo));

@@ -1,8 +1,6 @@
 #include "ASTVisitor.h"
 #include "../AST.h"
 
-#include <iostream>
-
 namespace Three {
     ASTVisitor::ASTVisitor() {
     }
@@ -22,31 +20,40 @@ namespace Three {
     }
 
     void ASTVisitor::visit(class FunctionDefinitionNode& node) {
-        std::cout << "Visiting function definition" << std::endl;
+        this->visitChildren(node);
     }
 
     void ASTVisitor::visit(class VariableDeclarationNode& node) {
-        std::cout << "Visiting variable declaration" << std::endl;
+        if (node.initializerExpression()) {
+            node.initializerExpression()->accept(*this);
+        }
     }
 
     void ASTVisitor::visit(class ClosureNode& node) {
-        std::cout << "Visiting closure" << std::endl;
+        this->visitChildren(node);
     }
 
     void ASTVisitor::visit(class IntegerLiteralNode& node) {
-        std::cout << "Visiting integer literal" << std::endl;
     }
 
     void ASTVisitor::visit(class BinaryOperatorNode& node) {
-        std::cout << "Visiting binary operator" << std::endl;
+        this->visitChildren(node);
     }
 
     void ASTVisitor::visit(class VariableNode& node) {
         std::cout << "Visiting variable" << std::endl;
     }
 
+    void ASTVisitor::visit(class CapturedVariableNode& node) {
+        std::cout << "Visiting captured" << std::endl;
+    }
+
+    void ASTVisitor::visit(class ReferencedVariableNode& node) {
+        std::cout << "Visiting referenced variable " << std::endl;
+    }
+
     void ASTVisitor::visit(class FunctionCallOperatorNode& node) {
-        std::cout << "Visiting function call op" << std::endl;
+        this->visitChildren(node);
     }
 
     void ASTVisitor::visit(class UnaryOperatorNode& node) {

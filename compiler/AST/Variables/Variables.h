@@ -1,0 +1,7 @@
+#include "FunctionVariableNode.h"
+#include "CapturedVariableNode.h"
+#include "LocalVariableNode.h"
+#include "ReferencedVariableNode.h"
+#include "SelfVariableNode.h"
+#include "VariableDeclarationNode.h"
+#include "ValueNode.h"

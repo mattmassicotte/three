@@ -1,6 +1,7 @@
 #include "Lexer.h"
 
 #include <assert.h>
+#include <sstream>
 
 namespace Three {
     Lexer::Lexer(std::istream* stream) {
@@ -36,6 +37,7 @@ namespace Three {
         _keywordMap["do"] = Token::Type::KeywordClosure;
         _keywordMap["struct"] = Token::Type::KeywordStructure;
         _keywordMap["enum"] = Token::Type::KeywordEnumeration;
+        _keywordMap["union"] = Token::Type::KeywordUnion;
         _keywordMap["switch"] = Token::Type::KeywordSwitch;
         _keywordMap["case"] = Token::Type::KeywordCase;
         _keywordMap["atomic"] = Token::Type::KeywordAtomic;
@@ -51,6 +53,9 @@ namespace Three {
         _keywordMap["abi"] = Token::Type::KeywordABI;
         _keywordMap["assert"] = Token::Type::KeywordAssert;
 
+        _annotationMap["access"] = Token::Type::AnnotationAccess;
+        _annotationMap["volatile"] = Token::Type::AnnotationVolatile;
+        _annotationMap["alias"] = Token::Type::AnnotationAlias;
         _annotationMap["read"] = Token::Type::AnnotationRead;
         _annotationMap["write"] = Token::Type::AnnotationWrite;
         _annotationMap["assert"] = Token::Type::AnnotationAssert;
@@ -61,6 +66,8 @@ namespace Three {
         _annotationMap["global"] = Token::Type::AnnotationGlobal;
         _annotationMap["thread"] = Token::Type::AnnotationThread;
         _annotationMap["io"] = Token::Type::AnnotationIO;
+        _annotationMap["register"] = Token::Type::AnnotationRegister;
+        _annotationMap["memory"] = Token::Type::AnnotationMemory;
         _annotationMap["flow"] = Token::Type::AnnotationFlow;
         _annotationMap["available"] = Token::Type::AnnotationAvailable;
         _annotationMap["noreturn"] = Token::Type::AnnotationNoreturn;
@@ -69,10 +76,15 @@ namespace Three {
         _annotationMap["optimize"] = Token::Type::AnnotationOptimize;
         _annotationMap["inline"] = Token::Type::AnnotationInline;
         _annotationMap["prefetch"] = Token::Type::AnnotationPrefetch;
-        _annotationMap["memory"] = Token::Type::AnnotationMemory;
         _annotationMap["pure"] = Token::Type::AnnotationPure;
         _annotationMap["throws"] = Token::Type::AnnotationThrows;
-        _annotationMap["released"] = Token::Type::AnnotationReleased;
+        _annotationMap["const"] = Token::Type::AnnotationConst;
+        _annotationMap["restrict"] = Token::Type::AnnotationRestrict;
+        _annotationMap["brief"] = Token::Type::AnnotationBrief;
+        _annotationMap["summary"] = Token::Type::AnnotationSummary;
+        _annotationMap["param"] = Token::Type::AnnotationParam;
+        _annotationMap["return"] = Token::Type::AnnotationReturn;
+        _annotationMap["todo"] = Token::Type::AnnotationTodo;
 
         _filterWhitespace = true;
     }
@@ -101,12 +113,37 @@ namespace Three {
     Token Lexer::next() {
         Token tmp;
 
-        _tokenBuffer.push_back(this->advance());
+        // easy case - no filtering
+        if (!_filterWhitespace) {
+            if (_tokenBuffer.size() == 0) {
+                _tokenBuffer.push_back(this->advance());
+            }
 
-        tmp = _tokenBuffer.front();
+            tmp = _tokenBuffer.front();
 
-        // remove the first token, which is now out of date
-        _tokenBuffer.erase(_tokenBuffer.begin());
+            // remove the first token, which is now out of date
+            _tokenBuffer.erase(_tokenBuffer.begin());
+
+            return tmp;
+        }
+
+        // harder case, we need to keep advancing until we have a non-whitespace token
+        // and then, we need to find the first non-whitespace token to return
+        for (;;) {
+            // make sure we have enough buffered
+            if (_tokenBuffer.size() == 0) {
+                _tokenBuffer.push_back(this->advance());
+            }
+
+            tmp = _tokenBuffer.front();
+
+            _tokenBuffer.erase(_tokenBuffer.begin());
+
+            // if it is non-whitespace, we're done
+            if (tmp.type() != Token::Type::Whitespace) {
+                break;
+            }
+        }
 
         return tmp;
     }
@@ -132,11 +169,37 @@ namespace Three {
     Token Lexer::peek(unsigned int distance) {
         assert(distance > 0);
 
-        for (int i = (distance - _tokenBuffer.size()); i > 0; --i) {
-            _tokenBuffer.push_back(this->advance());
+        // this case is easy - just return the token, regardless of type
+        if (!_filterWhitespace) {
+            // we need at least this many new tokens
+            for (int i = (distance - _tokenBuffer.size()); i > 0; --i) {
+                _tokenBuffer.push_back(this->advance());
+            }
+
+            return _tokenBuffer.at(distance - 1);
         }
 
-        return _tokenBuffer.at(distance - 1);
+        // This case is less easy. We need to keep taking tokens
+        // until we have enough non-whitespace ones.
+        uint32_t index = 0;
+        while (distance > 0) {
+            // make sure we have enough buffered tokens, and because of the looping, we can only miss one
+            if (index >= _tokenBuffer.size()) {
+                _tokenBuffer.push_back(this->advance());
+            }
+
+            // if we hit whitespace, keep looking
+            if (_tokenBuffer.at(index).type() == Token::Type::Whitespace) {
+                index += 1;
+                continue;
+            }
+
+            // we've made progress towards finding our peeked token
+            distance -= 1;
+            index += 1;
+        }
+
+        return _tokenBuffer.at(index - 1);
     }
 
     bool Lexer::atEnd() {
@@ -153,14 +216,17 @@ namespace Three {
         _filterWhitespace = value;
     }
 
+    void Lexer::advancePastWhitespace() {
+    }
+
     Token Lexer::advance() {
         Subtoken t = this->subtokenPeek();
 
         // Move past whitespace, if needed
-        while (_filterWhitespace && t.type() == Subtoken::Type::Whitespace) {
-            this->subtokenAdvance();
-            t = this->subtokenPeek();
-        }
+        //while (_filterWhitespace && t.type() == Subtoken::Type::Whitespace) {
+        //    this->subtokenAdvance();
+        //    t = this->subtokenPeek();
+        //}
 
         // filter out comments
         while (t.type() == Subtoken::Type::Comment) {
@@ -176,7 +242,11 @@ namespace Three {
             case Subtoken::Type::String:
                 this->subtokenAdvance();
                 // the "str" property includes the quotes
-                return Token(Token::Type::LiteralString, t.stringValue());
+                return Token(Token::Type::LiteralString, t.str());
+            case Subtoken::Type::Character:
+                this->subtokenAdvance();
+                // the "str" property includes the quotes
+                return Token(Token::Type::LiteralCharacter, t.str());
             case Subtoken::Type::Punctuation:
                 if (t.str()[0] == '@') {
                     return this->lexAnnotation();
@@ -244,6 +314,8 @@ namespace Three {
 
         // simple cases, that have no compounding
         switch (t.str()[0]) {
+            case ':':
+                return Token(Token::Type::PunctuationColon, ":");
             case ';':
                 return Token(Token::Type::PunctuationSemicolon, ";");
             case ',':
@@ -272,14 +344,6 @@ namespace Three {
 
         // cases with compounding
         switch (t.str()[0]) {
-            case ':':
-                if (this->subtokenPeek().str() == ":") {
-                    this->subtokenAdvance();
-
-                    return Token(Token::Type::OperatorScope, "::");
-                }
-
-                return Token(Token::Type::PunctuationColon, ":");
             case '-':
                 if (this->subtokenAdvanceIfEqual("-")) {
                     return Token(Token::Type::OperatorDecrement, "--");

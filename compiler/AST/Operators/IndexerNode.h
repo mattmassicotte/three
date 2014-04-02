@@ -5,10 +5,10 @@
 namespace Three {
     class IndexerNode : public OperatorNode {
     public:
-        static IndexerNode* parse(Parser& parser, ASTNode* operand);
+        static IndexerNode* parse(NewParser& parser, ASTNode* operand);
 
     public:
-        std::string name() const;
+        std::string nodeName() const;
         void accept(ASTVisitor& visitor);
     };
 }

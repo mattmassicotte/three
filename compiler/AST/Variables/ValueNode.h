@@ -5,9 +5,8 @@
 namespace Three {
     class ValueNode : public ASTNode {
     public:
-        ValueNode(const std::string& value, const TypeReference& type);
+        ValueNode(const std::string& value);
 
-        TypeReference nodeType() const;
         std::string name() const;
         void accept(ASTVisitor& visitor);
 
@@ -16,6 +15,5 @@ namespace Three {
 
     private:
         std::string _value;
-        TypeReference _type;
     };
 }

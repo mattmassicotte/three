@@ -1,25 +1,33 @@
 #include "CastNode.h"
-#include "../../Parser.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 
 namespace Three {
-    CastNode* CastNode::parse(Parser& parser) {
+    CastNode* CastNode::parse(NewParser& parser) {
+        assert(parser.helper()->nextIf(Token::Type::MetafunctionCast));
+
         CastNode* node = new CastNode();
 
-        assert(parser.next().type() == Token::Type::MetafunctionCast);
-        assert(parser.next().type() == Token::Type::PunctuationOpenParen);
+        bool success = parser.parseParentheses([&] () {
+            node->dataTypeArgument = parser.parseType();
 
-        node->_typeArgument = parser.parseType();
+            if (!parser.helper()->nextIf(Token::Type::PunctuationComma)) {
+                assert(0 && "Message: cast type argument should be followed by a comma");
+            }
 
-        assert(parser.next().type() == Token::Type::PunctuationComma);
+            node->addChild(parser.parseExpression());
+        });
 
-        // Cannot have tailing conditionals, so must be secondary
-        node->addChild(parser.parseSecondaryExpression());
-
-        assert(parser.next().type() == Token::Type::PunctuationCloseParen);
+        if (!success) {
+            assert(0 && "Message: cast requires open and close parens");
+        }
 
         return node;
+    }
+
+    std::string CastNode::nodeName() const {
+        return "Cast Metafunction";
     }
 
     std::string CastNode::name() const {
@@ -28,9 +36,5 @@ namespace Three {
 
     void CastNode::accept(ASTVisitor& visitor) {
         visitor.visit(*this);
-    }
-
-    TypeReference CastNode::argument() const {
-        return _typeArgument;
     }
 }

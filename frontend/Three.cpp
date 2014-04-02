@@ -1,6 +1,7 @@
-#include "../compiler/Parser.h"
+#include "../compiler/Lexer/Lexer.h"
+#include "../compiler/Parser/NewParser.h"
 #include "../compiler/Operations/CCodeGenVisitor.h"
-#include "../compiler/AST/ASTNode.h"
+#include "../compiler/AST/RootNode.h"
 #include "../compiler/CSourceIndexer.h"
 #include "REPL.h"
 
@@ -78,10 +79,10 @@ void getOptions(build_options_t* options, int argc, char** argv) {
     }
 }
 
-bool createCOutputs(Three::ParsingContext* context, const std::string& basePath) {
+bool createCOutputs(const Three::ParseContext& context, const std::string& basePath) {
     Three::CCodeGenVisitor visitor;
 
-    context->rootNode()->accept(visitor);
+    context.rootNode()->accept(visitor);
 
     std::ofstream bodyFile(basePath + ".c");
 
@@ -188,10 +189,15 @@ void adjustOutputFileName(build_options_t* options, const std::string& inputFile
 }
 
 int buildCSources(const std::string& inputFile) {
-    Three::ParsingContext* parsingContext = Three::Parser::contextFromFile(inputFile);
+    Three::ParseContext context;
 
-    std::string output = inputFile.substr(0, inputFile.length() - 2);
-    createCOutputs(parsingContext, output);
+    if (!Three::NewParser::parse(inputFile.c_str(), &context)) {
+        std::cout << "Unable to parse file" << std::endl;
+        return 1;
+    }
+
+    std::string outputPath = inputFile.substr(0, inputFile.length() - 2);
+    createCOutputs(context, outputPath);
 
     return 0;
 }
@@ -209,7 +215,7 @@ int linkExecutable(const std::string& linkerPath, const std::string& inputFile, 
     return system(s.str().c_str()) == 0;
 }
 
-int buildExecutable(build_options_t* options, const std::string& inputFile, Three::ParsingContext* context) {
+int buildExecutable(build_options_t* options, const std::string& inputFile, const Three::ParseContext& context) {
     createCOutputs(context, options->outputFile);
     compileCSource(options->compilerPath, options->outputFile + ".c", options->outputFile + ".o");
 
@@ -234,63 +240,69 @@ bool buildLibrary(const std::vector<std::string>& inputs, const std::string& out
     return system(s.str().c_str()) == 0;
 }
 
-int buildModule(build_options_t* options, Three::ParsingContext* context) {
-    std::vector<std::string> pathComponents = splitString(context->currentModule()->name, "_3_");
-
-    std::string path;
-
-    for (const std::string& component : pathComponents) {
-        path += component + "/";
-    }
-
-    if (!createPath(path)) {
-        std::cerr << "Unable to create path" << std::endl;
-        return 1;
-    }
-
-    for (const std::string& submodule : context->currentModule()->importedModules) {
-        std::cout << "[Compile] building subcomponent '" << submodule << "'" << std::endl;
-
-        buildCSources(submodule + ".3");
-        compileCSource(options->compilerPath, submodule + ".c", submodule + ".o");
-    }
-
-    std::vector<std::string> objects;
-
-    // now move the headers
-    for (const std::string& submodule : context->currentModule()->importedModules) {
-        rename((submodule + ".c").c_str(), (path + "/" + submodule + ".c").c_str());
-        rename((submodule + ".h").c_str(), (path + "/" + submodule + ".h").c_str());
-        rename((submodule + "_internal.h").c_str(), (path + "/" + submodule + "_internal.h").c_str());
-
-        objects.push_back(submodule + ".o");
-    }
-
-    buildLibrary(objects, path + "/" + "lib" + options->outputFile + ".a");
-
-    for (const std::string& object_file : objects) {
-        unlink(object_file.c_str());
-    }
-
-    return 0;
+int buildModule(build_options_t* options, const Three::ParseContext& context) {
+    return 1;
+    // std::vector<std::string> pathComponents = splitString("Module_3_Something", "_3_");
+    // 
+    // std::string path;
+    // 
+    // for (const std::string& component : pathComponents) {
+    //     path += component + "/";
+    // }
+    // 
+    // if (!createPath(path)) {
+    //     std::cerr << "Unable to create path" << std::endl;
+    //     return 1;
+    // }
+    // 
+    // for (const std::string& submodule : context->currentModule()->importedModules) {
+    //     std::cout << "[Compile] building subcomponent '" << submodule << "'" << std::endl;
+    // 
+    //     buildCSources(submodule + ".3");
+    //     compileCSource(options->compilerPath, submodule + ".c", submodule + ".o");
+    // }
+    // 
+    // std::vector<std::string> objects;
+    // 
+    // // now move the headers
+    // for (const std::string& submodule : context->currentModule()->importedModules) {
+    //     rename((submodule + ".c").c_str(), (path + "/" + submodule + ".c").c_str());
+    //     rename((submodule + ".h").c_str(), (path + "/" + submodule + ".h").c_str());
+    //     rename((submodule + "_internal.h").c_str(), (path + "/" + submodule + "_internal.h").c_str());
+    // 
+    //     objects.push_back(submodule + ".o");
+    // }
+    // 
+    // buildLibrary(objects, path + "/" + "lib" + options->outputFile + ".a");
+    // 
+    // for (const std::string& object_file : objects) {
+    //     unlink(object_file.c_str());
+    // }
+    // 
+    // return 0;
 }
 
 int processInput(build_options_t* options, const std::string& inputFile) {
-    Three::ParsingContext* parsingContext = Three::Parser::contextFromFile(inputFile);
+    Three::ParseContext context;
+
+    if (!Three::NewParser::parse(inputFile.c_str(), &context)) {
+        std::cout << "Unable to parse file" << std::endl;
+        return 1;
+    }
 
     if (options->printAST) {
-        std::cout << parsingContext->rootNode()->recursiveStr() << std::endl;
+        std::cout << context.rootNode()->recursiveStr() << std::endl;
         return 0;
     }
 
     adjustOutputFileName(options, inputFile);
 
-    if (parsingContext->currentModule()->hasMainFunction()) {
+    if (true) {
         std::cout << "[Compile] Building executable" << std::endl;
-        return buildExecutable(options, inputFile, parsingContext);
+        return buildExecutable(options, inputFile, context);
     }
 
-    return buildModule(options, parsingContext);
+    return buildModule(options, context);
 }
 
 int main(int argc, char** argv) {

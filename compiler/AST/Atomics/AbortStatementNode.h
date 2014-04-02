@@ -5,12 +5,16 @@
 namespace Three {
     class AbortStatementNode : public ASTNode {
     public:
-        static AbortStatementNode* parse(Parser& parser);
+        static AbortStatementNode* parse(NewParser& parser);
 
     public:
+        std::string nodeName() const;
         std::string name() const;
         void accept(ASTVisitor& visitor);
 
-        void codeGen(CSourceContext& context);
+        std::string transactionName() const;
+
+    private:
+        std::string _transactionName;
     };
 }

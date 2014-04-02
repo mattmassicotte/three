@@ -1,25 +1,44 @@
 #pragma once
 
 #include "DefinitionNode.h"
-#include "../../Constructs/Function.h"
+#include "compiler/constructs/NewDataType.h"
+#include "compiler/Lexer/Token.h"
+
+namespace Three {
+    class NewScope;
+}
 
 namespace Three {
     class FunctionDefinitionNode : public DefinitionNode {
     public:
-        static FunctionDefinitionNode* parse(Parser& parser);
+        static FunctionDefinitionNode* parse(NewParser& parser);
+        static bool bufferFunctionBody(NewParser& parser, std::stringstream& stream);
+        static bool bufferOpenToCloseToken(NewParser& parser, std::stringstream& stream, Token::Type closingType, bool parseClosing);
+        static bool scanToFirstToken(NewParser& parser, std::stringstream& stream, bool firstCall);
 
     public:
-        virtual std::string name() const;
+        std::string nodeName() const;
+        std::string name() const;
         std::string str() const;
         void accept(ASTVisitor& visitor);
 
-        Function* function() const;
-        ASTNode* ensureClause() const;
+        NewDataType functionType() const;
+        NewDataType methodOnType() const;
+        bool isMethod() const;
 
-        void codeGen(CSourceContext& context);
+        std::stringstream* bodyStream();
+        bool parseBody(NewParser& parser);
+
+        std::string fullName() const;
+        std::vector<std::string> namespaceComponents;
 
     private:
-        Function* _function;
-        ASTNode* _ensureBlock;
+        void defineParameterVariablesInScope(NewScope* scope);
+
+    private:
+        NewDataType _functionType;
+        NewDataType _methodOnType;
+        std::string _name;
+        std::stringstream _bodyString;
     };
 }

@@ -1,8 +1,9 @@
 #include "ASTNode.h"
-#include "../Constructs/Annotation.h"
+#include "compiler/constructs/NewDataType.h"
 
 #include <assert.h>
 #include <sstream>
+#include <iostream>
 
 namespace Three {
     ASTNode::ASTNode() : _statement(false) {
@@ -62,20 +63,8 @@ namespace Three {
         return false;
     }
 
-    TypeReference ASTNode::nodeType() const {
-        std::cout << "Accessing an ASTNode with an undefined type: " << this->nodeName() << std::endl;
-
-        assert(0);
-
-        return TypeReference();
-    }
-
-    std::vector<Annotation*> ASTNode::annotations() const {
-        return _annotations;
-    }
-
-    void ASTNode::setAnnotations(const std::vector<Annotation*>& annotations) {
-        _annotations = annotations;
+    NewDataType ASTNode::dataType() const {
+        return NewDataType();
     }
 
     std::string ASTNode::nodeName() const {
@@ -113,18 +102,6 @@ namespace Three {
     void ASTNode::acceptChildren(ASTVisitor& visitor) {
         this->eachChild([&] (ASTNode* child, uint32_t _) {
             child->accept(visitor);
-        });
-    }
-
-    void ASTNode::codeGen(CSourceContext& context) {
-    }
-
-    void ASTNode::codeGenChildren(CSourceContext& context) {
-        this->eachChildWithLast([=, &context] (ASTNode* node, bool last) {
-            node->codeGen(context);
-            if (node->statement()) {
-                context.current()->printLine(";");
-            }
         });
     }
 }

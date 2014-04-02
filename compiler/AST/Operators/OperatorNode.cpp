@@ -4,31 +4,31 @@
 #include "UnaryOperatorNode.h"
 #include "BinaryOperatorNode.h"
 #include "TernaryOperatorNode.h"
-#include "FunctionCallOperatorNode.h"
-#include "../Variables/VariableNode.h"
-#include "../../Parser.h"
+#include "Callable/FunctionCallOperatorNode.h"
+#include "Callable/MethodCallOperatorNode.h"
+#include "compiler/AST/Variables/VariableNode.h"
+#include "compiler/Parser/NewParser.h"
+
+#include "Operators.h"
 
 #include <assert.h>
 
 namespace Three {
-    ASTNode* OperatorNode::parse(Parser& parser, ASTNode* left, uint32_t precedence) {
-        OperatorNode* node = nullptr;
-
-        assert(parser.peek().isOperator());
-
-        if (parser.peek().str() == "?" || parser.peek().str() == "cas") {
-            node = new TernaryOperatorNode();
-        } else {
-            node = new BinaryOperatorNode();
+    ASTNode* OperatorNode::parse(NewParser& parser, ASTNode* left, uint32_t precedence) {
+        OperatorNode* node = OperatorNode::createOperator(parser);
+        if (!node) {
+            assert(0 && "Message: operator expected!");
         }
 
-        node->setOp(parser.next().str());
+        node->setOp(parser.helper()->nextStr());
 
         node->addChild(left);
         node->addChild(parser.parseExpression(precedence));
 
-        if (node->op() == "?" || node->op() == "cas") {
-            assert(parser.next().type() == Token::Type::PunctuationColon);
+        if (node->ternary()) {
+            if (parser.helper()->next().type() != Token::Type::PunctuationColon) {
+                assert(0 && "Message: Expecting colon in ternary operator");
+            }
 
             node->addChild(parser.parseExpression(precedence));
         }
@@ -36,86 +36,151 @@ namespace Three {
         return node;
     }
 
-    ASTNode* OperatorNode::parseUnary(Parser& parser) {
-        assert(parser.peek().isUnaryOperator());
+    ASTNode* OperatorNode::parseUnary(NewParser& parser) {
+        if (!parser.helper()->peek().isUnaryOperator()) {
+            assert(0 && "Message: Unary operator expected");
+        }
 
-        OperatorNode* node = new UnaryOperatorNode();
-        node->setOp(parser.next().str());
+        OperatorNode* node = OperatorNode::createOperator(parser, true);
+        node->setOp(parser.helper()->nextStr());
 
         // unary operators can only have secondary expressions
         // as arguments (identifiers, unary operators)
 
-        node->addChild(parser.parsePrimaryExpression());
+        node->addChild(parser.parseExpressionElement());
 
         return node;
     }
 
-    ASTNode* OperatorNode::parseTailing(Parser& parser, ASTNode* leftNode) {
+    ASTNode* OperatorNode::parseTailing(NewParser& parser, ASTNode* leftNode) {
         // possible tailing operators are:
         // .
         // ->
         // (
         // [
 
-        while (true) {
-            std::string op = parser.peek().str();
+        for (;;) {
+            switch (parser.helper()->peek().type()) {
+                case Token::Type::OperatorDot:
+                case Token::Type::OperatorArrow:
+                case Token::Type::PunctuationOpenBracket:
+                    leftNode = OperatorNode::parseSingleTailing(parser, leftNode);
+                    break;
+                case Token::Type::PunctuationOpenParen:
+                    leftNode = FunctionCallOperatorNode::parse(parser, leftNode);
+                    break;
+                default:
+                    return leftNode;
+            }
 
-            assert(leftNode);
-
-            if (op == "." || op == "->" || op == "[") {
-                leftNode = OperatorNode::parseSingleTailing(parser, leftNode);
-            } else if (op == "(") {
-                leftNode = Three::FunctionCallOperatorNode::parse(parser, leftNode);
-            } else {
+            // if we fail to parse anything, kill the loop
+            if (!leftNode) {
                 break;
             }
         }
 
+        return nullptr;
+    }
+
+    ASTNode* OperatorNode::parseSingleTailing(NewParser& parser, ASTNode* leftNode) {
+        switch (parser.helper()->peek().type()) {
+            case Token::Type::PunctuationOpenBracket:
+                return IndexerNode::parse(parser, leftNode);
+            case Token::Type::OperatorDot:
+                if (leftNode->dataType().isPointer()) {
+                    return MethodCallOperatorNode::parse(parser, leftNode);
+                }
+                // intentional fallthrough if not a method call
+            case Token::Type::OperatorArrow:
+                return MemberAccessNode::parse(parser, leftNode);
+            default:
+                break;
+        }
+
+        assert(0 && "Message: Unable to parse tailing operator");
+
         return leftNode;
     }
 
-    ASTNode* OperatorNode::parseSingleTailing(Parser& parser, ASTNode* leftNode) {
-        std::string op = parser.peek().str();
-
-        // construct and parse the indexer operator
-        if (op == "[") {
-            return Three::IndexerNode::parse(parser, leftNode);
-        }
-
-        // check for a method invocation
-        if (op == ".") {
-            if (leftNode->nodeType().indirectionDepth() == 1) {
-                parser.next();
-
-                assert(parser.peek().type() == Token::Type::Identifier);
-                std::string functionName = leftNode->nodeType().name() + "_3_" + parser.next().str();
-
-                VariableNode* receiver = VariableNode::parse(parser, functionName);
-
-                return FunctionCallOperatorNode::parse(parser, receiver, leftNode);
+    OperatorNode* OperatorNode::createOperator(NewParser& parser, bool unary) {
+        if (unary) {
+            switch (parser.helper()->peek().type()) {
+                case Token::Type::OperatorStar:      return new DereferenceOperatorNode();
+                case Token::Type::OperatorAmpersand: return new AddressOfOperatorNode();
+                case Token::Type::OperatorMinus:     return new UnaryMinusOperatorNode();
+                case Token::Type::OperatorNot:       return new NotOperatorNode();
+                case Token::Type::OperatorBinaryNot:
+                case Token::Type::OperatorIncrement:
+                case Token::Type::OperatorDecrement:
+                    break;
+                default:
+                    assert(0);
             }
         }
 
-        // member access operators
-        if (op == "->" || op == ".") {
-            return Three::MemberAccessNode::parse(parser, leftNode);
+        switch (parser.helper()->peek().type()) {
+            case Token::Type::OperatorStar:             return new MultiplicationOperatorNode();
+            case Token::Type::OperatorAmpersand:        return new BinaryAndOperatorNode();
+            case Token::Type::OperatorMinus:            return new SubtractionOperatorNode();
+            case Token::Type::OperatorIncrement:        return new PlainBinaryOperatorNode("Increment Operator");
+            case Token::Type::OperatorDecrement:        return new PlainBinaryOperatorNode("Decrement Operator");
+            case Token::Type::OperatorPlus:             return new AdditionOperatorNode();
+            case Token::Type::OperatorDivide:           return new DivisionOperatorNode();
+            case Token::Type::OperatorMod:              return new PlainBinaryOperatorNode("Modulus Operator");
+            case Token::Type::OperatorDot:              return new PlainBinaryOperatorNode("Dot Operator");
+            case Token::Type::OperatorArrow:            return new PlainBinaryOperatorNode("Arrow Operator");
+            case Token::Type::OperatorEqual:            return new PlainBinaryOperatorNode("Equal Operator");
+            case Token::Type::OperatorDeepEqual:        return new PlainBinaryOperatorNode("Deep-Equal Operator");
+            case Token::Type::OperatorCompare:          return new PlainBinaryOperatorNode("Compare Operator");
+            case Token::Type::OperatorNotEqual:         return new NotEqualOperatorNode();
+            case Token::Type::OperatorGreaterThan:      return new PlainBinaryOperatorNode("Greater-Than Operator");
+            case Token::Type::OperatorLessThan:         return new PlainBinaryOperatorNode("Less-Than Operator");
+            case Token::Type::OperatorGreaterOrEqual:   return new PlainBinaryOperatorNode("Greater-or-Equal Operator");
+            case Token::Type::OperatorLessOrEqual:      return new PlainBinaryOperatorNode("Less-or-Equal Operator");
+            case Token::Type::OperatorLogicalAnd:       return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorLogicalOr:        return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorLogicalXor:       return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorNot:              return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorBinaryNot:        return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorBinaryOr:         return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorBinaryXor:        return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorLeftShift:        return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorRightShift:       return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorAssign:           return new AssignOperatorNode();
+            case Token::Type::OperatorAddAssign:        return new PlainBinaryOperatorNode("Add-Assign Operator");
+            case Token::Type::OperatorSubtractAssign:   return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorMultiplyAssign:   return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorDivideAssign:     return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorModAssign:        return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorBitwiseAndAssign: return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorBitwiseOrAssign:  return new PlainBinaryOperatorNode("Bitwise Or-Assign Operator");
+            case Token::Type::OperatorBitwiseXorAssign: return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorLeftShiftAssign:  return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorRightShiftAssign: return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorLogicalAndAssign: return new PlainBinaryOperatorNode("");
+            case Token::Type::OperatorLogicalOrAssign:  return new PlainBinaryOperatorNode("Or-Assign Operator");
+            case Token::Type::OperatorQuestionMark:     return new TernaryConditionalOperatorNode();
+            case Token::Type::OperatorCAS:              return new CASOperatorNode();
+            default: break;
         }
 
-        assert(0 && "Parsing a tailing operator failed");
-        return leftNode;
+        return nullptr;
     }
 
-    TypeReference OperatorNode::nodeType() const {
+    NewDataType OperatorNode::dataType() const {
         // TODO: is this correct?
-        return this->childAtIndex(0)->nodeType();
+        return this->childAtIndex(0)->dataType();
     }
-
-    std::string OperatorNode::name() const {
+    std::string OperatorNode::nodeName() const {
         return "Operator";
     }
 
+    std::string OperatorNode::name() const {
+        return "Operator!!!";
+    }
+
     std::string OperatorNode::str() const {
-        return "Operator: " + this->op();
+        return this->nodeName();
     }
 
     std::string OperatorNode::op() const {

@@ -1,29 +1,39 @@
 #pragma once
 
 #include "../ASTNode.h"
-#include "../../Constructs/Variable.h"
+#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/NewVariable.h"
+#include "compiler/constructs/TranslationUnit.h"
 
 namespace Three {
     class VariableDeclarationNode : public ASTNode {
     public:
-        static VariableDeclarationNode* parse(Parser& parser, bool createVariable=true);
-
-    public:
-        virtual ~VariableDeclarationNode();
-
-        virtual std::string name() const;
-        TypeReference nodeType() const;
-        void accept(ASTVisitor& visitor);
-
-        Variable* variable() const;
-        ASTNode* initializerExpression() const;
-
-        void codeGen(CSourceContext& context);
-
-        bool global;
+        static VariableDeclarationNode* parse(NewParser& parser, bool createVariable = true);
+        static VariableDeclarationNode* parseGlobal(NewParser& parser);
 
     private:
-        Variable* _variable;
+        static void parseVariable(NewParser& parser, VariableDeclarationNode& node, bool createVariable = true);
+
+    public:
+        VariableDeclarationNode();
+        virtual ~VariableDeclarationNode();
+
+        NewDataType dataType() const;
+        std::string nodeName() const;
+        void accept(ASTVisitor& visitor);
+
+        std::string name() const;
+        ASTNode* initializerExpression() const;
+
+        NewVariable* variable() const;
+
+        bool global;
+        TranslationUnit::Visibility visibility;
+
+    private:
         ASTNode* _initializerExpression;
+        NewDataType _declaredType;
+        std::string _name;
+        NewVariable* _variable;
     };
 }

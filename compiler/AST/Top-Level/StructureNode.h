@@ -1,24 +1,19 @@
 #pragma once
 
-#include "DefinitionNode.h"
-#include "../../Constructs/DataType.h"
+#include "CompositeTypeDefinitionNode.h"
 
 namespace Three {
-    class StructureNode : public DefinitionNode {
+    class StructureNode : public CompositeTypeDefinitionNode {
     public:
-        static StructureNode* parse(Parser& parser);
-
-    public:
-        virtual std::string name() const;
+        std::string nodeName() const;
         void accept(ASTVisitor& visitor);
 
         uint32_t packing() const;
-        std::string structureName() const;
 
-        void codeGen(CSourceContext& context);
+    protected:
+        void setParsedIntegerSpecifier(NewParser& parser, uint32_t value);
 
     private:
         uint32_t _packing;
-        DataType* _type;
     };
 }

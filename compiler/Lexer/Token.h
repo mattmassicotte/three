@@ -33,6 +33,7 @@ namespace Three {
             LiteralTrue,
             LiteralFalse,
             LiteralNull,
+            LiteralCharacter,
 
             OperatorScope,
             OperatorStar,
@@ -106,6 +107,7 @@ namespace Three {
             KeywordClosure,
             KeywordStructure,
             KeywordEnumeration,
+            KeywordUnion,
             KeywordSwitch,
             KeywordCase,
             KeywordAtomic,
@@ -121,6 +123,9 @@ namespace Three {
             KeywordABI,
             KeywordAssert,
 
+            AnnotationAccess,
+            AnnotationVolatile,
+            AnnotationAlias,
             AnnotationRead,
             AnnotationWrite,
             AnnotationAssert,
@@ -131,6 +136,8 @@ namespace Three {
             AnnotationGlobal,
             AnnotationThread,
             AnnotationIO,
+            AnnotationRegister,
+            AnnotationMemory,
             AnnotationFlow,
             AnnotationAvailable,
             AnnotationNoreturn,
@@ -139,10 +146,17 @@ namespace Three {
             AnnotationOptimize,
             AnnotationInline,
             AnnotationPrefetch,
-            AnnotationMemory,
+
             AnnotationPure,
             AnnotationThrows,
-            AnnotationReleased
+            AnnotationConst,
+            AnnotationRestrict,
+
+            AnnotationBrief,
+            AnnotationSummary,
+            AnnotationParam,
+            AnnotationReturn,
+            AnnotationTodo
         } Type;
 
         const static uint32_t NonPrecedence     = 0;
@@ -155,6 +169,8 @@ namespace Three {
 
         Token::Type type() const;
         std::string str() const;
+        std::string strTrimmingFirstAndLast() const;
+        std::string strWithWhitespace() const;
 
         uint32_t precedence() const;
 
@@ -162,13 +178,18 @@ namespace Three {
         bool isStatementEnding();
 
         bool isAnnotation() const;
+        bool isTypeAnnotation() const;
         bool isOperator() const;
         bool isUnaryOperator() const;
         bool isTernaryOperator() const;
         bool isLeftAssociative() const;
 
+        bool isOpeningSpan() const;
+        Token::Type closingCounterpart() const;
+
     private:
         Token::Type _type;
         std::string _value;
+        std::string _fullValue;
     };
 }

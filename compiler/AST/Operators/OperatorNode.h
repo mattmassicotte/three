@@ -5,16 +5,17 @@
 namespace Three {
     class OperatorNode : public ASTNode {
     public:
-        static ASTNode* parse(Parser& parser, ASTNode* left, uint32_t precedence);
-        static ASTNode* parseUnary(Parser& parser);
-        static ASTNode* parseTailing(Parser& parser, ASTNode* leftNode);
-        static ASTNode* parseSingleTailing(Parser& parser, ASTNode* leftNode);
+        static ASTNode* parse(NewParser& parser, ASTNode* left, uint32_t precedence);
+        static ASTNode* parseUnary(NewParser& parser);
+        static ASTNode* parseTailing(NewParser& parser, ASTNode* leftNode);
+        static ASTNode* parseSingleTailing(NewParser& parser, ASTNode* leftNode);
 
     private:
-        static ASTNode* parseOperator(Parser& parser, ASTNode* leftOperand);
+        static OperatorNode* createOperator(NewParser& parser, bool unary = false);
 
     public:
-        virtual TypeReference nodeType() const;
+        NewDataType dataType() const;
+        virtual std::string nodeName() const;
         virtual std::string name() const;
 
         virtual std::string str() const;

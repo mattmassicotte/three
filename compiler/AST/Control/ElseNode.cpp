@@ -1,21 +1,39 @@
 #include "ElseNode.h"
-#include "../../Parser.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 
 namespace Three {
-    ElseNode* ElseNode::parse(Parser& parser) {
+    ElseNode* ElseNode::parse(NewParser& parser) {
+        assert(parser.helper()->nextIf(Token::Type::KeywordElse));
+
         ElseNode* node = new ElseNode();
 
-        assert(parser.next().type() == Token::Type::KeywordElse);
-        parser.parseNewline();
+        if (!parser.helper()->parseNewline()) {
+            assert(0 && "Message: else must be followed by a newline");
+            return node;
+        }
 
         // parse the body
-        parser.parseUntilEnd([&] () {
-            node->addChild(parser.parseStatement());
+        bool success = parser.helper()->parseUntil(false, [&] (const Token& token) {
+            switch (token.type()) {
+                case Token::Type::KeywordEnd:
+                    return true;
+                default:
+                    node->addChild(parser.parseStatement());
+                    return false;
+                }
         });
 
+        if (!success) {
+            assert(0 && "Message: unable to parse else body");
+        }
+
         return node;
+    }
+
+    std::string ElseNode::nodeName() const {
+        return "Else";
     }
 
     std::string ElseNode::name() const {
@@ -24,9 +42,5 @@ namespace Three {
 
     void ElseNode::accept(ASTVisitor& visitor) {
         visitor.visit(*this);
-    }
-
-    void ElseNode::codeGen(CSourceContext& context) {
-        assert(0 && "ElseNode cannot be codegen'ed to C directly");
     }
 }

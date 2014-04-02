@@ -62,7 +62,7 @@ namespace Three {
 
             // std::cout << "subtoken: '" << c << "' : " << type << std::endl;
 
-            // handle spans (comments, strings, whitespace)
+            // handle spans (comments, strings, whitespace, characters)
             switch (type) {
                 case Subtoken::Type::Comment:
                     if (c == '\n') {
@@ -75,6 +75,14 @@ namespace Three {
                     s << this->characterAdvance();
 
                     if (c == '"') {
+                        return Subtoken(type, s.str());
+                    }
+
+                    continue; // back to the while loop
+                case Subtoken::Type::Character:
+                    s << this->characterAdvance();
+
+                    if (c == '\'') {
                         return Subtoken(type, s.str());
                     }
 
@@ -119,7 +127,6 @@ namespace Three {
                 case '{':
                 case '}':
                 case '~':
-                case '\'':
                 case '(':
                 case ')':
                 case ',':
@@ -157,6 +164,16 @@ namespace Three {
                     }
 
                     type = Subtoken::Type::String;
+                    s << this->characterAdvance();
+
+                    break;
+                case '\'':
+                    _potentialDirective = false;
+                    if (type != Subtoken::Type::EndOfInput) {
+                        return Subtoken(type, s.str());
+                    }
+
+                    type = Subtoken::Type::Character;
                     s << this->characterAdvance();
 
                     break;

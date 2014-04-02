@@ -1,41 +1,43 @@
 #include "NamespaceNode.h"
-#include "../../Parser.h"
+#include "compiler/Parser/NewParser.h"
+#include "compiler/constructs/NewScope.h"
 
 #include <assert.h>
 
 namespace Three {
-    NamespaceNode* NamespaceNode::parse(Parser& parser) {
+    NamespaceNode* NamespaceNode::parse(NewParser& parser) {
+        assert(parser.helper()->nextIf(Token::Type::KeywordNamespace));
+
         NamespaceNode* node = new NamespaceNode();
 
-        assert(parser.next().type() == Token::Type::KeywordNamespace);
+        assert(parser.helper()->peek().type() == Token::Type::Identifier);
+        if (!parser.isAtIdentifierAvailableForDefinition()) {
+            assert(0 && "Message: namespace name isn't avaiable for definition");
+        }
 
-        node->_name = parser.parseQualifiedIdentifier();
-        assert(node->_name.length() > 0);
+        node->_name = parser.helper()->nextStr();
 
-        parser.parseNewline();
+        if (!parser.helper()->parseNewline()) {
+            assert(0 && "Message: new line expected after namespace definition");
+        }
 
-        parser.pushScope(new Scope(node->_name));
-        parser.currentScope()->setNamespace(node->_name);
+        parser.context()->pushScope();
+        parser.context()->scope()->namespaceString = node->_name;
 
-        parser.parseUntilEnd([&] () {
+        parser.helper()->parseUntilEnd([&] () {
             node->addChild(parser.parseTopLevelNode());
         });
 
-        parser.popScope();
-        parser.parseNewline();
+        parser.context()->popScope();
 
         return node;
     }
 
-    std::string NamespaceNode::name() const {
+    std::string NamespaceNode::nodeName() const {
         return "Namespace";
     }
 
-    std::string NamespaceNode::namespaceName() const {
+    std::string NamespaceNode::name() const {
         return _name;
-    }
-
-    void NamespaceNode::codeGen(CSourceContext& context) {
-        this->codeGenChildren(context);
     }
 }

@@ -6,23 +6,22 @@
 namespace Three {
     class IfNode : public ASTNode {
     public:
-        static IfNode* parse(Parser& parser);
-        static ASTNode* parseTailing(Parser& parser, ASTNode* node);
+        static IfNode* parse(NewParser& parser);
+        static ASTNode* parseTailing(NewParser& parser, ASTNode* node);
 
     public:
         IfNode();
 
+        std::string nodeName() const;
         virtual std::string name() const;
         void accept(ASTVisitor& visitor);
 
         ASTNode* condition() const;
         void     setCondition(ASTNode* node);
-        ElseNode* elseStatement() const;
-
-        void codeGen(CSourceContext& context);
+        ASTNode* elseStatement() const;
 
     private:
-        ASTNode*  _conditionNode;
-        ElseNode* _elseNode;
+        ASTNode* _conditionNode;
+        ASTNode* _elseNode;
     };
 }

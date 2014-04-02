@@ -1,24 +1,26 @@
 #include "AtomicExpressionNode.h"
 #include "../Operators/OperatorNode.h"
-#include "../../Parser.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 
 namespace Three {
-    AtomicExpressionNode* AtomicExpressionNode::parse(Parser& parser, bool statement) {
-        AtomicExpressionNode* node = new AtomicExpressionNode();
+    AtomicExpressionNode* AtomicExpressionNode::parse(NewParser& parser) {
+        assert(parser.helper()->nextIf(Token::Type::KeywordAtomic));
 
-        assert(parser.next().type() == Token::Type::KeywordAtomic);
+        AtomicExpressionNode* node = new AtomicExpressionNode();
 
         AtomicNode::parseOrdering(parser, node);
 
-        assert(parser.next().type() == Token::Type::PunctuationOpenParen);
+        if (!parser.helper()->nextIf(Token::Type::PunctuationOpenParen)) {
+            assert(0 && "Message: expecting open paren for atomic expression");
+        }
 
         node->addChild(parser.parseExpression());
 
-        assert(parser.next().type() == Token::Type::PunctuationCloseParen);
-
-        node->setStatement(statement);
+        if (!parser.helper()->nextIf(Token::Type::PunctuationCloseParen)) {
+            assert(0 && "Message: expecting close paren for atomic expression");
+        }
 
         return node;
     }
@@ -38,6 +40,10 @@ namespace Three {
         return op == ">" || op == ">=" || op == "<" || op == "<=" || op == "==";
     }
 
+    std::string AtomicExpressionNode::nodeName() const {
+        return "Atomic Expression";
+    }
+
     std::string AtomicExpressionNode::name() const {
         return "AtomicExpression";
     }
@@ -48,61 +54,5 @@ namespace Three {
 
     OperatorNode* AtomicExpressionNode::op() const {
         return dynamic_cast<OperatorNode*>(this->childAtIndex(0));
-    }
-
-    void AtomicExpressionNode::codeGenAtomicVariable(CSourceContext& context, OperatorNode* op) {
-        context << "(_Atomic(";
-        context << op->nodeType().codeGen();
-        context << ")*)";
-        context << "&";
-
-        op->childAtIndex(0)->codeGen(context);
-    }
-
-    void AtomicExpressionNode::codeGen(CSourceContext& context) {
-        context.declarations()->addHeader(false, "three/runtime/atomic.h");
-
-        // we need to inspect the operation inside the expression to figure out
-        // what code we actually need to emit
-        assert(this->childCount() == 1);
-
-        OperatorNode* op = this->op();
-
-        context.adjustCurrent(context.declarations(), [&] (CSource* source) {
-            *source << "THREE_CHECK_ATOMIC(";
-            *source << op->nodeType().codeGen();
-            source->printLine(");");
-        });
-
-        std::string functionName = AtomicExpressionNode::c11AtomicFunctionForFullOperation(op->op());
-        if (functionName != "") {
-            context << functionName;
-            context << "(";
-            this->codeGenAtomicVariable(context, op);
-            context << ", ";
-            op->childAtIndex(1)->codeGen(context);
-            context << ", ";
-            context << this->c11MemoryOrderString();
-            context << ")";
-
-            return;
-        }
-
-        if (AtomicExpressionNode::c11AtomicFunctionIsLoadOperation(op->op())) {
-            context << "atomic_load_explicit(";
-            this->codeGenAtomicVariable(context, op);
-            context << ", ";
-            context << this->c11MemoryOrderString();
-            context << ") ";
-
-            context << op->op();
-            context << " ";
-
-            op->childAtIndex(1)->codeGen(context);
-
-            return;
-        }
-
-        assert(0 && "Atomic expression codegen failure");
     }
 }

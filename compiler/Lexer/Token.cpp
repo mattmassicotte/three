@@ -18,6 +18,10 @@ namespace Three {
         return _value;
     }
 
+    std::string Token::strTrimmingFirstAndLast() const {
+        return _value.substr(1, _value.length() - 2);
+    }
+
     uint32_t Token::precedence() const {
         switch (_type) {
             case PunctuationOpenBracket: return 16;
@@ -85,6 +89,9 @@ namespace Three {
 
     bool Token::isAnnotation() const {
         switch (_type) {
+            case AnnotationAccess:
+            case AnnotationVolatile:
+            case AnnotationAlias:
             case AnnotationRead:
             case AnnotationWrite:
             case AnnotationAssert:
@@ -95,6 +102,8 @@ namespace Three {
             case AnnotationGlobal:
             case AnnotationThread:
             case AnnotationIO:
+            case AnnotationRegister:
+            case AnnotationMemory:
             case AnnotationFlow:
             case AnnotationAvailable:
             case AnnotationNoreturn:
@@ -103,10 +112,29 @@ namespace Three {
             case AnnotationOptimize:
             case AnnotationInline:
             case AnnotationPrefetch:
-            case AnnotationMemory:
             case AnnotationPure:
             case AnnotationThrows:
-            case AnnotationReleased:
+            case AnnotationConst:
+            case AnnotationRestrict:
+            case AnnotationBrief:
+            case AnnotationSummary:
+            case AnnotationParam:
+            case AnnotationReturn:
+                return true;
+            default:
+                break;
+        }
+
+        return false;
+    }
+
+    bool Token::isTypeAnnotation() const {
+        switch (_type) {
+            case AnnotationAccess:
+            case AnnotationVolatile:
+            case AnnotationAlias:
+            case AnnotationConst:
+            case AnnotationRestrict:
                 return true;
             default:
                 break;
@@ -226,6 +254,57 @@ namespace Three {
         }
 
         return true;
+    }
+
+    bool Token::isOpeningSpan() const {
+        switch (_type) {
+            case PunctuationOpenBrace:
+            case PunctuationOpenParen:
+            case PunctuationOpenBracket:
+            case KeywordDef:
+            case KeywordIf:
+            case KeywordLoop:
+            case KeywordFor:
+            case KeywordSwitch:
+            case KeywordAtomic:
+            case KeywordNamespace:
+            case KeywordModule:
+            case KeywordStructure:
+            case KeywordEnumeration:
+            case KeywordUnion:
+                return true;
+            default:
+                break;
+        }
+
+        return false;
+    }
+
+    Token::Type Token::closingCounterpart() const {
+        switch (_type) {
+            case PunctuationOpenBrace:
+                return PunctuationCloseBrace;
+            case PunctuationOpenParen:
+                return PunctuationCloseParen;
+            case PunctuationOpenBracket:
+                return PunctuationCloseBracket;
+            case KeywordDef:
+            case KeywordIf:
+            case KeywordLoop:
+            case KeywordFor:
+            case KeywordSwitch:
+            case KeywordAtomic:
+            case KeywordNamespace:
+            case KeywordModule:
+            case KeywordStructure:
+            case KeywordEnumeration:
+            case KeywordUnion:
+                return KeywordEnd;
+            default:
+                break;
+        }
+
+        return Undefined;
     }
 }
     

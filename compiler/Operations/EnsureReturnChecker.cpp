@@ -7,10 +7,10 @@ namespace Three {
     }
 
     void EnsureReturnChecker::visit(FunctionDefinitionNode& node) {
-        if (node.ensureClause()) {
-            _returnsAllowed = false;
-            node.ensureClause()->accept(*this);
-        }
+        // if (node.ensureClause()) {
+        //     _returnsAllowed = false;
+        //     node.ensureClause()->accept(*this);
+        // }
 
         _returnsAllowed = true;
     }

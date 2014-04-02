@@ -5,12 +5,11 @@
 namespace Three {
     class BreakNode : public ASTNode {
     public:
-        static BreakNode* parse(Parser& parser);
+        static BreakNode* parse(NewParser& parser);
 
     public:
+        std::string nodeName() const;
         std::string name() const;
         void accept(ASTVisitor& visitor);
-
-        void codeGen(CSourceContext& context);
     };
 }

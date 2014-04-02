@@ -1,25 +1,22 @@
 #pragma once
 
-#include "../ASTNode.h"
+#include "LiteralNode.h"
 
 namespace Three {
-    class IntegerLiteralNode : public ASTNode {
+    class IntegerLiteralNode : public LiteralNode {
     public:
-        static IntegerLiteralNode* parse(Parser& parser);
+        static IntegerLiteralNode* parse(NewParser& parser);
         static uint64_t integerValue(const std::string& string);
 
     public:
+        std::string nodeName() const;
         virtual std::string name() const;
         void accept(ASTVisitor& visitor);
-        TypeReference nodeType() const;
 
         void setValue(uint64_t v);
         uint64_t value() const;
 
-        void codeGen(CSourceContext& context);
-
     private:
         uint64_t _value;
-        TypeReference _type;
     };
 }

@@ -30,6 +30,8 @@ namespace Three {
         void setFilterWhitespace(bool value);
 
     protected:
+        void advancePastWhitespace();
+
         Token advance();
 
         Token lexWord();

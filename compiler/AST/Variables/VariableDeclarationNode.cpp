@@ -1,69 +1,88 @@
 #include "VariableDeclarationNode.h"
-#include "../../Parser.h"
+#include "compiler/Parser/NewParser.h"
+#include "compiler/constructs/NewScope.h"
 
 #include <assert.h>
 
 namespace Three {
-    VariableDeclarationNode* VariableDeclarationNode::parse(Parser& parser, bool createVariable) {
+    VariableDeclarationNode* VariableDeclarationNode::parse(NewParser& parser, bool createVariable) {
         VariableDeclarationNode* node = new VariableDeclarationNode();
 
-        node->global = false;
-        node->_variable = new Variable();
-
-        node->_variable->setType(parser.parseType());
-
-        assert(parser.peek().type() == Token::Type::Identifier);
-        node->_variable->setName(parser.next().str());
-
-        if (createVariable) {
-            parser.currentScope()->addVariable(node->_variable->name(), node->_variable);
-        }
-
-        if (parser.nextIf("=")) {
-            node->_initializerExpression = parser.parseExpression();
-        } else {
-            node->_initializerExpression = nullptr;
-        }
-
-        // TODO: this isn't quite right.  These aren't always statements.  So far,
-        // one place where they are not are in for loop start expressions
-        node->setStatement(true);
+        VariableDeclarationNode::parseVariable(parser, *node, createVariable);
 
         return node;
+    }
+
+    VariableDeclarationNode* VariableDeclarationNode::parseGlobal(NewParser& parser) {
+        VariableDeclarationNode* node = VariableDeclarationNode::parse(parser, true);
+    
+        node->global = true;
+        node->visibility = parser.context()->visibility();
+
+        return node;
+    }
+
+    void VariableDeclarationNode::parseVariable(NewParser& parser, VariableDeclarationNode& node, bool createVariable) {
+        // Here's the form of a variable declaration:
+        // (<type>) var (= <expression>)\n
+
+        // TODO: this is fairly messy
+        node._name = parser.parseTypeIdentifierPair(node._declaredType);
+        node._declaredType.setLabel(node._name);
+
+        if (parser.helper()->nextIf(Token::Type::OperatorAssign)) {
+            node._initializerExpression = parser.parseExpression();
+        }
+
+        if (createVariable) {
+            node._variable = new NewVariable();
+
+            node._variable->name = node.name();
+            node._variable->type = node.dataType();
+            
+
+            parser.context()->scope()->defineVariable(node._variable);
+        }
+    }
+
+    VariableDeclarationNode::VariableDeclarationNode() :
+        _initializerExpression(nullptr),
+        _variable(nullptr),
+        global(false),
+        visibility(TranslationUnit::Visibility::None) {
     }
 
     VariableDeclarationNode::~VariableDeclarationNode() {
         if (_initializerExpression) {
             delete _initializerExpression;
         }
+
+        if (_variable) {
+            delete _variable;
+        }
     }
 
-    std::string VariableDeclarationNode::name() const {
-        return "VariableDeclaration";
+    NewDataType VariableDeclarationNode::dataType() const {
+        return _declaredType;
     }
 
-    TypeReference VariableDeclarationNode::nodeType() const {
-        return _variable->type();
+    std::string VariableDeclarationNode::nodeName() const {
+        return "Variable Declaration";
     }
 
     void VariableDeclarationNode::accept(ASTVisitor& visitor) {
         visitor.visit(*this);
     }
 
-    Variable* VariableDeclarationNode::variable() const {
-        return this->_variable;
+    std::string VariableDeclarationNode::name() const {
+        return _name;
     }
 
     ASTNode* VariableDeclarationNode::initializerExpression() const {
         return _initializerExpression;
     }
 
-    void VariableDeclarationNode::codeGen(CSourceContext& context) {
-        context << this->_variable->type().codeGen(this->_variable->name());
-
-        if (this->initializerExpression()) {
-            context << " = ";
-            this->initializerExpression()->codeGen(context);
-        }
+    NewVariable* VariableDeclarationNode::variable() const {
+        return _variable;
     }
 }

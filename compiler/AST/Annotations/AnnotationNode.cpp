@@ -1,80 +1,68 @@
-#include "AnnotationNode.h"
-#include "../../Parser.h"
+#include "Annotations.h"
+#include "compiler/Parser/NewParser.h"
 
 #include <assert.h>
 
 namespace Three {
-    AnnotationNode* AnnotationNode::parse(Parser& parser) {
-        std::string name;
+    AnnotationNode* AnnotationNode::parse(NewParser& parser) {
+        switch (parser.helper()->peek().type()) {
+            case Token::Type::AnnotationAccess:
+            case Token::Type::AnnotationVolatile:
+            case Token::Type::AnnotationAlias:
+            case Token::Type::AnnotationConst:
+            case Token::Type::AnnotationRestrict:
+                assert(0 && "Message: Annotation must be used as a type qualifier");
+                break;
+            case Token::Type::AnnotationBrief:
+                return BriefAnnotationNode::parse(parser);
+            case Token::Type::AnnotationSummary:
+                return SummaryAnnotationNode::parse(parser);
+            case Token::Type::AnnotationParam:
+                return ParamAnnotationNode::parse(parser);
+            case Token::Type::AnnotationRead:
+                return ReadAnnotationNode::parse(parser);
+            case Token::Type::AnnotationWrite:
+            case Token::Type::AnnotationAssert:
+            case Token::Type::AnnotationSentinel:
+            case Token::Type::AnnotationChecked:
+            case Token::Type::AnnotationNull:
+            case Token::Type::AnnotationSuccess:
+            case Token::Type::AnnotationGlobal:
+            case Token::Type::AnnotationThread:
+            case Token::Type::AnnotationIO:
+            case Token::Type::AnnotationRegister:
+            case Token::Type::AnnotationMemory:
+            case Token::Type::AnnotationFlow:
+            case Token::Type::AnnotationAvailable:
+                assert(0 && "Unhandled annotation");
+                break;
+            case Token::Type::AnnotationNoreturn:
+                return NoreturnAnnotationNode::parse(parser);
 
-        AnnotationNode* node = new AnnotationNode();
-
-        node->_annotation = NULL;
-
-        name = parser.next().str();
-        if (name == "@noreturn") {
-            node->_annotation = new NoReturnAnnotation();
-        } else if (name == "@inline") {
-            
-            assert(parser.next().type() == Token::Type::PunctuationOpenParen);
-
-            std::string value = parser.next().str();
-            if (value == "always") {
-                node->_annotation = new InlineAnnotation(InlineAnnotation::Type::Always);
-            } else if (value == "never") {
-                node->_annotation = new InlineAnnotation(InlineAnnotation::Type::Never);
-            } else if (value == "allowed"){
-                node->_annotation = new InlineAnnotation(InlineAnnotation::Type::Allowed);
-            } else {
-                assert(0 && "Unrecognized @inline annotation type");
-            }
-
-            assert(parser.next().type() == Token::Type::PunctuationCloseParen);
-        } else if (name == "@common") {
-            node->_annotation = new CommonAnnotation();
-
-            assert(parser.next().type() == Token::Type::PunctuationOpenParen);
-
-            node->addChild(parser.parseExpression());
-
-            assert(parser.next().type() == Token::Type::PunctuationCloseParen);
-        } else if (name == "@c") {
-            assert(parser.next().type() == Token::Type::PunctuationOpenParen);
-
-            std::string value = parser.next().str();
-            if (value == "notypedef") {
-                node->_annotation = new CSourceAnnotation(CSourceAnnotation::Type::NoTypedef);
-            } else {
-                assert(0 && "Unrecognized @c annotation type");
-            }
-
-            assert(parser.next().type() == Token::Type::PunctuationCloseParen);
-        } else {
-            assert(0 && "Unrecognized annotation");
+            case Token::Type::AnnotationReturn:
+                return ReturnAnnotationNode::parse(parser);
+            case Token::Type::AnnotationCommon:
+            case Token::Type::AnnotationUncommon:
+            case Token::Type::AnnotationOptimize:
+            case Token::Type::AnnotationInline:
+            case Token::Type::AnnotationPrefetch:
+            case Token::Type::AnnotationPure:
+            case Token::Type::AnnotationThrows:
+                assert(0 && "Unhandled annotation");
+                break;
+            default:
+                break;
         }
 
-        node->_annotation->annotationName = name;
+        assert(0 && "Unrecognized annotation");
 
-        parser.currentScope()->addAnnotation(node->annotation());
-
-        return node;
+        return nullptr;
     }
 
     AnnotationNode::~AnnotationNode() {
-        if (_annotation) {
-            delete _annotation;
-        }
     }
 
     std::string AnnotationNode::name() const {
         return "Annotation";
-    }
-
-    Annotation* AnnotationNode::annotation() const {
-        return _annotation;
-    }
-
-    void AnnotationNode::codeGen(CSourceContext& context) {
-        context.current()->addHeader(false, "three/runtime/annotations.h");
     }
 }

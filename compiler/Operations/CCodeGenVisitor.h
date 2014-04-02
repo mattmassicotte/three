@@ -27,6 +27,8 @@ namespace Three {
         void visit(class IntegerLiteralNode& node);
         void visit(class BinaryOperatorNode& node);
         void visit(class VariableNode& node);
+        void visit(class CapturedVariableNode& node);
+        void visit(class ReferencedVariableNode& node);
         void visit(class FunctionCallOperatorNode& node);
         void visit(class UnaryOperatorNode& node);
         void visit(class StringLiteralNode& node);
@@ -53,7 +55,7 @@ namespace Three {
         void visit(class BarrierNode& node);
         void visit(class ValueNode& node);
 
-        void visitChildren(class ASTNode& node);
+        void visitChildren(class ASTNode& node, bool statements = false);
 
         std::string externalHeaderString();
         std::string internalHeaderString();
@@ -70,11 +72,14 @@ namespace Three {
         void prepareForAtomicExpressions();
         void prepareForTransactions();
         void transactionAllocation(const std::string& name);
-        void endCurrentTransaction();
+        void endCurrentTransaction(const std::string& name);
         std::string c11MemoryOrderString(AtomicNode::Ordering order) const;
         void atomicVariable(class OperatorNode* op);
         std::string c11AtomicFunctionForFullOperation(const std::string& op);
         bool c11AtomicFunctionIsLoadOperation(const std::string& op);
+
+        void closureEnvironmentStructure(class ClosureNode& node, CSource& source);
+        std::string closureEnvironmentCapture(class ClosureNode& node);
 
         void sourceForVisibility(TranslationUnit::Visibility v, std::function<void (CSource&)> func);
 
@@ -86,7 +91,6 @@ namespace Three {
 
         CSource* _currentSource;
 
-        ASTNode* _activeEnsureClause;
         uint32_t _tmpReturnValueCounter;
     };
 }

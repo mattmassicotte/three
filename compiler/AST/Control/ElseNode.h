@@ -5,12 +5,11 @@
 namespace Three {
     class ElseNode : public ASTNode {
     public:
-        static ElseNode* parse(Parser& parser);
+        static ElseNode* parse(NewParser& parser);
 
     public:
+        std::string nodeName() const;
         std::string name() const;
         void accept(ASTVisitor& visitor);
-
-        void codeGen(CSourceContext& context);
     };
 }

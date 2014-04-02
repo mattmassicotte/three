@@ -5,9 +5,6 @@
 namespace Three {
     class ModuleImportNode : public ASTNode {
     public:
-        static ModuleImportNode* parse(Parser& parser);
-
-    public:
         virtual std::string name() const;
 
         void setPath(const std::string& value);

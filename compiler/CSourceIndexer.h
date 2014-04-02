@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Constructs/Module.h"
+#include "compiler/Parser/ParseContext.h"
 
 #include <string>
 #include <map>
@@ -17,6 +17,9 @@ namespace Three {
 
     class CSourceIndexer {
     public:
+        static bool resolvePathAndIndex(const std::string& path, bool useSearchPaths, ParseContext* context);
+
+    public:
         static std::vector<std::string>* defaultCIncludePaths();
         static std::string resolveCHeaderPath(const std::string& partialPath);
         static std::vector<std::string> defaultCCompilerArguments();
@@ -25,22 +28,20 @@ namespace Three {
         CSourceIndexer();
         virtual ~CSourceIndexer();
 
-        bool indexFileAtUnresolvedPath(const std::string& path);
-        bool indexFileAtPath(const std::string& path);
-        void addFunction(const std::string& name);
-        void addType(const std::string& name, DataType::Flavor flavor);
+        bool indexFileAtUnresolvedPath(const std::string& path, ParseContext* context);
+        bool indexFileAtPath(const std::string& path, ParseContext* context);
+        void addFunction(const std::string& name, const void* declInfoPtr);
+        void addType(const std::string& name, const void* declInfoPtr);
         void addVariable(const std::string& name);
         void addConstant(const std::string& name);
         void addField(const CompoundField& field);
-
-        Module* module() const;
 
     public:
         bool verbose;
 
     private:
-        Module* _module;
-        DataType* _currentCompoundType;
+        ParseContext* _context;
+        // DataType* _currentCompoundType;
         std::vector<CompoundField> _fields;
     };
 }
