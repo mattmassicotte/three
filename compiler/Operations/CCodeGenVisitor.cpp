@@ -29,6 +29,17 @@ namespace Three {
 
         // Function Prototype
         this->sourceForVisibility(node.visibility(), [&] (CSource& source) {
+            if (node.functionType().returnCount() > 1) {
+                source.printLineAndIndent("typedef struct {");
+
+                node.functionType().eachReturnWithLast([&] (const NewDataType& returnType, bool last) {
+                    source << CTypeCodeGenerator::codeGen(returnType);
+                    source << " " << returnType.label();
+                    source.printLine(";");
+                });
+
+                source.outdentAndPrintLine("} " + node.name() + "_returns;");
+            }
             source << functionString;
             source.printLine(";");
         });

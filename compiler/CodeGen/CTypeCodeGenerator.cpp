@@ -122,9 +122,9 @@ namespace Three {
         // returnType function(param1, param2)
         // returnType (*varName)(param1, param2)
 
-        assert(type.returnCount() <= 1 && "Unhandled: multiple return values");
-
-        if (type.returnCount() == 0) {
+        if (type.returnCount() > 1) {
+            s << type.label() << "_returns";
+        } else if (type.returnCount() == 0) {
             s << "void";
         } else {
             s << CTypeCodeGenerator::codeGen(type.returnAtIndex(0));

@@ -97,6 +97,7 @@ namespace Three {
         uint32_t returnCount() const;
         NewDataType returnAtIndex(uint32_t idx) const;
         void addReturn(NewDataType t);
+        void eachReturnWithLast(std::function<void (const NewDataType&, bool)> func) const;
 
     public:
         std::vector<NewDataType> subtypes;
