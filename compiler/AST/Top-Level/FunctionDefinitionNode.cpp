@@ -43,7 +43,16 @@ namespace Three {
         // parse signature
         node->_functionType = parser.parseFunctionSignatureType();
         node->_functionType.setLabel(node->fullName());
-        if (!parser.context()->defineFunctionForName(NewDataType(NewDataType::Kind::Function), node->_name)) {
+
+        // insert the self parameter, if needed
+        if (node->isMethod()) {
+            NewDataType selfPtr = NewDataType::wrapInPointer(node->_methodOnType);
+            selfPtr.setLabel("self");
+
+            node->_functionType.parameters.insert(node->_functionType.parameters.cbegin(), selfPtr);
+        }
+
+        if (!parser.context()->defineFunctionForName(node->_functionType, node->_name)) {
             assert(0 && "Message: function name already used");
         }
 
@@ -199,17 +208,9 @@ namespace Three {
     void FunctionDefinitionNode::defineParameterVariablesInScope(NewScope* scope) {
         // create variables for all arguments in this scope, including the special self
         // variable if this is a method
-        if (this->isMethod()) {
-            NewDataType selfType = NewDataType(NewDataType::Kind::Pointer);
-            selfType.addSubtype(_methodOnType);
-
-            scope->defineVariableTypeForName(selfType, "self");
-        }
-
         _functionType.eachParameterWithLast([&] (const NewDataType& type, bool last) {
             scope->defineVariableTypeForName(type, type.label());
         });
-
     }
 
     bool FunctionDefinitionNode::parseBody(NewParser& parser) {
@@ -240,6 +241,10 @@ namespace Three {
 
         for (const std::string& part : namespaceComponents) {
             s << part << "_3_";
+        }
+
+        if (_methodOnType.kind() != NewDataType::Kind::Undefined) {
+            s << _methodOnType.name() << "_3_";
         }
 
         s << this->name();

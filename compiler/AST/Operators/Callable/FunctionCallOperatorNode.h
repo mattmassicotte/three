@@ -10,7 +10,5 @@ namespace Three {
     public:
         std::string nodeName() const;
         void accept(ASTVisitor& visitor);
-
-        bool receiverIsClosure() const; // this should not be used
     };
 }

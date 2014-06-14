@@ -18,6 +18,7 @@ namespace Three {
         virtual void visit(class CapturedVariableNode& node);
         virtual void visit(class ReferencedVariableNode& node);
         virtual void visit(class FunctionCallOperatorNode& node);
+        virtual void visit(class MethodCallOperatorNode& node);
         virtual void visit(class UnaryOperatorNode& node);
         virtual void visit(class StringLiteralNode& node);
         virtual void visit(class SwitchNode& node);

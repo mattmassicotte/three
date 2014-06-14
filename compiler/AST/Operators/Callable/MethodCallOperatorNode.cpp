@@ -13,6 +13,10 @@ namespace Three {
             assert(0 && "Message: method name should be an identifier");
         }
 
+        if (receiver->dataType().kind() != NewDataType::Kind::Pointer) {
+            assert(0 && "Message: Method receiver type must be a pointer");
+        }
+
         node->_name = parser.helper()->nextStr();
 
         if (!CallableOperatorNode::parseArguments(parser, node)) {

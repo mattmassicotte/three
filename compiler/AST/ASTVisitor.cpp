@@ -56,6 +56,10 @@ namespace Three {
         this->visitChildren(node);
     }
 
+    void ASTVisitor::visit(class MethodCallOperatorNode& node) {
+        this->visitChildren(node);
+    }
+
     void ASTVisitor::visit(class UnaryOperatorNode& node) {
         std::cout << "Visiting unary op" << std::endl;
     }

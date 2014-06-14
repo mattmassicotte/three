@@ -167,25 +167,41 @@ namespace Three {
     }
 
     void CCodeGenVisitor::visit(FunctionCallOperatorNode& node) {
-        if (node.receiverIsClosure()) {
-            *_currentSource << "THREE_CALL_CLOSURE(";
-            // *_currentSource << node.receiverNodeType().codeGenFunction("");
-            *_currentSource << ", ";
-            node.receiver()->accept(*this);
-
-            if (node.childCount() > 0) {
-                *_currentSource << ", ";
-            }
-        } else {
-            node.receiver()->accept(*this);
-            *_currentSource << "(";
-        }
+        // TODO: fix this
+        // if (node.receiverIsClosure()) {
+        //     *_currentSource << "THREE_CALL_CLOSURE(";
+        //     // *_currentSource << node.receiverNodeType().codeGenFunction("");
+        //     *_currentSource << ", ";
+        //     node.receiver()->accept(*this);
+        // 
+        //     if (node.childCount() > 0) {
+        //         *_currentSource << ", ";
+        //     }
+        // } else {
+        node.receiver()->accept(*this);
+        *_currentSource << "(";
 
         node.eachChildWithLast([&] (ASTNode* child, bool last) {
             child->accept(*this);
             if (!last) {
                 *_currentSource << ", ";
             }
+        });
+
+        *_currentSource << ")";
+    }
+
+    void CCodeGenVisitor::visit(MethodCallOperatorNode& node) {
+        assert(node.receiverDataType().subtypeCount() == 1);
+
+        *_currentSource << node.receiverDataType().subtypeAtIndex(0).name() + "_3_" + node.name();
+        *_currentSource << "(";
+
+        node.receiver()->accept(*this);
+
+        node.eachChildWithLast([&] (ASTNode* child, bool last) {
+            *_currentSource << ", ";
+            child->accept(*this);
         });
 
         *_currentSource << ")";

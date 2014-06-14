@@ -13,7 +13,6 @@ TEST_F(NewParserTests_FunctionCalls, FunctionCallOperator) {
     ASSERT_EQ("Function Call Operator", fnCall->nodeName());
     ASSERT_EQ("Function Variable", fnCall->receiver()->nodeName());
     ASSERT_EQ(0, fnCall->childCount());
-    ASSERT_FALSE(fnCall->receiverIsClosure());
 }
 
 TEST_F(NewParserTests_FunctionCalls, FunctionCallOperatorWithArgument) {
@@ -26,7 +25,6 @@ TEST_F(NewParserTests_FunctionCalls, FunctionCallOperatorWithArgument) {
     ASSERT_EQ("Function Call Operator", fnCall->nodeName());
     ASSERT_EQ(1, fnCall->childCount());
     ASSERT_EQ("Local Variable", fnCall->childAtIndex(0)->nodeName());
-    ASSERT_FALSE(fnCall->receiverIsClosure());
 }
 
 TEST_F(NewParserTests_FunctionCalls, FunctionCallOperatorWithTwoArguments) {
@@ -40,7 +38,6 @@ TEST_F(NewParserTests_FunctionCalls, FunctionCallOperatorWithTwoArguments) {
     ASSERT_EQ(2, fnCall->childCount());
     ASSERT_EQ("Local Variable", fnCall->childAtIndex(0)->nodeName());
     ASSERT_EQ("Local Variable", fnCall->childAtIndex(1)->nodeName());
-    ASSERT_FALSE(fnCall->receiverIsClosure());
 }
 
 TEST_F(NewParserTests_FunctionCalls, InvokeClosureParameter) {
@@ -83,6 +80,7 @@ TEST_F(NewParserTests_FunctionCalls, MethodInvocation) {
 
     ASSERT_EQ(2, node->childCount());
     ASSERT_EQ("Function Definition", node->childAtIndex(0)->nodeName());
+    ASSERT_EQ(NewDataType::Kind::Integer, dynamic_cast<Three::FunctionDefinitionNode*>(node->childAtIndex(0))->methodOnType().kind());
 
     node = node->childAtIndex(1);
     ASSERT_EQ("Function Definition", node->nodeName());

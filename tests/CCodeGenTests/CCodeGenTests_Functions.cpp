@@ -77,3 +77,21 @@ TEST_F(CCodeGenTests_Functions, FunctionDefinitionWithMultipleReturns) {
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
     EXPECT_EQ("test_returns test(void) {\n}\n\n", visitor->bodyString());
 }
+
+TEST_F(CCodeGenTests_Functions, MethodInvocation) {
+    Three::CCodeGenVisitor* visitor = this->visit("def Int.foo(Int b)\n"
+                                                  "end\n"
+                                                  "def test(*Int i)\n"
+                                                  "  i.foo(5)\n"
+                                                  "end\n");
+
+    EXPECT_EQ("", visitor->declarationsString());
+    EXPECT_EQ("void Int_3_foo(int* self, int b);\n"
+              "void test(int* i);\n", visitor->internalHeaderString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
+    EXPECT_EQ("void Int_3_foo(int* self, int b) {\n"
+              "}\n\n"
+              "void test(int* i) {\n"
+              "    Int_3_foo(i, 5);\n"
+              "}\n\n", visitor->bodyString());
+}

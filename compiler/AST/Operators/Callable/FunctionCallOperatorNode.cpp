@@ -26,10 +26,4 @@ namespace Three {
     void FunctionCallOperatorNode::accept(ASTVisitor& visitor) {
         visitor.visit(*this);
     }
-
-    bool FunctionCallOperatorNode::receiverIsClosure() const {
-        assert(this->receiver());
-
-        return this->receiverDataType().kind() == NewDataType::Kind::Closure;
-    }
 }

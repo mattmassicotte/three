@@ -28,9 +28,9 @@ namespace Three {
 
         switch (_kind) {
             case Undefined: return "Undefined";
-            case Integer:   return "Integer";
-            case Boolean:   return "Boolean";
-            default:        return "Invalid";
+            case Integer:   return "Int";
+            case Boolean:   return "Bool";
+            default:        return "Unspecified";
         }
     }
 

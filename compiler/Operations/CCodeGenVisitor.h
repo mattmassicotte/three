@@ -30,6 +30,7 @@ namespace Three {
         void visit(class CapturedVariableNode& node);
         void visit(class ReferencedVariableNode& node);
         void visit(class FunctionCallOperatorNode& node);
+        void visit(class MethodCallOperatorNode& node);
         void visit(class UnaryOperatorNode& node);
         void visit(class StringLiteralNode& node);
         void visit(class SwitchNode& node);
