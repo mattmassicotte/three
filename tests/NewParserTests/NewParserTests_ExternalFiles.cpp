@@ -6,6 +6,7 @@ protected:
     virtual void SetUp() {
         NewParserTestsBase::SetUp();
         this->setSkipIncludes(true);
+        this->setSkipImports(true);
     }
 };
 

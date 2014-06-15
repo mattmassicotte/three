@@ -2,45 +2,14 @@
 #include "../../CSourceIndexer.h"
 #include "compiler/Parser/NewParser.h"
 
+#include "compiler/Messages/ImportFailureMessage.h"
+
 #include <assert.h>
 #include <sstream>
 #include <unistd.h>
 #include <fstream>
 
 namespace Three {
-    // ImportNode* ImportNode::parse(OldParser& parser) {
-    //     ImportNode* node = new ImportNode();
-    // 
-    //     assert(parser.next().type() == Token::Type::KeywordImport);
-    // 
-    //     node->setPath(parser.parseQualifiedIdentifier("/"));
-    //     assert(node->_path.length() > 0);
-    //     node->_visibility = parser.context()->visibility();
-    // 
-    //     parser.parseNewline();
-    // 
-    //     // TODO: This is copy-paste from the include node.
-    //     CSourceIndexer index;
-    // 
-    //     if (!index.indexFileAtPath(node->resolvedFilePath())) {
-    //         std::cout << "[Warning] Unable to import '" << node->path() << "'" << std::endl;
-    //         return node;
-    //     }
-    // 
-    //     parser.currentModule()->addModule(node->resolvedFilePath(), index.module());
-    // 
-    //     index.module()->eachFunction([&] (const Function* function) {
-    //         Variable* var = new Variable();
-    // 
-    //         var->setName(function->fullyQualifiedName());
-    //         var->setType(TypeReference(function->createType(), 1));
-    // 
-    //         parser.currentScope()->addVariable(function->fullyQualifiedName(), var);
-    //     });
-    // 
-    //     return node;
-    // }
-
     ImportNode* ImportNode::parse(NewParser& parser) {
         ImportNode* node = new ImportNode();
 
@@ -55,6 +24,10 @@ namespace Three {
 
         if (!parser.helper()->parseNewline()) {
             assert(0 && "Message: Import statement must be followed by a newline");
+        }
+
+        if (!parser.context()->import(node->_argument)) {
+            parser.context()->addMessage(new ImportFailureMessage(node->_argument));
         }
 
         return node;

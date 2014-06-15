@@ -6,6 +6,8 @@ class NewParserTestsBase : public testing::Test {
 protected:
     virtual void SetUp() {
         _skipIncludes = false;
+        _skipImports = false;
+
         _stream  = nullptr;
         _lexer   = nullptr;
         _parser  = nullptr;
@@ -34,6 +36,7 @@ protected:
         assert(!_context);
         _context = new Three::ParseContext();
         _context->skipIncludes = _skipIncludes;
+        _context->skipImports = _skipImports;
 
         _parser->parse(_lexer, _context);
 
@@ -77,10 +80,15 @@ protected:
         _skipIncludes = value;
     }
 
+    void setSkipImports(bool value) {
+        _skipImports = value;
+    }
+
     std::istringstream* _stream;
     Three::Lexer* _lexer;
     Three::NewParser* _parser;
     Three::ParseContext* _context;
     bool _skipIncludes;
+    bool _skipImports;
 };
 

@@ -31,6 +31,10 @@ namespace Three {
         uint32_t messageCount() const;
         Message* messageAtIndex(uint32_t i) const;
         void addMessage(Message* message);
+        void clearMessages();
+        bool displayMessages();
+
+        bool import(const std::string& name);
 
         void setVisibility(TranslationUnit::Visibility visibility);
         TranslationUnit::Visibility visibility() const;
@@ -58,6 +62,7 @@ namespace Three {
 
     public:
         bool skipIncludes; // for testing
+        bool skipImports;
 
     private:
         RootNode* _rootNode;

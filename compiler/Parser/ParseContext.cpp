@@ -3,9 +3,10 @@
 #include "compiler/AST/RootNode.h"
 #include "compiler/constructs/NewDataType.h"
 #include "compiler/constructs/NewScope.h"
+#include "compiler/CSourceIndexer.h"
 
 namespace Three {
-    ParseContext::ParseContext() {
+    ParseContext::ParseContext() : skipIncludes(false), skipImports(false) {
         _rootNode = new RootNode();
         _currentScope = new NewScope();
         _visibility = TranslationUnit::Visibility::Default;
@@ -24,9 +25,7 @@ namespace Three {
         delete _rootNode;
         delete _currentScope;
 
-        for (Message* message : _messages) {
-            delete message;
-        }
+        this->clearMessages();
     }
 
     RootNode* ParseContext::rootNode() const {
@@ -43,6 +42,39 @@ namespace Three {
 
     void ParseContext::addMessage(Message* message) {
         _messages.push_back(message);
+    }
+
+    void ParseContext::clearMessages() {
+        for (Message* message : _messages) {
+            delete message;
+        }
+
+        _messages.clear();
+    }
+
+    bool ParseContext::displayMessages() {
+        // handle messages
+        for (int i = 0; i < this->messageCount(); ++i) {
+            std::cout << this->messageAtIndex(i)->str() << std::endl;
+        }
+
+        return this->messageCount() > 0;
+    }
+
+    bool ParseContext::import(const std::string& name) {
+        if (skipImports) {
+            return true;
+        }
+
+        // resolve name
+        std::string path = name;
+
+        // if we find a .3 file, but not a .h file, we have to compile it first
+
+        // now, actually index the source
+        CSourceIndexer indexer;
+
+        return indexer.indexFileAtPath(name, this);
     }
 
     void ParseContext::setVisibility(TranslationUnit::Visibility visibility) {

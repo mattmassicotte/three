@@ -21,7 +21,17 @@ namespace Three {
             return false;
         }
 
+        if (context->displayMessages()) {
+            return false;
+        }
+
+        context->clearMessages();
+
         if (!parser.parseFunctionBodies(context)) {
+            return false;
+        }
+
+        if (context->displayMessages()) {
             return false;
         }
 
@@ -230,7 +240,7 @@ namespace Three {
         // parse newline(s), which should always appear at the end of statement, unless
         // we've completed the input
         if (!_helper->lexer()->atEnd() && !_helper->parseNewlines()) {
-            assert(0 && "Message: statement should always terminate with a newline");
+            //assert(0 && "Message: statement should always terminate with a newline");
         }
 
         return node;

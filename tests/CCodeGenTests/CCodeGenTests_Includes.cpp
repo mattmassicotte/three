@@ -16,11 +16,3 @@ TEST_F(CCodeGenTests_Includes, PublicIncludeNode) {
     EXPECT_EQ("#include <stdio.h>\n#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
     EXPECT_EQ("", visitor->bodyString());
 }
-
-TEST_F(CCodeGenTests_Includes, ImportNode) {
-    Three::CCodeGenVisitor* visitor = this->visit("import TestImport\n");
-
-    EXPECT_EQ("#include \"TestImport.h\"\n\n", visitor->internalHeaderString());
-    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
-    EXPECT_EQ("", visitor->bodyString());
-}

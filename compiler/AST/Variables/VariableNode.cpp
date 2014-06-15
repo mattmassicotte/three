@@ -7,6 +7,8 @@
 #include "CapturedVariableNode.h"
 #include "SelfVariableNode.h"
 
+#include "compiler/Messages/UnrecognizedVariableMessage.h"
+
 #include <assert.h>
 
 namespace Three {
@@ -32,7 +34,7 @@ namespace Three {
         node->_name = identifier;
         node->_newVariable = parser.context()->scope()->variableForName(identifier);
         if (!node->_newVariable) {
-            assert(0 && "Message: no variable found in scope matching name");
+            parser.context()->addMessage(new UnrecognizedVariableMessage(identifier));
         }
 
         return node;
