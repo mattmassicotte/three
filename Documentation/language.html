@@ -209,8 +209,8 @@ s->value1 = <span class="literal">5</span>;
                     <pre><code>
 [<span class="literal">3</span>]<span class="entity">Int</span> x = {<span class="literal">1</span>, <span class="literal">2</span>, <span class="literal">3</span>}
 <em>No Equivalent</em>
-[<span class="literal">3</span>]*<span class="entity">Int</span>
-*[<span class="literal">3</span>]<span class="entity">Int</span>
+[<span class="literal">3</span>]*<span class="entity">Int</span> x
+*[<span class="literal">3</span>]<span class="entity">Int</span> x
 
 x[<span class="literal">0</span>] = <span class="literal">1</span>
 <em>No Equivalent</em>
@@ -409,8 +409,8 @@ x ? y : z
 
 
 <span class="keyword">typedef</span> <span class="keyword">struct</span> {
-    <span class="entity">int</span> one,
-    <span class="entity">int</span> two
+    <span class="entity">int</span> one;
+    <span class="entity">int</span> two;
 } <span class="keyword">foo_return</span>;
 <span class="entity">foo_return</span> foo(<span class="entity">int</span> x, <span class="entity">int</span> y) {
     <span class="keyword">return</span> (<span class="entity">foo_return</span>){x, y};
