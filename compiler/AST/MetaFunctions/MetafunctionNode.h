@@ -6,7 +6,7 @@
 namespace Three {
     class MetafunctionNode : public ASTNode {
     public:
-        static MetafunctionNode* parse(NewParser& parser);
+        static MetafunctionNode* parse(Parser& parser);
 
     public:
         virtual std::string nodeName() const;

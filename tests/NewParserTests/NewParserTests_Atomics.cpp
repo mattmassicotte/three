@@ -1,9 +1,9 @@
 #include "../ParserTestsBase.h"
 
-class NewParserTests_Atomics : public ParserTestsBase {
+class ParserTests_Atomics : public ParserTestsBase {
 };
 
-TEST_F(NewParserTests_Atomics, AtomicBarrierWithoutSpecifier) {
+TEST_F(ParserTests_Atomics, AtomicBarrierWithoutSpecifier) {
     ASTNode* node = this->parseSingleFunction("def test()\n"
                                               "  barrier\n"
                                               "end\n");
@@ -14,7 +14,7 @@ TEST_F(NewParserTests_Atomics, AtomicBarrierWithoutSpecifier) {
     ASSERT_EQ(AtomicNode::Ordering::SequentiallyConsistent, dynamic_cast<Three::BarrierNode*>(node)->ordering());
 }
 
-TEST_F(NewParserTests_Atomics, AtomicBarrierWithSpecifier) {
+TEST_F(ParserTests_Atomics, AtomicBarrierWithSpecifier) {
     ASTNode* node = this->parseSingleFunction("def test()\n"
                                               "  barrier:unordered\n"
                                               "end\n");
@@ -25,7 +25,7 @@ TEST_F(NewParserTests_Atomics, AtomicBarrierWithSpecifier) {
     ASSERT_EQ(AtomicNode::Ordering::None, dynamic_cast<Three::BarrierNode*>(node)->ordering());
 }
 
-TEST_F(NewParserTests_Atomics, AtomicExpressionAssign) {
+TEST_F(ParserTests_Atomics, AtomicExpressionAssign) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  atomic:ordered(a = a)\n"
                                               "end\n");
@@ -40,7 +40,7 @@ TEST_F(NewParserTests_Atomics, AtomicExpressionAssign) {
     ASSERT_EQ("Assign Operator", node->nodeName());
 }
 
-TEST_F(NewParserTests_Atomics, AtomicStatement) {
+TEST_F(ParserTests_Atomics, AtomicStatement) {
     ASTNode* node = this->parseSingleFunction("def test()\n"
                                               "  atomic\n"
                                               "  end\n"
@@ -52,7 +52,7 @@ TEST_F(NewParserTests_Atomics, AtomicStatement) {
     ASSERT_TRUE(dynamic_cast<AtomicStatementNode*>(node)->elseClause() == nullptr);
 }
 
-TEST_F(NewParserTests_Atomics, AtomicStatementWithElse) {
+TEST_F(ParserTests_Atomics, AtomicStatementWithElse) {
     ASTNode* node = this->parseSingleFunction("def test()\n"
                                               "  atomic\n"
                                               "  else\n"
@@ -65,7 +65,7 @@ TEST_F(NewParserTests_Atomics, AtomicStatementWithElse) {
     ASSERT_TRUE(dynamic_cast<AtomicStatementNode*>(node)->elseClause() != nullptr);
 }
 
-TEST_F(NewParserTests_Atomics, AtomicStatementWithAbort) {
+TEST_F(ParserTests_Atomics, AtomicStatementWithAbort) {
     ASTNode* node = this->parseSingleFunction("def test()\n"
                                               "  atomic\n"
                                               "    abort\n"

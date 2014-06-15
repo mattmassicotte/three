@@ -1,9 +1,9 @@
 #include "../ParserTestsBase.h"
 
-class NewParserTests_Functions : public ParserTestsBase {
+class ParserTests_Functions : public ParserTestsBase {
 };
 
-TEST_F(NewParserTests_Functions, FunctionDefinition) {
+TEST_F(ParserTests_Functions, FunctionDefinition) {
     ASTNode* node = this->parseNode("def foo()\nend\n");
 
     FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
@@ -17,7 +17,7 @@ TEST_F(NewParserTests_Functions, FunctionDefinition) {
     ASSERT_EQ(0, func->functionType().returnCount());
 }
 
-TEST_F(NewParserTests_Functions, FunctionWithOneTypedParameter) {
+TEST_F(ParserTests_Functions, FunctionWithOneTypedParameter) {
     ASTNode* node = this->parseNode("def foo(Int a)\nend\n");
 
     FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
@@ -34,7 +34,7 @@ TEST_F(NewParserTests_Functions, FunctionWithOneTypedParameter) {
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
 }
 
-TEST_F(NewParserTests_Functions, FunctionWithTwoTypedParameter) {
+TEST_F(ParserTests_Functions, FunctionWithTwoTypedParameter) {
     ASTNode* node = this->parseNode("def foo(Int a, Float b)\nend\n");
 
     FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
@@ -53,7 +53,7 @@ TEST_F(NewParserTests_Functions, FunctionWithTwoTypedParameter) {
     ASSERT_EQ("b", func->functionType().parameterAtIndex(1).label());
 }
 
-TEST_F(NewParserTests_Functions, FunctionWithTwoUntypedParameter) {
+TEST_F(ParserTests_Functions, FunctionWithTwoUntypedParameter) {
     ASTNode* node = this->parseNode("def foo(a, b)\nend\n");
 
     FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
@@ -72,7 +72,7 @@ TEST_F(NewParserTests_Functions, FunctionWithTwoUntypedParameter) {
     ASSERT_EQ("b", func->functionType().parameterAtIndex(1).label());
 }
 
-TEST_F(NewParserTests_Functions, FunctionWithOneUntypedParameter) {
+TEST_F(ParserTests_Functions, FunctionWithOneUntypedParameter) {
     ASTNode* node = this->parseNode("def foo(a)\nend\n");
 
     FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
@@ -89,7 +89,7 @@ TEST_F(NewParserTests_Functions, FunctionWithOneUntypedParameter) {
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
 }
 
-TEST_F(NewParserTests_Functions, FunctionWithOneUntypedAndOneTypedParameter) {
+TEST_F(ParserTests_Functions, FunctionWithOneUntypedAndOneTypedParameter) {
     ASTNode* node = this->parseNode("def foo(a, Int b)\nend\n");
 
     FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
@@ -108,7 +108,7 @@ TEST_F(NewParserTests_Functions, FunctionWithOneUntypedAndOneTypedParameter) {
     ASSERT_EQ("b", func->functionType().parameterAtIndex(1).label());
 }
 
-TEST_F(NewParserTests_Functions, FunctionWithOneTypedAndOneUnypedParameter) {
+TEST_F(ParserTests_Functions, FunctionWithOneTypedAndOneUnypedParameter) {
     ASTNode* node = this->parseNode("def foo(Int a, b)\nend\n");
 
     FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
@@ -127,7 +127,7 @@ TEST_F(NewParserTests_Functions, FunctionWithOneTypedAndOneUnypedParameter) {
     ASSERT_EQ("b", func->functionType().parameterAtIndex(1).label());
 }
 
-TEST_F(NewParserTests_Functions, FunctionWithOneReturn) {
+TEST_F(ParserTests_Functions, FunctionWithOneReturn) {
     ASTNode* node = this->parseNode("def foo(; Int)\nend\n");
 
     FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
@@ -144,7 +144,7 @@ TEST_F(NewParserTests_Functions, FunctionWithOneReturn) {
     ASSERT_EQ("", func->functionType().returnAtIndex(0).label());
 }
 
-TEST_F(NewParserTests_Functions, FunctionWithTwoReturns) {
+TEST_F(ParserTests_Functions, FunctionWithTwoReturns) {
     ASTNode* node = this->parseNode("def foo(; Int, Float)\nend\n");
 
     FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
@@ -161,7 +161,7 @@ TEST_F(NewParserTests_Functions, FunctionWithTwoReturns) {
     ASSERT_EQ(NewDataType::Kind::Float, func->functionType().returnAtIndex(1).kind());
 }
 
-TEST_F(NewParserTests_Functions, FunctionWithTypedParamAndReturn) {
+TEST_F(ParserTests_Functions, FunctionWithTypedParamAndReturn) {
     ASTNode* node = this->parseNode("def foo(Int a; Int)\nend\n");
 
     FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
@@ -181,7 +181,7 @@ TEST_F(NewParserTests_Functions, FunctionWithTypedParamAndReturn) {
     ASSERT_EQ("", func->functionType().returnAtIndex(0).label());
 }
 
-TEST_F(NewParserTests_Functions, FunctionWithOneNamedReturn) {
+TEST_F(ParserTests_Functions, FunctionWithOneNamedReturn) {
     ASTNode* node = this->parseNode("def foo(; Int x)\nend\n");
 
     FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
@@ -198,7 +198,7 @@ TEST_F(NewParserTests_Functions, FunctionWithOneNamedReturn) {
     ASSERT_EQ("x", func->functionType().returnAtIndex(0).label());
 }
 
-TEST_F(NewParserTests_Functions, FunctionWithFunctionParam) {
+TEST_F(ParserTests_Functions, FunctionWithFunctionParam) {
     ASTNode* node = this->parseNode("def foo(() a)\nend\n");
 
     FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
@@ -215,7 +215,7 @@ TEST_F(NewParserTests_Functions, FunctionWithFunctionParam) {
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
 }
 
-TEST_F(NewParserTests_Functions, FunctionWithClosureParam) {
+TEST_F(ParserTests_Functions, FunctionWithClosureParam) {
     ASTNode* node = this->parseNode("def foo({} a)\nend\n");
 
     FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
@@ -232,7 +232,7 @@ TEST_F(NewParserTests_Functions, FunctionWithClosureParam) {
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
 }
 
-TEST_F(NewParserTests_Functions, BackToBackEmptyFunctions) {
+TEST_F(ParserTests_Functions, BackToBackEmptyFunctions) {
     Three::ASTNode* node = this->parseNode("def test()\n"
                                            "end\n"
                                            "def test2()\n"
@@ -244,7 +244,7 @@ TEST_F(NewParserTests_Functions, BackToBackEmptyFunctions) {
     ASSERT_EQ("Function Definition", node->childAtIndex(1)->nodeName());
 }
 
-TEST_F(NewParserTests_Functions, MethodDefinition) {
+TEST_F(ParserTests_Functions, MethodDefinition) {
     Three::ASTNode* node = this->parseNode("def Int.test()\nend\n");
 
     node = node->childAtIndex(0);
@@ -257,7 +257,7 @@ TEST_F(NewParserTests_Functions, MethodDefinition) {
     
 }
 
-TEST_F(NewParserTests_Functions, SelfInMethodDefinition) {
+TEST_F(ParserTests_Functions, SelfInMethodDefinition) {
     Three::ASTNode* node = this->parseSingleFunction("def Int.test()\n"
                                                      "  *self + 1\n"
                                                      "end\n");
@@ -274,7 +274,7 @@ TEST_F(NewParserTests_Functions, SelfInMethodDefinition) {
     ASSERT_EQ("Self Variable", node->childAtIndex(0)->nodeName());
 }
 
-// TEST_F(NewParserTests_Functions, Varargs) {
+// TEST_F(ParserTests_Functions, Varargs) {
 //     Three::ASTNode* node = this->parseSingleFunction("def test(Vararg ap)\n"
 //                                                      "  Int a\n"
 //                                                      "  a = nextarg(Int, ap)\n"

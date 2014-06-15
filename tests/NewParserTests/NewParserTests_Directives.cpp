@@ -1,15 +1,15 @@
 #include "../ParserTestsBase.h"
 
-class NewParserTests_Directives : public ParserTestsBase {
+class ParserTests_Directives : public ParserTestsBase {
 };
 
-TEST_F(NewParserTests_Directives, Default) {
+TEST_F(ParserTests_Directives, Default) {
     Three::ParseContext* ctx = this->parse("Int a");
 
     ASSERT_EQ(TranslationUnit::Visibility::Default, ctx->visibility());
 }
 
-TEST_F(NewParserTests_Directives, Public) {
+TEST_F(ParserTests_Directives, Public) {
     Three::ParseContext* ctx = this->parse("public\nInt a");
 
     ASSERT_EQ(TranslationUnit::Visibility::External, ctx->visibility());
@@ -19,7 +19,7 @@ TEST_F(NewParserTests_Directives, Public) {
     ASSERT_EQ(TranslationUnit::Visibility::External, visNode->type());
 }
 
-TEST_F(NewParserTests_Directives, Private) {
+TEST_F(ParserTests_Directives, Private) {
     Three::ParseContext* ctx = this->parse("private\nInt a");
 
     ASSERT_EQ(TranslationUnit::Visibility::None, ctx->visibility());
@@ -29,7 +29,7 @@ TEST_F(NewParserTests_Directives, Private) {
     ASSERT_EQ(TranslationUnit::Visibility::None, visNode->type());
 }
 
-TEST_F(NewParserTests_Directives, Namespace) {
+TEST_F(ParserTests_Directives, Namespace) {
     ASTNode* node = this->parseNode("namespace Foo\n"
                                     "  def test(Int x)\n"
                                     "  end\n"

@@ -1,10 +1,10 @@
 #include "../ParserTestsBase.h"
 #include "compiler/constructs/NewDataType.h"
 
-class NewParserTests_CustomTypes : public ParserTestsBase {
+class ParserTests_CustomTypes : public ParserTestsBase {
 };
 
-TEST_F(NewParserTests_CustomTypes, Structure) {
+TEST_F(ParserTests_CustomTypes, Structure) {
     ASTNode* node = this->parseNode("struct MyStruct\n"
                                     "end\n");
 
@@ -20,7 +20,7 @@ TEST_F(NewParserTests_CustomTypes, Structure) {
     ASSERT_EQ(NewDataType::Kind::Structure, this->context()->typeKindWithName("MyStruct"));
 }
 
-TEST_F(NewParserTests_CustomTypes, StructureWithPacking) {
+TEST_F(ParserTests_CustomTypes, StructureWithPacking) {
     ASTNode* node = this->parseNode("struct:4 MyStruct\n"
                                     "end\n");
 
@@ -36,7 +36,7 @@ TEST_F(NewParserTests_CustomTypes, StructureWithPacking) {
     ASSERT_EQ(NewDataType::Kind::Structure, this->context()->typeKindWithName("MyStruct"));
 }
 
-TEST_F(NewParserTests_CustomTypes, StructureWithOneTypedMember) {
+TEST_F(ParserTests_CustomTypes, StructureWithOneTypedMember) {
     ASTNode* node = this->parseNode("struct:4 MyStruct\n"
                                     "  Int a\n"
                                     "end\n");
@@ -60,7 +60,7 @@ TEST_F(NewParserTests_CustomTypes, StructureWithOneTypedMember) {
     ASSERT_EQ(NewDataType::Kind::Structure, this->context()->typeKindWithName("MyStruct"));
 }
 
-TEST_F(NewParserTests_CustomTypes, StructureWithTwoTypedMembers) {
+TEST_F(ParserTests_CustomTypes, StructureWithTwoTypedMembers) {
     ASTNode* node = this->parseNode("struct:4 MyStruct\n"
                                     "  Int a\n"
                                     "  Float b\n"
@@ -88,7 +88,7 @@ TEST_F(NewParserTests_CustomTypes, StructureWithTwoTypedMembers) {
     ASSERT_EQ("b", member->name());
 }
 
-TEST_F(NewParserTests_CustomTypes, StructureWithUntypedMembers) {
+TEST_F(ParserTests_CustomTypes, StructureWithUntypedMembers) {
     ASTNode* node = this->parseNode("struct:4 MyStruct\n"
                                     "  a\n"
                                     "  b\n"
@@ -116,7 +116,7 @@ TEST_F(NewParserTests_CustomTypes, StructureWithUntypedMembers) {
     ASSERT_EQ("b", member->name());
 }
 
-TEST_F(NewParserTests_CustomTypes, Enumeration) {
+TEST_F(ParserTests_CustomTypes, Enumeration) {
     ASTNode* node = this->parseNode("enum MyEnum\n"
                                     "end\n");
 
@@ -130,7 +130,7 @@ TEST_F(NewParserTests_CustomTypes, Enumeration) {
     ASSERT_EQ(0, enumNode->definedType().subtypeCount());
 }
 
-TEST_F(NewParserTests_CustomTypes, EnumerationWithSize) {
+TEST_F(ParserTests_CustomTypes, EnumerationWithSize) {
     ASTNode* node = this->parseNode("enum:4 MyEnum\n"
                                     "end\n");
 
@@ -144,7 +144,7 @@ TEST_F(NewParserTests_CustomTypes, EnumerationWithSize) {
     ASSERT_EQ(0, enumNode->definedType().subtypeCount());
 }
 
-TEST_F(NewParserTests_CustomTypes, EnumerationWithOneMember) {
+TEST_F(ParserTests_CustomTypes, EnumerationWithOneMember) {
     ASTNode* node = this->parseNode("enum MyEnum\n"
                                     "  Value\n"
                                     "end\n");
@@ -160,7 +160,7 @@ TEST_F(NewParserTests_CustomTypes, EnumerationWithOneMember) {
     ASSERT_EQ(1, enumNode->childCount());
 }
 
-TEST_F(NewParserTests_CustomTypes, Union) {
+TEST_F(ParserTests_CustomTypes, Union) {
     ASTNode* node = this->parseNode("union MyUnion\n"
                                     "end\n");
 
@@ -173,7 +173,7 @@ TEST_F(NewParserTests_CustomTypes, Union) {
     ASSERT_EQ(0, unionNode->definedType().subtypeCount());
 }
 
-TEST_F(NewParserTests_CustomTypes, UnionWithOneTypedMember) {
+TEST_F(ParserTests_CustomTypes, UnionWithOneTypedMember) {
     ASTNode* node = this->parseNode("union MyUnion\n"
                                     "  Int a\n"
                                     "end\n");
@@ -194,7 +194,7 @@ TEST_F(NewParserTests_CustomTypes, UnionWithOneTypedMember) {
     ASSERT_EQ("a", member->name());
 }
 
-TEST_F(NewParserTests_CustomTypes, UnionWithTwoTypedMembers) {
+TEST_F(ParserTests_CustomTypes, UnionWithTwoTypedMembers) {
     ASTNode* node = this->parseNode("union MyUnion\n"
                                     "  Int a\n"
                                     "  Float b\n"

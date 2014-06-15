@@ -1,8 +1,8 @@
 #include "SummaryAnnotationNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 namespace Three {
-    SummaryAnnotationNode* SummaryAnnotationNode::parse(NewParser& parser) {
+    SummaryAnnotationNode* SummaryAnnotationNode::parse(Parser& parser) {
         SummaryAnnotationNode* node = new SummaryAnnotationNode();
 
         if (!parser.helper()->nextIf(Token::Type::AnnotationSummary)) {

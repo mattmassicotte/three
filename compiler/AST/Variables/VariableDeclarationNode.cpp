@@ -1,11 +1,11 @@
 #include "VariableDeclarationNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 #include "compiler/constructs/NewScope.h"
 
 #include <assert.h>
 
 namespace Three {
-    VariableDeclarationNode* VariableDeclarationNode::parse(NewParser& parser, bool createVariable) {
+    VariableDeclarationNode* VariableDeclarationNode::parse(Parser& parser, bool createVariable) {
         VariableDeclarationNode* node = new VariableDeclarationNode();
 
         VariableDeclarationNode::parseVariable(parser, *node, createVariable);
@@ -13,7 +13,7 @@ namespace Three {
         return node;
     }
 
-    VariableDeclarationNode* VariableDeclarationNode::parseGlobal(NewParser& parser) {
+    VariableDeclarationNode* VariableDeclarationNode::parseGlobal(Parser& parser) {
         VariableDeclarationNode* node = VariableDeclarationNode::parse(parser, true);
     
         node->global = true;
@@ -22,7 +22,7 @@ namespace Three {
         return node;
     }
 
-    void VariableDeclarationNode::parseVariable(NewParser& parser, VariableDeclarationNode& node, bool createVariable) {
+    void VariableDeclarationNode::parseVariable(Parser& parser, VariableDeclarationNode& node, bool createVariable) {
         // Here's the form of a variable declaration:
         // (<type>) var (= <expression>)\n
 

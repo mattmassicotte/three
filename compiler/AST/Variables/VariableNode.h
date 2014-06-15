@@ -7,7 +7,7 @@
 namespace Three {
     class VariableNode : public ASTNode {
     public:
-        static VariableNode* parse(NewParser& parser, const std::string& identifier);
+        static VariableNode* parse(Parser& parser, const std::string& identifier);
 
     public:
         VariableNode();

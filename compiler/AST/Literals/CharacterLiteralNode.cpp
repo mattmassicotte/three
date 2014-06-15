@@ -1,10 +1,10 @@
 #include "CharacterLiteralNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    CharacterLiteralNode* CharacterLiteralNode::parse(NewParser& parser) {
+    CharacterLiteralNode* CharacterLiteralNode::parse(Parser& parser) {
         CharacterLiteralNode* node = new CharacterLiteralNode();
 
         assert(parser.helper()->peek().type() == Token::Type::LiteralCharacter);

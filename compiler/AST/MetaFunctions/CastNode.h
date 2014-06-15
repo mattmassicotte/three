@@ -5,7 +5,7 @@
 namespace Three {
     class CastNode : public MetafunctionNode {
     public:
-        static CastNode* parse(NewParser& parser);
+        static CastNode* parse(Parser& parser);
 
     public:
         std::string nodeName() const;

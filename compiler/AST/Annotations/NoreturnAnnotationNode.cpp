@@ -1,8 +1,8 @@
 #include "NoreturnAnnotationNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 namespace Three {
-    NoreturnAnnotationNode* NoreturnAnnotationNode::parse(NewParser& parser) {
+    NoreturnAnnotationNode* NoreturnAnnotationNode::parse(Parser& parser) {
         NoreturnAnnotationNode* node = new NoreturnAnnotationNode();
 
         if (!parser.helper()->nextIf(Token::Type::AnnotationNoreturn)) {

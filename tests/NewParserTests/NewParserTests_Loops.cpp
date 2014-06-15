@@ -1,9 +1,9 @@
 #include "../ParserTestsBase.h"
 
-class NewParserTests_Loops : public ParserTestsBase {
+class ParserTests_Loops : public ParserTestsBase {
 };
 
-TEST_F(NewParserTests_Loops, InfiniteLoop) {
+TEST_F(ParserTests_Loops, InfiniteLoop) {
     ASTNode* node = this->parseSingleFunction("def test()\n"
                                               "  loop\n"
                                               "  end\n"
@@ -17,7 +17,7 @@ TEST_F(NewParserTests_Loops, InfiniteLoop) {
     ASSERT_FALSE(loop->evaluateConditionAtEnd());
 }
 
-TEST_F(NewParserTests_Loops, SingleConditionLoop) {
+TEST_F(ParserTests_Loops, SingleConditionLoop) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  loop a\n"
                                               "  end\n"
@@ -31,7 +31,7 @@ TEST_F(NewParserTests_Loops, SingleConditionLoop) {
     ASSERT_FALSE(loop->evaluateConditionAtEnd());
 }
 
-TEST_F(NewParserTests_Loops, LoopAfter) {
+TEST_F(ParserTests_Loops, LoopAfter) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  loop:after a\n"
                                               "  end\n"
@@ -45,7 +45,7 @@ TEST_F(NewParserTests_Loops, LoopAfter) {
     ASSERT_TRUE(loop->evaluateConditionAtEnd());
 }
 
-TEST_F(NewParserTests_Loops, ForStatement) {
+TEST_F(ParserTests_Loops, ForStatement) {
     ASTNode* node = this->parseSingleFunction("def test()\n"
                                               "  for (Int i = 0; i < 10; i += 1)\n"
                                               "  end\n"
@@ -59,7 +59,7 @@ TEST_F(NewParserTests_Loops, ForStatement) {
     ASSERT_EQ("Add-Assign Operator", loop->loopExpression()->nodeName());
 }
 
-TEST_F(NewParserTests_Loops, ForRangeStatement) {
+TEST_F(ParserTests_Loops, ForRangeStatement) {
     ASTNode* node = this->parseSingleFunction("def test()\n"
                                               "  for (Int i in 0:10)\n"
                                               "  end\n"
@@ -78,7 +78,7 @@ TEST_F(NewParserTests_Loops, ForRangeStatement) {
     ASSERT_EQ(10, dynamic_cast<IntegerLiteralNode*>(loop->rangeEndExpression())->value());
 }
 
-TEST_F(NewParserTests_Loops, BreakStatement) {
+TEST_F(ParserTests_Loops, BreakStatement) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  loop\n"
                                               "    break\n"
@@ -93,7 +93,7 @@ TEST_F(NewParserTests_Loops, BreakStatement) {
     ASSERT_EQ("Break", loop->childAtIndex(0)->nodeName());
 }
 
-TEST_F(NewParserTests_Loops, BreakStatementTailingIf) {
+TEST_F(ParserTests_Loops, BreakStatementTailingIf) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  loop\n"
                                               "    break if a\n"
@@ -110,7 +110,7 @@ TEST_F(NewParserTests_Loops, BreakStatementTailingIf) {
     ASSERT_EQ("Break", node->childAtIndex(0)->nodeName());
 }
 
-TEST_F(NewParserTests_Loops, ContinueStatement) {
+TEST_F(ParserTests_Loops, ContinueStatement) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  loop\n"
                                               "    continue\n"
@@ -125,7 +125,7 @@ TEST_F(NewParserTests_Loops, ContinueStatement) {
     ASSERT_EQ("Continue", loop->childAtIndex(0)->nodeName());
 }
 
-TEST_F(NewParserTests_Loops, ContinueStatementTailingIf) {
+TEST_F(ParserTests_Loops, ContinueStatementTailingIf) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  loop\n"
                                               "    continue if a\n"

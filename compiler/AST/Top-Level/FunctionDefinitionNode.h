@@ -11,10 +11,10 @@ namespace Three {
 namespace Three {
     class FunctionDefinitionNode : public DefinitionNode {
     public:
-        static FunctionDefinitionNode* parse(NewParser& parser);
-        static bool bufferFunctionBody(NewParser& parser, std::stringstream& stream);
-        static bool bufferOpenToCloseToken(NewParser& parser, std::stringstream& stream, Token::Type closingType, bool parseClosing);
-        static bool scanToFirstToken(NewParser& parser, std::stringstream& stream, bool firstCall);
+        static FunctionDefinitionNode* parse(Parser& parser);
+        static bool bufferFunctionBody(Parser& parser, std::stringstream& stream);
+        static bool bufferOpenToCloseToken(Parser& parser, std::stringstream& stream, Token::Type closingType, bool parseClosing);
+        static bool scanToFirstToken(Parser& parser, std::stringstream& stream, bool firstCall);
 
     public:
         std::string nodeName() const;
@@ -27,7 +27,7 @@ namespace Three {
         bool isMethod() const;
 
         std::stringstream* bodyStream();
-        bool parseBody(NewParser& parser);
+        bool parseBody(Parser& parser);
 
         std::string fullName() const;
         std::vector<std::string> namespaceComponents;

@@ -10,7 +10,7 @@ namespace Three {
         std::string text() const;
 
     protected:
-        bool parseText(NewParser& parser);
+        bool parseText(Parser& parser);
 
     private:
         std::string _text;

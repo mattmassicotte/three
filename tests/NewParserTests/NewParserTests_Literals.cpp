@@ -1,10 +1,10 @@
 #include "../ParserTestsBase.h"
 #include "compiler/constructs/NewDataType.h"
 
-class NewParserTests_Literals : public ParserTestsBase {
+class ParserTests_Literals : public ParserTestsBase {
 };
 
-TEST_F(NewParserTests_Literals, IntegerLiteral) {
+TEST_F(ParserTests_Literals, IntegerLiteral) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  a = 1\n"
                                               "end\n");
@@ -21,7 +21,7 @@ TEST_F(NewParserTests_Literals, IntegerLiteral) {
     ASSERT_EQ(0, literal->dataType().widthSpecifier());
 }
 
-TEST_F(NewParserTests_Literals, NegativeIntegerLiteral) {
+TEST_F(ParserTests_Literals, NegativeIntegerLiteral) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  a = -1\n"
                                               "end\n");
@@ -40,7 +40,7 @@ TEST_F(NewParserTests_Literals, NegativeIntegerLiteral) {
     ASSERT_EQ(NewDataType::Kind::Integer, literal->dataType().kind());
 }
 
-TEST_F(NewParserTests_Literals, IntegerLiteralWithTypeSpecifier) {
+TEST_F(ParserTests_Literals, IntegerLiteralWithTypeSpecifier) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  a = 1:Natural:64\n"
                                               "end\n");
@@ -57,7 +57,7 @@ TEST_F(NewParserTests_Literals, IntegerLiteralWithTypeSpecifier) {
     ASSERT_EQ(64, literal->dataType().widthSpecifier());
 }
 
-TEST_F(NewParserTests_Literals, FloatLiteral) {
+TEST_F(ParserTests_Literals, FloatLiteral) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  a = 1.0\n"
                                               "end\n");
@@ -74,7 +74,7 @@ TEST_F(NewParserTests_Literals, FloatLiteral) {
     ASSERT_EQ(0, literal->dataType().widthSpecifier());
 }
 
-TEST_F(NewParserTests_Literals, FloatLiteralWithTypeSpecifier) {
+TEST_F(ParserTests_Literals, FloatLiteralWithTypeSpecifier) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  a = 1.0:Real:64\n"
                                               "end\n");
@@ -91,7 +91,7 @@ TEST_F(NewParserTests_Literals, FloatLiteralWithTypeSpecifier) {
     ASSERT_EQ(64, literal->dataType().widthSpecifier());
 }
 
-TEST_F(NewParserTests_Literals, HexLiteral) {
+TEST_F(ParserTests_Literals, HexLiteral) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  a = 0x4d2\n"
                                               "end\n");
@@ -108,7 +108,7 @@ TEST_F(NewParserTests_Literals, HexLiteral) {
     ASSERT_EQ(0, literal->dataType().widthSpecifier());
 }
 
-TEST_F(NewParserTests_Literals, BinaryLiteral) {
+TEST_F(ParserTests_Literals, BinaryLiteral) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  a = 0b010011010010\n"
                                               "end\n");
@@ -125,7 +125,7 @@ TEST_F(NewParserTests_Literals, BinaryLiteral) {
     ASSERT_EQ(0, literal->dataType().widthSpecifier());
 }
 
-TEST_F(NewParserTests_Literals, NullLiteral) {
+TEST_F(ParserTests_Literals, NullLiteral) {
     ASTNode* node = this->parseSingleFunction("def test(*Int a)\n"
                                               "  a = null\n"
                                               "end\n");
@@ -142,7 +142,7 @@ TEST_F(NewParserTests_Literals, NullLiteral) {
     ASSERT_EQ(NewDataType::Kind::Void, literal->dataType().subtypeAtIndex(0).kind());
 }
 
-TEST_F(NewParserTests_Literals, StringLiteral) {
+TEST_F(ParserTests_Literals, StringLiteral) {
     ASTNode* node = this->parseSingleFunction("def test(*Char a)\n"
                                               "  a = \"hello\"\n"
                                               "end\n");
@@ -161,7 +161,7 @@ TEST_F(NewParserTests_Literals, StringLiteral) {
     ASSERT_EQ(NewDataType::CharacterEncoding::UTF8, literal->dataType().subtypeAtIndex(0).characterEncoding());
 }
 
-TEST_F(NewParserTests_Literals, StringLiteralAscii) {
+TEST_F(ParserTests_Literals, StringLiteralAscii) {
     ASTNode* node = this->parseSingleFunction("def test(*Char a)\n"
                                               "  a = \"hello\":ascii\n"
                                               "end\n");
@@ -180,7 +180,7 @@ TEST_F(NewParserTests_Literals, StringLiteralAscii) {
     ASSERT_EQ(NewDataType::CharacterEncoding::ASCII, literal->dataType().subtypeAtIndex(0).characterEncoding());
 }
 
-TEST_F(NewParserTests_Literals, StringLiteralUTF16LE) {
+TEST_F(ParserTests_Literals, StringLiteralUTF16LE) {
     ASTNode* node = this->parseSingleFunction("def test(*Char a)\n"
                                               "  a = \"hello\":utf16le\n"
                                               "end\n");
@@ -199,7 +199,7 @@ TEST_F(NewParserTests_Literals, StringLiteralUTF16LE) {
     ASSERT_EQ(NewDataType::CharacterEncoding::UTF16LE, literal->dataType().subtypeAtIndex(0).characterEncoding());
 }
 
-TEST_F(NewParserTests_Literals, CharacterLiteral) {
+TEST_F(ParserTests_Literals, CharacterLiteral) {
     ASTNode* node = this->parseSingleFunction("def test(Char a)\n"
                                               "  a = 'h'\n"
                                               "end\n");
@@ -217,7 +217,7 @@ TEST_F(NewParserTests_Literals, CharacterLiteral) {
     ASSERT_EQ(0, literal->dataType().subtypeCount());
 }
 
-TEST_F(NewParserTests_Literals, CharacterLiteralAscii) {
+TEST_F(ParserTests_Literals, CharacterLiteralAscii) {
     ASTNode* node = this->parseSingleFunction("def test(Char a)\n"
                                               "  a = 'h':ascii\n"
                                               "end\n");
@@ -235,7 +235,7 @@ TEST_F(NewParserTests_Literals, CharacterLiteralAscii) {
     ASSERT_EQ(0, literal->dataType().subtypeCount());
 }
 
-TEST_F(NewParserTests_Literals, TrueLiteral) {
+TEST_F(ParserTests_Literals, TrueLiteral) {
     ASTNode* node = this->parseSingleFunction("def test(Bool a)\n"
                                               "  a = true\n"
                                               "end\n");
@@ -252,7 +252,7 @@ TEST_F(NewParserTests_Literals, TrueLiteral) {
     ASSERT_EQ(0, literal->dataType().subtypeCount());
 }
 
-TEST_F(NewParserTests_Literals, FalseLiteral) {
+TEST_F(ParserTests_Literals, FalseLiteral) {
     ASTNode* node = this->parseSingleFunction("def test(Bool a)\n"
                                               "  a = false\n"
                                               "end\n");

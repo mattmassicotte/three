@@ -5,7 +5,7 @@
 namespace Three {
     class NamespaceNode : public ASTNode {
     public:
-        static NamespaceNode* parse(NewParser& parser);
+        static NamespaceNode* parse(Parser& parser);
 
     public:
         std::string nodeName() const;

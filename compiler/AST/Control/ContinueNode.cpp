@@ -1,10 +1,10 @@
 #include "ContinueNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    ContinueNode* ContinueNode::parse(NewParser& parser) {
+    ContinueNode* ContinueNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordContinue));
 
         ContinueNode* node = new ContinueNode();

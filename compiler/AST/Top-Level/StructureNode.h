@@ -11,7 +11,7 @@ namespace Three {
         uint32_t packing() const;
 
     protected:
-        void setParsedIntegerSpecifier(NewParser& parser, uint32_t value);
+        void setParsedIntegerSpecifier(Parser& parser, uint32_t value);
 
     private:
         uint32_t _packing;

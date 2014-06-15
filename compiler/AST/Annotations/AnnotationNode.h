@@ -5,7 +5,7 @@
 namespace Three {
     class AnnotationNode : public ASTNode {
     public:
-        static AnnotationNode* parse(NewParser& parser);
+        static AnnotationNode* parse(Parser& parser);
 
     public:
         virtual ~AnnotationNode();

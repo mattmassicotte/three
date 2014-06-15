@@ -1,9 +1,9 @@
 #include "CallableOperatorNode.h"
 #include "compiler/constructs/NewDataType.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 namespace Three {
-    bool CallableOperatorNode::parseArguments(NewParser& parser, CallableOperatorNode* node) {
+    bool CallableOperatorNode::parseArguments(Parser& parser, CallableOperatorNode* node) {
         assert(parser.helper()->nextIf(Token::Type::PunctuationOpenParen));
 
         // each argumetn is an expression

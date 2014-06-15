@@ -1,11 +1,11 @@
 #include "StringLiteralNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 #include <sstream>
 
 namespace Three {
-    StringLiteralNode* StringLiteralNode::parse(NewParser& parser) {
+    StringLiteralNode* StringLiteralNode::parse(Parser& parser) {
         StringLiteralNode* node = new StringLiteralNode();
 
         assert(parser.helper()->peek().type() == Token::Type::LiteralString);

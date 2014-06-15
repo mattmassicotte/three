@@ -1,11 +1,11 @@
 #include "ClosureNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 #include "compiler/constructs/NewScope.h"
 
 #include <assert.h>
 
 namespace Three {
-    ClosureNode* ClosureNode::parse(NewParser& parser) {
+    ClosureNode* ClosureNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordClosure));
 
         ClosureNode* node = new ClosureNode();

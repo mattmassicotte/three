@@ -1,11 +1,11 @@
 #include "ForNode.h"
 #include "../Variables/VariableDeclarationNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    ForNode* ForNode::parse(NewParser& parser) {
+    ForNode* ForNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordFor));
 
         ForNode* node = new ForNode();

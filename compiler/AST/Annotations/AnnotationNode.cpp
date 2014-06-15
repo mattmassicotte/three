@@ -1,10 +1,10 @@
 #include "Annotations.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    AnnotationNode* AnnotationNode::parse(NewParser& parser) {
+    AnnotationNode* AnnotationNode::parse(Parser& parser) {
         switch (parser.helper()->peek().type()) {
             case Token::Type::AnnotationAccess:
             case Token::Type::AnnotationVolatile:

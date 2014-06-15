@@ -5,7 +5,7 @@
 namespace Three {
     class NoreturnAnnotationNode : public AnnotationNode {
     public:
-        static NoreturnAnnotationNode* parse(NewParser& parser);
+        static NoreturnAnnotationNode* parse(Parser& parser);
 
     public:
         virtual std::string nodeName() const;

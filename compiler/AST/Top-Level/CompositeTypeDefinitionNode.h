@@ -7,7 +7,7 @@
 namespace Three {
     class CompositeTypeDefinitionNode : public ASTNode {
     public:
-        static CompositeTypeDefinitionNode* parse(NewParser& parser);
+        static CompositeTypeDefinitionNode* parse(Parser& parser);
 
     public:
         std::string name() const;
@@ -16,7 +16,7 @@ namespace Three {
         TranslationUnit::Visibility visibility;
 
     protected:
-        virtual void setParsedIntegerSpecifier(NewParser& parser, uint32_t value) = 0;
+        virtual void setParsedIntegerSpecifier(Parser& parser, uint32_t value) = 0;
 
     private:
         std::string _name;

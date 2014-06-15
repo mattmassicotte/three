@@ -1,10 +1,10 @@
 #include "BooleanLiteralNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    BooleanLiteralNode* BooleanLiteralNode::parse(NewParser& parser) {
+    BooleanLiteralNode* BooleanLiteralNode::parse(Parser& parser) {
         BooleanLiteralNode* node = new BooleanLiteralNode();
 
         switch (parser.helper()->next().type()) {

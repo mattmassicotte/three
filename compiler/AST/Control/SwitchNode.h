@@ -5,7 +5,7 @@
 namespace Three {
     class SwitchNode : public ASTNode {
     public:
-        static SwitchNode* parse(NewParser& parser);
+        static SwitchNode* parse(Parser& parser);
 
     public:
         std::string nodeName() const;

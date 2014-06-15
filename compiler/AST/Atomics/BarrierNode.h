@@ -5,7 +5,7 @@
 namespace Three {
     class BarrierNode : public Three::AtomicNode {
     public:
-        static BarrierNode* parse(NewParser& parser);
+        static BarrierNode* parse(Parser& parser);
 
     public:
         std::string name() const;

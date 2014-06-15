@@ -1,8 +1,8 @@
 #include "ParamAnnotationNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 namespace Three {
-    ParamAnnotationNode* ParamAnnotationNode::parse(NewParser& parser) {
+    ParamAnnotationNode* ParamAnnotationNode::parse(Parser& parser) {
         ParamAnnotationNode* node = new ParamAnnotationNode();
 
         if (!parser.helper()->nextIf(Token::Type::AnnotationParam)) {

@@ -1,6 +1,6 @@
 #include "ImportNode.h"
 #include "../../CSourceIndexer.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include "compiler/Messages/ImportFailureMessage.h"
 
@@ -10,7 +10,7 @@
 #include <fstream>
 
 namespace Three {
-    ImportNode* ImportNode::parse(NewParser& parser) {
+    ImportNode* ImportNode::parse(Parser& parser) {
         ImportNode* node = new ImportNode();
 
         if (!parser.helper()->nextIf(Token::Type::KeywordImport)) {

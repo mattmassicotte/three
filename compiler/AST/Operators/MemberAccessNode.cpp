@@ -1,10 +1,10 @@
 #include "MemberAccessNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    MemberAccessNode* MemberAccessNode::parse(NewParser& parser, ASTNode* operand) {
+    MemberAccessNode* MemberAccessNode::parse(Parser& parser, ASTNode* operand) {
         bool indirect = false;
 
         switch (parser.helper()->peek().type()) {

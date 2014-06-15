@@ -6,7 +6,7 @@
 namespace Three {
     class ForNode : public ASTNode {
     public:
-        static ForNode* parse(NewParser& parser);
+        static ForNode* parse(Parser& parser);
 
     public:
         virtual ~ForNode();

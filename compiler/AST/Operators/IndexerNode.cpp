@@ -1,10 +1,10 @@
 #include "IndexerNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    IndexerNode* IndexerNode::parse(NewParser& parser, ASTNode* operand) {
+    IndexerNode* IndexerNode::parse(Parser& parser, ASTNode* operand) {
         if (!parser.helper()->nextIf(Token::Type::PunctuationOpenBracket)) {
             assert(0 && "Message: Indexer should start with a [");
             return nullptr;

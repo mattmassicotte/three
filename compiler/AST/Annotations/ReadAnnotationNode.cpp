@@ -1,8 +1,8 @@
 #include "ReadAnnotationNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 namespace Three {
-    ReadAnnotationNode* ReadAnnotationNode::parse(NewParser& parser) {
+    ReadAnnotationNode* ReadAnnotationNode::parse(Parser& parser) {
         ReadAnnotationNode* node = new ReadAnnotationNode();
 
         if (!parser.helper()->nextIf(Token::Type::AnnotationRead)) {

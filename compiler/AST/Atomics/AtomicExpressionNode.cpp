@@ -1,11 +1,11 @@
 #include "AtomicExpressionNode.h"
 #include "../Operators/OperatorNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    AtomicExpressionNode* AtomicExpressionNode::parse(NewParser& parser) {
+    AtomicExpressionNode* AtomicExpressionNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordAtomic));
 
         AtomicExpressionNode* node = new AtomicExpressionNode();

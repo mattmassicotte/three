@@ -1,10 +1,10 @@
 #include "../ParserTestsBase.h"
 #include "compiler/constructs/NewDataType.h"
 
-class NewParserTests_Operators : public ParserTestsBase {
+class ParserTests_Operators : public ParserTestsBase {
 };
 
-TEST_F(NewParserTests_Operators, MultiplyExpression) {
+TEST_F(ParserTests_Operators, MultiplyExpression) {
     FunctionDefinitionNode* node = this->parseSingleFunction("def test(Int x, Int y)\n"
                                                              "  x * y\n"
                                                              "end\n");
@@ -16,7 +16,7 @@ TEST_F(NewParserTests_Operators, MultiplyExpression) {
     ASSERT_EQ("y", dynamic_cast<VariableNode*>(opNode->childAtIndex(1))->name());
 }
 
-TEST_F(NewParserTests_Operators, DivisionExpression) {
+TEST_F(ParserTests_Operators, DivisionExpression) {
     FunctionDefinitionNode* node = this->parseSingleFunction("def test(Int x, Int y)\n"
                                                              "  x / y\n"
                                                              "end\n");
@@ -28,7 +28,7 @@ TEST_F(NewParserTests_Operators, DivisionExpression) {
     ASSERT_EQ("y", dynamic_cast<VariableNode*>(opNode->childAtIndex(1))->name());
 }
 
-TEST_F(NewParserTests_Operators, AssignmentExpression) {
+TEST_F(ParserTests_Operators, AssignmentExpression) {
     FunctionDefinitionNode* node = this->parseSingleFunction("def test()\n"
                                                              "  Int x\n"
                                                              "  Int y\n"
@@ -54,7 +54,7 @@ TEST_F(NewParserTests_Operators, AssignmentExpression) {
     ASSERT_EQ("y", dynamic_cast<VariableNode*>(opNode->childAtIndex(1))->name());
 }
 
-TEST_F(NewParserTests_Operators, SelfAssignmentExpression) {
+TEST_F(ParserTests_Operators, SelfAssignmentExpression) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  a = a\n"
                                               "end\n");
@@ -62,7 +62,7 @@ TEST_F(NewParserTests_Operators, SelfAssignmentExpression) {
     ASSERT_EQ("Assign Operator", node->childAtIndex(0)->nodeName());
 }
 
-TEST_F(NewParserTests_Operators, AdditionExpression) {
+TEST_F(ParserTests_Operators, AdditionExpression) {
     FunctionDefinitionNode* node = this->parseSingleFunction("def test(Int x, Int y)\n"
                                                              "  x + y\n"
                                                              "end\n");
@@ -74,7 +74,7 @@ TEST_F(NewParserTests_Operators, AdditionExpression) {
     ASSERT_EQ("y", dynamic_cast<VariableNode*>(opNode->childAtIndex(1))->name());
 }
 
-TEST_F(NewParserTests_Operators, SubtractionExpression) {
+TEST_F(ParserTests_Operators, SubtractionExpression) {
     FunctionDefinitionNode* node = this->parseSingleFunction("def test(Int x, Int y)\n"
                                                              "  x - y\n"
                                                              "end\n");
@@ -86,7 +86,7 @@ TEST_F(NewParserTests_Operators, SubtractionExpression) {
     ASSERT_EQ("y", dynamic_cast<VariableNode*>(opNode->childAtIndex(1))->name());
 }
 
-TEST_F(NewParserTests_Operators, ParenthesisExpression) {
+TEST_F(ParserTests_Operators, ParenthesisExpression) {
     FunctionDefinitionNode* node = this->parseSingleFunction("def test(Int x, Int y)\n"
                                                              "  x = (x - y) * y\n"
                                                              "end\n");
@@ -107,7 +107,7 @@ TEST_F(NewParserTests_Operators, ParenthesisExpression) {
     ASSERT_EQ("y", dynamic_cast<VariableNode*>(opNode->childAtIndex(1))->name());
 }
 
-TEST_F(NewParserTests_Operators, DereferenceOperator) {
+TEST_F(ParserTests_Operators, DereferenceOperator) {
     FunctionDefinitionNode* node = this->parseSingleFunction("def test(*Int x)\n"
                                                              "  *x\n"
                                                              "end\n");
@@ -118,7 +118,7 @@ TEST_F(NewParserTests_Operators, DereferenceOperator) {
     ASSERT_EQ("x", dynamic_cast<VariableNode*>(opNode->childAtIndex(0))->name());
 }
 
-TEST_F(NewParserTests_Operators, AddressOfOperator) {
+TEST_F(ParserTests_Operators, AddressOfOperator) {
     FunctionDefinitionNode* node = this->parseSingleFunction("def test(Int x)\n"
                                                              "  &x\n"
                                                              "end\n");
@@ -129,7 +129,7 @@ TEST_F(NewParserTests_Operators, AddressOfOperator) {
     ASSERT_EQ("x", dynamic_cast<VariableNode*>(opNode->childAtIndex(0))->name());
 }
 
-TEST_F(NewParserTests_Operators, AssignToDereference) {
+TEST_F(ParserTests_Operators, AssignToDereference) {
     FunctionDefinitionNode* node = this->parseSingleFunction("def test(*Int x, *Int y)\n"
                                                              "  *x = *y\n"
                                                              "end\n");
@@ -145,7 +145,7 @@ TEST_F(NewParserTests_Operators, AssignToDereference) {
     ASSERT_EQ("y", dynamic_cast<VariableNode*>(opNode->childAtIndex(1)->childAtIndex(0))->name());
 }
 
-TEST_F(NewParserTests_Operators, MemberAccessOperator) {
+TEST_F(ParserTests_Operators, MemberAccessOperator) {
     ASTNode* node = this->parseNodeWithBodies("struct MyStruct\n"
                                               "  Int a\n"
                                               "end\n"
@@ -167,7 +167,7 @@ TEST_F(NewParserTests_Operators, MemberAccessOperator) {
     ASSERT_EQ("value", dynamic_cast<VariableNode*>(node)->name());
 }
 
-TEST_F(NewParserTests_Operators, IndirectMemberAccessOperator) {
+TEST_F(ParserTests_Operators, IndirectMemberAccessOperator) {
     ASTNode* node = this->parseNodeWithBodies("struct MyStruct\n"
                                               "  Int a\n"
                                               "end\n"
@@ -189,7 +189,7 @@ TEST_F(NewParserTests_Operators, IndirectMemberAccessOperator) {
     ASSERT_EQ("value", dynamic_cast<VariableNode*>(node)->name());
 }
 
-TEST_F(NewParserTests_Operators, AddressOfAndArrowPrecedence) {
+TEST_F(ParserTests_Operators, AddressOfAndArrowPrecedence) {
     ASTNode* node = this->parseNodeWithBodies("struct MyStruct\n"
                                               "  Int x\n"
                                               "end\n"
@@ -215,7 +215,7 @@ TEST_F(NewParserTests_Operators, AddressOfAndArrowPrecedence) {
     ASSERT_EQ("a", dynamic_cast<VariableNode*>(node)->name());
 }
 
-TEST_F(NewParserTests_Operators, IndexerOperator) {
+TEST_F(ParserTests_Operators, IndexerOperator) {
     ASTNode* node = this->parseSingleFunction("def test([5]Int x, Int y)\n"
                                               "  x[y] = y\n"
                                               "end\n");
@@ -234,7 +234,7 @@ TEST_F(NewParserTests_Operators, IndexerOperator) {
     ASSERT_EQ("y", dynamic_cast<VariableNode*>(node->childAtIndex(1))->name());
 }
 
-TEST_F(NewParserTests_Operators, EqualOperator) {
+TEST_F(ParserTests_Operators, EqualOperator) {
     ASTNode* node = this->parseSingleFunction("def test(Int x)\n"
                                               "  x == x\n"
                                               "end\n");
@@ -243,7 +243,7 @@ TEST_F(NewParserTests_Operators, EqualOperator) {
     ASSERT_EQ("Equal Operator", node->nodeName());
 }
 
-TEST_F(NewParserTests_Operators, NotEqualOperator) {
+TEST_F(ParserTests_Operators, NotEqualOperator) {
     ASTNode* node = this->parseSingleFunction("def test(Int x)\n"
                                               "  x != x\n"
                                               "end\n");
@@ -252,7 +252,7 @@ TEST_F(NewParserTests_Operators, NotEqualOperator) {
     ASSERT_EQ("Not-Equal Operator", node->nodeName());
 }
 
-TEST_F(NewParserTests_Operators, TernaryConditionalOperator) {
+TEST_F(ParserTests_Operators, TernaryConditionalOperator) {
     ASTNode* node = this->parseSingleFunction("def test(Int a, Int b, Int c)\n"
                                               "  a = (a == b) ? b : c\n"
                                               "end\n");
@@ -269,7 +269,7 @@ TEST_F(NewParserTests_Operators, TernaryConditionalOperator) {
     ASSERT_EQ("c", dynamic_cast<VariableNode*>(node->childAtIndex(2))->name());
 }
 
-TEST_F(NewParserTests_Operators, TernaryCompareAndSwapOperator) {
+TEST_F(ParserTests_Operators, TernaryCompareAndSwapOperator) {
     ASTNode* node = this->parseSingleFunction("def test(Int a, Int b, Int c)\n"
                                               "  a cas b : c\n"
                                               "end\n");
@@ -285,7 +285,7 @@ TEST_F(NewParserTests_Operators, TernaryCompareAndSwapOperator) {
     ASSERT_EQ("c", dynamic_cast<VariableNode*>(node->childAtIndex(2))->name());
 }
 
-TEST_F(NewParserTests_Operators, CompoundAdditionAssignmentOperator) {
+TEST_F(ParserTests_Operators, CompoundAdditionAssignmentOperator) {
     ASTNode* node = this->parseSingleFunction("def test(Int a, Int b)\n"
                                               "  a += b\n"
                                               "end\n");
@@ -294,7 +294,7 @@ TEST_F(NewParserTests_Operators, CompoundAdditionAssignmentOperator) {
     ASSERT_EQ("Add-Assign Operator", node->nodeName());
 }
 
-TEST_F(NewParserTests_Operators, CompoundBitwiseOrAssignmentOperator) {
+TEST_F(ParserTests_Operators, CompoundBitwiseOrAssignmentOperator) {
     ASTNode* node = this->parseSingleFunction("def test(Int a, Int b)\n"
                                               "  a |= b\n"
                                               "end\n");
@@ -303,7 +303,7 @@ TEST_F(NewParserTests_Operators, CompoundBitwiseOrAssignmentOperator) {
     ASSERT_EQ("Bitwise Or-Assign Operator", node->nodeName());
 }
 
-TEST_F(NewParserTests_Operators, PrecedenceTest) {
+TEST_F(ParserTests_Operators, PrecedenceTest) {
     ASTNode* node = this->parseSingleFunction("def test(Int x, Int y, Int z)\n"
                                               "  x = x * y + z\n"
                                               "end\n");
@@ -320,7 +320,7 @@ TEST_F(NewParserTests_Operators, PrecedenceTest) {
     ASSERT_EQ("Multiplication Operator", node->nodeName());
 }
 
-TEST_F(NewParserTests_Operators, OrAssignmentOperator) {
+TEST_F(ParserTests_Operators, OrAssignmentOperator) {
     ASTNode* node = this->parseSingleFunction("def test(Int a, Int b)\n"
                                               "  a ||= b\n"
                                               "end\n");
@@ -329,7 +329,7 @@ TEST_F(NewParserTests_Operators, OrAssignmentOperator) {
     ASSERT_EQ("Or-Assign Operator", node->nodeName());
 }
 
-TEST_F(NewParserTests_Operators, UnaryMinusOperator) {
+TEST_F(ParserTests_Operators, UnaryMinusOperator) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  a = -a\n"
                                               "end\n");
@@ -341,7 +341,7 @@ TEST_F(NewParserTests_Operators, UnaryMinusOperator) {
     ASSERT_EQ("Unary Minus Operator", node->nodeName());
 }
 
-TEST_F(NewParserTests_Operators, UnaryNotOperator) {
+TEST_F(ParserTests_Operators, UnaryNotOperator) {
     ASTNode* node = this->parseSingleFunction("def test(Bool a)\n"
                                               "  a = !a\n"
                                               "end\n");

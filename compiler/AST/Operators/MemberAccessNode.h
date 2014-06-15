@@ -5,7 +5,7 @@
 namespace Three {
     class MemberAccessNode : public OperatorNode {
     public:
-        static MemberAccessNode* parse(NewParser& parser, ASTNode* operand);
+        static MemberAccessNode* parse(Parser& parser, ASTNode* operand);
         
     public:
         std::string nodeName() const;

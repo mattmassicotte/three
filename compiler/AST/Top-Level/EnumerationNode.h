@@ -17,7 +17,7 @@ namespace Three {
         void eachMemberWithLast(std::function<void (const std::string&, bool)> func);
 
     protected:
-        void setParsedIntegerSpecifier(NewParser& parser, uint32_t value);
+        void setParsedIntegerSpecifier(Parser& parser, uint32_t value);
 
     private:
         uint32_t _size;

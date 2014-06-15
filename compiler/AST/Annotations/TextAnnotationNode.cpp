@@ -1,5 +1,5 @@
 #include "TextAnnotationNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 #include "compiler/Lexer/Lexer.h"
 
 #include <sstream>
@@ -9,7 +9,7 @@ namespace Three {
         return "Text Annotation";
     }
 
-    bool TextAnnotationNode::parseText(NewParser& parser) {
+    bool TextAnnotationNode::parseText(Parser& parser) {
         // This is actually quite complex, because we want to perserve
         // the contents exactly as entered. To do this, we need to be careful
         // with whitespace handling.

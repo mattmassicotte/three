@@ -5,7 +5,7 @@
 namespace Three {
     class AtomicStatementNode : public ASTNode {
     public:
-        static ASTNode* parse(NewParser& parser);
+        static ASTNode* parse(Parser& parser);
 
     public:
         std::string nodeName() const;

@@ -1,4 +1,4 @@
-#include "NewParser.h"
+#include "Parser.h"
 #include "ParseHelper.h"
 #include "compiler/constructs/NewDataType.h"
 #include "compiler/Lexer/Lexer.h"
@@ -11,11 +11,11 @@
 #include <fstream>
 
 namespace Three {
-    bool NewParser::parse(const char* inputPath, ParseContext* context) {
+    bool Parser::parse(const char* inputPath, ParseContext* context) {
         std::ifstream file(inputPath);
         Three::Lexer lexer(&file);
 
-        Three::NewParser parser;
+        Three::Parser parser;
 
         if (!parser.parse(&lexer, context)) {
             return false;
@@ -38,7 +38,7 @@ namespace Three {
         return true;
     }
 
-    NewParser::NewParser() {
+    Parser::Parser() {
         _characterEncodingMap["ascii"]   = NewDataType::CharacterEncoding::ASCII;
         _characterEncodingMap["utf8"]    = NewDataType::CharacterEncoding::UTF8;
         _characterEncodingMap["utf16"]   = NewDataType::CharacterEncoding::UTF16;
@@ -49,22 +49,22 @@ namespace Three {
         _characterEncodingMap["utf32be"] = NewDataType::CharacterEncoding::UTF32BE;
     }
 
-    NewParser::~NewParser() {
+    Parser::~Parser() {
     }
 
-    ParseContext* NewParser::context() const {
+    ParseContext* Parser::context() const {
         return _context;
     }
 
-    ParseHelper* NewParser::helper() const {
+    ParseHelper* Parser::helper() const {
         return _helper;
     }
 
-    bool NewParser::verbose() const {
+    bool Parser::verbose() const {
         return false;
     }
 
-    bool NewParser::parse(Lexer* lexer, ParseContext* context) {
+    bool Parser::parse(Lexer* lexer, ParseContext* context) {
         assert(lexer && "Lexer cannot be null");
         assert(context && "ParseContext cannot be null");
 
@@ -87,7 +87,7 @@ namespace Three {
         return true;
     }
 
-    void NewParser::startParse() {
+    void Parser::startParse() {
         _helper->parseUntil(false, [&] (const Token& token) {
             ASTNode* node = this->parseTopLevelNode();
 
@@ -100,7 +100,7 @@ namespace Three {
         });
     }
 
-    bool NewParser::parseFunctionBodies(ParseContext* context) {
+    bool Parser::parseFunctionBodies(ParseContext* context) {
         _context = context;
 
         for (FunctionDefinitionNode* node : _functions) {
@@ -112,7 +112,7 @@ namespace Three {
         return true;
     }
 
-    void NewParser::parseFunctionBody(FunctionDefinitionNode* func) {
+    void Parser::parseFunctionBody(FunctionDefinitionNode* func) {
         assert(func);
 
         Lexer lexer(func->bodyStream());
@@ -127,7 +127,7 @@ namespace Three {
         _helper = nullptr;
     }
 
-    ASTNode* NewParser::parseTopLevelNode() {
+    ASTNode* Parser::parseTopLevelNode() {
         ASTNode* node = nullptr;
 
         if (this->verbose()) {
@@ -184,7 +184,7 @@ namespace Three {
         return node;
     }
 
-    ASTNode* NewParser::parseStatement() {
+    ASTNode* Parser::parseStatement() {
         ASTNode* node = nullptr;
 
         // advance past newlines here
@@ -246,7 +246,7 @@ namespace Three {
         return node;
     }
 
-    ASTNode* NewParser::parseExpressionStatement() {
+    ASTNode* Parser::parseExpressionStatement() {
         ASTNode* node = this->parseExpression();
 
         if (node) {
@@ -257,7 +257,7 @@ namespace Three {
         return node;
     }
 
-    ASTNode* NewParser::parseExpression(uint32_t precedence) {
+    ASTNode* Parser::parseExpression(uint32_t precedence) {
         // Parsing expressions is very complex, and depends on correctly setting
         // the precedence and associativity of operator tokens.
         // The algorithm used is called Precedence Climbing.
@@ -303,11 +303,11 @@ namespace Three {
         return left;
     }
 
-    ASTNode* NewParser::parseExpressionElement() {
+    ASTNode* Parser::parseExpressionElement() {
         return OperatorNode::parseTailing(*this, this->parseExpressionElementWithoutTailingOperators());
     }
 
-    ASTNode* NewParser::parseExpressionElementWithoutTailingOperators() {
+    ASTNode* Parser::parseExpressionElementWithoutTailingOperators() {
         ASTNode* node = nullptr;
 
         if (this->verbose()) {
@@ -369,7 +369,7 @@ namespace Three {
         return nullptr;
     }
 
-    ASTNode* NewParser::parseExpressionIdentifier() {
+    ASTNode* Parser::parseExpressionIdentifier() {
         assert(_helper->peek().type() == Token::Type::Identifier);
 
         std::string identifier = _helper->nextStr();
@@ -385,7 +385,7 @@ namespace Three {
         return VariableNode::parse(*this, identifier);
     }
 
-    bool NewParser::parseParentheses(std::function<void (void)> func) {
+    bool Parser::parseParentheses(std::function<void (void)> func) {
         if (!_helper->nextIf(Token::Type::PunctuationOpenParen)) {
             return false;
         }
@@ -395,7 +395,7 @@ namespace Three {
         return _helper->nextIf(Token::Type::PunctuationCloseParen);
     }
 
-    std::string NewParser::parseMultiPartIdentifier() {
+    std::string Parser::parseMultiPartIdentifier() {
         std::stringstream s;
 
         for (;;) {
@@ -424,7 +424,7 @@ namespace Three {
         return s.str();
     }
 
-    bool NewParser::parseBodyWithElse(const std::string& label, ASTNode** elseNode, std::function<void (void)> func) {
+    bool Parser::parseBodyWithElse(const std::string& label, ASTNode** elseNode, std::function<void (void)> func) {
         assert(elseNode);
         *elseNode = nullptr;
 
@@ -449,13 +449,13 @@ namespace Three {
         return true;
     }
 
-    bool NewParser::parseBodyWithElse(ASTNode* node, ASTNode** elseNode) {
+    bool Parser::parseBodyWithElse(ASTNode* node, ASTNode** elseNode) {
         return this->parseBodyWithElse(node->nodeName(), elseNode, [&] () {
             node->addChild(this->parseStatement());
         });
     }
 
-    uint32_t NewParser::peekDepthIfAtType(uint32_t peekDepth) {
+    uint32_t Parser::peekDepthIfAtType(uint32_t peekDepth) {
         if (this->peekType(&peekDepth)) {
             return peekDepth;
         }
@@ -463,11 +463,11 @@ namespace Three {
         return 0;
     }
 
-    bool NewParser::isAtType() {
+    bool Parser::isAtType() {
         return this->peekDepthIfAtType() > 0;
     }
 
-    bool NewParser::peekType(unsigned int* peekDepth) {
+    bool Parser::peekType(unsigned int* peekDepth) {
         // move past any type prefixes
         this->peekTypePrefixes(peekDepth);
 
@@ -482,7 +482,7 @@ namespace Three {
         return false;
     }
 
-    bool NewParser::peekTypePrefixes(unsigned int* peekDepth) {
+    bool Parser::peekTypePrefixes(unsigned int* peekDepth) {
         unsigned int originalDepth = *peekDepth;
 
         // Pointers, arrays, annotations could be intermixed.
@@ -523,7 +523,7 @@ namespace Three {
         return *peekDepth > originalDepth;
     }
 
-    bool NewParser::peekTypeAnnotations(unsigned int* peekDepth) {
+    bool Parser::peekTypeAnnotations(unsigned int* peekDepth) {
         unsigned int originalDepth = *peekDepth;
 
         for (;;) {
@@ -564,7 +564,7 @@ namespace Three {
         return *peekDepth > originalDepth;
     }
 
-    bool NewParser::peekFunctionType(unsigned int* peekDepth) {
+    bool Parser::peekFunctionType(unsigned int* peekDepth) {
         Token::Type closingPunctuation;
 
         // "{} Identifier"
@@ -621,7 +621,7 @@ namespace Three {
         return false;
     }
 
-    bool NewParser::peekNonFunctionType(unsigned int* peekDepth) {
+    bool Parser::peekNonFunctionType(unsigned int* peekDepth) {
         if (_helper->peek(*peekDepth).type() == Token::Type::KeywordVararg) {
             *peekDepth += 1;
             return true;
@@ -693,11 +693,11 @@ namespace Three {
         return true;
     }
 
-    NewDataType NewParser::parseType() {
+    NewDataType Parser::parseType() {
         return this->parseAndApplyTypeAnnotations();
     }
 
-    NewDataType NewParser::parseAndApplyTypeAnnotations() {
+    NewDataType Parser::parseAndApplyTypeAnnotations() {
         bool foundConst = false;
         bool foundRestrict = false;
         bool foundVolatile = false;
@@ -812,7 +812,7 @@ namespace Three {
         return type;
     }
 
-    NewDataType NewParser::parseTypeWithoutAnnotations() {
+    NewDataType Parser::parseTypeWithoutAnnotations() {
         // Handle recursive types (pointer and array)
         switch (_helper->peek().type()) {
             case Token::Type::OperatorStar:
@@ -867,7 +867,7 @@ namespace Three {
         return type;
     }
 
-    NewDataType NewParser::parsePointerType() {
+    NewDataType Parser::parsePointerType() {
         assert(_helper->next().type() == Token::Type::OperatorStar);
 
         NewDataType type = NewDataType(NewDataType::Kind::Pointer);
@@ -877,7 +877,7 @@ namespace Three {
         return type;
     }
 
-    NewDataType NewParser::parseArrayType() {
+    NewDataType Parser::parseArrayType() {
         assert(_helper->next().type() == Token::Type::PunctuationOpenBracket);
 
         NewDataType type = NewDataType(NewDataType::Kind::Array);
@@ -893,7 +893,7 @@ namespace Three {
         return type;
     }
 
-    NewDataType NewParser::parseFunctionType(bool signature, std::vector<std::string>* references) {
+    NewDataType Parser::parseFunctionType(bool signature, std::vector<std::string>* references) {
         NewDataType type;
         Token::Type closingPunctuation = _helper->peek().closingCounterpart();
 
@@ -1009,11 +1009,11 @@ namespace Three {
         return type;
     }
 
-    NewDataType NewParser::parseFunctionSignatureType() {
+    NewDataType Parser::parseFunctionSignatureType() {
         return this->parseFunctionType(true);
     }
 
-    uint32_t NewParser::parseIntegerSpecifier() {
+    uint32_t Parser::parseIntegerSpecifier() {
         if (_helper->peek().type() != Token::Type::LiteralInteger) {
             assert(0 && "Message: width specifier being invalid");
             return 0;
@@ -1022,7 +1022,7 @@ namespace Three {
         return strtol(_helper->next().str().c_str(), NULL, 10);
     }
 
-    std::string NewParser::parseTypeIdentifierPair(NewDataType& type) {
+    std::string Parser::parseTypeIdentifierPair(NewDataType& type) {
         // depth could be zero for untyped variables
         uint32_t depth = this->peekDepthIfAtType();
         if (depth > 0) {
@@ -1046,7 +1046,7 @@ namespace Three {
         return "";
     }
 
-    NewDataType::Access NewParser::parseAnnotationAccess() {
+    NewDataType::Access Parser::parseAnnotationAccess() {
         if (_helper->peek().type() != Token::Type::Identifier) {
             assert(0 && "Message: annotation argument should be r/read, w/write, rw/readwrite, or n/none");
             return NewDataType::Access::None;
@@ -1067,7 +1067,7 @@ namespace Three {
         return NewDataType::Access::None;
     }
 
-    NewDataType::CharacterEncoding NewParser::parseCharacterEncodingSpecifier() {
+    NewDataType::CharacterEncoding Parser::parseCharacterEncodingSpecifier() {
         assert(_helper->peek().type() == Token::Type::Identifier);
 
         auto it = _characterEncodingMap.find(_helper->next().str());
@@ -1080,7 +1080,7 @@ namespace Three {
         return it->second;
     }
 
-    bool NewParser::isAtIdentifierAvailableForDefinition() {
+    bool Parser::isAtIdentifierAvailableForDefinition() {
         if (_helper->peek().type() != Token::Type::Identifier) {
             std::cout << _helper->peek().str() << std::endl;
             assert(0 && "Message: expecting identifier");
@@ -1089,7 +1089,7 @@ namespace Three {
         return _context->identifierAvailableForDefinition(_helper->peek().str());
     }
 
-    void NewParser::addFunctionForParsing(FunctionDefinitionNode* node) {
+    void Parser::addFunctionForParsing(FunctionDefinitionNode* node) {
         _functions.push_back(node);
     }
 }

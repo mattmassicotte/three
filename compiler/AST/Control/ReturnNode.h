@@ -5,7 +5,7 @@
 namespace Three {
     class ReturnNode : public ASTNode {
     public:
-        static ReturnNode* parse(NewParser& parser);
+        static ReturnNode* parse(Parser& parser);
 
     public:
         std::string nodeName() const;

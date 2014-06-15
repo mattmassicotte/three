@@ -5,7 +5,7 @@
 namespace Three {
     class AbortStatementNode : public ASTNode {
     public:
-        static AbortStatementNode* parse(NewParser& parser);
+        static AbortStatementNode* parse(Parser& parser);
 
     public:
         std::string nodeName() const;

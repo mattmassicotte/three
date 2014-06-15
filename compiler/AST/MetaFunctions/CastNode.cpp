@@ -1,10 +1,10 @@
 #include "CastNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    CastNode* CastNode::parse(NewParser& parser) {
+    CastNode* CastNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::MetafunctionCast));
 
         CastNode* node = new CastNode();

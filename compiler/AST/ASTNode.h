@@ -10,7 +10,7 @@
 
 // forward declarations
 namespace Three {
-    class NewParser;
+    class Parser;
     class NewDataType;
 };
 

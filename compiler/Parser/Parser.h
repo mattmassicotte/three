@@ -14,19 +14,19 @@ namespace Three {
 }
 
 namespace Three {
-    class NewParser {
+    class Parser {
     public:
         static bool parse(const char* inputPath, ParseContext* context);
 
     public:
-        NewParser();
-        virtual ~NewParser();
+        Parser();
+        virtual ~Parser();
 
     private:
-        NewParser(const NewParser& other);
-        NewParser(NewParser&& other);
-        NewParser& operator=(NewParser other);
-        NewParser& operator=(NewParser&& other);
+        Parser(const Parser& other);
+        Parser(Parser&& other);
+        Parser& operator=(Parser other);
+        Parser& operator=(Parser&& other);
 
     public:
         ParseContext* context() const;

@@ -6,7 +6,7 @@
 namespace Three {
     class LiteralNode : public ASTNode {
     public:
-        static LiteralNode* parse(NewParser& parser);
+        static LiteralNode* parse(Parser& parser);
 
     public:
         std::string name() const { return "tmp"; } // to be removed eventually

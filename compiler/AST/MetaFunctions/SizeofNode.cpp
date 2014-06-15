@@ -1,10 +1,10 @@
 #include "SizeofNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    SizeofNode* SizeofNode::parse(NewParser& parser) {
+    SizeofNode* SizeofNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::MetafunctionSizeOf));
 
         SizeofNode* node = new SizeofNode();

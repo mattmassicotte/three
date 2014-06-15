@@ -5,7 +5,7 @@
 namespace Three {
     class ImportNode : public ExternalSourceNode {
     public:
-        static ImportNode* parse(NewParser& parser);
+        static ImportNode* parse(Parser& parser);
 
     public:
         std::string nodeName() const;

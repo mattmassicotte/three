@@ -5,7 +5,7 @@
 namespace Three {
     class MethodCallOperatorNode : public CallableOperatorNode {
     public:
-        static MethodCallOperatorNode* parse(NewParser& parser, ASTNode* receiver);
+        static MethodCallOperatorNode* parse(Parser& parser, ASTNode* receiver);
 
     public:
         std::string nodeName() const;

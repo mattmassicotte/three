@@ -1,8 +1,8 @@
 #include "MethodCallOperatorNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 namespace Three {
-    MethodCallOperatorNode* MethodCallOperatorNode::parse(NewParser& parser, ASTNode* receiver) {
+    MethodCallOperatorNode* MethodCallOperatorNode::parse(Parser& parser, ASTNode* receiver) {
         assert(parser.helper()->nextIf(Token::Type::OperatorDot));
 
         MethodCallOperatorNode* node = new MethodCallOperatorNode();

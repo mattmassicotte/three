@@ -1,12 +1,12 @@
 #include "CompositeTypeDefinitionNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 #include "../Variables/VariableDeclarationNode.h"
 #include "StructureNode.h"
 #include "EnumerationNode.h"
 #include "UnionNode.h"
 
 namespace Three {
-    CompositeTypeDefinitionNode* CompositeTypeDefinitionNode::parse(NewParser& parser) {
+    CompositeTypeDefinitionNode* CompositeTypeDefinitionNode::parse(Parser& parser) {
         CompositeTypeDefinitionNode* node = nullptr;
         NewDataType::Kind typeKind;
 

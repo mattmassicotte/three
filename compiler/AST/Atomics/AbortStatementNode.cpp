@@ -1,11 +1,11 @@
 #include "AbortStatementNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 #include "compiler/constructs/NewScope.h"
 
 #include <assert.h>
 
 namespace Three {
-    AbortStatementNode* AbortStatementNode::parse(NewParser& parser) {
+    AbortStatementNode* AbortStatementNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordAbort));
 
         AbortStatementNode* node = new AbortStatementNode();

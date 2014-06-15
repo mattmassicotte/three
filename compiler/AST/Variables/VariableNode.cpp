@@ -1,5 +1,5 @@
 #include "VariableNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 #include "compiler/constructs/NewScope.h"
 #include "LocalVariableNode.h"
 #include "FunctionVariableNode.h"
@@ -12,7 +12,7 @@
 #include <assert.h>
 
 namespace Three {
-    VariableNode* VariableNode::parse(NewParser& parser, const std::string& identifier) {
+    VariableNode* VariableNode::parse(Parser& parser, const std::string& identifier) {
         VariableNode* node = nullptr;
 
         NewDataType type = parser.context()->functionForName(identifier);

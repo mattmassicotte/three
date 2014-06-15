@@ -5,7 +5,7 @@
 namespace Three {
     class BooleanLiteralNode : public LiteralNode {
     public:
-        static BooleanLiteralNode* parse(NewParser& parser);
+        static BooleanLiteralNode* parse(Parser& parser);
 
     public:
         std::string nodeName() const;

@@ -6,7 +6,7 @@
 namespace Three {
     class VisibilityNode : public ASTNode {
     public:
-        static VisibilityNode* parse(NewParser& parser);
+        static VisibilityNode* parse(Parser& parser);
 
     public:
         std::string nodeName() const;

@@ -2,12 +2,12 @@
 #include "RealLiteralNode.h"
 #include "CharacterLiteralNode.h"
 #include "BooleanLiteralNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    LiteralNode* LiteralNode::parse(NewParser& parser) {
+    LiteralNode* LiteralNode::parse(Parser& parser) {
         switch (parser.helper()->peek().type()) {
             case Token::Type::LiteralReal:
                 return RealLiteralNode::parse(parser);

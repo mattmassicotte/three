@@ -9,7 +9,7 @@ namespace Three {
         visitor.visit(*this);
     }
 
-    void UnionNode::setParsedIntegerSpecifier(NewParser& parser, uint32_t value) {
+    void UnionNode::setParsedIntegerSpecifier(Parser& parser, uint32_t value) {
         assert(0 && "Message: Integer specifiers not used for unions");
     }
 }

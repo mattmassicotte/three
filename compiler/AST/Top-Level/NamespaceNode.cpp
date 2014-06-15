@@ -1,11 +1,11 @@
 #include "NamespaceNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 #include "compiler/constructs/NewScope.h"
 
 #include <assert.h>
 
 namespace Three {
-    NamespaceNode* NamespaceNode::parse(NewParser& parser) {
+    NamespaceNode* NamespaceNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordNamespace));
 
         NamespaceNode* node = new NamespaceNode();

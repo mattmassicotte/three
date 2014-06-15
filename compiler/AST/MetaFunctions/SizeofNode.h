@@ -5,7 +5,7 @@
 namespace Three {
     class SizeofNode : public MetafunctionNode {
     public:
-        static SizeofNode* parse(NewParser& parser);
+        static SizeofNode* parse(Parser& parser);
 
     public:
         std::string nodeName() const;

@@ -1,8 +1,8 @@
 #include "BriefAnnotationNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 namespace Three {
-    BriefAnnotationNode* BriefAnnotationNode::parse(NewParser& parser) {
+    BriefAnnotationNode* BriefAnnotationNode::parse(Parser& parser) {
         BriefAnnotationNode* node = new BriefAnnotationNode();
 
         if (!parser.helper()->nextIf(Token::Type::AnnotationBrief)) {

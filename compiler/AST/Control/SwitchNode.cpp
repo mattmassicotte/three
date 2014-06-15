@@ -1,12 +1,12 @@
 #include "SwitchNode.h"
 #include "CaseNode.h"
 #include "ElseNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    SwitchNode* SwitchNode::parse(NewParser& parser) {
+    SwitchNode* SwitchNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordSwitch));
 
         SwitchNode* node = new SwitchNode();

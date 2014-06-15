@@ -5,7 +5,7 @@
 namespace Three {
     class BreakNode : public ASTNode {
     public:
-        static BreakNode* parse(NewParser& parser);
+        static BreakNode* parse(Parser& parser);
 
     public:
         std::string nodeName() const;

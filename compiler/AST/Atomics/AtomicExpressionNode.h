@@ -7,7 +7,7 @@ namespace Three {
 
     class AtomicExpressionNode : public Three::AtomicNode {
     public:
-        static AtomicExpressionNode* parse(NewParser& parser);
+        static AtomicExpressionNode* parse(Parser& parser);
         std::string c11AtomicFunctionForOperator(const std::string& op);
 
     public:

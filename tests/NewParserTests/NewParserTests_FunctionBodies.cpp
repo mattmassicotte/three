@@ -1,6 +1,6 @@
 #include "../ParserTestsBase.h"
 
-class NewParserTests_FunctionBodies : public ParserTestsBase {
+class ParserTests_FunctionBodies : public ParserTestsBase {
 protected:
     FunctionDefinitionNode* parseFunction(const char* input) {
         ASTNode* node = this->parseNode(input);
@@ -9,7 +9,7 @@ protected:
     }
 };
 
-TEST_F(NewParserTests_FunctionBodies, EmptyFunction) {
+TEST_F(ParserTests_FunctionBodies, EmptyFunction) {
     FunctionDefinitionNode* func = this->parseFunction("def foo()\nend\n");
 
     ASSERT_EQ("Function Definition", func->nodeName());
@@ -18,7 +18,7 @@ TEST_F(NewParserTests_FunctionBodies, EmptyFunction) {
     ASSERT_EQ("", func->bodyStream()->str());
 }
 
-TEST_F(NewParserTests_FunctionBodies, FunctionWithComment) {
+TEST_F(ParserTests_FunctionBodies, FunctionWithComment) {
     FunctionDefinitionNode* func = this->parseFunction("def foo()\n"
                                                        "  # abc def\n"
                                                        "end\n");
@@ -26,7 +26,7 @@ TEST_F(NewParserTests_FunctionBodies, FunctionWithComment) {
     ASSERT_EQ("  \n", func->bodyStream()->str());
 }
 
-TEST_F(NewParserTests_FunctionBodies, Statements) {
+TEST_F(ParserTests_FunctionBodies, Statements) {
     FunctionDefinitionNode* func = this->parseFunction("def foo()\n"
                                                        "  a = b\n"
                                                        "  Type d = b\n"
@@ -36,7 +36,7 @@ TEST_F(NewParserTests_FunctionBodies, Statements) {
     ASSERT_EQ("  a = b\n  Type d = b\n", func->bodyStream()->str());
 }
 
-TEST_F(NewParserTests_FunctionBodies, If) {
+TEST_F(ParserTests_FunctionBodies, If) {
     FunctionDefinitionNode* func = this->parseFunction("def foo()\n"
                                                        "  if abc\n"
                                                        "  end\n"
@@ -45,7 +45,7 @@ TEST_F(NewParserTests_FunctionBodies, If) {
     ASSERT_EQ("  if abc\n  end\n", func->bodyStream()->str());
 }
 
-TEST_F(NewParserTests_FunctionBodies, TailingIf) {
+TEST_F(ParserTests_FunctionBodies, TailingIf) {
     FunctionDefinitionNode* func = this->parseFunction("def foo()\n"
                                                        "  return if abc\n"
                                                        "end\n");
@@ -53,7 +53,7 @@ TEST_F(NewParserTests_FunctionBodies, TailingIf) {
     ASSERT_EQ("  return if abc\n", func->bodyStream()->str());
 }
 
-TEST_F(NewParserTests_FunctionBodies, AtomicStatement) {
+TEST_F(ParserTests_FunctionBodies, AtomicStatement) {
     FunctionDefinitionNode* func = this->parseFunction("def foo()\n"
                                                        "  atomic\n"
                                                        "  end\n"
@@ -62,7 +62,7 @@ TEST_F(NewParserTests_FunctionBodies, AtomicStatement) {
     ASSERT_EQ("  atomic\n  end\n", func->bodyStream()->str());
 }
 
-TEST_F(NewParserTests_FunctionBodies, AtomicExpression) {
+TEST_F(ParserTests_FunctionBodies, AtomicExpression) {
     FunctionDefinitionNode* func = this->parseFunction("def foo()\n"
                                                        "  atomic(x += 1)\n"
                                                        "end\n");
@@ -70,7 +70,7 @@ TEST_F(NewParserTests_FunctionBodies, AtomicExpression) {
     ASSERT_EQ("  atomic(x += 1)\n", func->bodyStream()->str());
 }
 
-TEST_F(NewParserTests_FunctionBodies, AtomicExpressionWithSpace) {
+TEST_F(ParserTests_FunctionBodies, AtomicExpressionWithSpace) {
     FunctionDefinitionNode* func = this->parseFunction("def foo()\n"
                                                        "  atomic (x += 1)\n"
                                                        "end\n");
@@ -78,7 +78,7 @@ TEST_F(NewParserTests_FunctionBodies, AtomicExpressionWithSpace) {
     ASSERT_EQ("  atomic (x += 1)\n", func->bodyStream()->str());
 }
 
-TEST_F(NewParserTests_FunctionBodies, AtomicExpressionWithOrdering) {
+TEST_F(ParserTests_FunctionBodies, AtomicExpressionWithOrdering) {
     FunctionDefinitionNode* func = this->parseFunction("def foo()\n"
                                                        "  atomic:relaxed(x += 1)\n"
                                                        "end\n");
@@ -86,7 +86,7 @@ TEST_F(NewParserTests_FunctionBodies, AtomicExpressionWithOrdering) {
     ASSERT_EQ("  atomic:relaxed(x += 1)\n", func->bodyStream()->str());
 }
 
-TEST_F(NewParserTests_FunctionBodies, CASOperator) {
+TEST_F(ParserTests_FunctionBodies, CASOperator) {
     FunctionDefinitionNode* func = this->parseFunction("def test()\n"
                                                        "  a cas b : c\n"
                                                        "end\n");
@@ -94,7 +94,7 @@ TEST_F(NewParserTests_FunctionBodies, CASOperator) {
     ASSERT_EQ("  a cas b : c\n", func->bodyStream()->str());
 }
 
-TEST_F(NewParserTests_FunctionBodies, CASOperatorWithType) {
+TEST_F(ParserTests_FunctionBodies, CASOperatorWithType) {
     FunctionDefinitionNode* func = this->parseFunction("def test(Int a)\n"
                                                        "  a cas b : c\n"
                                                        "end\n");

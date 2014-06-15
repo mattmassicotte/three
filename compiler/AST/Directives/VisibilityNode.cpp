@@ -1,10 +1,10 @@
 #include "VisibilityNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    VisibilityNode* VisibilityNode::parse(NewParser& parser) {
+    VisibilityNode* VisibilityNode::parse(Parser& parser) {
         VisibilityNode* node = new VisibilityNode();
 
         switch (parser.helper()->next().type()) {

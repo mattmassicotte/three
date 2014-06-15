@@ -5,7 +5,7 @@
 namespace Three {
     class NullLiteralNode : public LiteralNode {
     public:
-        static NullLiteralNode* parse(NewParser& parser);
+        static NullLiteralNode* parse(Parser& parser);
 
     public:
         std::string nodeName() const;

@@ -1,11 +1,11 @@
 #include "FunctionCallOperatorNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 #include "compiler/AST/Variables/VariableNode.h"
 
 #include <assert.h>
 
 namespace Three {
-    FunctionCallOperatorNode* FunctionCallOperatorNode::parse(NewParser& parser, ASTNode* receiver, ASTNode* firstArg) {
+    FunctionCallOperatorNode* FunctionCallOperatorNode::parse(Parser& parser, ASTNode* receiver, ASTNode* firstArg) {
         assert(parser.helper()->peek().type() == Token::Type::PunctuationOpenParen);
 
         FunctionCallOperatorNode* node = new FunctionCallOperatorNode();

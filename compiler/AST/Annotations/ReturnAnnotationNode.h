@@ -5,7 +5,7 @@
 namespace Three {
     class ReturnAnnotationNode : public TextAnnotationNode {
     public:
-        static ReturnAnnotationNode* parse(NewParser& parser);
+        static ReturnAnnotationNode* parse(Parser& parser);
 
     public:
         virtual std::string nodeName() const;

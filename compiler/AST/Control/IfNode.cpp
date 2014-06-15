@@ -1,10 +1,10 @@
 #include "IfNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    IfNode* IfNode::parse(NewParser& parser) {
+    IfNode* IfNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordIf));
 
         IfNode* node = new IfNode();
@@ -29,7 +29,7 @@ namespace Three {
         return node;
     }
 
-    ASTNode* IfNode::parseTailing(NewParser& parser, ASTNode* node) {
+    ASTNode* IfNode::parseTailing(Parser& parser, ASTNode* node) {
         if (!parser.helper()->nextIf(Token::Type::KeywordIf)) {
             return node;
         }

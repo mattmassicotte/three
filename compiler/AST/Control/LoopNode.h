@@ -5,7 +5,7 @@
 namespace Three {
     class LoopNode : public ASTNode {
     public:
-        static LoopNode* parse(NewParser& parser);
+        static LoopNode* parse(Parser& parser);
 
     public:
         virtual ~LoopNode();

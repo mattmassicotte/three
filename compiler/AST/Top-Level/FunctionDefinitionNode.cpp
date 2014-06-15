@@ -1,5 +1,5 @@
 #include "FunctionDefinitionNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 #include "compiler/Lexer/Lexer.h"
 #include "compiler/constructs/NewScope.h"
 #include "compiler/AST/Atomics/AtomicNode.h"
@@ -8,7 +8,7 @@
 #include <sstream>
 
 namespace Three {
-    FunctionDefinitionNode* FunctionDefinitionNode::parse(NewParser& parser) {
+    FunctionDefinitionNode* FunctionDefinitionNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordDef));
 
         FunctionDefinitionNode* node = new FunctionDefinitionNode();
@@ -77,7 +77,7 @@ namespace Three {
         return node;
     }
 
-    bool FunctionDefinitionNode::bufferFunctionBody(NewParser& parser, std::stringstream& stream) {
+    bool FunctionDefinitionNode::bufferFunctionBody(Parser& parser, std::stringstream& stream) {
         parser.helper()->lexer()->setFilterWhitespace(false);
 
         bool result = bufferOpenToCloseToken(parser, stream, Token::Type::KeywordEnd, false);
@@ -93,7 +93,7 @@ namespace Three {
     //
     // The basic idea is, buffer up tokens, and if you find a token that gets paired with an 'end',
     // recurse and continue.
-    bool FunctionDefinitionNode::bufferOpenToCloseToken(NewParser& parser, std::stringstream& stream, Token::Type closingType, bool parseClosing) {
+    bool FunctionDefinitionNode::bufferOpenToCloseToken(Parser& parser, std::stringstream& stream, Token::Type closingType, bool parseClosing) {
         bool firstCall = !parseClosing;
 
         for (;;) {
@@ -148,7 +148,7 @@ namespace Three {
         }
     }
 
-    bool FunctionDefinitionNode::scanToFirstToken(NewParser& parser, std::stringstream& stream, bool firstCall) {
+    bool FunctionDefinitionNode::scanToFirstToken(Parser& parser, std::stringstream& stream, bool firstCall) {
         // if firstCall is true, we've been called immediately after a function definition line,
         // and there will be no newline
         if (!firstCall) {
@@ -213,7 +213,7 @@ namespace Three {
         });
     }
 
-    bool FunctionDefinitionNode::parseBody(NewParser& parser) {
+    bool FunctionDefinitionNode::parseBody(Parser& parser) {
         parser.context()->pushScope();
         parser.context()->scope()->setScopedBasename(this->name());
 

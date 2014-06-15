@@ -5,7 +5,7 @@
 namespace Three {
     class CaseNode : public ASTNode {
     public:
-        static CaseNode* parse(NewParser& parser);
+        static CaseNode* parse(Parser& parser);
 
     public:
         std::string nodeName() const;

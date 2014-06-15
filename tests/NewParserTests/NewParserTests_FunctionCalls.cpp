@@ -1,9 +1,9 @@
 #include "../ParserTestsBase.h"
 
-class NewParserTests_FunctionCalls : public ParserTestsBase {
+class ParserTests_FunctionCalls : public ParserTestsBase {
 };
 
-TEST_F(NewParserTests_FunctionCalls, FunctionCallOperator) {
+TEST_F(ParserTests_FunctionCalls, FunctionCallOperator) {
     ASTNode* node = this->parseSingleFunction("def test()\n"
                                               "  test()\n"
                                               "end\n");
@@ -15,7 +15,7 @@ TEST_F(NewParserTests_FunctionCalls, FunctionCallOperator) {
     ASSERT_EQ(0, fnCall->childCount());
 }
 
-TEST_F(NewParserTests_FunctionCalls, FunctionCallOperatorWithArgument) {
+TEST_F(ParserTests_FunctionCalls, FunctionCallOperatorWithArgument) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  test(a)\n"
                                               "end\n");
@@ -27,7 +27,7 @@ TEST_F(NewParserTests_FunctionCalls, FunctionCallOperatorWithArgument) {
     ASSERT_EQ("Local Variable", fnCall->childAtIndex(0)->nodeName());
 }
 
-TEST_F(NewParserTests_FunctionCalls, FunctionCallOperatorWithTwoArguments) {
+TEST_F(ParserTests_FunctionCalls, FunctionCallOperatorWithTwoArguments) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  test(a, a)\n"
                                               "end\n");
@@ -40,7 +40,7 @@ TEST_F(NewParserTests_FunctionCalls, FunctionCallOperatorWithTwoArguments) {
     ASSERT_EQ("Local Variable", fnCall->childAtIndex(1)->nodeName());
 }
 
-TEST_F(NewParserTests_FunctionCalls, InvokeClosureParameter) {
+TEST_F(ParserTests_FunctionCalls, InvokeClosureParameter) {
     Three::ASTNode* node = this->parseSingleFunction("def test({Int} closure)\n"
                                                      "  closure(1)\n"
                                                      "end\n");
@@ -54,7 +54,7 @@ TEST_F(NewParserTests_FunctionCalls, InvokeClosureParameter) {
     ASSERT_EQ("Local Variable", fnCall->receiver()->nodeName());
 }
 
-TEST_F(NewParserTests_FunctionCalls, InvokeClosurePointerParameter) {
+TEST_F(ParserTests_FunctionCalls, InvokeClosurePointerParameter) {
     Three::ASTNode* node = this->parseSingleFunction("def test(*{Int} closure)\n"
                                                      "  (*closure)(1)\n"
                                                      "end\n");
@@ -71,7 +71,7 @@ TEST_F(NewParserTests_FunctionCalls, InvokeClosurePointerParameter) {
     ASSERT_EQ("Local Variable", node->childAtIndex(0)->nodeName());
 }
 
-TEST_F(NewParserTests_FunctionCalls, MethodInvocation) {
+TEST_F(ParserTests_FunctionCalls, MethodInvocation) {
     Three::ASTNode* node = this->parseNodeWithBodies("def Int.test(Int b)\n"
                                                      "end\n"
                                                      "def invoke(*Int a)\n"
@@ -98,7 +98,7 @@ TEST_F(NewParserTests_FunctionCalls, MethodInvocation) {
     EXPECT_EQ("Integer Literal", method->childAtIndex(0)->nodeName());
 }
 
-TEST_F(NewParserTests_FunctionCalls, InvokeVariableAsFunction) {
+TEST_F(ParserTests_FunctionCalls, InvokeVariableAsFunction) {
     Three::ASTNode* node = this->parseSingleFunction("def test()\n"
                                                      "  (Int) func\n"
                                                      "  func(1)\n"
@@ -115,7 +115,7 @@ TEST_F(NewParserTests_FunctionCalls, InvokeVariableAsFunction) {
     ASSERT_EQ("Local Variable", fnCall->receiver()->nodeName());
 }
 
-TEST_F(NewParserTests_FunctionCalls, FunctionCallDereference) {
+TEST_F(ParserTests_FunctionCalls, FunctionCallDereference) {
     Three::ASTNode* node = this->parseNodeWithBodies("def foo(;*Int)\n"
                                                      "  return null\n"
                                                      "end\n"

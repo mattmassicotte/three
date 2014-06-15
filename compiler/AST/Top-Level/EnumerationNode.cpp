@@ -1,6 +1,6 @@
 #include "EnumerationNode.h"
 #include "../Variables/VariableDeclarationNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
@@ -31,7 +31,7 @@ namespace Three {
         });
     }
 
-    void EnumerationNode::setParsedIntegerSpecifier(NewParser& parser, uint32_t value) {
+    void EnumerationNode::setParsedIntegerSpecifier(Parser& parser, uint32_t value) {
         _size = value;
     }
 }

@@ -1,10 +1,10 @@
 #include "../ParserTestsBase.h"
 #include "compiler/constructs/NewDataType.h"
 
-class NewParserTests_Metafunctions : public ParserTestsBase {
+class ParserTests_Metafunctions : public ParserTestsBase {
 };
 
-TEST_F(NewParserTests_Metafunctions, Sizeof) {
+TEST_F(ParserTests_Metafunctions, Sizeof) {
     Three::ASTNode* node = this->parseSingleFunction("def test()\n"
                                                      "  sizeof(Int)\n"
                                                      "end\n");
@@ -17,7 +17,7 @@ TEST_F(NewParserTests_Metafunctions, Sizeof) {
     EXPECT_EQ(0, sizeofNode->childCount());
 }
 
-// TEST_F(NewParserTests_Metafunctions, Alignof) {
+// TEST_F(ParserTests_Metafunctions, Alignof) {
 //     Three::ASTNode* node = this->parseSingleFunction("def test()\n"
 //                                                      "  alignof(Int)\n"
 //                                                      "end\n");
@@ -26,7 +26,7 @@ TEST_F(NewParserTests_Metafunctions, Sizeof) {
 //     ASSERT_TRUE(false);
 // }
 // 
-// TEST_F(NewParserTests_Metafunctions, Offsetof) {
+// TEST_F(ParserTests_Metafunctions, Offsetof) {
 //     Three::ASTNode* node = this->parseNodeWithBodies("struct MyStruct\n"
 //                                                      "  a\n"
 //                                                      "end\n"
@@ -38,7 +38,7 @@ TEST_F(NewParserTests_Metafunctions, Sizeof) {
 //     ASSERT_TRUE(false);
 // }
 // 
-// TEST_F(NewParserTests_Metafunctions, Nameof) {
+// TEST_F(ParserTests_Metafunctions, Nameof) {
 //     Three::ASTNode* node = this->parseSingleFunction("def test()\n"
 //                                                      "  nameof(Int)\n"
 //                                                      "end\n");
@@ -47,7 +47,7 @@ TEST_F(NewParserTests_Metafunctions, Sizeof) {
 //     ASSERT_TRUE(false);
 // }
 // 
-// TEST_F(NewParserTests_Metafunctions, Cardinalityof) {
+// TEST_F(ParserTests_Metafunctions, Cardinalityof) {
 //     Three::ASTNode* node = this->parseSingleFunction("def test([5]Int array)\n"
 //                                                      "  cardinalityof(array)\n"
 //                                                      "end\n");
@@ -56,7 +56,7 @@ TEST_F(NewParserTests_Metafunctions, Sizeof) {
 //     ASSERT_TRUE(false);
 // }
 
-TEST_F(NewParserTests_Metafunctions, Cast) {
+TEST_F(ParserTests_Metafunctions, Cast) {
     Three::ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                                      "  a = cast(Int, 5)\n"
                                                      "end\n");
@@ -73,7 +73,7 @@ TEST_F(NewParserTests_Metafunctions, Cast) {
     EXPECT_EQ("Integer Literal", cast->childAtIndex(0)->nodeName());
 }
 
-TEST_F(NewParserTests_Metafunctions, Nextarg) {
+TEST_F(ParserTests_Metafunctions, Nextarg) {
     Three::ASTNode* node = this->parseSingleFunction("def test(Int a, Vararg ap)\n"
                                                      "  a = nextarg(Int, ap)\n"
                                                      "end\n");

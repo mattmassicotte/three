@@ -1,6 +1,6 @@
 #include "StructureNode.h"
 #include "../Variables/VariableDeclarationNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 #include <sstream>
@@ -18,7 +18,7 @@ namespace Three {
         return _packing;
     }
 
-    void StructureNode::setParsedIntegerSpecifier(NewParser& parser, uint32_t value) {
+    void StructureNode::setParsedIntegerSpecifier(Parser& parser, uint32_t value) {
         _packing = value;
     }
 }

@@ -1,9 +1,9 @@
 #include "../ParserTestsBase.h"
 
-class NewParserTests_Closures : public ParserTestsBase {
+class ParserTests_Closures : public ParserTestsBase {
 };
 
-TEST_F(NewParserTests_Closures, InlineClosureWithNoArguments) {
+TEST_F(ParserTests_Closures, InlineClosureWithNoArguments) {
     ASTNode* node = this->parseNodeWithBodies("def foo({} c)\n"
                                               "end\n"
                                               "def test()\n"
@@ -25,7 +25,7 @@ TEST_F(NewParserTests_Closures, InlineClosureWithNoArguments) {
     ASSERT_EQ(0, closure->dataType().returnCount());
 }
 
-TEST_F(NewParserTests_Closures, InlineClosureWithOneArgument) {
+TEST_F(ParserTests_Closures, InlineClosureWithOneArgument) {
     ASTNode* node = this->parseNodeWithBodies("def foo({} c)\n"
                                               "end\n"
                                               "def test()\n"
@@ -48,7 +48,7 @@ TEST_F(NewParserTests_Closures, InlineClosureWithOneArgument) {
     ASSERT_EQ(0, closure->dataType().returnCount());
 }
 
-TEST_F(NewParserTests_Closures, InlineClosureWithTwoArguments) {
+TEST_F(ParserTests_Closures, InlineClosureWithTwoArguments) {
     ASTNode* node = this->parseNodeWithBodies("def foo({} c)\n"
                                               "end\n"
                                               "def test()\n"
@@ -69,7 +69,7 @@ TEST_F(NewParserTests_Closures, InlineClosureWithTwoArguments) {
     ASSERT_EQ(0, closure->dataType().returnCount());
 }
 
-TEST_F(NewParserTests_Closures, ClosureVariableWithCapture) {
+TEST_F(ParserTests_Closures, ClosureVariableWithCapture) {
     ASTNode* node = this->parseNodeWithBodies("def test()\n"
                                               "  Int x = 42\n"
                                               "  Int y = 43\n"
@@ -111,7 +111,7 @@ TEST_F(NewParserTests_Closures, ClosureVariableWithCapture) {
     EXPECT_EQ("Captured Variable", node->childAtIndex(1)->nodeName());
 }
 
-TEST_F(NewParserTests_Closures, NestedClosureVariableWithCapture) {
+TEST_F(ParserTests_Closures, NestedClosureVariableWithCapture) {
     ASTNode* node = this->parseNodeWithBodies("def test()\n"
                                               "  Int x = 42\n"
                                               "  Int y = 43\n"

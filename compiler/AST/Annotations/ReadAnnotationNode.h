@@ -5,7 +5,7 @@
 namespace Three {
     class ReadAnnotationNode : public AnnotationNode {
     public:
-        static ReadAnnotationNode* parse(NewParser& parser);
+        static ReadAnnotationNode* parse(Parser& parser);
 
     public:
         virtual std::string nodeName() const;

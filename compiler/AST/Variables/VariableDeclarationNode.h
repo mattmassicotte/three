@@ -8,11 +8,11 @@
 namespace Three {
     class VariableDeclarationNode : public ASTNode {
     public:
-        static VariableDeclarationNode* parse(NewParser& parser, bool createVariable = true);
-        static VariableDeclarationNode* parseGlobal(NewParser& parser);
+        static VariableDeclarationNode* parse(Parser& parser, bool createVariable = true);
+        static VariableDeclarationNode* parseGlobal(Parser& parser);
 
     private:
-        static void parseVariable(NewParser& parser, VariableDeclarationNode& node, bool createVariable = true);
+        static void parseVariable(Parser& parser, VariableDeclarationNode& node, bool createVariable = true);
 
     public:
         VariableDeclarationNode();

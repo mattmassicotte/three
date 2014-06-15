@@ -7,14 +7,14 @@
 #include "Callable/FunctionCallOperatorNode.h"
 #include "Callable/MethodCallOperatorNode.h"
 #include "compiler/AST/Variables/VariableNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include "Operators.h"
 
 #include <assert.h>
 
 namespace Three {
-    ASTNode* OperatorNode::parse(NewParser& parser, ASTNode* left, uint32_t precedence) {
+    ASTNode* OperatorNode::parse(Parser& parser, ASTNode* left, uint32_t precedence) {
         OperatorNode* node = OperatorNode::createOperator(parser);
         if (!node) {
             assert(0 && "Message: operator expected!");
@@ -36,7 +36,7 @@ namespace Three {
         return node;
     }
 
-    ASTNode* OperatorNode::parseUnary(NewParser& parser) {
+    ASTNode* OperatorNode::parseUnary(Parser& parser) {
         if (!parser.helper()->peek().isUnaryOperator()) {
             assert(0 && "Message: Unary operator expected");
         }
@@ -52,7 +52,7 @@ namespace Three {
         return node;
     }
 
-    ASTNode* OperatorNode::parseTailing(NewParser& parser, ASTNode* leftNode) {
+    ASTNode* OperatorNode::parseTailing(Parser& parser, ASTNode* leftNode) {
         // possible tailing operators are:
         // .
         // ->
@@ -82,7 +82,7 @@ namespace Three {
         return nullptr;
     }
 
-    ASTNode* OperatorNode::parseSingleTailing(NewParser& parser, ASTNode* leftNode) {
+    ASTNode* OperatorNode::parseSingleTailing(Parser& parser, ASTNode* leftNode) {
         switch (parser.helper()->peek().type()) {
             case Token::Type::PunctuationOpenBracket:
                 return IndexerNode::parse(parser, leftNode);
@@ -102,7 +102,7 @@ namespace Three {
         return leftNode;
     }
 
-    OperatorNode* OperatorNode::createOperator(NewParser& parser, bool unary) {
+    OperatorNode* OperatorNode::createOperator(Parser& parser, bool unary) {
         if (unary) {
             switch (parser.helper()->peek().type()) {
                 case Token::Type::OperatorStar:      return new DereferenceOperatorNode();

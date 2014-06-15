@@ -1,11 +1,11 @@
 #include "ReturnNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 #include "compiler/constructs/NewScope.h"
 
 #include <assert.h>
 
 namespace Three {
-    ReturnNode* ReturnNode::parse(NewParser& parser) {
+    ReturnNode* ReturnNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordReturn));
 
         ReturnNode* node = new ReturnNode();

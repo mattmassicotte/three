@@ -1,10 +1,10 @@
 #include "CaseNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    CaseNode* CaseNode::parse(NewParser& parser) {
+    CaseNode* CaseNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordCase));
 
         CaseNode* node = new CaseNode();

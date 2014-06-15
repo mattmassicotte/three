@@ -1,10 +1,10 @@
 #include "BarrierNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    BarrierNode* BarrierNode::parse(NewParser& parser) {
+    BarrierNode* BarrierNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordBarrier));
 
         BarrierNode* node = new BarrierNode();

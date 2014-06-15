@@ -1,8 +1,8 @@
 #include "ReturnAnnotationNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 namespace Three {
-    ReturnAnnotationNode* ReturnAnnotationNode::parse(NewParser& parser) {
+    ReturnAnnotationNode* ReturnAnnotationNode::parse(Parser& parser) {
         ReturnAnnotationNode* node = new ReturnAnnotationNode();
 
         if (!parser.helper()->nextIf(Token::Type::AnnotationReturn)) {

@@ -1,13 +1,13 @@
 #include "IncludeNode.h"
 #include "../../CSourceIndexer.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 #include "compiler/Lexer/Lexer.h"
 
 #include <assert.h>
 #include <sstream>
 
 namespace Three {
-    IncludeNode* IncludeNode::parse(NewParser& parser) {
+    IncludeNode* IncludeNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordInclude));
 
         IncludeNode* node = new IncludeNode();
@@ -42,7 +42,7 @@ namespace Three {
         return node;
     }
 
-    std::string IncludeNode::parseSearchPathArgument(NewParser& parser) {
+    std::string IncludeNode::parseSearchPathArgument(Parser& parser) {
         if (!parser.helper()->nextIf(Token::Type::OperatorLessThan)) {
             assert(0 && "Message: Include argument must start with \" or <");
             return "";

@@ -1,9 +1,9 @@
 #include "../ParserTestsBase.h"
 
-class NewParserTests_Control : public ParserTestsBase {
+class ParserTests_Control : public ParserTestsBase {
 };
 
-TEST_F(NewParserTests_Control, ReturnStatement) {
+TEST_F(ParserTests_Control, ReturnStatement) {
     ASTNode* node = this->parseSingleFunction("def test()\n"
                                               "  return\n"
                                               "end\n");
@@ -14,7 +14,7 @@ TEST_F(NewParserTests_Control, ReturnStatement) {
     ASSERT_EQ(0, node->childCount());
 }
 
-TEST_F(NewParserTests_Control, ReturnStatementTailingIf) {
+TEST_F(ParserTests_Control, ReturnStatementTailingIf) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  return if a\n"
                                               "end\n");
@@ -27,7 +27,7 @@ TEST_F(NewParserTests_Control, ReturnStatementTailingIf) {
     ASSERT_EQ("Return", node->childAtIndex(0)->nodeName());
 }
 
-TEST_F(NewParserTests_Control, ReturnOneExpression) {
+TEST_F(ParserTests_Control, ReturnOneExpression) {
     ASTNode* node = this->parseSingleFunction("def test(Int a; Int)\n"
                                               "  return a + a\n"
                                               "end\n");
@@ -39,7 +39,7 @@ TEST_F(NewParserTests_Control, ReturnOneExpression) {
     ASSERT_EQ("Addition Operator", node->childAtIndex(0)->nodeName());
 }
 
-TEST_F(NewParserTests_Control, ReturnTwoExpressions) {
+TEST_F(ParserTests_Control, ReturnTwoExpressions) {
     ASTNode* node = this->parseSingleFunction("def test(Int a; Int, Int)\n"
                                               "  return a + a, a\n"
                                               "end\n");
@@ -52,7 +52,7 @@ TEST_F(NewParserTests_Control, ReturnTwoExpressions) {
     ASSERT_EQ("Local Variable", node->childAtIndex(1)->nodeName());
 }
 
-TEST_F(NewParserTests_Control, ReturnTwoExpressionsTailingIf) {
+TEST_F(ParserTests_Control, ReturnTwoExpressionsTailingIf) {
     ASTNode* node = this->parseSingleFunction("def test(Int a; Int, Int)\n"
                                               "  return a + a, a if a\n"
                                               "end\n");
@@ -65,7 +65,7 @@ TEST_F(NewParserTests_Control, ReturnTwoExpressionsTailingIf) {
     ASSERT_EQ(2, node->childAtIndex(0)->childCount());
 }
 
-TEST_F(NewParserTests_Control, SimpleIfWithNoElseStatement) {
+TEST_F(ParserTests_Control, SimpleIfWithNoElseStatement) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  if a\n"
                                               "    a = a\n"
@@ -81,7 +81,7 @@ TEST_F(NewParserTests_Control, SimpleIfWithNoElseStatement) {
     ASSERT_EQ(NULL, ifNode->elseStatement());
 }
 
-TEST_F(NewParserTests_Control, SimpleIfWithElse) {
+TEST_F(ParserTests_Control, SimpleIfWithElse) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  if a\n"
                                               "    a = a\n"
@@ -101,7 +101,7 @@ TEST_F(NewParserTests_Control, SimpleIfWithElse) {
     ASSERT_EQ("Multiplication Operator", ifNode->elseStatement()->childAtIndex(0)->nodeName());
 }
 
-TEST_F(NewParserTests_Control, SwitchWithElse) {
+TEST_F(ParserTests_Control, SwitchWithElse) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  switch a\n"
                                               "  case a\n"

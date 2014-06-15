@@ -5,7 +5,7 @@
 namespace Three {
     class CallableOperatorNode : public OperatorNode {
     public:
-        static bool parseArguments(NewParser& parser, CallableOperatorNode* node);
+        static bool parseArguments(Parser& parser, CallableOperatorNode* node);
 
     public:
         virtual ~CallableOperatorNode();

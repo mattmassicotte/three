@@ -1,10 +1,10 @@
 #include "ElseNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    ElseNode* ElseNode::parse(NewParser& parser) {
+    ElseNode* ElseNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordElse));
 
         ElseNode* node = new ElseNode();

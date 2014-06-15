@@ -5,7 +5,7 @@
 namespace Three {
     class IntegerLiteralNode : public LiteralNode {
     public:
-        static IntegerLiteralNode* parse(NewParser& parser);
+        static IntegerLiteralNode* parse(Parser& parser);
         static uint64_t integerValue(const std::string& string);
 
     public:

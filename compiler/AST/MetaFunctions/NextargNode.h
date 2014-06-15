@@ -5,7 +5,7 @@
 namespace Three {
     class NextargNode : public MetafunctionNode {
     public:
-        static NextargNode* parse(NewParser& parser);
+        static NextargNode* parse(Parser& parser);
 
     public:
         std::string name() const;

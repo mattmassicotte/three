@@ -5,13 +5,13 @@
 namespace Three {
     class OperatorNode : public ASTNode {
     public:
-        static ASTNode* parse(NewParser& parser, ASTNode* left, uint32_t precedence);
-        static ASTNode* parseUnary(NewParser& parser);
-        static ASTNode* parseTailing(NewParser& parser, ASTNode* leftNode);
-        static ASTNode* parseSingleTailing(NewParser& parser, ASTNode* leftNode);
+        static ASTNode* parse(Parser& parser, ASTNode* left, uint32_t precedence);
+        static ASTNode* parseUnary(Parser& parser);
+        static ASTNode* parseTailing(Parser& parser, ASTNode* leftNode);
+        static ASTNode* parseSingleTailing(Parser& parser, ASTNode* leftNode);
 
     private:
-        static OperatorNode* createOperator(NewParser& parser, bool unary = false);
+        static OperatorNode* createOperator(Parser& parser, bool unary = false);
 
     public:
         NewDataType dataType() const;

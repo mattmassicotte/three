@@ -1,10 +1,10 @@
 #include "NextargNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    NextargNode* NextargNode::parse(NewParser& parser) {
+    NextargNode* NextargNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::MetafunctionNextarg));
 
         NextargNode* node = new NextargNode();

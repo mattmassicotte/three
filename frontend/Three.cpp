@@ -1,5 +1,5 @@
 #include "../compiler/Lexer/Lexer.h"
-#include "../compiler/Parser/NewParser.h"
+#include "../compiler/Parser/Parser.h"
 #include "../compiler/Operations/CCodeGenVisitor.h"
 #include "../compiler/AST/RootNode.h"
 #include "../compiler/CSourceIndexer.h"
@@ -191,7 +191,7 @@ void adjustOutputFileName(build_options_t* options, const std::string& inputFile
 int buildCSources(const std::string& inputFile) {
     Three::ParseContext context;
 
-    if (!Three::NewParser::parse(inputFile.c_str(), &context)) {
+    if (!Three::Parser::parse(inputFile.c_str(), &context)) {
         std::cout << "Unable to parse file" << std::endl;
         return 1;
     }
@@ -285,7 +285,7 @@ int buildModule(build_options_t* options, const Three::ParseContext& context) {
 int processInput(build_options_t* options, const std::string& inputFile) {
     Three::ParseContext context;
 
-    if (!Three::NewParser::parse(inputFile.c_str(), &context)) {
+    if (!Three::Parser::parse(inputFile.c_str(), &context)) {
         std::cout << "Unable to parse file" << std::endl;
         return 1;
     }

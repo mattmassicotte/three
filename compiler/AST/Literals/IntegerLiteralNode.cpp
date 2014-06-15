@@ -1,11 +1,11 @@
 #include "IntegerLiteralNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 #include <sstream>
 
 namespace Three {
-    IntegerLiteralNode* IntegerLiteralNode::parse(NewParser& parser) {
+    IntegerLiteralNode* IntegerLiteralNode::parse(Parser& parser) {
         switch (parser.helper()->peek().type()) {
             case Token::Type::LiteralInteger:
             case Token::Type::LiteralBinary:

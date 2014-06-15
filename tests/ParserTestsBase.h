@@ -1,5 +1,5 @@
 #include "compiler/Lexer/Lexer.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 #include "compiler/Messages/Message.h"
 
 class ParserTestsBase : public testing::Test {
@@ -31,7 +31,7 @@ protected:
         _lexer = new Three::Lexer(_stream);
 
         assert(!_parser);
-        _parser = new Three::NewParser();
+        _parser = new Three::Parser();
 
         assert(!_context);
         _context = new Three::ParseContext();
@@ -86,7 +86,7 @@ protected:
 
     std::istringstream* _stream;
     Three::Lexer* _lexer;
-    Three::NewParser* _parser;
+    Three::Parser* _parser;
     Three::ParseContext* _context;
     bool _skipIncludes;
     bool _skipImports;

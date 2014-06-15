@@ -1,9 +1,9 @@
 #include "MetafunctionNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 #include "Metafunctions.h"
 
 namespace Three {
-    MetafunctionNode* MetafunctionNode::parse(NewParser& parser) {
+    MetafunctionNode* MetafunctionNode::parse(Parser& parser) {
         switch (parser.helper()->peek().type()) {
             case Token::Type::MetafunctionSizeOf:
                 return SizeofNode::parse(parser);

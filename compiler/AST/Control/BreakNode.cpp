@@ -1,10 +1,10 @@
 #include "BreakNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    BreakNode* BreakNode::parse(NewParser& parser) {
+    BreakNode* BreakNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::KeywordBreak));
 
         BreakNode* node = new BreakNode();

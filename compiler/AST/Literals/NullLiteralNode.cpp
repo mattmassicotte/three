@@ -1,10 +1,10 @@
 #include "NullLiteralNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    NullLiteralNode* NullLiteralNode::parse(NewParser& parser) {
+    NullLiteralNode* NullLiteralNode::parse(Parser& parser) {
         assert(parser.helper()->nextIf(Token::Type::LiteralNull));
 
         NullLiteralNode* node = new NullLiteralNode();

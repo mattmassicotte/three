@@ -1,13 +1,13 @@
 #include "AtomicStatementNode.h"
 #include "AtomicExpressionNode.h"
 #include "../Control/ElseNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 #include "compiler/constructs/NewScope.h"
 
 #include <assert.h>
 
 namespace Three {
-    ASTNode* AtomicStatementNode::parse(NewParser& parser) {
+    ASTNode* AtomicStatementNode::parse(Parser& parser) {
         if (AtomicNode::isAtAtomicExpression(parser)) {
             return nullptr;
         }

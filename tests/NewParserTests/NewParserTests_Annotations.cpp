@@ -2,10 +2,10 @@
 #include "compiler/constructs/NewDataType.h"
 #include "compiler/AST/Annotations/Annotations.h"
 
-class NewParserTests_Annotations : public ParserTestsBase {
+class ParserTests_Annotations : public ParserTestsBase {
 };
 
-TEST_F(NewParserTests_Annotations, GlobalConstBoolean) {
+TEST_F(ParserTests_Annotations, GlobalConstBoolean) {
     ASTNode* node = this->parseNode("@const Bool value\n");
 
     node = node->childAtIndex(0);
@@ -16,7 +16,7 @@ TEST_F(NewParserTests_Annotations, GlobalConstBoolean) {
     ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalConstPointerToBoolean) {
+TEST_F(ParserTests_Annotations, GlobalConstPointerToBoolean) {
     ASTNode* node = this->parseNode("@const *Bool value\n");
 
     node = node->childAtIndex(0);
@@ -27,7 +27,7 @@ TEST_F(NewParserTests_Annotations, GlobalConstPointerToBoolean) {
     ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().subtypeAtIndex(0).access());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalPointerToConstBoolean) {
+TEST_F(ParserTests_Annotations, GlobalPointerToConstBoolean) {
     ASTNode* node = this->parseNode("* @const Bool value\n");
 
     node = node->childAtIndex(0);
@@ -38,7 +38,7 @@ TEST_F(NewParserTests_Annotations, GlobalPointerToConstBoolean) {
     ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalConstPointerToConstBoolean) {
+TEST_F(ParserTests_Annotations, GlobalConstPointerToConstBoolean) {
     ASTNode* node = this->parseNode("@const * @const Bool value\n");
 
     node = node->childAtIndex(0);
@@ -49,7 +49,7 @@ TEST_F(NewParserTests_Annotations, GlobalConstPointerToConstBoolean) {
     ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalRestrictedPointer) {
+TEST_F(ParserTests_Annotations, GlobalRestrictedPointer) {
     ASTNode* node = this->parseNode("@restrict *Int value\n");
 
     node = node->childAtIndex(0);
@@ -61,7 +61,7 @@ TEST_F(NewParserTests_Annotations, GlobalRestrictedPointer) {
     ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().subtypeAtIndex(0).access());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalVolatileBool) {
+TEST_F(ParserTests_Annotations, GlobalVolatileBool) {
     ASTNode* node = this->parseNode("@volatile Bool value\n");
 
     node = node->childAtIndex(0);
@@ -71,7 +71,7 @@ TEST_F(NewParserTests_Annotations, GlobalVolatileBool) {
     ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().volatility());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalVolatileNoneBool) {
+TEST_F(ParserTests_Annotations, GlobalVolatileNoneBool) {
     ASTNode* node = this->parseNode("@volatile(none) Bool value\n");
 
     node = node->childAtIndex(0);
@@ -80,7 +80,7 @@ TEST_F(NewParserTests_Annotations, GlobalVolatileNoneBool) {
     ASSERT_EQ(NewDataType::Access::None, node->dataType().volatility());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalVolatileReadBool) {
+TEST_F(ParserTests_Annotations, GlobalVolatileReadBool) {
     ASTNode* node = this->parseNode("@volatile(r) Bool value\n");
 
     node = node->childAtIndex(0);
@@ -89,7 +89,7 @@ TEST_F(NewParserTests_Annotations, GlobalVolatileReadBool) {
     ASSERT_EQ(NewDataType::Access::Read, node->dataType().volatility());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalVolatileWriteBool) {
+TEST_F(ParserTests_Annotations, GlobalVolatileWriteBool) {
     ASTNode* node = this->parseNode("@volatile(w) Bool value\n");
 
     node = node->childAtIndex(0);
@@ -98,7 +98,7 @@ TEST_F(NewParserTests_Annotations, GlobalVolatileWriteBool) {
     ASSERT_EQ(NewDataType::Access::Write, node->dataType().volatility());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalVolatileReadWriteBool) {
+TEST_F(ParserTests_Annotations, GlobalVolatileReadWriteBool) {
     ASTNode* node = this->parseNode("@volatile(rw) Bool value\n");
 
     node = node->childAtIndex(0);
@@ -107,7 +107,7 @@ TEST_F(NewParserTests_Annotations, GlobalVolatileReadWriteBool) {
     ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().volatility());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalAccessReadShortBool) {
+TEST_F(ParserTests_Annotations, GlobalAccessReadShortBool) {
     ASTNode* node = this->parseNode("@access(r) Bool value\n");
 
     node = node->childAtIndex(0);
@@ -116,7 +116,7 @@ TEST_F(NewParserTests_Annotations, GlobalAccessReadShortBool) {
     ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalAccessReadBool) {
+TEST_F(ParserTests_Annotations, GlobalAccessReadBool) {
     ASTNode* node = this->parseNode("@access(read) Bool value\n");
 
     node = node->childAtIndex(0);
@@ -125,7 +125,7 @@ TEST_F(NewParserTests_Annotations, GlobalAccessReadBool) {
     ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalAccessWriteShortBool) {
+TEST_F(ParserTests_Annotations, GlobalAccessWriteShortBool) {
     ASTNode* node = this->parseNode("@access(w) Bool value\n");
 
     node = node->childAtIndex(0);
@@ -133,7 +133,7 @@ TEST_F(NewParserTests_Annotations, GlobalAccessWriteShortBool) {
     ASSERT_EQ(NewDataType::Access::Write, node->dataType().access());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalAccessWriteBool) {
+TEST_F(ParserTests_Annotations, GlobalAccessWriteBool) {
     ASTNode* node = this->parseNode("@access(write) Bool value\n");
 
     node = node->childAtIndex(0);
@@ -141,7 +141,7 @@ TEST_F(NewParserTests_Annotations, GlobalAccessWriteBool) {
     ASSERT_EQ(NewDataType::Access::Write, node->dataType().access());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalAccessReadWriteShortBool) {
+TEST_F(ParserTests_Annotations, GlobalAccessReadWriteShortBool) {
     ASTNode* node = this->parseNode("@access(rw) Bool value\n");
 
     node = node->childAtIndex(0);
@@ -149,7 +149,7 @@ TEST_F(NewParserTests_Annotations, GlobalAccessReadWriteShortBool) {
     ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().access());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalAccessReadWriteBool) {
+TEST_F(ParserTests_Annotations, GlobalAccessReadWriteBool) {
     ASTNode* node = this->parseNode("@access(readwrite) Bool value\n");
 
     node = node->childAtIndex(0);
@@ -157,7 +157,7 @@ TEST_F(NewParserTests_Annotations, GlobalAccessReadWriteBool) {
     ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().access());
 }
 
-TEST_F(NewParserTests_Annotations, GlobalAccessNoneWriteBool) {
+TEST_F(ParserTests_Annotations, GlobalAccessNoneWriteBool) {
     ASTNode* node = this->parseNode("@access(none) Bool value\n");
 
     node = node->childAtIndex(0);
@@ -165,7 +165,7 @@ TEST_F(NewParserTests_Annotations, GlobalAccessNoneWriteBool) {
     ASSERT_EQ(NewDataType::Access::None, node->dataType().access());
 }
 
-TEST_F(NewParserTests_Annotations, BriefAnnotation) {
+TEST_F(ParserTests_Annotations, BriefAnnotation) {
     ASTNode* node = this->parseNode("@brief Some description\n");
 
     TextAnnotationNode* brief = dynamic_cast<TextAnnotationNode*>(node->childAtIndex(0));
@@ -174,7 +174,7 @@ TEST_F(NewParserTests_Annotations, BriefAnnotation) {
     ASSERT_EQ("Some description", brief->text());
 }
 
-TEST_F(NewParserTests_Annotations, SummaryAnnotation) {
+TEST_F(ParserTests_Annotations, SummaryAnnotation) {
     ASTNode* node = this->parseNode("@summary Some longer description\n");
 
     TextAnnotationNode* summary = dynamic_cast<TextAnnotationNode*>(node->childAtIndex(0));
@@ -183,7 +183,7 @@ TEST_F(NewParserTests_Annotations, SummaryAnnotation) {
     ASSERT_EQ("Some longer description", summary->text());
 }
 
-TEST_F(NewParserTests_Annotations, BriefThenSummary) {
+TEST_F(ParserTests_Annotations, BriefThenSummary) {
     ASTNode* node = this->parseNode("@brief Some description\n"
                                     "@summary Some longer description\n");
 
@@ -200,7 +200,7 @@ TEST_F(NewParserTests_Annotations, BriefThenSummary) {
     ASSERT_EQ("Some longer description", textNode->text());
 }
 
-TEST_F(NewParserTests_Annotations, ParamAnnotation) {
+TEST_F(ParserTests_Annotations, ParamAnnotation) {
     ASTNode* node = this->parseNode("@param A function parameter\n");
 
     TextAnnotationNode* summary = dynamic_cast<TextAnnotationNode*>(node->childAtIndex(0));
@@ -209,7 +209,7 @@ TEST_F(NewParserTests_Annotations, ParamAnnotation) {
     ASSERT_EQ("A function parameter", summary->text());
 }
 
-TEST_F(NewParserTests_Annotations, ParamWithAdditionalAnnotations) {
+TEST_F(ParserTests_Annotations, ParamWithAdditionalAnnotations) {
     ASTNode* node = this->parseNode("@param @read(1) A function parameter\n");
 
     TextAnnotationNode* param = dynamic_cast<TextAnnotationNode*>(node->childAtIndex(0));
@@ -222,7 +222,7 @@ TEST_F(NewParserTests_Annotations, ParamWithAdditionalAnnotations) {
     ASSERT_EQ("Read Annotation", readNode->nodeName());
 }
 
-TEST_F(NewParserTests_Annotations, ReturnAnnotation) {
+TEST_F(ParserTests_Annotations, ReturnAnnotation) {
     ASTNode* node = this->parseNode("@return return value\n");
 
     TextAnnotationNode* returnNode = dynamic_cast<TextAnnotationNode*>(node->childAtIndex(0));
@@ -231,7 +231,7 @@ TEST_F(NewParserTests_Annotations, ReturnAnnotation) {
     ASSERT_EQ("return value", returnNode->text());
 }
 
-TEST_F(NewParserTests_Annotations, NoReturnAnnotation) {
+TEST_F(ParserTests_Annotations, NoReturnAnnotation) {
     ASTNode* node = this->parseNode("@noreturn");
 
     ASSERT_EQ("No Return Annotation", node->childAtIndex(0)->nodeName());

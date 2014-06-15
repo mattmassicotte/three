@@ -1,12 +1,12 @@
 #include "AtomicNode.h"
 #include "AtomicExpressionNode.h"
 #include "AtomicStatementNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    void AtomicNode::parseOrdering(NewParser& parser, AtomicNode* node) {
+    void AtomicNode::parseOrdering(Parser& parser, AtomicNode* node) {
         if (!parser.helper()->nextIf(Token::Type::PunctuationColon)) {
             node->_ordering = AtomicNode::Ordering::SequentiallyConsistent;
             return;
@@ -28,7 +28,7 @@ namespace Three {
         }
     }
 
-    bool AtomicNode::isAtAtomicExpression(NewParser& parser) {
+    bool AtomicNode::isAtAtomicExpression(Parser& parser) {
         if (parser.helper()->peek().type() != Token::Type::KeywordAtomic) {
             return false;
         }

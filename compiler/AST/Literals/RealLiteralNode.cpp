@@ -1,10 +1,10 @@
 #include "RealLiteralNode.h"
-#include "compiler/Parser/NewParser.h"
+#include "compiler/Parser/Parser.h"
 
 #include <assert.h>
 
 namespace Three {
-    RealLiteralNode* RealLiteralNode::parse(NewParser& parser) {
+    RealLiteralNode* RealLiteralNode::parse(Parser& parser) {
         RealLiteralNode* node = new RealLiteralNode();
 
         if (parser.helper()->peek().type() == Token::Type::LiteralReal) {

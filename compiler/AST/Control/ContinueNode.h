@@ -5,7 +5,7 @@
 namespace Three {
     class ContinueNode : public ASTNode {
     public:
-        static ContinueNode* parse(NewParser& parser);
+        static ContinueNode* parse(Parser& parser);
 
     public:
         std::string nodeName() const;

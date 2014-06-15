@@ -9,6 +9,6 @@ namespace Three {
         void accept(ASTVisitor& visitor);
 
     protected:
-        void setParsedIntegerSpecifier(NewParser& parser, uint32_t value);
+        void setParsedIntegerSpecifier(Parser& parser, uint32_t value);
     };
 }
