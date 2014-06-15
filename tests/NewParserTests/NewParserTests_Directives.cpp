@@ -1,6 +1,6 @@
-#include "../NewParserTestsBase.h"
+#include "../ParserTestsBase.h"
 
-class NewParserTests_Directives : public NewParserTestsBase {
+class NewParserTests_Directives : public ParserTestsBase {
 };
 
 TEST_F(NewParserTests_Directives, Default) {

@@ -2,7 +2,7 @@
 #include "compiler/Parser/NewParser.h"
 #include "compiler/Messages/Message.h"
 
-class NewParserTestsBase : public testing::Test {
+class ParserTestsBase : public testing::Test {
 protected:
     virtual void SetUp() {
         _skipIncludes = false;

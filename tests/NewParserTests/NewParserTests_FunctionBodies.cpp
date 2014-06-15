@@ -1,6 +1,6 @@
-#include "../NewParserTestsBase.h"
+#include "../ParserTestsBase.h"
 
-class NewParserTests_FunctionBodies : public NewParserTestsBase {
+class NewParserTests_FunctionBodies : public ParserTestsBase {
 protected:
     FunctionDefinitionNode* parseFunction(const char* input) {
         ASTNode* node = this->parseNode(input);

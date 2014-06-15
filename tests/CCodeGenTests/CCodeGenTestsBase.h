@@ -1,15 +1,15 @@
-#include "../NewParserTestsBase.h"
+#include "../ParserTestsBase.h"
 #include "compiler/Operations/CCodeGenVisitor.h"
 
-class CCodeGenTestsBase : public NewParserTestsBase {
+class CCodeGenTestsBase : public ParserTestsBase {
 protected:
     virtual void SetUp() {
-        NewParserTestsBase::SetUp();
+        ParserTestsBase::SetUp();
         _visitor = nullptr;
     }
 
     virtual void TearDown() {
-        NewParserTestsBase::TearDown();
+        ParserTestsBase::TearDown();
         delete _visitor;
     }
 

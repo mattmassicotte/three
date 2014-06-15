@@ -1,8 +1,8 @@
-#include "../NewParserTestsBase.h"
+#include "../ParserTestsBase.h"
 #include "compiler/constructs/NewDataType.h"
 #include "compiler/AST/Annotations/Annotations.h"
 
-class NewParserTests_Annotations : public NewParserTestsBase {
+class NewParserTests_Annotations : public ParserTestsBase {
 };
 
 TEST_F(NewParserTests_Annotations, GlobalConstBoolean) {

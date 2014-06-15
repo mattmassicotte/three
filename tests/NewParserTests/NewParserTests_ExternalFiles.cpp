@@ -1,10 +1,10 @@
-#include "../NewParserTestsBase.h"
+#include "../ParserTestsBase.h"
 #include "compiler/AST/Directives/ImportNode.h"
 
-class NewParserTests_ExternalFiles : public NewParserTestsBase {
+class NewParserTests_ExternalFiles : public ParserTestsBase {
 protected:
     virtual void SetUp() {
-        NewParserTestsBase::SetUp();
+        ParserTestsBase::SetUp();
         this->setSkipIncludes(true);
         this->setSkipImports(true);
     }

@@ -1,7 +1,7 @@
-#include "../NewParserTestsBase.h"
+#include "../ParserTestsBase.h"
 #include "compiler/constructs/NewDataType.h"
 
-class NewParserTests_Metafunctions : public NewParserTestsBase {
+class NewParserTests_Metafunctions : public ParserTestsBase {
 };
 
 TEST_F(NewParserTests_Metafunctions, Sizeof) {

@@ -1,6 +1,6 @@
-#include "../NewParserTestsBase.h"
+#include "../ParserTestsBase.h"
 
-class NewParserTests_Atomics : public NewParserTestsBase {
+class NewParserTests_Atomics : public ParserTestsBase {
 };
 
 TEST_F(NewParserTests_Atomics, AtomicBarrierWithoutSpecifier) {

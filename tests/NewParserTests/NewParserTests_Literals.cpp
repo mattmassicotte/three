@@ -1,7 +1,7 @@
-#include "../NewParserTestsBase.h"
+#include "../ParserTestsBase.h"
 #include "compiler/constructs/NewDataType.h"
 
-class NewParserTests_Literals : public NewParserTestsBase {
+class NewParserTests_Literals : public ParserTestsBase {
 };
 
 TEST_F(NewParserTests_Literals, IntegerLiteral) {

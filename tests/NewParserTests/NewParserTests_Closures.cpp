@@ -1,6 +1,6 @@
-#include "../NewParserTestsBase.h"
+#include "../ParserTestsBase.h"
 
-class NewParserTests_Closures : public NewParserTestsBase {
+class NewParserTests_Closures : public ParserTestsBase {
 };
 
 TEST_F(NewParserTests_Closures, InlineClosureWithNoArguments) {

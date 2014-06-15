@@ -1,6 +1,6 @@
-#include "../NewParserTestsBase.h"
+#include "../ParserTestsBase.h"
 
-class NewParserTests_Loops : public NewParserTestsBase {
+class NewParserTests_Loops : public ParserTestsBase {
 };
 
 TEST_F(NewParserTests_Loops, InfiniteLoop) {

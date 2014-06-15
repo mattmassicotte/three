@@ -1,6 +1,6 @@
-#include "../NewParserTestsBase.h"
+#include "../ParserTestsBase.h"
 
-class NewParserTests_Types : public NewParserTestsBase {
+class NewParserTests_Types : public ParserTestsBase {
 };
 
 TEST_F(NewParserTests_Types, GlobalBoolean) {

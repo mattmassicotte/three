@@ -1,6 +1,6 @@
-#include "../NewParserTestsBase.h"
+#include "../ParserTestsBase.h"
 
-class NewParserTests_Functions : public NewParserTestsBase {
+class NewParserTests_Functions : public ParserTestsBase {
 };
 
 TEST_F(NewParserTests_Functions, FunctionDefinition) {
