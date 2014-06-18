@@ -4,6 +4,7 @@
 #include "compiler/constructs/NewDataType.h"
 #include "compiler/constructs/NewScope.h"
 #include "compiler/CSourceIndexer.h"
+#include "compiler/Parser/Parser.h"
 
 namespace Three {
     ParseContext::ParseContext() : skipIncludes(false), skipImports(false) {
@@ -67,14 +68,24 @@ namespace Three {
         }
 
         // resolve name
-        std::string path = name;
+        std::string path = this->resolveImportPath(name);
+
+        std::cout << "resolved to '" << path << "'" << std::endl;
 
         // if we find a .3 file, but not a .h file, we have to compile it first
+        if (!Parser::parse(std::string(path + ".3").c_str(), this)) {
+            std::cout << "Unable to parse import" << std::endl;
+        }
 
         // now, actually index the source
         CSourceIndexer indexer;
 
-        return indexer.indexFileAtPath(name, this);
+        return indexer.indexFileAtPath(path + ".h", this);
+    }
+
+    std::string ParseContext::resolveImportPath(const std::string& name) {
+        std::cout << "bogus path resolution" << std::endl;
+        return "/Users/matt/Documents/src/distributed-queue-test/" + name;
     }
 
     void ParseContext::setVisibility(TranslationUnit::Visibility visibility) {

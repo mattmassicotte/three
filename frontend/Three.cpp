@@ -3,6 +3,8 @@
 #include "../compiler/Operations/CCodeGenVisitor.h"
 #include "../compiler/AST/RootNode.h"
 #include "../compiler/CSourceIndexer.h"
+#include "CSourceEmitter.h"
+
 #include "REPL.h"
 
 #include <algorithm>
@@ -77,35 +79,6 @@ void getOptions(build_options_t* options, int argc, char** argv) {
                 break;
         }
     }
-}
-
-bool createCOutputs(const Three::ParseContext& context, const std::string& basePath) {
-    Three::CCodeGenVisitor visitor;
-
-    context.rootNode()->accept(visitor);
-
-    std::ofstream bodyFile(basePath + ".c");
-
-    // make sure to import the headers
-    visitor.addInternalHeader(true, basePath + ".h");
-    visitor.addDeclarationsHeader(true, basePath + "_internal.h");
-
-    bodyFile << "// Declarations" << std::endl;
-    bodyFile << visitor.declarationsString();
-    bodyFile << std::endl << "// Definitions" << std::endl;
-    bodyFile << visitor.bodyString();
-
-    std::ofstream internalHeaderFile(basePath + "_internal.h");
-
-    internalHeaderFile << Three::CSource::includeGuard("");
-    internalHeaderFile << visitor.internalHeaderString();
-
-    std::ofstream externalHeaderFile(basePath + ".h");
-
-    externalHeaderFile << Three::CSource::includeGuard("");
-    externalHeaderFile << visitor.externalHeaderString();
-
-    return true;
 }
 
 std::vector<std::string> defaultCIncludePaths(void) {
@@ -196,8 +169,8 @@ int buildCSources(const std::string& inputFile) {
         return 1;
     }
 
-    std::string outputPath = inputFile.substr(0, inputFile.length() - 2);
-    createCOutputs(context, outputPath);
+    std::string outputPath = Three::CSourceEmitter::pathWithoutExtension(inputFile);
+    Three::CSourceEmitter::createSourcesAtPath(context, outputPath);
 
     return 0;
 }
@@ -216,7 +189,8 @@ int linkExecutable(const std::string& linkerPath, const std::string& inputFile, 
 }
 
 int buildExecutable(build_options_t* options, const std::string& inputFile, const Three::ParseContext& context) {
-    createCOutputs(context, options->outputFile);
+    Three::CSourceEmitter::createSourcesAtPath(context, options->outputFile);
+
     compileCSource(options->compilerPath, options->outputFile + ".c", options->outputFile + ".o");
 
     linkExecutable(options->compilerPath, options->outputFile + ".o", options->outputFile);

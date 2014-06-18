@@ -35,6 +35,7 @@ namespace Three {
         bool displayMessages();
 
         bool import(const std::string& name);
+        std::string resolveImportPath(const std::string& name);
 
         void setVisibility(TranslationUnit::Visibility visibility);
         TranslationUnit::Visibility visibility() const;
