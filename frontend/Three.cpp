@@ -3,7 +3,7 @@
 #include "../compiler/Operations/CCodeGenVisitor.h"
 #include "../compiler/AST/RootNode.h"
 #include "../compiler/CSourceIndexer.h"
-#include "CSourceEmitter.h"
+#include "compiler/CSourceEmitter.h"
 
 #include "REPL.h"
 
@@ -175,7 +175,7 @@ int buildCSources(const std::string& inputFile) {
     return 0;
 }
 
-int linkExecutable(const std::string& linkerPath, const std::string& inputFile, const std::string& outputPath) {
+int linkExecutable(const std::string& linkerPath, const std::vector<std::string>& objects, const std::string& outputPath) {
     std::stringstream s;
 
     s << linkerPath;
@@ -183,7 +183,9 @@ int linkExecutable(const std::string& linkerPath, const std::string& inputFile, 
 
     s << " -o '" << outputPath << "'" ;
 
-    s << " '" << inputFile << "'";
+    for (const std::string& object : objects) {
+        s << " '" << object << "'";
+    }
 
     return system(s.str().c_str()) == 0;
 }
@@ -191,9 +193,20 @@ int linkExecutable(const std::string& linkerPath, const std::string& inputFile, 
 int buildExecutable(build_options_t* options, const std::string& inputFile, const Three::ParseContext& context) {
     Three::CSourceEmitter::createSourcesAtPath(context, options->outputFile);
 
+    // compile main C source
     compileCSource(options->compilerPath, options->outputFile + ".c", options->outputFile + ".o");
 
-    linkExecutable(options->compilerPath, options->outputFile + ".o", options->outputFile);
+    // compile imported sources
+    std::vector<std::string> objects;
+
+    objects.push_back(options->outputFile + ".o");
+
+    for (const std::string& path : context.importedPaths()) {
+        compileCSource(options->compilerPath, path + ".c", path + ".o");
+        objects.push_back(path + ".o");
+    }
+
+    linkExecutable(options->compilerPath, objects, options->outputFile);
 
     return 1;
 }

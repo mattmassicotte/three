@@ -4,6 +4,7 @@
 #include "compiler/constructs/NewDataType.h"
 #include "compiler/constructs/NewScope.h"
 #include "compiler/CSourceIndexer.h"
+#include "compiler/CSourceEmitter.h"
 #include "compiler/Parser/Parser.h"
 
 namespace Three {
@@ -27,6 +28,10 @@ namespace Three {
         delete _currentScope;
 
         this->clearMessages();
+
+        for (ParseContext* subcontext : _importedContexts) {
+            delete subcontext;
+        }
     }
 
     RootNode* ParseContext::rootNode() const {
@@ -72,20 +77,49 @@ namespace Three {
 
         std::cout << "resolved to '" << path << "'" << std::endl;
 
+        ParseContext* importedContext = new ParseContext();
+
         // if we find a .3 file, but not a .h file, we have to compile it first
-        if (!Parser::parse(std::string(path + ".3").c_str(), this)) {
+        if (!Parser::parse(std::string(path + ".3").c_str(), importedContext)) {
             std::cout << "Unable to parse import" << std::endl;
         }
 
         // now, actually index the source
+        if (!CSourceEmitter::createSourcesAtPath(*importedContext, path)) {
+            std::cout << "Unable to emit C sources for import" << std::endl;
+        }
+
+        // make things in the current context visible
+        _importedContexts.push_back(importedContext);
+
+        // need to create function variables for non-C functions
+        for (std::pair<std::string, NewDataType> fnPair: importedContext->_functions) {
+            if (fnPair.second.kind() == NewDataType::Kind::CFunction) {
+                continue;
+            }
+
+            this->scope()->defineVariableTypeForName(fnPair.second, fnPair.first);
+        }
+
         CSourceIndexer indexer;
 
-        return indexer.indexFileAtPath(path + ".h", this);
+        if (!indexer.indexFileAtPath(path + ".h", this)) {
+            std::cout << "Unable to index import header" << std::endl;
+            return false;
+        }
+
+        _importedPaths.push_back(path);
+
+        return true;
     }
 
     std::string ParseContext::resolveImportPath(const std::string& name) {
         std::cout << "bogus path resolution" << std::endl;
         return "/Users/matt/Documents/src/distributed-queue-test/" + name;
+    }
+
+    std::vector<std::string> ParseContext::importedPaths() const {
+        return _importedPaths;
     }
 
     void ParseContext::setVisibility(TranslationUnit::Visibility visibility) {
@@ -103,6 +137,15 @@ namespace Three {
             return it->second;
         }
 
+        // search imported context
+        for (ParseContext* subcontext : _importedContexts) {
+            NewDataType type = subcontext->dataTypeForName(name);
+
+            if (type.defined()) {
+                return type;
+            }
+        }
+
         return NewDataType();
     }
 
@@ -114,6 +157,12 @@ namespace Three {
         // also have to restrict a few keywords
         if (name == "cas") {
             return false;
+        }
+
+        for (ParseContext* subcontext : _importedContexts) {
+            if (!subcontext->identifierAvailableForDefinition(name)) {
+                return false;
+            }
         }
 
         return true;
@@ -154,8 +203,15 @@ namespace Three {
             return it->second;
         }
 
-        return NewDataType();
+        for (ParseContext* subcontext : _importedContexts) {
+            NewDataType fnType = subcontext->functionForName(name);
 
+            if (fnType.defined()) {
+                return fnType;
+            }
+        }
+
+        return NewDataType();
     }
 
     bool ParseContext::defineFunctionForName(const NewDataType& type, const std::string& name) {
@@ -169,10 +225,6 @@ namespace Three {
 
         // now, define this function as a "variable" in the current scope
         return this->scope()->defineVariableTypeForName(type, name);
-    }
-
-    NewDataType ParseContext::variableForName(const std::string& name) const {
-        return NewDataType(NewDataType::Kind::Integer);
     }
 
     NewScope* ParseContext::scope() const {

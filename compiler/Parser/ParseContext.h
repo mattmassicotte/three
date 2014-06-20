@@ -19,12 +19,6 @@ namespace Three {
         ParseContext();
         virtual ~ParseContext();
 
-    private:
-        ParseContext(const ParseContext& other);
-        ParseContext(ParseContext&& other);
-        ParseContext& operator=(ParseContext other);
-        ParseContext& operator=(ParseContext&& other);
-
     public:
         RootNode* rootNode() const;
 
@@ -36,6 +30,7 @@ namespace Three {
 
         bool import(const std::string& name);
         std::string resolveImportPath(const std::string& name);
+        std::vector<std::string> importedPaths() const;
 
         void setVisibility(TranslationUnit::Visibility visibility);
         TranslationUnit::Visibility visibility() const;
@@ -52,9 +47,6 @@ namespace Three {
         NewDataType functionForName(const std::string& name) const;
         bool defineFunctionForName(const NewDataType& type, const std::string& name);
 
-        NewDataType variableForName(const std::string& name) const;
-        bool defineVariableForName(const NewDataType& type, const std::string& name);
-
         NewScope* scope() const;
         void pushScope();
         void popScope();
@@ -62,7 +54,8 @@ namespace Three {
         void postProcessAST();
 
     public:
-        bool skipIncludes; // for testing
+        // for testing
+        bool skipIncludes;
         bool skipImports;
 
     private:
@@ -73,5 +66,8 @@ namespace Three {
         std::vector<Message*> _messages;
         std::map<std::string, NewDataType> _dataTypeMap;
         std::map<std::string, NewDataType> _functions;
+
+        std::vector<ParseContext*> _importedContexts;
+        std::vector<std::string> _importedPaths;
     };
 }
