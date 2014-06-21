@@ -113,6 +113,24 @@ std::vector<std::string> splitString(const std::string& string, const std::strin
     return parts;
 }
 
+std::string str_dirname(const std::string& path) {
+    std::vector<std::string> parts = splitString(path, "/");
+
+    if (parts.size() == 0) {
+        return "";
+    }
+
+    parts.pop_back(); // remove last element
+
+    std::stringstream s;
+
+    for (const std::string& string : parts) {
+        s << "/" << string;
+    }
+
+    return s.str();
+}
+
 bool createPath(const std::string& path) {
     std::vector<std::string> components = splitString(path, "/");
 
@@ -272,6 +290,8 @@ int buildModule(build_options_t* options, const Three::ParseContext& context) {
 int processInput(build_options_t* options, const std::string& inputFile) {
     Three::ParseContext context;
 
+    context.addImportSearchPath(str_dirname(inputFile));
+
     if (!Three::Parser::parse(inputFile.c_str(), &context)) {
         std::cout << "Unable to parse file" << std::endl;
         return 1;
@@ -309,7 +329,19 @@ int main(int argc, char** argv) {
         return 2;
     }
 
-    processInput(&options, std::string(argv[0]));
+    std::string inputFile = std::string(argv[0]);
+    if (inputFile.length() == 0) {
+        std::cerr << "[Compile] No input files" << std::endl;
+        return 3;
+    }
+
+    if (*inputFile.cbegin() != '/') {
+        char* path = getcwd(NULL, 0);
+        inputFile = std::string(path) + "/" + inputFile;
+        free(path);
+    }
+
+    processInput(&options, inputFile);
 
     return 0;
 }

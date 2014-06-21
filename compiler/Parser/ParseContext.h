@@ -29,6 +29,7 @@ namespace Three {
         bool displayMessages();
 
         bool import(const std::string& name);
+        void addImportSearchPath(const std::string& name);
         std::string resolveImportPath(const std::string& name);
         std::vector<std::string> importedPaths() const;
 
@@ -69,5 +70,6 @@ namespace Three {
 
         std::vector<ParseContext*> _importedContexts;
         std::vector<std::string> _importedPaths;
+        std::vector<std::string> _importSearchPaths;
     };
 }

@@ -7,6 +7,8 @@
 #include "compiler/CSourceEmitter.h"
 #include "compiler/Parser/Parser.h"
 
+#include <fstream>
+
 namespace Three {
     ParseContext::ParseContext() : skipIncludes(false), skipImports(false) {
         _rootNode = new RootNode();
@@ -75,8 +77,6 @@ namespace Three {
         // resolve name
         std::string path = this->resolveImportPath(name);
 
-        std::cout << "resolved to '" << path << "'" << std::endl;
-
         ParseContext* importedContext = new ParseContext();
 
         // if we find a .3 file, but not a .h file, we have to compile it first
@@ -113,9 +113,23 @@ namespace Three {
         return true;
     }
 
+    void ParseContext::addImportSearchPath(const std::string& name) {
+        _importSearchPaths.push_back(name);
+    }
+
     std::string ParseContext::resolveImportPath(const std::string& name) {
-        std::cout << "bogus path resolution" << std::endl;
-        return "/Users/matt/Documents/src/distributed-queue-test/" + name;
+        for (const std::string& path : _importSearchPaths) {
+            std::string fullPath = path + "/" + name;
+
+            // constructing an ifstream checks if we can open the file for reading
+            std::ifstream file(fullPath + ".3");
+
+            if (file) {
+                return fullPath;
+            }
+        }
+
+        return "";
     }
 
     std::vector<std::string> ParseContext::importedPaths() const {
