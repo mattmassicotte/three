@@ -168,6 +168,8 @@ namespace Three {
     }
 
     NewDataType OperatorNode::dataType() const {
+        assert(this->childCount() > 0);
+
         // TODO: is this correct?
         return this->childAtIndex(0)->dataType();
     }

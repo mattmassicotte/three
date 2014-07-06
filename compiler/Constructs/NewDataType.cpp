@@ -137,6 +137,14 @@ namespace Three {
         subtypes.push_back(t);
     }
 
+    void NewDataType::eachSubtypeWithLast(std::function<void (const NewDataType&, bool)> func) const {
+        uint32_t lastIndex = this->subtypeCount() - 1;
+
+        for (uint32_t i = 0; i < this->subtypeCount(); ++i) {
+            func(this->subtypeAtIndex(i), lastIndex == i);
+        }
+    }
+
     uint32_t NewDataType::parameterCount() const {
         return parameters.size();
     }
@@ -155,6 +163,10 @@ namespace Three {
         for (uint32_t i = 0; i < this->parameterCount(); ++i) {
             func(this->parameterAtIndex(i), lastIndex == i);
         }
+    }
+
+    NewDataType NewDataType::returnType() const {
+        return _returns.at(0);
     }
 
     uint32_t NewDataType::returnCount() const {

@@ -18,3 +18,5 @@
 #include "CASOperatorNode.h"
 #include "Callable/FunctionCallOperatorNode.h"
 #include "Callable/MethodCallOperatorNode.h"
+#include "DestructuredAssignmentOperatorNode.h"
+#include "TupleNode.h"

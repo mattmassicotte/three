@@ -39,32 +39,6 @@ TEST_F(ParserTests_Control, ReturnOneExpression) {
     ASSERT_EQ("Addition Operator", node->childAtIndex(0)->nodeName());
 }
 
-TEST_F(ParserTests_Control, ReturnTwoExpressions) {
-    ASTNode* node = this->parseSingleFunction("def test(Int a; Int, Int)\n"
-                                              "  return a + a, a\n"
-                                              "end\n");
-
-    node = node->childAtIndex(0);
-
-    ASSERT_EQ("Return", node->nodeName());
-    ASSERT_EQ(2, node->childCount());
-    ASSERT_EQ("Addition Operator", node->childAtIndex(0)->nodeName());
-    ASSERT_EQ("Local Variable", node->childAtIndex(1)->nodeName());
-}
-
-TEST_F(ParserTests_Control, ReturnTwoExpressionsTailingIf) {
-    ASTNode* node = this->parseSingleFunction("def test(Int a; Int, Int)\n"
-                                              "  return a + a, a if a\n"
-                                              "end\n");
-
-    node = node->childAtIndex(0);
-
-    ASSERT_EQ("If", node->nodeName());
-    ASSERT_EQ(1, node->childCount());
-    ASSERT_EQ("Return", node->childAtIndex(0)->nodeName());
-    ASSERT_EQ(2, node->childAtIndex(0)->childCount());
-}
-
 TEST_F(ParserTests_Control, SimpleIfWithNoElseStatement) {
     ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                               "  if a\n"

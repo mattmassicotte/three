@@ -27,10 +27,12 @@ namespace Three {
         virtual void visit(class EnumerationNode& node);
         virtual void visit(class MemberAccessNode& node);
         virtual void visit(class TernaryOperatorNode& node);
+        virtual void visit(class DestructuredAssignmentOperatorNode& node);
         virtual void visit(class IndexerNode& node);
         virtual void visit(class ReturnNode& node);
         virtual void visit(class NullLiteralNode& node);
         virtual void visit(class BooleanLiteralNode& node);
+        virtual void visit(class TupleNode& node);
         virtual void visit(class LoopNode& node);
         virtual void visit(class ForNode& node);
         virtual void visit(class BreakNode& node);

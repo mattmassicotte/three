@@ -41,6 +41,7 @@ namespace Three {
             case NewDataType::Kind::Real:
             case NewDataType::Kind::Character:
             case NewDataType::Kind::Vararg:
+            case NewDataType::Kind::Tuple:
                 s << CTypeCodeGenerator::codeGenScalarType(usedType);
                 break;
             case NewDataType::Kind::Closure:
@@ -54,6 +55,7 @@ namespace Three {
                 return CTypeCodeGenerator::codeGenFunctionSignature(usedType, indirectionDepth);
             case NewDataType::Kind::Pointer:
                 assert(0 && "Bug: type should never be a pointer at this stage of codegen");
+                break;
             case NewDataType::Kind::Array:
                 break;
             case NewDataType::Kind::Function:
@@ -106,6 +108,8 @@ namespace Three {
                 return "three_closure_t";
             case NewDataType::Kind::Vararg:
                 return "va_list";
+            case NewDataType::Kind::Tuple:
+                return CTypeCodeGenerator::codeGenTupleStructName(type);
             default:
                 assert(0 && "Bug: unhandled scalar C type");
                 break;
@@ -122,9 +126,7 @@ namespace Three {
         // returnType function(param1, param2)
         // returnType (*varName)(param1, param2)
 
-        if (type.returnCount() > 1) {
-            s << type.label() << "_returns";
-        } else if (type.returnCount() == 0) {
+        if (type.returnCount() == 0) {
             s << "void";
         } else {
             s << CTypeCodeGenerator::codeGen(type.returnAtIndex(0));
@@ -158,6 +160,21 @@ namespace Three {
         }
 
         s << ")";
+
+        return s.str();
+    }
+
+    std::string CTypeCodeGenerator::codeGenTupleStructName(const NewDataType& type) {
+        std::stringstream s;
+
+        assert(type.subtypeCount() > 0);
+
+        type.eachSubtypeWithLast([&] (const NewDataType& subtype, bool last) {
+            s << CTypeCodeGenerator::codeGen(subtype);
+            s << "_";
+        });
+
+        s << "tuple_t";
 
         return s.str();
     }

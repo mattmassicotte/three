@@ -121,7 +121,7 @@ namespace Three {
         _helper = &helper;
 
         if (!func->parseBody(*this)) {
-            assert(0 && "Message: unable to parse function body");
+            assert(false && "Message: unable to parse function body");
         }
 
         _helper = nullptr;
@@ -249,11 +249,36 @@ namespace Three {
     ASTNode* Parser::parseExpressionStatement() {
         ASTNode* node = this->parseExpression();
 
-        if (node) {
-            node->setStatement(true);
+        if (!node) {
+            return nullptr;
         }
-    
+
+        if (_helper->peek().type() == Token::Type::PunctuationComma) {
+            // we have a destructuring assignment
+            node = DestructuredAssignmentOperatorNode::parse(*this, node);
+        }
+
+        if (!node) {
+            return nullptr;
+        }
+
+        node->setStatement(true);
+
         // return IfNode::parseTailing(this->parseExpression());
+        return node;
+    }
+
+    ASTNode* Parser::parseExpressionWithTuples() {
+        ASTNode* node = this->parseExpression();
+
+        if (!node) {
+            return nullptr;
+        }
+
+        if (_helper->peek().type() == Token::Type::PunctuationComma) {
+            return TupleNode::parse(*this, node);
+        }
+
         return node;
     }
 
@@ -382,7 +407,9 @@ namespace Three {
         // - global variable
         // - local variable
 
-        return VariableNode::parse(*this, identifier);
+        ASTNode* node = VariableNode::parse(*this, identifier);
+
+        return node;
     }
 
     bool Parser::parseParentheses(std::function<void (void)> func) {
@@ -910,6 +937,7 @@ namespace Three {
 
         // check for ending punctuation
         if (_helper->nextIf(closingPunctuation)) {
+            type.addReturn(NewDataType::Kind::Void);
             return type;
         }
 
@@ -953,10 +981,13 @@ namespace Three {
 
         // now, again, check for ending punctuation
         if (_helper->nextIf(closingPunctuation)) {
+            type.addReturn(NewDataType::Kind::Void);
             return type;
         }
 
         // finally, we have returns
+        NewDataType returnTuple = NewDataType(NewDataType::Kind::Tuple);
+
         for (int i = 0;; ++i) {
             bool mustParseType = false;
 
@@ -980,10 +1011,24 @@ namespace Three {
                 returnType.setLabel(_helper->nextStr());
             }
 
-            type.addReturn(returnType);
+            returnTuple.addSubtype(returnType);
 
             // if we encounter a common, make sure the next thing we do is try to parse a type
             mustParseType = _helper->nextIf(Token::Type::PunctuationComma);
+        }
+
+        // fix up the return type
+        switch (returnTuple.subtypeCount()) {
+            case 0:
+                type.addReturn(NewDataType::Kind::Void);
+                break;
+            case 1:
+                // unwrap the tuple
+                type.addReturn(returnTuple.subtypeAtIndex(0));
+                break;
+            default:
+                type.addReturn(returnTuple);
+                break;
         }
 
         // parse references

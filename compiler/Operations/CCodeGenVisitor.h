@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <string>
+#include <map>
 
 namespace Three {
     class CCodeGenVisitor : public ASTVisitor {
@@ -39,10 +40,12 @@ namespace Three {
         void visit(class EnumerationNode& node);
         void visit(class MemberAccessNode& node);
         void visit(class TernaryOperatorNode& node);
+        void visit(class DestructuredAssignmentOperatorNode& node);
         void visit(class IndexerNode& node);
         void visit(class ReturnNode& node);
         void visit(class NullLiteralNode& node);
         void visit(class BooleanLiteralNode& node);
+        void visit(class TupleNode& node);
         void visit(class LoopNode& node);
         void visit(class ForNode& node);
         void visit(class BreakNode& node);
@@ -70,6 +73,7 @@ namespace Three {
         void forCondition(class ForNode& node);
         void forStartExpression(class ForNode& node);
         void forLoopExpression(class ForNode& node);
+        void returnStatementArgument(class ReturnNode& node);
         void prepareForAtomicExpressions();
         void prepareForTransactions();
         void transactionAllocation(const std::string& name);
@@ -82,6 +86,8 @@ namespace Three {
         void closureEnvironmentStructure(class ClosureNode& node, CSource& source);
         std::string closureEnvironmentCapture(class ClosureNode& node);
 
+        void createDefinitionForTuple(const class NewDataType& tupleType, CSource& source);
+
         void sourceForVisibility(TranslationUnit::Visibility v, std::function<void (CSource&)> func);
 
     private:
@@ -93,5 +99,7 @@ namespace Three {
         CSource* _currentSource;
 
         uint32_t _tmpReturnValueCounter;
+        NewDataType _currentFunctionType;
+        std::map<std::string, bool> _tupleDefinitionMap;
     };
 }

@@ -45,7 +45,7 @@ TEST_F(ParserTests_Closures, InlineClosureWithOneArgument) {
     ASSERT_EQ(0, closure->dataType().subtypeCount());
     ASSERT_EQ(2, closure->dataType().parameterCount());
     ASSERT_EQ(NewDataType::Kind::Integer, closure->dataType().parameterAtIndex(1).kind());
-    ASSERT_EQ(0, closure->dataType().returnCount());
+    ASSERT_EQ(NewDataType::Kind::Void, closure->dataType().returnType().kind());
 }
 
 TEST_F(ParserTests_Closures, InlineClosureWithTwoArguments) {
@@ -66,7 +66,7 @@ TEST_F(ParserTests_Closures, InlineClosureWithTwoArguments) {
     ASSERT_EQ(NewDataType::Kind::Closure, closure->dataType().kind());
     ASSERT_EQ(0, closure->dataType().subtypeCount());
     ASSERT_EQ(3, closure->dataType().parameterCount());
-    ASSERT_EQ(0, closure->dataType().returnCount());
+    ASSERT_EQ(NewDataType::Kind::Void, closure->dataType().returnType().kind());
 }
 
 TEST_F(ParserTests_Closures, ClosureVariableWithCapture) {
@@ -142,7 +142,7 @@ TEST_F(ParserTests_Closures, NestedClosureVariableWithCapture) {
     EXPECT_EQ(NewDataType::Kind::Closure, closure->dataType().kind());
     EXPECT_EQ(0, closure->dataType().subtypeCount());
     EXPECT_EQ(2, closure->dataType().parameterCount());
-    EXPECT_EQ(0, closure->dataType().returnCount());
+    ASSERT_EQ(NewDataType::Kind::Void, closure->dataType().returnType().kind());
 
     ASSERT_EQ(3, closure->childCount());
 
@@ -161,7 +161,7 @@ TEST_F(ParserTests_Closures, NestedClosureVariableWithCapture) {
     EXPECT_EQ(NewDataType::Kind::Closure, closure->dataType().kind());
     EXPECT_EQ(0, closure->dataType().subtypeCount());
     EXPECT_EQ(2, closure->dataType().parameterCount());
-    EXPECT_EQ(0, closure->dataType().returnCount());
+    ASSERT_EQ(NewDataType::Kind::Void, closure->dataType().returnType().kind());
 
     node = closure->childAtIndex(0);
     ASSERT_EQ("Assign Operator", node->nodeName()); // y = x

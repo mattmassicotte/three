@@ -6,7 +6,7 @@ namespace Three {
     bool CallableOperatorNode::parseArguments(Parser& parser, CallableOperatorNode* node) {
         assert(parser.helper()->nextIf(Token::Type::PunctuationOpenParen));
 
-        // each argumetn is an expression
+        // each argument is an expression, and cannot be a tuple
         bool success = parser.helper()->parseUntil(true, [&] (const Token& token) {
             if (token.type() == Token::Type::PunctuationCloseParen) {
                 return true;
@@ -52,5 +52,9 @@ namespace Three {
 
     NewDataType CallableOperatorNode::receiverDataType() const {
         return _receiver->dataType();
+    }
+
+    NewDataType CallableOperatorNode::dataType() const {
+        return this->receiverDataType();//.returnAtIndex(0);
     }
 }

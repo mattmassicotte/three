@@ -25,21 +25,15 @@ namespace Three {
         // codegen state
         _tmpReturnValueCounter = 0;
 
-        std::string functionString = CTypeCodeGenerator::codeGen(node.functionType());
+        _currentFunctionType = node.functionType();
+        std::string functionString = CTypeCodeGenerator::codeGen(_currentFunctionType);
 
         // Function Prototype
         this->sourceForVisibility(node.visibility(), [&] (CSource& source) {
-            if (node.functionType().returnCount() > 1) {
-                source.printLineAndIndent("typedef struct {");
-
-                node.functionType().eachReturnWithLast([&] (const NewDataType& returnType, bool last) {
-                    source << CTypeCodeGenerator::codeGen(returnType);
-                    source << " " << returnType.label();
-                    source.printLine(";");
-                });
-
-                source.outdentAndPrintLine("} " + node.name() + "_returns;");
+            if (node.functionType().returnType().kind() == NewDataType::Kind::Tuple) {
+                this->createDefinitionForTuple(node.functionType().returnType(), source);
             }
+
             source << functionString;
             source.printLine(";");
         });
@@ -372,6 +366,40 @@ namespace Three {
         assert(0 && "codegen for ternary operator not supported");
     }
 
+    void CCodeGenVisitor::visit(DestructuredAssignmentOperatorNode& node) {
+        assert(node.childCount() == 2);
+
+        std::string tmpVariableName = "tmp_return";
+
+        // TODO: make this the data type of the right hand side
+        NewDataType tupleType = node.childAtIndex(0)->dataType();
+
+        // part one, a temporary variable to hold the right-hand side value
+        *_currentSource << CTypeCodeGenerator::codeGen(tupleType, tmpVariableName);
+        *_currentSource << " = ";
+
+        // assign it to the right hand side
+        node.childAtIndex(1)->accept(*this);
+
+        _currentSource->printLine(";");
+
+        // now, carry out the parallel assignment
+        ASTNode* tuple = node.childAtIndex(0);
+
+        tuple->eachChild([&] (ASTNode* child, uint32_t idx) {
+            child->accept(*this);
+
+            *_currentSource << " = ";
+
+            *_currentSource << tmpVariableName << "." << tupleType.subtypeAtIndex(idx).label();
+
+            // This is a hack: this node is defined as a statement.
+            if (idx < tuple->childCount() - 1) {
+                _currentSource->printLine(";");
+            }
+        });
+    }
+
     void CCodeGenVisitor::visit(IndexerNode& node) {
         assert(node.childCount() == 2);
 
@@ -389,9 +417,6 @@ namespace Three {
         // codegen state
         _tmpReturnValueCounter++;
 
-        // we can have zero or one children, but nothing else
-        assert(node.childCount() < 2);
-
         // this is the easy case - no children
         if (node.childCount() == 0) {
             if (node.endsTransaction()) {
@@ -402,13 +427,17 @@ namespace Three {
             return;
         }
 
-        // This return node has an expression
         if (!node.endsTransaction()) {
             *_currentSource << "return ";
-            node.childAtIndex(0)->accept(*this);
+            this->returnStatementArgument(node);
+
             return;
         }
 
+        // if this return is impliciting ending a transaction,
+        // we need to buffer the return value, so all arguments
+        // of the return are evaluated before the transaction
+        // is complete
         std::stringstream s;
 
         s << "tmp_return_value_" << _tmpReturnValueCounter;
@@ -419,7 +448,7 @@ namespace Three {
         *_currentSource << CTypeCodeGenerator::codeGen(node.childAtIndex(0)->dataType(), varName);
 
         *_currentSource << " = ";
-        node.childAtIndex(0)->accept(*this);
+        this->returnStatementArgument(node);
         _currentSource->printLine(";");
 
         if (node.endsTransaction()) {
@@ -435,6 +464,26 @@ namespace Three {
 
     void CCodeGenVisitor::visit(BooleanLiteralNode& node) {
         *_currentSource << (node.value() ? "true" : "false");
+    }
+
+    void CCodeGenVisitor::visit(TupleNode& node) {
+        
+        std::string structName = CTypeCodeGenerator::codeGenTupleStructName(node.dataType());
+
+        // first a cast to the struct type, which must be defined
+        *_currentSource << "(" << structName << ")";
+
+        *_currentSource << "{";
+
+        node.eachChildWithLast([&] (ASTNode* child, bool last) {
+            child->accept(*this);
+
+            if (!last) {
+                *_currentSource << ", ";
+            }
+        });
+
+        *_currentSource << "}";
     }
 
     void CCodeGenVisitor::visit(LoopNode& node) {
@@ -668,6 +717,10 @@ namespace Three {
         *_currentSource << "++" << node.rangeLoopVariable()->name;
     }
 
+    void CCodeGenVisitor::returnStatementArgument(ReturnNode& node) {
+        this->visitChildren(node);
+    }
+
     // Transactions Support
     void CCodeGenVisitor::prepareForAtomicExpressions() {
         _declaractionsSource.addHeader(false, "three/runtime/atomic.h");
@@ -767,6 +820,21 @@ namespace Three {
         s << ");";
 
         return s.str();
+    }
+
+    void CCodeGenVisitor::createDefinitionForTuple(const NewDataType& tupleType, CSource& source) {
+        source.printLineAndIndent("typedef struct {");
+
+        tupleType.eachSubtypeWithLast([&] (const NewDataType& type, bool last) {
+            source << CTypeCodeGenerator::codeGen(type);
+            source << " " << type.label();
+
+            source.printLine(";");
+        });
+
+        std::string structName = CTypeCodeGenerator::codeGenTupleStructName(tupleType);
+
+        source.outdentAndPrintLine("} " + structName + ";");
     }
 
     // Utilities

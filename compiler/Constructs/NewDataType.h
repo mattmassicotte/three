@@ -18,6 +18,7 @@ namespace Three {
             Real,
             Character,
             Pointer,
+            Tuple,
             Array,
             Function,
             Closure,
@@ -89,11 +90,13 @@ namespace Three {
         uint32_t subtypeCount() const;
         NewDataType subtypeAtIndex(uint32_t idx) const;
         void addSubtype(NewDataType t);
+        void eachSubtypeWithLast(std::function<void (const NewDataType&, bool)> func) const;
 
         uint32_t parameterCount() const;
         NewDataType parameterAtIndex(uint32_t idx) const;
         void addParameter(NewDataType t);
         void eachParameterWithLast(std::function<void (const NewDataType&, bool)> func) const;
+        NewDataType returnType() const;
         uint32_t returnCount() const;
         NewDataType returnAtIndex(uint32_t idx) const;
         void addReturn(NewDataType t);

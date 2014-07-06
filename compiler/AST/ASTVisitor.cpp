@@ -96,6 +96,10 @@ namespace Three {
         std::cout << "Visiting ternary operator" << std::endl;
     }
 
+    void ASTVisitor::visit(class DestructuredAssignmentOperatorNode& node) {
+        this->visitChildren(node);
+    }
+
     void ASTVisitor::visit(class IndexerNode& node) {
         this->visitChildren(node);
     }
@@ -110,6 +114,10 @@ namespace Three {
 
     void ASTVisitor::visit(class BooleanLiteralNode& node) {
         std::cout << "Visiting boolean literal" << std::endl;
+    }
+
+    void ASTVisitor::visit(class TupleNode& node) {
+        this->visitChildren(node);
     }
 
     void ASTVisitor::visit(class LoopNode& node) {

@@ -1,4 +1,4 @@
-GTEST_VERSION = '1.6.0'
+GTEST_VERSION = '1.7.0'
 GTEST_DIR     = File.absolute_path(File.join(VENDOR_DIR, 'gtest'))
 
 GTEST_INCLUDE_DIR = File.join(GTEST_DIR, 'include')

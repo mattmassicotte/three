@@ -12,20 +12,19 @@ namespace Three {
 
         node->_transactionName = parser.context()->scope()->currentScopedName("tx");
 
-        parser.helper()->parseUntil(false, [&] (const Token& token) {
-            switch (token.type()) {
-                case Token::Type::Newline:
-                case Token::Type::KeywordIf: // for tailing ifs
-                    return true;
-                default:
-                    node->addChild(parser.parseExpression());
-                    break;
-            }
+        ASTNode* child = nullptr;
 
-            // if the next token is a comma, we have more return values to parse,
-            // and if not, we're done
-            return !parser.helper()->nextIf(Token::Type::PunctuationComma);
-        });
+        switch (parser.helper()->peek().type()) {
+            case Token::Type::Newline:
+            case Token::Type::KeywordIf: // for tailing ifs
+                break;
+            default:
+                child = parser.parseExpressionWithTuples();
+                if (child) {
+                    node->addChild(child);
+                }
+                break;
+        }
 
         node->setStatement(true);
 

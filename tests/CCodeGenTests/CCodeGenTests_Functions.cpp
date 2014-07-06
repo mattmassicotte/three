@@ -65,19 +65,6 @@ TEST_F(CCodeGenTests_Functions, FunctionReferences) {
     EXPECT_EQ("void foo(void) {\n}\n\nvoid test(void) {\n    void* ptr = (&foo);\n}\n\n", visitor->bodyString());
 }
 
-TEST_F(CCodeGenTests_Functions, FunctionDefinitionWithMultipleReturns) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(; Int a, Int b)\nend\n");
-
-    EXPECT_EQ("", visitor->declarationsString());
-    EXPECT_EQ("typedef struct {\n"
-              "    int a;\n"
-              "    int b;\n"
-              "} test_returns;\n"
-              "test_returns test(void);\n", visitor->internalHeaderString());
-    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
-    EXPECT_EQ("test_returns test(void) {\n}\n\n", visitor->bodyString());
-}
-
 TEST_F(CCodeGenTests_Functions, MethodInvocation) {
     Three::CCodeGenVisitor* visitor = this->visit("def Int.foo(Int b)\n"
                                                   "end\n"

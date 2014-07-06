@@ -10,6 +10,7 @@ namespace Three {
     public:
         virtual ~CallableOperatorNode();
 
+        NewDataType dataType() const;
         virtual std::string nodeName() const;
         void accept(ASTVisitor& visitor);
 
