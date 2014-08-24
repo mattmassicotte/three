@@ -28,16 +28,13 @@
                 <td>
                     <pre><code>
 <span class="entity">Bool</span>
+<span class="entity">Int</span>
 <span class="entity">Int</span>:32
-<span class="entity">Natural</span>:32
+<span class="entity">UInt</span>:32
 <span class="entity">Float</span>:32
 <span class="entity">Real</span>
 <span class="entity">Void</span>
 <span class="entity">Natural</span>
-
-  <span class="entity">Int</span>
- *<span class="entity">Int</span>
-**<span class="entity">Int</span>
 
 <span class="entity">Int</span>:32:1:4 v
                     </code></pre>
@@ -46,15 +43,12 @@
                     <pre><code>
 <span class="entity">_Bool</span>
 <span class="entity">int</span>
-<span class="entity">unsigned int</span>
+<span class="entity">int32_t</span>
+<span class="entity">uint32_t</span>
 <span class="entity">float</span>
-<span class="entity">float</span> (with fast-math)
+<span class="entity">float</span> <em>(with fast-math)</em>
 <span class="entity">void</span>
-<span class="entity">uintptr_t</span>
-
-<span class="entity">int</span>
-<span class="entity">int</span>
-<span class="entity">int</span>**
+<span class="entity">unsigned int</span> <em>(with no-overflow)</em>
 
 <span class="entity">int32_t</span> v <span class="directive">__attribute__</span>((vector_size(16), aligned(1)));
                     </code></pre>
@@ -69,7 +63,7 @@
 <span class="entity">Char</span>:<span class="entity">utf8</span>
 <span class="entity">Char</span>:<span class="entity">utf16</span>
 <span class="entity">Char</span>:<span class="entity">utf32</span>
-<span class="entity">Natural</span>:8
+<span class="entity">UInt</span>:8
                     </code></pre>
                 </td>
                 <td>
@@ -83,6 +77,71 @@
                     </code></pre>
                 </td>
             </tr>
+            <tr><th colspan="2">Pointers and Mutability</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+  <span class="entity">Int</span>
+  <span class="entity">Int</span><span class="keyword">!</span>
+ *<span class="entity">Int</span>
+ *<span class="entity">Int</span><span class="keyword">!</span>
+ **<span class="entity">Int</span>
+ *<span class="keyword">!</span><span class="entity">Int</span><span class="keyword">!</span>
+
+ *<span class="keyword">?</span><span class="entity">Int</span>
+ *<span class="keyword">?</span>*<span class="keyword">?</span><span class="entity">Int</span>
+
+ *<span class="keyword">!?</span><span class="entity">Int</span><span class="keyword">!</span>
+ 
+ <span class="entity">Int</span><span class="keyword">?</span>
+ <span class="entity">Int</span><span class="keyword">!?</span>
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<span class="keyword">const</span> <span class="entity">int</span>
+<span class="entity">int</span>
+<span class="keyword">const</span> <span class="entity">int</span>* <span class="keyword">const</span>
+<span class="entity">int</span>* <span class="keyword">const</span>
+<span class="keyword">const</span> <span class="entity">int</span>* <span class="keyword">const</span>* <span class="keyword">const</span>
+<span class="entity">int</span>*
+
+<span class="keyword">const</span> <span class="entity">int</span>* <span class="keyword">const</span> <em>(null allowed)</em>
+<span class="keyword">const</span> <span class="entity">int</span>* <span class="keyword">const</span> <em>(null allowed)</em> * <span class="keyword">const</span> <em>(null allowed)</em>
+
+<span class="entity">int</span>* <em>(null allowed)</em>
+
+<span class="keyword">const</span> <span class="entity">int</span>* <span class="keyword">const</span> <em>(null allowed)</em>
+<span class="entity">int</span>* <span class="keyword">const</span> <em>(null allowed)</em>
+                    </code></pre>
+                </td>
+            </tr>
+            <tr><th colspan="2">Arrays</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+[<span class="literal">3</span>]<span class="entity">Int</span> x = {<span class="literal">1</span>, <span class="literal">2</span>, <span class="literal">3</span>}
+<em>No Equivalent</em>
+[<span class="literal">3</span>]*<span class="keyword">!</span><span class="entity">Int</span><span class="keyword">!</span> x
+*<span class="keyword">!</span>[<span class="literal">3</span>]<span class="entity">Int</span><span class="keyword">!</span> x
+
+x[<span class="literal">0</span>] = <span class="literal">1</span>
+<em>No Equivalent</em>
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<span class="keyword">const</span> <span class="entity">int</span> x[<span class="literal">3</span>] = {<span class="literal">1</span>, <span class="literal">2</span>, <span class="literal">3</span>}
+<span class="entity">int</span> x[]
+<span class="entity">int</span>* x[<span class="literal">3</span>]   <span class="comment">// array of int pointers</span>
+<span class="entity">int</span> (*x)[<span class="literal">3</span>] <span class="comment">// pointer to array of ints</span>
+
+x[<span class="literal">0</span>] = <span class="literal">1</span>;
+<span class="literal">0</span>[x] = <span class="literal">1</span>;
+                    </code></pre>
+                </td>
+            </tr>
+
             <tr><th colspan="2">Literals</th></tr>
             <tr>
                 <td>
@@ -92,7 +151,7 @@
 
 <span class="literal">1234</span>
 <span class="literal">1234</span>:<span class="entity">Int</span>:64
-<span class="literal">1234</span>:<span class="entity">Natural</span>:64
+<span class="literal">1234</span>:<span class="entity">UInt</span>:64
 <span class="literal">-1234</span>
 <span class="literal">1234.0</span>
 <span class="literal">1234.0</span>:<span class="entity">Float</span>:32
@@ -150,7 +209,7 @@
   <span class="entity">Int</span>        value1
   <span class="entity">Int</span>:32     value2
   <span class="entity">Int</span>:64     value3
-  <span class="entity">Natural</span>:32 value4
+  <span class="entity">UInt</span>:32    value4
   <span class="entity">Int</span>:5      value5
 <span class="keyword">end</span>
 
@@ -200,31 +259,6 @@ s->value1 = <span class="literal">5</span>
 
 s->value1 = <span class="literal">5</span>;
 (*s).value1 = <span class="literal">5</span>;
-                    </code></pre>
-                </td>
-            </tr>
-            <tr><th colspan="2">Arrays</th></tr>
-            <tr>
-                <td>
-                    <pre><code>
-[<span class="literal">3</span>]<span class="entity">Int</span> x = {<span class="literal">1</span>, <span class="literal">2</span>, <span class="literal">3</span>}
-<em>No Equivalent</em>
-[<span class="literal">3</span>]*<span class="entity">Int</span> x
-*[<span class="literal">3</span>]<span class="entity">Int</span> x
-
-x[<span class="literal">0</span>] = <span class="literal">1</span>
-<em>No Equivalent</em>
-                    </code></pre>
-                </td>
-                <td>
-                    <pre><code>
-<span class="entity">int</span> x[<span class="literal">3</span>] = {<span class="literal">1</span>, <span class="literal">2</span>, <span class="literal">3</span>};
-<span class="entity">int</span> x[];
-<span class="entity">int</span>* x[<span class="literal">3</span>];   <span class="comment">// array of int pointers</span>
-<span class="entity">int</span> (*x)[<span class="literal">3</span>]; <span class="comment">// pointer to array of ints</span>
-
-x[<span class="literal">0</span>] = <span class="literal">1</span>;
-<span class="literal">0</span>[x] = <span class="literal">1</span>;
                     </code></pre>
                 </td>
             </tr>

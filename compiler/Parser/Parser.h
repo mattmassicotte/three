@@ -54,12 +54,14 @@ namespace Three {
         bool isAtType();
         bool peekType(unsigned int* peekDepth);
         bool peekTypePrefixes(unsigned int* peekDepth);
+        bool peekTypePostfixes(unsigned int* peekDepth);
         bool peekTypeAnnotations(unsigned int* peekDepth);
         bool peekFunctionType(unsigned int* peekDepth);
         bool peekNonFunctionType(unsigned int* peekDepth);
         NewDataType parseType();
         NewDataType parseAndApplyTypeAnnotations();
         NewDataType parseTypeWithoutAnnotations();
+        NewDataType parseTypePostfixes(const NewDataType& type, bool optionalWrapping);
         NewDataType parsePointerType();
         NewDataType parseArrayType();
         NewDataType parseFunctionType(bool signature = false, std::vector<std::string>* references = nullptr);

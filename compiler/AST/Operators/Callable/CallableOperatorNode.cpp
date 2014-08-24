@@ -55,6 +55,6 @@ namespace Three {
     }
 
     NewDataType CallableOperatorNode::dataType() const {
-        return this->receiverDataType();//.returnAtIndex(0);
+        return this->receiverDataType().returnType();
     }
 }

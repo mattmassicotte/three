@@ -20,8 +20,8 @@ TEST_F(CCodeGenTests_Loops, ConditionLoop) {
                                                   "  end\n"
                                                   "end\n");
 
-    EXPECT_EQ("void test(int x);\n", visitor->internalHeaderString());
-    EXPECT_EQ("void test(int x) {\n    while (x > 0) {\n    }\n}\n\n", visitor->bodyString());
+    EXPECT_EQ("void test(const int x);\n", visitor->internalHeaderString());
+    EXPECT_EQ("void test(const int x) {\n    while (x > 0) {\n    }\n}\n\n", visitor->bodyString());
 }
 
 TEST_F(CCodeGenTests_Loops, ConditionLoopWithStatement) {
@@ -31,8 +31,8 @@ TEST_F(CCodeGenTests_Loops, ConditionLoopWithStatement) {
                                                   "  end\n"
                                                   "end\n");
 
-    EXPECT_EQ("void test(int x);\n", visitor->internalHeaderString());
-    EXPECT_EQ("void test(int x) {\n"
+    EXPECT_EQ("void test(const int x);\n", visitor->internalHeaderString());
+    EXPECT_EQ("void test(const int x) {\n"
               "    while (x > 0) {\n"
               "        x += 1;\n"
               "    }\n"
@@ -45,13 +45,13 @@ TEST_F(CCodeGenTests_Loops, AfterConditionLoop) {
                                                   "  end\n"
                                                   "end\n");
 
-    EXPECT_EQ("void test(int x);\n", visitor->internalHeaderString());
-    EXPECT_EQ("void test(int x) {\n    do {\n    } while (x > 0);\n}\n\n", visitor->bodyString());
+    EXPECT_EQ("void test(const int x);\n", visitor->internalHeaderString());
+    EXPECT_EQ("void test(const int x) {\n    do {\n    } while (x > 0);\n}\n\n", visitor->bodyString());
 }
 
 TEST_F(CCodeGenTests_Loops, ForLoop) {
     Three::CCodeGenVisitor* visitor = this->visit("def test()\n"
-                                                  "  for (Int i = 0; i < 10; i += 1)\n"
+                                                  "  for (Int! i = 0; i < 10; i += 1)\n"
                                                   "  end\n"
                                                   "end\n");
 
@@ -61,7 +61,7 @@ TEST_F(CCodeGenTests_Loops, ForLoop) {
 
 TEST_F(CCodeGenTests_Loops, RangedForLoop) {
     Three::CCodeGenVisitor* visitor = this->visit("def test()\n"
-                                                  "  for (Int i in 0:10)\n"
+                                                  "  for (Int! i in 0:10)\n"
                                                   "  end\n"
                                                   "end\n");
 

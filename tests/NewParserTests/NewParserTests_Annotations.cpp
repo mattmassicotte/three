@@ -24,7 +24,7 @@ TEST_F(ParserTests_Annotations, GlobalConstPointerToBoolean) {
     ASSERT_EQ(NewDataType::Pointer, node->dataType().kind());
     ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
     ASSERT_EQ(NewDataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().subtypeAtIndex(0).access());
+    ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
 }
 
 TEST_F(ParserTests_Annotations, GlobalPointerToConstBoolean) {
@@ -33,7 +33,7 @@ TEST_F(ParserTests_Annotations, GlobalPointerToConstBoolean) {
     node = node->childAtIndex(0);
 
     ASSERT_EQ(NewDataType::Pointer, node->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().access());
+    ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
     ASSERT_EQ(NewDataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
     ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
 }
@@ -55,10 +55,10 @@ TEST_F(ParserTests_Annotations, GlobalRestrictedPointer) {
     node = node->childAtIndex(0);
 
     ASSERT_EQ(NewDataType::Pointer, node->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().access());
+    ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
     ASSERT_TRUE(node->dataType().potentiallyAliased());
     ASSERT_EQ(NewDataType::Integer, node->dataType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().subtypeAtIndex(0).access());
+    ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
 }
 
 TEST_F(ParserTests_Annotations, GlobalVolatileBool) {
@@ -67,7 +67,7 @@ TEST_F(ParserTests_Annotations, GlobalVolatileBool) {
     node = node->childAtIndex(0);
 
     ASSERT_EQ(NewDataType::Boolean, node->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().access());
+    ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
     ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().volatility());
 }
 

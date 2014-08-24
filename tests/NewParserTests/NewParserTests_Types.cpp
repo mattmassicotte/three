@@ -11,6 +11,7 @@ TEST_F(ParserTests_Types, GlobalBoolean) {
     ASSERT_EQ("Variable Declaration", node->nodeName());
     ASSERT_EQ("value", node->name());
     ASSERT_EQ(NewDataType::Boolean, node->dataType().kind());
+    ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
 }
 
 TEST_F(ParserTests_Types, GlobalUntyped) {
@@ -473,4 +474,93 @@ TEST_F(ParserTests_Types, VarargVariable) {
 
     ASSERT_EQ(NewDataType::Vararg, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
+}
+
+TEST_F(ParserTests_Types, GlobalMutableBoolean) {
+    ASTNode* node = this->parseNode("Bool! value\n");
+
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ("Variable Declaration", node->nodeName());
+    ASSERT_EQ("value", node->name());
+    EXPECT_EQ(NewDataType::Boolean, node->dataType().kind());
+    EXPECT_EQ(NewDataType::Access::ReadWrite, node->dataType().access());
+}
+
+TEST_F(ParserTests_Types, GlobalOptionalBooleanPointer) {
+    ASTNode* node = this->parseNode("Bool? value\n");
+
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ("Variable Declaration", node->nodeName());
+    ASSERT_EQ("value", node->name());
+    EXPECT_EQ(NewDataType::NullablePointer, node->dataType().kind());
+    EXPECT_EQ(NewDataType::Access::Read, node->dataType().access());
+    ASSERT_EQ(1, node->dataType().subtypeCount());
+    EXPECT_EQ(NewDataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
+    EXPECT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
+}
+
+TEST_F(ParserTests_Types, GlobalOptionalMutableBooleanPointer) {
+    ASTNode* node = this->parseNode("Bool!? value\n");
+
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ("Variable Declaration", node->nodeName());
+    ASSERT_EQ("value", node->name());
+    EXPECT_EQ(NewDataType::NullablePointer, node->dataType().kind());
+    EXPECT_EQ(NewDataType::Access::Read, node->dataType().access());
+    ASSERT_EQ(1, node->dataType().subtypeCount());
+    EXPECT_EQ(NewDataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
+    EXPECT_EQ(NewDataType::Access::ReadWrite, node->dataType().subtypeAtIndex(0).access());
+}
+
+TEST_F(ParserTests_Types, GlobalMutableBooleanPointer) {
+    ASTNode* node = this->parseNode("*Bool! value\n");
+
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ("Variable Declaration", node->nodeName());
+    ASSERT_EQ("value", node->name());
+    EXPECT_EQ(NewDataType::Pointer, node->dataType().kind());
+    EXPECT_EQ(NewDataType::Access::Read, node->dataType().access());
+    ASSERT_EQ(1, node->dataType().subtypeCount());
+    EXPECT_EQ(NewDataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
+    EXPECT_EQ(NewDataType::Access::ReadWrite, node->dataType().subtypeAtIndex(0).access());
+}
+
+TEST_F(ParserTests_Types, GlobalMutableBooleanMutablePointer) {
+    ASTNode* node = this->parseNode("*!Bool! value\n");
+
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ("Variable Declaration", node->nodeName());
+    ASSERT_EQ("value", node->name());
+    EXPECT_EQ(NewDataType::Pointer, node->dataType().kind());
+    EXPECT_EQ(NewDataType::Access::ReadWrite, node->dataType().access());
+    ASSERT_EQ(1, node->dataType().subtypeCount());
+    EXPECT_EQ(NewDataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
+    EXPECT_EQ(NewDataType::Access::ReadWrite, node->dataType().subtypeAtIndex(0).access());
+}
+
+TEST_F(ParserTests_Types, GlobalMutableBooleanPointerToMutablePointer) {
+    ASTNode* node = this->parseNode("*!*Bool! value\n");
+
+    node = node->childAtIndex(0);
+
+    NewDataType type = node->dataType();
+    ASSERT_EQ("Variable Declaration", node->nodeName());
+    ASSERT_EQ("value", node->name());
+    EXPECT_EQ(NewDataType::Pointer, type.kind());
+    EXPECT_EQ(NewDataType::Access::ReadWrite, type.access());
+    ASSERT_EQ(1, node->dataType().subtypeCount());
+
+    type = type.subtypeAtIndex(0);
+    EXPECT_EQ(NewDataType::Pointer, type.kind());
+    EXPECT_EQ(NewDataType::Access::Read, type.access());
+    ASSERT_EQ(1, type.subtypeCount());
+
+    type = type.subtypeAtIndex(0);
+    EXPECT_EQ(NewDataType::Boolean, type.kind());
+    EXPECT_EQ(NewDataType::Access::ReadWrite, type.access());
 }

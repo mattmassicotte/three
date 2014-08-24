@@ -44,6 +44,11 @@ namespace Three {
             return !parser.helper()->nextIf(Token::Type::PunctuationComma);
         });
 
+        if (node->childCount() == 0) {
+            assert(0 && "Message: failed to parse tuple - zero children");
+            return nullptr;
+        }
+
         // we now need to construct the type
         NewDataType type = NewDataType(NewDataType::Kind::Tuple);
         node->eachChildWithLast([&] (const ASTNode* child, bool last) {
@@ -51,6 +56,8 @@ namespace Three {
         });
 
         node->_type = type;
+
+        assert(type.subtypeCount() > 0);
 
         return node;
     }

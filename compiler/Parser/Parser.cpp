@@ -499,10 +499,12 @@ namespace Three {
         this->peekTypePrefixes(peekDepth);
 
         if (this->peekNonFunctionType(peekDepth)) {
+            this->peekTypePostfixes(peekDepth);
             return true;
         }
 
         if (this->peekFunctionType(peekDepth)) {
+            this->peekTypePostfixes(peekDepth);
             return true;
         }
 
@@ -517,6 +519,7 @@ namespace Three {
             switch (_helper->peek(*peekDepth).type()) {
                 case Token::Type::OperatorStar:
                     *peekDepth += 1;
+                    this->peekTypePostfixes(peekDepth);
                     continue;
                 case Token::Type::PunctuationOpenBracket:
                     *peekDepth += 1;
@@ -541,6 +544,26 @@ namespace Three {
                     continue;
                 default:
                     return false;
+            }
+
+            break; // kill the loop
+        }
+
+        // return true if we've advanced at all
+        return *peekDepth > originalDepth;
+    }
+
+    bool Parser::peekTypePostfixes(unsigned int* peekDepth) {
+        unsigned int originalDepth = *peekDepth;
+
+        for (;;) {
+            switch (_helper->peek(*peekDepth).type()) {
+                case Token::Type::OperatorNot:
+                case Token::Type::OperatorQuestionMark:
+                    *peekDepth += 1;
+                    continue;
+                default:
+                    break;
             }
 
             break; // kill the loop
@@ -803,6 +826,7 @@ namespace Three {
 
         // now that we've parsed all the annotations, we can proceed to the type itself
         NewDataType type = this->parseTypeWithoutAnnotations();
+        type = this->parseTypePostfixes(type, true);
 
         if (foundConst && foundAccess) {
             assert(0 && "Message: @const and @access cannot be applied at the same time");
@@ -894,10 +918,36 @@ namespace Three {
         return type;
     }
 
+    NewDataType Parser::parseTypePostfixes(const NewDataType& type, bool optionalWrapping) {
+        NewDataType newType(type);
+
+        if (_helper->nextIf(Token::Type::OperatorNot)) {
+            newType.setAccess(NewDataType::Access::ReadWrite);
+        }
+
+        if (_helper->nextIf(Token::Type::OperatorQuestionMark)) {
+            if (optionalWrapping) {
+                NewDataType ptr(NewDataType::Kind::NullablePointer);
+
+                ptr.addSubtype(newType);
+                ptr.setLabel(newType.label());
+
+                newType = ptr;
+            } else {
+                assert(newType.kind() == NewDataType::Kind::Pointer);
+                newType.setKind(NewDataType::Kind::NullablePointer);
+            }
+        }
+
+        return newType;
+    }
+
     NewDataType Parser::parsePointerType() {
         assert(_helper->next().type() == Token::Type::OperatorStar);
 
         NewDataType type = NewDataType(NewDataType::Kind::Pointer);
+
+        type = this->parseTypePostfixes(type, false);
 
         type.addSubtype(this->parseType());
 

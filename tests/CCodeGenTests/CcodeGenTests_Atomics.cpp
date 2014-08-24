@@ -4,7 +4,7 @@ class CCodeGenTests_Atomics : public CCodeGenTestsBase {
 };
 
 TEST_F(CCodeGenTests_Atomics, AtomicStatement) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(Int x)\n"
+    Three::CCodeGenVisitor* visitor = this->visit("def test(Int! x)\n"
                                                   "  atomic\n"
                                                   "    x = 1\n"
                                                   "  end\n"
@@ -26,7 +26,7 @@ TEST_F(CCodeGenTests_Atomics, AtomicStatement) {
 }
 
 TEST_F(CCodeGenTests_Atomics, AtomicStatementWithElse) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(Int x)\n"
+    Three::CCodeGenVisitor* visitor = this->visit("def test(Int! x)\n"
                                                   "  atomic\n"
                                                   "    x = 1\n"
                                                   "  else\n"
@@ -48,7 +48,7 @@ TEST_F(CCodeGenTests_Atomics, AtomicStatementWithElse) {
 }
 
 TEST_F(CCodeGenTests_Atomics, AtomicStatementWithAbort) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(Int x)\n"
+    Three::CCodeGenVisitor* visitor = this->visit("def test(Int! x)\n"
                                                   "  atomic\n"
                                                   "    x = 1\n"
                                                   "    abort if x > 0\n"
@@ -85,7 +85,7 @@ TEST_F(CCodeGenTests_Atomics, MemoryBarrier) {
 }
 
 TEST_F(CCodeGenTests_Atomics, AtomicExpressionAdd) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(Int x)\n"
+    Three::CCodeGenVisitor* visitor = this->visit("def test(Int! x)\n"
                                                   "  x = atomic (x += 1)\n"
                                                   "end\n");
 
@@ -98,7 +98,7 @@ TEST_F(CCodeGenTests_Atomics, AtomicExpressionAdd) {
 }
 
 TEST_F(CCodeGenTests_Atomics, AtomicExpressionSubtract) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(Int x)\n"
+    Three::CCodeGenVisitor* visitor = this->visit("def test(Int! x)\n"
                                                   "  x = atomic (x -= 1)\n"
                                                   "end\n");
 
@@ -116,15 +116,15 @@ TEST_F(CCodeGenTests_Atomics, AtomicExpressionLoad) {
                                                   "end\n");
 
     EXPECT_EQ("#include <three/runtime/atomic.h>\n\n"
-              "THREE_CHECK_ATOMIC(int);\n", visitor->declarationsString());
-    EXPECT_EQ("void test(int x);\n", visitor->internalHeaderString());
-    EXPECT_EQ("void test(int x) {\n"
-              "    bool value = atomic_load_explicit((_Atomic(int)*)&x, memory_order_seq_cst) > 0;\n"
+              "THREE_CHECK_ATOMIC(const int);\n", visitor->declarationsString());
+    EXPECT_EQ("void test(const int x);\n", visitor->internalHeaderString());
+    EXPECT_EQ("void test(const int x) {\n"
+              "    const bool value = atomic_load_explicit((_Atomic(const int)*)&x, memory_order_seq_cst) > 0;\n"
               "}\n\n", visitor->bodyString());
 }
 
 TEST_F(CCodeGenTests_Atomics, AtomicExpressionAsStatement) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(Int x)\n"
+    Three::CCodeGenVisitor* visitor = this->visit("def test(Int! x)\n"
                                                   "  atomic (x += 1)\n"
                                                   "end\n");
 
@@ -137,7 +137,7 @@ TEST_F(CCodeGenTests_Atomics, AtomicExpressionAsStatement) {
 }
 
 TEST_F(CCodeGenTests_Atomics, ReturnStatementInAtomic) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(Int x)\n"
+    Three::CCodeGenVisitor* visitor = this->visit("def test(Int! x)\n"
                                                   "  atomic\n"
                                                   "    x = 1\n"
                                                   "    return if x > 0\n"
@@ -170,10 +170,10 @@ TEST_F(CCodeGenTests_Atomics, ReturnBooleanInAtomic) {
                                                   "  end\n"
                                                   "end\n");
 
-    EXPECT_EQ("bool test(void) {\n"
+    EXPECT_EQ("const bool test(void) {\n"
               "    three_transaction_t test_tx_1 = THREE_MAKE_DEFAULT_TRANSACTION();\n"
               "    if (three_transaction_begin(&test_tx_1)) {\n"
-              "        bool tmp_return_value_1 = true;\n"
+              "        const bool tmp_return_value_1 = true;\n"
               "        three_transaction_end(&test_tx_1);\n"
               "        return tmp_return_value_1;\n"
               "    } else {\n"

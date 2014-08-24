@@ -10,8 +10,8 @@ TEST_F(CCodeGenTests_Types, Structure) {
                                                   "end\n");
 
     EXPECT_EQ("typedef struct Foo {\n"
-              "    int x;\n"
-              "    int y;\n"
+              "    const int x;\n"
+              "    const int y;\n"
               "} Foo;\n\n", visitor->internalHeaderString());
     EXPECT_EQ("", visitor->bodyString());
 }
@@ -23,7 +23,10 @@ TEST_F(CCodeGenTests_Types, PublicStructure) {
                                                   "  Int y\n"
                                                   "end\n");
 
-    EXPECT_EQ("typedef struct Foo {\n    int x;\n    int y;\n} Foo;\n\n", visitor->internalHeaderString());
+    EXPECT_EQ("typedef struct Foo {\n"
+              "    const int x;\n"
+              "    const int y;\n"
+              "} Foo;\n\n", visitor->internalHeaderString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n"
               "typedef struct Foo Foo;\n\n", visitor->externalHeaderString());
     EXPECT_EQ("", visitor->bodyString());
@@ -35,7 +38,7 @@ TEST_F(CCodeGenTests_Types, PrivateStructure) {
                                                   "  Int x\n"
                                                   "end\n");
 
-    EXPECT_EQ("typedef struct Foo {\n    int x;\n} Foo;\n\n", visitor->internalHeaderString());
+    EXPECT_EQ("typedef struct Foo {\n    const int x;\n} Foo;\n\n", visitor->internalHeaderString());
     EXPECT_EQ("", visitor->declarationsString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
     EXPECT_EQ("", visitor->bodyString());
@@ -50,8 +53,8 @@ TEST_F(CCodeGenTests_Types, PackedStructure) {
     EXPECT_EQ("#pragma pack(push)\n"
               "#pragma pack(4)\n"
               "typedef struct Foo {\n"
-              "    int x;\n"
-              "    int y;\n"
+              "    const int x;\n"
+              "    const int y;\n"
               "} Foo;\n"
               "#pragma pack(pop)\n\n", visitor->internalHeaderString());
     EXPECT_EQ("", visitor->bodyString());
@@ -94,35 +97,47 @@ TEST_F(CCodeGenTests_Types, Enumeration) {
 TEST_F(CCodeGenTests_Types, SimpleBooleans) {
     Three::CCodeGenVisitor* visitor = this->visit("Bool value\n");
 
+    EXPECT_EQ("const bool value;\n", visitor->bodyString());
+}
+
+TEST_F(CCodeGenTests_Types, SimpleMutableBooleans) {
+    Three::CCodeGenVisitor* visitor = this->visit("Bool! value\n");
+
     EXPECT_EQ("bool value;\n", visitor->bodyString());
 }
 
 TEST_F(CCodeGenTests_Types, SimpleInteger) {
     Three::CCodeGenVisitor* visitor = this->visit("Int value\n");
 
-    EXPECT_EQ("int value;\n", visitor->bodyString());
+    EXPECT_EQ("const int value;\n", visitor->bodyString());
 }
 
 TEST_F(CCodeGenTests_Types, SimpleNatural) {
     Three::CCodeGenVisitor* visitor = this->visit("Natural value\n");
 
-    EXPECT_EQ("unsigned int value;\n", visitor->bodyString());
+    EXPECT_EQ("const unsigned int value;\n", visitor->bodyString());
 }
 
 TEST_F(CCodeGenTests_Types, SimpleNatural32) {
     Three::CCodeGenVisitor* visitor = this->visit("Natural:32 value\n");
 
-    EXPECT_EQ("uint32_t value;\n", visitor->bodyString());
+    EXPECT_EQ("const uint32_t value;\n", visitor->bodyString());
 }
 
 TEST_F(CCodeGenTests_Types, SimpleFloat) {
     Three::CCodeGenVisitor* visitor = this->visit("Float value\n");
 
-    EXPECT_EQ("float value;\n", visitor->bodyString());
+    EXPECT_EQ("const float value;\n", visitor->bodyString());
 }
 
 TEST_F(CCodeGenTests_Types, SimpleFloat64) {
     Three::CCodeGenVisitor* visitor = this->visit("Float:64 value\n");
 
-    EXPECT_EQ("double value;\n", visitor->bodyString());
+    EXPECT_EQ("const double value;\n", visitor->bodyString());
+}
+
+TEST_F(CCodeGenTests_Types, PointerToInteger) {
+    Three::CCodeGenVisitor* visitor = this->visit("*Int value\n");
+
+    EXPECT_EQ("const int* const value;\n", visitor->bodyString());
 }

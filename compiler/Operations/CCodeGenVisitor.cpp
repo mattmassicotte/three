@@ -26,7 +26,7 @@ namespace Three {
         _tmpReturnValueCounter = 0;
 
         _currentFunctionType = node.functionType();
-        std::string functionString = CTypeCodeGenerator::codeGen(_currentFunctionType);
+        std::string functionString = CTypeCodeGenerator::codeGenFunction(_currentFunctionType, node.fullName());
 
         // Function Prototype
         this->sourceForVisibility(node.visibility(), [&] (CSource& source) {
@@ -372,7 +372,8 @@ namespace Three {
         std::string tmpVariableName = "tmp_return";
 
         // TODO: make this the data type of the right hand side
-        NewDataType tupleType = node.childAtIndex(0)->dataType();
+        NewDataType tupleType = node.childAtIndex(1)->dataType();
+        assert(tupleType.kind() == NewDataType::Kind::Tuple);
 
         // part one, a temporary variable to hold the right-hand side value
         *_currentSource << CTypeCodeGenerator::codeGen(tupleType, tmpVariableName);
@@ -468,7 +469,7 @@ namespace Three {
 
     void CCodeGenVisitor::visit(TupleNode& node) {
         
-        std::string structName = CTypeCodeGenerator::codeGenTupleStructName(node.dataType());
+        std::string structName = CTypeCodeGenerator::codeGen(node.dataType());
 
         // first a cast to the struct type, which must be defined
         *_currentSource << "(" << structName << ")";

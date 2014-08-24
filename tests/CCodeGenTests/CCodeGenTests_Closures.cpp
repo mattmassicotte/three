@@ -2,7 +2,7 @@
 
 class CCodeGenTests_Closures : public CCodeGenTestsBase {
 };
-
+/*
 TEST_F(CCodeGenTests_Closures, ClosureVariableCapture) {
     Three::CCodeGenVisitor* visitor = this->visit("def test()\n"
                                                   "  Int x = 0\n"
@@ -54,8 +54,9 @@ TEST_F(CCodeGenTests_Closures, ClosureVariableCaptureWithReference) {
               "    THREE_CAPTURE_ENV(test_closure_1_env, &x);\n"
               "    three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_HAS_REFERENCES);\n"
               "}\n\n", visitor->bodyString());
-}
+}*/
 /*
+TODO: re-enable this
 TEST_F(CCodeGenTests_Closures, InvokeClosurePointer) {
     ASTNode* node = this->parse("def test(*{Int value} closure)\n"
                                 "    (*closure)(1)\n"

@@ -9,3 +9,5 @@
 
 #define THREE_ATTR_ABI_FASTCALL    __attribute__((fastcall))
 #define THREE_ATTR_ABI_THISCALL    __attribute__((thiscall))
+
+#define THREE_ATTR_NULLABLE

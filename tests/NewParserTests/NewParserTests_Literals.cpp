@@ -19,6 +19,7 @@ TEST_F(ParserTests_Literals, IntegerLiteral) {
     ASSERT_EQ(1, literal->value());
     ASSERT_EQ(NewDataType::Kind::Integer, literal->dataType().kind());
     ASSERT_EQ(0, literal->dataType().widthSpecifier());
+    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
 }
 
 TEST_F(ParserTests_Literals, NegativeIntegerLiteral) {
@@ -38,6 +39,7 @@ TEST_F(ParserTests_Literals, NegativeIntegerLiteral) {
 
     ASSERT_EQ(1, literal->value());
     ASSERT_EQ(NewDataType::Kind::Integer, literal->dataType().kind());
+    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
 }
 
 TEST_F(ParserTests_Literals, IntegerLiteralWithTypeSpecifier) {
@@ -55,6 +57,7 @@ TEST_F(ParserTests_Literals, IntegerLiteralWithTypeSpecifier) {
     ASSERT_EQ(1, literal->value());
     ASSERT_EQ(NewDataType::Kind::Natural, literal->dataType().kind());
     ASSERT_EQ(64, literal->dataType().widthSpecifier());
+    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
 }
 
 TEST_F(ParserTests_Literals, FloatLiteral) {
@@ -72,6 +75,7 @@ TEST_F(ParserTests_Literals, FloatLiteral) {
     ASSERT_EQ(1.0, literal->value());
     ASSERT_EQ(NewDataType::Kind::Float, literal->dataType().kind());
     ASSERT_EQ(0, literal->dataType().widthSpecifier());
+    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
 }
 
 TEST_F(ParserTests_Literals, FloatLiteralWithTypeSpecifier) {
@@ -89,6 +93,7 @@ TEST_F(ParserTests_Literals, FloatLiteralWithTypeSpecifier) {
     ASSERT_EQ(1.0, literal->value());
     ASSERT_EQ(NewDataType::Kind::Real, literal->dataType().kind());
     ASSERT_EQ(64, literal->dataType().widthSpecifier());
+    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
 }
 
 TEST_F(ParserTests_Literals, HexLiteral) {
@@ -106,6 +111,7 @@ TEST_F(ParserTests_Literals, HexLiteral) {
     ASSERT_EQ(1234, literal->value());
     ASSERT_EQ(NewDataType::Kind::Integer, literal->dataType().kind());
     ASSERT_EQ(0, literal->dataType().widthSpecifier());
+    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
 }
 
 TEST_F(ParserTests_Literals, BinaryLiteral) {
@@ -123,6 +129,7 @@ TEST_F(ParserTests_Literals, BinaryLiteral) {
     ASSERT_EQ(1234, literal->value());
     ASSERT_EQ(NewDataType::Kind::Integer, literal->dataType().kind());
     ASSERT_EQ(0, literal->dataType().widthSpecifier());
+    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
 }
 
 TEST_F(ParserTests_Literals, NullLiteral) {
@@ -138,8 +145,10 @@ TEST_F(ParserTests_Literals, NullLiteral) {
     NullLiteralNode* literal = dynamic_cast<NullLiteralNode*>(node->childAtIndex(1));
 
     ASSERT_EQ(NewDataType::Kind::Pointer, literal->dataType().kind());
+    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
     ASSERT_EQ(1, literal->dataType().subtypeCount());
     ASSERT_EQ(NewDataType::Kind::Void, literal->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().subtypeAtIndex(0).access());
 }
 
 TEST_F(ParserTests_Literals, StringLiteral) {
@@ -156,6 +165,7 @@ TEST_F(ParserTests_Literals, StringLiteral) {
 
     ASSERT_EQ("hello", literal->stringValue());
     ASSERT_EQ(NewDataType::Kind::Pointer, literal->dataType().kind());
+    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
     ASSERT_EQ(1, literal->dataType().subtypeCount());
     ASSERT_EQ(NewDataType::Kind::Character, literal->dataType().subtypeAtIndex(0).kind());
     ASSERT_EQ(NewDataType::CharacterEncoding::UTF8, literal->dataType().subtypeAtIndex(0).characterEncoding());

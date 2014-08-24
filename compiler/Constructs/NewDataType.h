@@ -18,6 +18,7 @@ namespace Three {
             Real,
             Character,
             Pointer,
+            NullablePointer,
             Tuple,
             Array,
             Function,

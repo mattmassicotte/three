@@ -8,14 +8,14 @@ TEST_F(CCodeGenTests_Literals, LiteralNull) {
                                                   "  x = null\n"
                                                   "end\n");
 
-    EXPECT_EQ("void test(int* x);\n", visitor->internalHeaderString());
-    EXPECT_EQ("void test(int* x) {\n"
+    EXPECT_EQ("void test(const int* const x);\n", visitor->internalHeaderString());
+    EXPECT_EQ("void test(const int* const x) {\n"
               "    x = NULL;\n"
               "}\n\n", visitor->bodyString());
 }
 
 TEST_F(CCodeGenTests_Literals, BooleanLiteral) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(Bool x)\n"
+    Three::CCodeGenVisitor* visitor = this->visit("def test(Bool! x)\n"
                                                   "  x = true\n"
                                                   "  x = false\n"
                                                   "end\n");

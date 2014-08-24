@@ -16,7 +16,7 @@ namespace Three {
         _alignmentSpecifier(0),
         _vectorSizeSpecifier(0),
         _characterEncoding(NewDataType::CharacterEncoding::UTF8),
-        _access(NewDataType::Access::ReadWrite),
+        _access(NewDataType::Access::Read),
         _volatility(NewDataType::Access::None),
         _potentiallyAliased(true) {
     }

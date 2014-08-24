@@ -14,7 +14,7 @@ TEST_F(ParserTests_FunctionCalls, FunctionCallOperator) {
     ASSERT_EQ("Function Variable", fnCall->receiver()->nodeName());
     ASSERT_EQ(0, fnCall->childCount());
 
-    ASSERT_EQ(NewDataType::Void, fnCall->dataType().returnType().kind());
+    ASSERT_EQ(NewDataType::Void, fnCall->dataType().kind());
 }
 
 TEST_F(ParserTests_FunctionCalls, FunctionCallOperatorWithArgument) {

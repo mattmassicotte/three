@@ -15,6 +15,7 @@ TEST_F(ParserTests_CustomTypes, Structure) {
     ASSERT_EQ(0, structNode->packing());
 
     ASSERT_EQ(NewDataType::Kind::Structure, structNode->definedType().kind());
+    ASSERT_EQ(NewDataType::Access::Read, structNode->definedType().access());
     ASSERT_EQ(0, structNode->definedType().subtypeCount());
 
     ASSERT_EQ(NewDataType::Kind::Structure, this->context()->typeKindWithName("MyStruct"));

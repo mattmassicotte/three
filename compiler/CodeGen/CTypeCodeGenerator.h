@@ -6,9 +6,12 @@ namespace Three {
     class CTypeCodeGenerator {
     public:
         static std::string codeGen(const NewDataType& type, const std::string& varName="");
+        static std::string codeGenType(const NewDataType& type);
         static std::string codeGenScalarType(const NewDataType& type);
-        static std::string codeGenFunctionSignature(const NewDataType& type, uint32_t indirectionDepth);
-
+        static std::string codeGenFunction(const NewDataType& type, const std::string& leadingString);
+        static std::string codeGenFunctionType(const NewDataType& type, const std::string& innerString);
         static std::string codeGenTupleStructName(const NewDataType& type);
+
+        static bool typeCanBeConst(const NewDataType& type);
     };
 }

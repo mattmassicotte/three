@@ -31,6 +31,7 @@ TEST_F(ParserTests_Functions, FunctionWithOneTypedParameter) {
     ASSERT_EQ(NewDataType::Void, func->functionType().returnType().kind());
 
     ASSERT_EQ(NewDataType::Kind::Integer, func->functionType().parameterAtIndex(0).kind());
+    ASSERT_EQ(NewDataType::Access::Read, func->functionType().parameterAtIndex(0).access());
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
 }
 
@@ -273,6 +274,7 @@ TEST_F(ParserTests_Functions, SelfInMethodDefinition) {
     ASSERT_EQ("Self Variable", node->childAtIndex(0)->nodeName());
 }
 
+// TODO: reenable
 // TEST_F(ParserTests_Functions, Varargs) {
 //     Three::ASTNode* node = this->parseSingleFunction("def test(Vararg ap)\n"
 //                                                      "  Int a\n"
@@ -282,3 +284,28 @@ TEST_F(ParserTests_Functions, SelfInMethodDefinition) {
 //     std::cout << node->recursiveStr() << std::endl;
 //     ASSERT_TRUE(false);
 // }
+
+
+TEST_F(ParserTests_Functions, FunctionWithStructParam) {
+    ASTNode* node = this->parseNode("struct Foo\n"
+                                    "  Int a\n"
+                                    "end\n"
+                                    "def foo(Foo arg)\n"
+                                    "end\n");
+
+    ASSERT_EQ(2, node->childCount());
+    node = node->childAtIndex(1);
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node);
+    ASSERT_EQ("foo", func->name());
+
+    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(0, func->functionType().subtypeCount());
+    ASSERT_EQ(1, func->functionType().parameterCount());
+    ASSERT_EQ(NewDataType::Kind::Void, func->functionType().returnType().kind());
+
+    ASSERT_EQ(NewDataType::Kind::Structure, func->functionType().parameterAtIndex(0).kind());
+    ASSERT_EQ(NewDataType::Access::Read, func->functionType().parameterAtIndex(0).access());
+    ASSERT_EQ("arg", func->functionType().parameterAtIndex(0).label());
+}
