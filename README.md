@@ -7,12 +7,17 @@ Three is intended for systems and low-level programming that would typically be 
 - Reduced macro usage
 - Standardization of conditional compilation
 - Language-level constructs for atomic and transactional memory operations
+- Explicit control over mutability and nullable pointers
 - Standardized and simplified attributes
 - Vector instructions
 - Linkage and ABI controls
 - API documentation notation
 - Library+header packaging
 - 95% native compatibility with existing C headers
+
+####Warning
+
+Three is still in active development. You will encounter compiler bugs, including codegen problems. Please be careful using Three, and do report problems you find!
 
 ####Why does Three exist?
 
