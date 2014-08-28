@@ -24,7 +24,6 @@ protected:
 
         assert(_context);
 
-        _indexer->verbose = true;
         if (!_indexer->indexFileAtPath("/tmp/test_output.h", _context)) {
             std::cout << "Indexing failed" << std::endl;
             return nullptr;

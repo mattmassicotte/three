@@ -15,8 +15,12 @@ namespace Three {
     VariableNode* VariableNode::parse(Parser& parser, const std::string& identifier) {
         VariableNode* node = nullptr;
 
-        NewDataType type = parser.context()->functionForName(identifier);
-        if (type.kind() != NewDataType::Kind::Undefined) {
+        NewVariable* variable = parser.context()->scope()->variableForName(identifier);
+        if (!variable) {
+            parser.context()->addMessage(new UnrecognizedVariableMessage(identifier));
+        }
+
+        if (parser.context()->functionForName(identifier).kind() != NewDataType::Kind::Undefined) {
             node = new FunctionVariableNode();
         } else if (parser.context()->scope()->referencedVariable(identifier)) {
             node = new ReferencedVariableNode();
@@ -32,10 +36,7 @@ namespace Three {
         }
 
         node->_name = identifier;
-        node->_newVariable = parser.context()->scope()->variableForName(identifier);
-        if (!node->_newVariable) {
-            parser.context()->addMessage(new UnrecognizedVariableMessage(identifier));
-        }
+        node->_newVariable= variable;
 
         return node;
     }

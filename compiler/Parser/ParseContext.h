@@ -11,6 +11,7 @@ namespace Three {
     class RootNode;
     class Message;
     class NewScope;
+    class NewVariable;
 }
 
 namespace Three {
@@ -51,6 +52,7 @@ namespace Three {
         NewScope* scope() const;
         void pushScope();
         void popScope();
+        NewScope* rootScope() const;
 
         void postProcessAST();
 
@@ -61,6 +63,7 @@ namespace Three {
 
     private:
         RootNode* _rootNode;
+        NewScope* _rootScope;
         NewScope* _currentScope;
         TranslationUnit::Visibility _visibility;
 

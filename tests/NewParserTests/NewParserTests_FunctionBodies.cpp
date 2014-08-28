@@ -32,7 +32,6 @@ TEST_F(ParserTests_FunctionBodies, Statements) {
                                                        "  Type d = b\n"
                                                        "end\n");
 
-    // TODO: the leading whitespace is dropped here...
     ASSERT_EQ("  a = b\n  Type d = b\n", func->bodyStream()->str());
 }
 

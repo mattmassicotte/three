@@ -74,25 +74,21 @@ TEST_F(CCodeGenTests_Types, Enumeration) {
     EXPECT_EQ("", visitor->bodyString());
 }
 
-// TEST_F(CCodeGenTests_Types, NamespacedEnumeration) {
-//     ASTNode* node = this->parse("namespace Foo\n"
-//                                 "  enum Bar\n"
-//                                 "    A\n"
-//                                 "    B\n"
-//                                 "  end\n"
-//                                 "end\n");
-// 
-//     CCodeGenVisitor visitor;
-// 
-//     node->accept(visitor);
-// 
-//     EXPECT_EQ("enum {\n"
-//               "    Foo_3_Bar_3_A,\n"
-//               "    Foo_3_Bar_3_B\n"
-//               "};\n"
-//               "typedef uint32_t Foo_3_Bar;\n\n", visitor->internalHeaderString());
-//     EXPECT_EQ("", visitor->bodyString());
-// }
+TEST_F(CCodeGenTests_Types, NamespacedEnumeration) {
+    Three::CCodeGenVisitor* visitor = this->visit("namespace Foo\n"
+                                                  "  enum Bar\n"
+                                                  "    A\n"
+                                                  "    B\n"
+                                                  "  end\n"
+                                                  "end\n");
+
+    EXPECT_EQ("enum {\n"
+              "    Foo_3_Bar_3_A,\n"
+              "    Foo_3_Bar_3_B\n"
+              "};\n"
+              "typedef uint32_t Foo_3_Bar;\n\n", visitor->internalHeaderString());
+    EXPECT_EQ("", visitor->bodyString());
+}
 
 TEST_F(CCodeGenTests_Types, SimpleBooleans) {
     Three::CCodeGenVisitor* visitor = this->visit("Bool value\n");

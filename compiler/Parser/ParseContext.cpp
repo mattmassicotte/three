@@ -12,7 +12,8 @@
 namespace Three {
     ParseContext::ParseContext() : skipIncludes(false), skipImports(false) {
         _rootNode = new RootNode();
-        _currentScope = new NewScope();
+        _rootScope = new NewScope();
+        _currentScope = _rootScope;
         _visibility = TranslationUnit::Visibility::Default;
 
         _dataTypeMap["Void"]    = NewDataType(NewDataType::Kind::Void);
@@ -254,12 +255,18 @@ namespace Three {
     }
 
     void ParseContext::popScope() {
+        assert(_currentScope != _rootScope);
+
         NewScope* old = _currentScope;
 
         assert(old->parent());
         _currentScope = old->parent();
 
         delete old;
+    }
+
+    NewScope* ParseContext::rootScope() const {
+        return _rootScope;
     }
 
     void ParseContext::postProcessAST() {

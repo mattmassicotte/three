@@ -29,7 +29,8 @@ namespace Three {
             Vararg,
             CFunction,
             CStructPrefixedStructure,
-            CInt
+            CInt,
+            CUnspecifiedMacro
         } Kind;
 
         typedef enum {

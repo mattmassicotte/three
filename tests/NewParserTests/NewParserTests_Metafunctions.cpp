@@ -17,44 +17,44 @@ TEST_F(ParserTests_Metafunctions, Sizeof) {
     EXPECT_EQ(0, sizeofNode->childCount());
 }
 
-// TEST_F(ParserTests_Metafunctions, Alignof) {
-//     Three::ASTNode* node = this->parseSingleFunction("def test()\n"
-//                                                      "  alignof(Int)\n"
-//                                                      "end\n");
-//     
-//     std::cout << node->recursiveStr() << std::endl;
-//     ASSERT_TRUE(false);
-// }
-// 
-// TEST_F(ParserTests_Metafunctions, Offsetof) {
-//     Three::ASTNode* node = this->parseNodeWithBodies("struct MyStruct\n"
-//                                                      "  a\n"
-//                                                      "end\n"
-//                                                      "def test()\n"
-//                                                      "  offsetof(MyStruct, a)\n"
-//                                                      "end\n");
-//     
-//     std::cout << node->recursiveStr() << std::endl;
-//     ASSERT_TRUE(false);
-// }
-// 
-// TEST_F(ParserTests_Metafunctions, Nameof) {
-//     Three::ASTNode* node = this->parseSingleFunction("def test()\n"
-//                                                      "  nameof(Int)\n"
-//                                                      "end\n");
-//     
-//     std::cout << node->recursiveStr() << std::endl;
-//     ASSERT_TRUE(false);
-// }
-// 
-// TEST_F(ParserTests_Metafunctions, Cardinalityof) {
-//     Three::ASTNode* node = this->parseSingleFunction("def test([5]Int array)\n"
-//                                                      "  cardinalityof(array)\n"
-//                                                      "end\n");
-//     
-//     std::cout << node->recursiveStr() << std::endl;
-//     ASSERT_TRUE(false);
-// }
+TEST_F(ParserTests_Metafunctions, Alignof) {
+    Three::ASTNode* node = this->parseSingleFunction("def test()\n"
+                                                     "  alignof(Int)\n"
+                                                     "end\n");
+    
+    std::cout << node->recursiveStr() << std::endl;
+    ASSERT_TRUE(false);
+}
+
+TEST_F(ParserTests_Metafunctions, Offsetof) {
+    Three::ASTNode* node = this->parseNodeWithBodies("struct MyStruct\n"
+                                                     "  a\n"
+                                                     "end\n"
+                                                     "def test()\n"
+                                                     "  offsetof(MyStruct, a)\n"
+                                                     "end\n");
+    
+    std::cout << node->recursiveStr() << std::endl;
+    ASSERT_TRUE(false);
+}
+
+TEST_F(ParserTests_Metafunctions, Nameof) {
+    Three::ASTNode* node = this->parseSingleFunction("def test()\n"
+                                                     "  nameof(Int)\n"
+                                                     "end\n");
+    
+    std::cout << node->recursiveStr() << std::endl;
+    ASSERT_TRUE(false);
+}
+
+TEST_F(ParserTests_Metafunctions, Cardinalityof) {
+    Three::ASTNode* node = this->parseSingleFunction("def test([5]Int array)\n"
+                                                     "  cardinalityof(array)\n"
+                                                     "end\n");
+    
+    std::cout << node->recursiveStr() << std::endl;
+    ASSERT_TRUE(false);
+}
 
 TEST_F(ParserTests_Metafunctions, Cast) {
     Three::ASTNode* node = this->parseSingleFunction("def test(Int a)\n"

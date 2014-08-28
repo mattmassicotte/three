@@ -2,7 +2,7 @@
 
 class CCodeGenTests_Closures : public CCodeGenTestsBase {
 };
-/*
+
 TEST_F(CCodeGenTests_Closures, ClosureVariableCapture) {
     Three::CCodeGenVisitor* visitor = this->visit("def test()\n"
                                                   "  Int x = 0\n"
@@ -54,17 +54,12 @@ TEST_F(CCodeGenTests_Closures, ClosureVariableCaptureWithReference) {
               "    THREE_CAPTURE_ENV(test_closure_1_env, &x);\n"
               "    three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_HAS_REFERENCES);\n"
               "}\n\n", visitor->bodyString());
-}*/
-/*
-TODO: re-enable this
-TEST_F(CCodeGenTests_Closures, InvokeClosurePointer) {
-    ASTNode* node = this->parse("def test(*{Int value} closure)\n"
-                                "    (*closure)(1)\n"
-                                "end\n");
+}
 
-    CCodeGenVisitor visitor;
-
-    node->accept(visitor);
+TEST_F(CCodeGenTests_Closures, DISABLED_InvokeClosurePointer) {
+    Three::CCodeGenVisitor* visitor = this->visit("def test(*{Int value} closure)\n"
+                                                  "    (*closure)(1)\n"
+                                                  "end\n");
 
     EXPECT_EQ("", visitor->declarationsString());
     EXPECT_EQ("void test(three_closure_t* closure);\n", visitor->internalHeaderString());
@@ -74,19 +69,15 @@ TEST_F(CCodeGenTests_Closures, InvokeClosurePointer) {
               "}\n\n", visitor->bodyString());
 }
 
-TEST_F(CCodeGenTests_Closures, NestedClosures) {
-    ASTNode* node = this->parse("def test()\n"
-                                "  {} closure = do () {\n"
-                                "    {} nested_closure = do () {\n"
-                                "      {} double_nested_closure = do () {\n"
-                                "      }\n"
-                                "    }\n"
-                                "  }\n"
-                                "end\n");
-
-    CCodeGenVisitor visitor;
-
-    node->accept(visitor);
+TEST_F(CCodeGenTests_Closures, DISABLED_NestedClosures) {
+    Three::CCodeGenVisitor* visitor = this->visit("def test()\n"
+                                                  "  {} closure = do () {\n"
+                                                  "    {} nested_closure = do () {\n"
+                                                  "      {} double_nested_closure = do () {\n"
+                                                  "      }\n"
+                                                  "    }\n"
+                                                  "  }\n"
+                                                  "end\n");
 
     EXPECT_EQ("void test(void);\n", visitor->internalHeaderString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
@@ -117,4 +108,3 @@ TEST_F(CCodeGenTests_Closures, NestedClosures) {
               "    three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_DEFAULT);\n"
               "}\n\n", visitor->bodyString());
 }
-*/

@@ -1,6 +1,7 @@
 #include "Parser.h"
 #include "ParseHelper.h"
 #include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/NewScope.h"
 #include "compiler/Lexer/Lexer.h"
 
 #include "compiler/AST.h"
@@ -406,6 +407,15 @@ namespace Three {
         // - C macro
         // - global variable
         // - local variable
+
+        // TODO: I think at this point we really need some kind of symbol table. Dealing
+        // with C symbols is tough, and that could  reduce the number of heurestics needed.
+        NewVariable* variable = _context->scope()->variableForName(identifier);
+        if (variable) {
+            if (variable->type.kind() == NewDataType::Kind::CUnspecifiedMacro) {
+                return new CMacroNode(identifier);
+            }
+        }
 
         ASTNode* node = VariableNode::parse(*this, identifier);
 

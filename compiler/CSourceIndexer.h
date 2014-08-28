@@ -36,6 +36,8 @@ namespace Three {
         void addConstant(const std::string& name);
         void addField(const CompoundField& field);
 
+        void addMacro(const std::string& name);
+
     public:
         bool verbose;
 

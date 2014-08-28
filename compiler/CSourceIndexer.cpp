@@ -1,5 +1,7 @@
 #include "CSourceIndexer.h"
 #include "runtime/platform.h"
+#include "compiler/Constructs/NewVariable.h"
+#include "compiler/Constructs/NewScope.h"
 
 #include <assert.h>
 #include <clang-c/Index.h>
@@ -321,6 +323,18 @@ namespace Three {
         // 
         // _currentCompoundType->addChild(TypeReference(type, field.indirection, field.dimensions), field.name);
     }
+
+    void CSourceIndexer::addMacro(const std::string& name) {
+        if (verbose) {
+            std::cout << "[Indexer] defining macro " << name << std::endl;
+        }
+
+        NewDataType type(NewDataType::Kind::CUnspecifiedMacro);
+
+        if (!_context->rootScope()->defineVariableTypeForName(type, name)) {
+            std::cout << "[Indexer] Failed to define macro variable '" << name << "'" << std::endl;
+        }
+    }
 }
 
 static int abortQuery(CXClientData clientData, void* reserved) {
@@ -408,7 +422,7 @@ static enum CXChildVisitResult VisitorCallback(CXCursor cursor, CXCursor parent,
 
     switch (clang_getCursorKind(cursor)) {
         case CXCursor_MacroDefinition:
-            index->addConstant(std::string(clang_getCString(clang_getCursorDisplayName(cursor))));
+            index->addMacro(std::string(clang_getCString(clang_getCursorDisplayName(cursor))));
             break;
         default:
             break;

@@ -69,13 +69,13 @@ TEST_F(CTypeCodeGeneratorTests, Closure) {
     type.addReturn(NewDataType(NewDataType::Kind::Void));
     type.setAccess(NewDataType::Access::Read);
 
-    // EXPECT_EQ("void (* const)(void)", CTypeCodeGenerator::codeGen(type));
+    EXPECT_EQ("void (* const)(void)", CTypeCodeGenerator::codeGen(type));
     EXPECT_EQ("const three_closure_t x", CTypeCodeGenerator::codeGen(type, "x"));
 
     type = NewDataType::wrapInPointer(type);
     type.setAccess(NewDataType::Access::Read);
 
-    // EXPECT_EQ("void (* const)(void)", CTypeCodeGenerator::codeGen(type));
+    EXPECT_EQ("void (* const)(void)", CTypeCodeGenerator::codeGen(type));
     EXPECT_EQ("const three_closure_t* const x", CTypeCodeGenerator::codeGen(type, "x"));
 }
 
