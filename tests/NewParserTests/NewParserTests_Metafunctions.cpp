@@ -12,33 +12,33 @@ TEST_F(ParserTests_Metafunctions, Sizeof) {
     node = node->childAtIndex(0);
     ASSERT_EQ("Sizeof Metafunction", node->nodeName());
 
-    Three::SizeofNode* sizeofNode = dynamic_cast<Three::SizeofNode*>(node);
-    EXPECT_EQ(NewDataType::Kind::Integer, sizeofNode->dataTypeArgument.kind());
-    EXPECT_EQ(0, sizeofNode->childCount());
+    Three::SizeofNode* metaFn = dynamic_cast<Three::SizeofNode*>(node);
+    EXPECT_EQ(NewDataType::Kind::Integer, metaFn->dataTypeArgument.kind());
+    EXPECT_EQ(0, metaFn->childCount());
 }
 
-TEST_F(ParserTests_Metafunctions, Alignof) {
+TEST_F(ParserTests_Metafunctions, DISABLED_Alignof) {
     Three::ASTNode* node = this->parseSingleFunction("def test()\n"
                                                      "  alignof(Int)\n"
                                                      "end\n");
-    
+
     std::cout << node->recursiveStr() << std::endl;
     ASSERT_TRUE(false);
 }
 
-TEST_F(ParserTests_Metafunctions, Offsetof) {
+TEST_F(ParserTests_Metafunctions, DISABLED_Offsetof) {
     Three::ASTNode* node = this->parseNodeWithBodies("struct MyStruct\n"
                                                      "  a\n"
                                                      "end\n"
                                                      "def test()\n"
                                                      "  offsetof(MyStruct, a)\n"
                                                      "end\n");
-    
+
     std::cout << node->recursiveStr() << std::endl;
     ASSERT_TRUE(false);
 }
 
-TEST_F(ParserTests_Metafunctions, Nameof) {
+TEST_F(ParserTests_Metafunctions, DISABLED_Nameof) {
     Three::ASTNode* node = this->parseSingleFunction("def test()\n"
                                                      "  nameof(Int)\n"
                                                      "end\n");
@@ -47,7 +47,7 @@ TEST_F(ParserTests_Metafunctions, Nameof) {
     ASSERT_TRUE(false);
 }
 
-TEST_F(ParserTests_Metafunctions, Cardinalityof) {
+TEST_F(ParserTests_Metafunctions, DISABLED_Cardinalityof) {
     Three::ASTNode* node = this->parseSingleFunction("def test([5]Int array)\n"
                                                      "  cardinalityof(array)\n"
                                                      "end\n");

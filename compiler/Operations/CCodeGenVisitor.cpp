@@ -95,7 +95,9 @@ namespace Three {
         CSource* temp = _currentSource;
         _currentSource = &dedicatedSource;
 
-        (*_currentSource) << "static " << CTypeCodeGenerator::codeGen(node.dataType());
+        std::string functionString = CTypeCodeGenerator::codeGenFunction(node.dataType(), node.closureName());
+
+        (*_currentSource) << "static " << functionString;
 
         _currentSource->printLineAndIndent(" {");
 

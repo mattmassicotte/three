@@ -17,17 +17,17 @@ TEST_F(CCodeGenTests_Closures, ClosureVariableCapture) {
               "    const int x;\n"
               "    const int y;\n"
               "};\n"
-              "static void test_closure_1(struct test_closure_1_env* self_env, int arg1) {\n"
+              "static void test_closure_1(const struct test_closure_1_env* const self_env, const int arg1) {\n"
               "    (self_env->x) + (self_env->y);\n"
               "}\n"
               "THREE_CHECK_CLOSURE_FUNCTION(test_closure_1);\n\n", visitor->declarationsString());
     EXPECT_EQ("void test(void);\n", visitor->internalHeaderString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
     EXPECT_EQ("void test(void) {\n"
-              "    int x = 0;\n"
-              "    int y = 0;\n"
+              "    const int x = 0;\n"
+              "    const int y = 0;\n"
               "    THREE_CAPTURE_ENV(test_closure_1_env, x, y);\n"
-              "    three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_DEFAULT);\n"
+              "    const three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_DEFAULT);\n"
               "}\n\n", visitor->bodyString());
 }
 

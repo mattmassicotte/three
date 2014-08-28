@@ -74,7 +74,7 @@ TEST_F(CCodeGenTests_Types, Enumeration) {
     EXPECT_EQ("", visitor->bodyString());
 }
 
-TEST_F(CCodeGenTests_Types, NamespacedEnumeration) {
+TEST_F(CCodeGenTests_Types, DISABLED_NamespacedEnumeration) {
     Three::CCodeGenVisitor* visitor = this->visit("namespace Foo\n"
                                                   "  enum Bar\n"
                                                   "    A\n"
