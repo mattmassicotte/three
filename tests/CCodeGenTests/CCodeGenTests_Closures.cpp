@@ -41,18 +41,18 @@ TEST_F(CCodeGenTests_Closures, ClosureVariableCaptureWithReference) {
 
     EXPECT_EQ("// test_closure_1\n"
               "struct test_closure_1_env {\n"
-              "    int* x;\n"
+              "    int* const x;\n"
               "};\n"
-              "static void test_closure_1(struct test_closure_1_env* self_env, int arg1) {\n"
+              "static void test_closure_1(const struct test_closure_1_env* const self_env, const int arg1) {\n"
               "    *(self_env->x) = 5;\n"
               "}\n"
               "THREE_CHECK_CLOSURE_FUNCTION(test_closure_1);\n\n", visitor->declarationsString());
     EXPECT_EQ("void test(void);\n", visitor->internalHeaderString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
     EXPECT_EQ("void test(void) {\n"
-              "    int x = 0;\n"
+              "    const int x = 0;\n"
               "    THREE_CAPTURE_ENV(test_closure_1_env, &x);\n"
-              "    three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_HAS_REFERENCES);\n"
+              "    const three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_HAS_REFERENCES);\n"
               "}\n\n", visitor->bodyString());
 }
 

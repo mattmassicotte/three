@@ -39,7 +39,11 @@ namespace Three {
         for (const std::string& name : referenceNames) {
             NewVariable* v = parser.context()->scope()->variableForName(name);
 
-            envStruct.addSubtype(NewDataType::wrapInPointer(v->type, name));
+            // this must be writable, because that's the point
+            NewDataType type = v->type;
+            type.setAccess(NewDataType::Access::ReadWrite);
+
+            envStruct.addSubtype(NewDataType::wrapInPointer(type, name));
 
             // track the variable as referenced in this scope
             parser.context()->scope()->addReferencedVariable(name);
