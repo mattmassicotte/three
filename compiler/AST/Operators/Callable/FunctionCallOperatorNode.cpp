@@ -10,6 +10,8 @@ namespace Three {
 
         FunctionCallOperatorNode* node = new FunctionCallOperatorNode();
 
+        std::cout << receiver->recursiveStr() << std::endl;
+
         node->setReceiver(receiver);
 
         if (!CallableOperatorNode::parseArguments(parser, node)) {

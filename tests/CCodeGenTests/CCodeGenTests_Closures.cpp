@@ -56,16 +56,16 @@ TEST_F(CCodeGenTests_Closures, ClosureVariableCaptureWithReference) {
               "}\n\n", visitor->bodyString());
 }
 
-TEST_F(CCodeGenTests_Closures, DISABLED_InvokeClosurePointer) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(*{Int value} closure)\n"
+TEST_F(CCodeGenTests_Closures, InvokeClosurePointer) {
+    Three::CCodeGenVisitor* visitor = this->visit("def test(*{Int} closure)\n"
                                                   "    (*closure)(1)\n"
                                                   "end\n");
 
     EXPECT_EQ("", visitor->declarationsString());
-    EXPECT_EQ("void test(three_closure_t* closure);\n", visitor->internalHeaderString());
+    EXPECT_EQ("void test(const three_closure_t* const closure);\n", visitor->internalHeaderString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
-    EXPECT_EQ("void test(three_closure_t* closure) {\n"
-              "    THREE_CALL_CLOSURE(void (*)(void*, int), (*closure), 1);\n"
+    EXPECT_EQ("void test(const three_closure_t* const closure) {\n"
+              "    THREE_CALL_CLOSURE(void (*)(void* const, const int), (*closure), 1);\n"
               "}\n\n", visitor->bodyString());
 }
 

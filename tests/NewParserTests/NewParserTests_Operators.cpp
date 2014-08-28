@@ -115,6 +115,7 @@ TEST_F(ParserTests_Operators, DereferenceOperator) {
     OperatorNode* opNode = dynamic_cast<OperatorNode*>(node->childAtIndex(0));
 
     ASSERT_EQ("Dereference Operator", opNode->nodeName());
+    ASSERT_EQ(NewDataType::Kind::Integer, opNode->dataType().kind());
     ASSERT_EQ("x", dynamic_cast<VariableNode*>(opNode->childAtIndex(0))->name());
 }
 

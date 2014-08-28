@@ -990,6 +990,9 @@ namespace Three {
                 break;
             case Token::Type::PunctuationOpenBrace:
                 type = NewDataType(NewDataType::Kind::Closure);
+
+                // make sure to define the environment pointer
+                type.addParameter(NewDataType::wrapInPointer(NewDataType::Kind::Void));
                 break;
             default:
                 assert(0 && "Message: failed to parse a function type");

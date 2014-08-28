@@ -390,7 +390,10 @@ TEST_F(ParserTests_Types, GlobalClosure) {
     ASSERT_EQ("value", node->name());
     ASSERT_EQ(NewDataType::Closure, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
-    ASSERT_EQ(0, node->dataType().parameterCount());
+    ASSERT_EQ(1, node->dataType().parameterCount());
+    ASSERT_EQ(NewDataType::Kind::Pointer, node->dataType().parameterAtIndex(0).kind());
+    ASSERT_EQ(1, node->dataType().parameterAtIndex(0).subtypeCount());
+    ASSERT_EQ(NewDataType::Kind::Void, node->dataType().parameterAtIndex(0).subtypeAtIndex(0).kind());
     ASSERT_EQ(NewDataType::Void, node->dataType().returnType().kind());
 }
 
@@ -401,8 +404,8 @@ TEST_F(ParserTests_Types, GlobalClosureTakingSingleParam) {
 
     ASSERT_EQ(NewDataType::Closure, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
-    ASSERT_EQ(1, node->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().parameterAtIndex(0).kind());
+    ASSERT_EQ(2, node->dataType().parameterCount());
+    ASSERT_EQ(NewDataType::Integer, node->dataType().parameterAtIndex(1).kind());
     ASSERT_EQ(NewDataType::Void, node->dataType().returnType().kind());
 }
 
@@ -413,9 +416,9 @@ TEST_F(ParserTests_Types, GlobalClosureTakingTwoParams) {
 
     ASSERT_EQ(NewDataType::Closure, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
-    ASSERT_EQ(2, node->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().parameterAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Float, node->dataType().parameterAtIndex(1).kind());
+    ASSERT_EQ(3, node->dataType().parameterCount());
+    ASSERT_EQ(NewDataType::Integer, node->dataType().parameterAtIndex(1).kind());
+    ASSERT_EQ(NewDataType::Float, node->dataType().parameterAtIndex(2).kind());
     ASSERT_EQ(NewDataType::Void, node->dataType().returnType().kind());
 }
 
@@ -426,8 +429,8 @@ TEST_F(ParserTests_Types, GlobalClosureTakingAPointerParam) {
 
     ASSERT_EQ(NewDataType::Closure, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
-    ASSERT_EQ(1, node->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().parameterAtIndex(0).kind());
+    ASSERT_EQ(2, node->dataType().parameterCount());
+    ASSERT_EQ(NewDataType::Pointer, node->dataType().parameterAtIndex(1).kind());
     ASSERT_EQ(NewDataType::Void, node->dataType().returnType().kind());
 }
 
@@ -438,7 +441,7 @@ TEST_F(ParserTests_Types, GlobalClosureWithReturn) {
 
     ASSERT_EQ(NewDataType::Closure, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
-    ASSERT_EQ(0, node->dataType().parameterCount());
+    ASSERT_EQ(1, node->dataType().parameterCount());
     ASSERT_EQ(1, node->dataType().returnCount());
     ASSERT_EQ(NewDataType::Integer, node->dataType().returnType().kind());
 }
@@ -450,7 +453,7 @@ TEST_F(ParserTests_Types, GlobalClosureWithTwoReturns) {
 
     ASSERT_EQ(NewDataType::Closure, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
-    ASSERT_EQ(0, node->dataType().parameterCount());
+    ASSERT_EQ(1, node->dataType().parameterCount());
     ASSERT_EQ(NewDataType::Tuple, node->dataType().returnType().kind());
     ASSERT_EQ(2, node->dataType().returnType().subtypeCount());
     ASSERT_EQ(NewDataType::Integer, node->dataType().returnType().subtypeAtIndex(0).kind());

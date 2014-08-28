@@ -163,19 +163,23 @@ namespace Three {
     }
 
     void CCodeGenVisitor::visit(FunctionCallOperatorNode& node) {
-        // TODO: fix this
-        // if (node.receiverIsClosure()) {
-        //     *_currentSource << "THREE_CALL_CLOSURE(";
-        //     // *_currentSource << node.receiverNodeType().codeGenFunction("");
-        //     *_currentSource << ", ";
-        //     node.receiver()->accept(*this);
-        // 
-        //     if (node.childCount() > 0) {
-        //         *_currentSource << ", ";
-        //     }
-        // } else {
-        node.receiver()->accept(*this);
-        *_currentSource << "(";
+        NewDataType receiverType = node.receiver()->dataType();
+
+        if (receiverType.kind() == NewDataType::Kind::Closure) {
+            *_currentSource << "THREE_CALL_CLOSURE(";
+            // This is kind of abusing the CTypeCodeGenerator API a little. But, this bit of code-gen
+            // is pretty weird.
+            *_currentSource << CTypeCodeGenerator::codeGenFunctionType(receiverType, "*");
+            *_currentSource << ", ";
+            node.receiver()->accept(*this);
+        
+            if (node.childCount() > 0) {
+                *_currentSource << ", ";
+            }
+        } else {
+            node.receiver()->accept(*this);
+            *_currentSource << "(";
+        }
 
         node.eachChildWithLast([&] (ASTNode* child, bool last) {
             child->accept(*this);
