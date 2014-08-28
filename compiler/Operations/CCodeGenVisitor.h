@@ -58,6 +58,7 @@ namespace Three {
         void visit(class AtomicStatementNode& node);
         void visit(class BarrierNode& node);
         void visit(class ValueNode& node);
+        void visit(class CMacroNode& node);
 
         void visitChildren(class ASTNode& node, bool statements = false);
 

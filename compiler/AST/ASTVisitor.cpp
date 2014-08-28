@@ -166,4 +166,8 @@ namespace Three {
     void ASTVisitor::visit(class ValueNode& node) {
         std::cout << "Visiting value" << std::endl;
     }
+
+    void ASTVisitor::visit(class CMacroNode& node) {
+        std::cout << "Visiting C macro" << std::endl;
+    }
 }

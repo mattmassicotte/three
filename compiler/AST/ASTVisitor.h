@@ -45,5 +45,6 @@ namespace Three {
         virtual void visit(class AtomicStatementNode& node);
         virtual void visit(class BarrierNode& node);
         virtual void visit(class ValueNode& node);
+        virtual void visit(class CMacroNode& node);
     };
 }

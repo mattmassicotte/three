@@ -674,6 +674,10 @@ namespace Three {
         *_currentSource << node.value();
     }
 
+    void CCodeGenVisitor::visit(CMacroNode& node) {
+        *_currentSource << node.value();
+    }
+
     // For Loop Support
     void CCodeGenVisitor::forCondition(ForNode& node) {
         if (node.condition()) {
