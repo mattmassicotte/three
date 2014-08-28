@@ -274,17 +274,27 @@ TEST_F(ParserTests_Functions, SelfInMethodDefinition) {
     ASSERT_EQ("Self Variable", node->childAtIndex(0)->nodeName());
 }
 
-// TODO: reenable
-// TEST_F(ParserTests_Functions, Varargs) {
-//     Three::ASTNode* node = this->parseSingleFunction("def test(Vararg ap)\n"
-//                                                      "  Int a\n"
-//                                                      "  a = nextarg(Int, ap)\n"
-//                                                      "end\n");
-// 
-//     std::cout << node->recursiveStr() << std::endl;
-//     ASSERT_TRUE(false);
-// }
+TEST_F(ParserTests_Functions, Varargs) {
+    Three::ASTNode* node = this->parseSingleFunction("def test(Vararg ap)\n"
+                                                     "  Int a\n"
+                                                     "  a = nextarg(Int, ap)\n"
+                                                     "end\n");
 
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node);
+
+    ASSERT_EQ("Function Definition", func->nodeName());
+    ASSERT_EQ("test", func->name());
+
+    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(0, func->functionType().subtypeCount());
+    ASSERT_EQ(1, func->functionType().parameterCount());
+    ASSERT_EQ(NewDataType::Void, func->functionType().returnType().kind());
+
+    ASSERT_EQ(NewDataType::Kind::Vararg, func->functionType().parameterAtIndex(0).kind());
+    ASSERT_EQ("ap", func->functionType().parameterAtIndex(0).label());
+}
 
 TEST_F(ParserTests_Functions, FunctionWithStructParam) {
     ASTNode* node = this->parseNode("struct Foo\n"
