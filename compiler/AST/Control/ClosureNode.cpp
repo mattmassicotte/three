@@ -64,7 +64,12 @@ namespace Three {
                 return true;
             }
 
-            node->addChild(parser.parseStatement());
+            ASTNode* child = parser.parseStatement();
+            if (!child) {
+                return true; // we're done
+            }
+
+            node->addChild(child);
 
             return false;
         });

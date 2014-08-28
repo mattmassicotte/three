@@ -175,3 +175,18 @@ TEST_F(ParserTests_Closures, NestedClosureVariableWithCapture) {
     EXPECT_EQ("Referenced Variable", node->childAtIndex(0)->nodeName());
     EXPECT_EQ("Local Variable", node->childAtIndex(1)->nodeName());
 }
+
+TEST_F(ParserTests_Closures, ClosureWithEmptyBody) {
+    ASTNode* node = this->parseNodeWithBodies("def test()\n"
+                                                  "  {} closure = do () {\n"
+                                                  "  }\n"
+                                                  "end\n");
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    VariableDeclarationNode* varDecl = dynamic_cast<VariableDeclarationNode*>(node->childAtIndex(0));
+    ASSERT_EQ("Variable Declaration", varDecl->nodeName());
+
+    ASSERT_EQ("Closure", varDecl->initializerExpression()->nodeName());
+}

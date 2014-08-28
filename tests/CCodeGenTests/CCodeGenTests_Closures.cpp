@@ -69,7 +69,7 @@ TEST_F(CCodeGenTests_Closures, InvokeClosurePointer) {
               "}\n\n", visitor->bodyString());
 }
 
-TEST_F(CCodeGenTests_Closures, DISABLED_NestedClosures) {
+TEST_F(CCodeGenTests_Closures, NestedClosures) {
     Three::CCodeGenVisitor* visitor = this->visit("def test()\n"
                                                   "  {} closure = do () {\n"
                                                   "    {} nested_closure = do () {\n"
@@ -84,27 +84,27 @@ TEST_F(CCodeGenTests_Closures, DISABLED_NestedClosures) {
     EXPECT_EQ("// test_closure_3\n"
               "struct test_closure_3_env {\n"
               "};\n"
-              "static void test_closure_3(struct test_closure_3_env* self_env) {\n"
+              "static void test_closure_3(const struct test_closure_3_env* const self_env) {\n"
               "}\n"
               "THREE_CHECK_CLOSURE_FUNCTION(test_closure_3);\n\n"
               "// test_closure_2\n"
               "struct test_closure_2_env {\n"
               "};\n"
-              "static void test_closure_2(struct test_closure_2_env* self_env) {\n"
+              "static void test_closure_2(const struct test_closure_2_env* const self_env) {\n"
               "    THREE_CAPTURE_ENV(test_closure_3_env);\n"
-              "    three_closure_t double_nested_closure = THREE_MAKE_CLOSURE(test_closure_3, THREE_CLOSURE_FLAGS_DEFAULT);\n"
+              "    const three_closure_t double_nested_closure = THREE_MAKE_CLOSURE(test_closure_3, THREE_CLOSURE_FLAGS_DEFAULT);\n"
               "}\n"
               "THREE_CHECK_CLOSURE_FUNCTION(test_closure_2);\n\n"
               "// test_closure_1\n"
               "struct test_closure_1_env {\n"
               "};\n"
-              "static void test_closure_1(struct test_closure_1_env* self_env) {\n"
+              "static void test_closure_1(const struct test_closure_1_env* const self_env) {\n"
               "    THREE_CAPTURE_ENV(test_closure_2_env);\n"
-              "    three_closure_t nested_closure = THREE_MAKE_CLOSURE(test_closure_2, THREE_CLOSURE_FLAGS_DEFAULT);\n"
+              "    const three_closure_t nested_closure = THREE_MAKE_CLOSURE(test_closure_2, THREE_CLOSURE_FLAGS_DEFAULT);\n"
               "}\n"
               "THREE_CHECK_CLOSURE_FUNCTION(test_closure_1);\n\n", visitor->declarationsString());
     EXPECT_EQ("void test(void) {\n"
               "    THREE_CAPTURE_ENV(test_closure_1_env);\n"
-              "    three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_DEFAULT);\n"
+              "    const three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_DEFAULT);\n"
               "}\n\n", visitor->bodyString());
 }
