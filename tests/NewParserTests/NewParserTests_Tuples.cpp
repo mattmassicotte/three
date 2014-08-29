@@ -17,6 +17,36 @@ TEST_F(ParserTests_Tuples, ReturnTwoExpressions) {
     ASSERT_EQ(2, node->dataType().subtypeCount());
     ASSERT_EQ("Addition Operator", node->childAtIndex(0)->nodeName());
     ASSERT_EQ("Local Variable", node->childAtIndex(1)->nodeName());
+
+    ASSERT_EQ(NewDataType::Kind::Tuple, node->dataType().kind());
+    ASSERT_EQ(2, node->dataType().subtypeCount());
+    ASSERT_EQ(NewDataType::Kind::Integer, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
+    ASSERT_EQ(NewDataType::Kind::Integer, node->dataType().subtypeAtIndex(1).kind());
+    ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(1).access());
+}
+
+TEST_F(ParserTests_Tuples, DISABLED_ReturnTwoExpressionsWithMutability) {
+    ASTNode* node = this->parseSingleFunction("def test(Int a; Int, Int!)\n"
+                                              "  return a + a, a\n"
+                                              "end\n");
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Return", node->nodeName());
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Tuple", node->nodeName());
+    ASSERT_EQ(2, node->dataType().subtypeCount());
+    ASSERT_EQ("Addition Operator", node->childAtIndex(0)->nodeName());
+    ASSERT_EQ("Local Variable", node->childAtIndex(1)->nodeName());
+
+    ASSERT_EQ(NewDataType::Kind::Tuple, node->dataType().kind());
+    ASSERT_EQ(2, node->dataType().subtypeCount());
+    ASSERT_EQ(NewDataType::Kind::Integer, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
+    ASSERT_EQ(NewDataType::Kind::Integer, node->dataType().subtypeAtIndex(1).kind());
+    ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().subtypeAtIndex(1).access());
 }
 
 TEST_F(ParserTests_Tuples, ReturnTwoExpressionsTailingIf) {
