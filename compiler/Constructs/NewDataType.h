@@ -53,6 +53,7 @@ namespace Three {
 
     public:
         static NewDataType wrapInPointer(const NewDataType& type, const std::string& label = "");
+        static NewDataType mutableVersion(const NewDataType& type);
 
     public:
         NewDataType(Kind k=Kind::Undefined);

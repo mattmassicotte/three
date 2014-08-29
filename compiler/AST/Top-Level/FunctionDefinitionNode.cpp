@@ -205,10 +205,26 @@ namespace Three {
         return &_bodyString;
     }
 
-    void FunctionDefinitionNode::defineVariableForReturnType(NewScope* scope, const NewDataType& type) const {
-        if (type.label().size() == 0) {
+    void FunctionDefinitionNode::eachNamedReturn(std::function<void (const NewDataType&)> block) const {
+        // tuples have to be treated special here
+        if (_functionType.returnType().kind() == NewDataType::Kind::Tuple) {
+            _functionType.returnType().eachSubtypeWithLast([&] (const NewDataType& type, bool last) {
+                if (type.label().size() > 0) {
+                    block(NewDataType::mutableVersion(type));
+                }
+            });
+
             return;
         }
+
+        // just a simple return type
+        if (_functionType.returnType().label().size() > 0) {
+            block(NewDataType::mutableVersion(_functionType.returnType()));
+        }
+    }
+
+    void FunctionDefinitionNode::defineVariableForReturnType(NewScope* scope, const NewDataType& type) const {
+        assert(type.label().size() != 0);
 
         scope->defineVariableTypeForName(type, type.label());
     }
@@ -220,15 +236,10 @@ namespace Three {
             scope->defineVariableTypeForName(type, type.label());
         });
 
-        // now, create variables for each named return. And, we have to treat tuples
-        // special
-        if (_functionType.returnType().kind() == NewDataType::Kind::Tuple) {
-            _functionType.returnType().eachSubtypeWithLast([&] (const NewDataType& type, bool last) {
-                this->defineVariableForReturnType(scope, type);
-            });
-        } else {
-            this->defineVariableForReturnType(scope, _functionType.returnType());
-        }
+        // now, create variables for each named return
+        this->eachNamedReturn([&] (const NewDataType& type) {
+            this->defineVariableForReturnType(scope, type);
+        });
     }
 
     bool FunctionDefinitionNode::parseBody(Parser& parser) {

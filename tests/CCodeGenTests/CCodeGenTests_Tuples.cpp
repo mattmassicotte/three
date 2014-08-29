@@ -13,10 +13,13 @@ TEST_F(CCodeGenTests_Tuples, FunctionDefinitionWithMultipleReturns) {
               "} const_int_const_int_tuple_t;\n"
               "const const_int_const_int_tuple_t test(void);\n", visitor->internalHeaderString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
-    EXPECT_EQ("const const_int_const_int_tuple_t test(void) {\n}\n\n", visitor->bodyString());
+    EXPECT_EQ("const const_int_const_int_tuple_t test(void) {\n"
+              "    int a;\n"
+              "    int b;\n"
+              "}\n\n", visitor->bodyString());
 }
 
-TEST_F(CCodeGenTests_Tuples, DISABLED_FunctionDefinitionWithMultipleReturnsWithoutNames) {
+TEST_F(CCodeGenTests_Tuples, FunctionDefinitionWithMultipleReturnsWithoutNames) {
     Three::CCodeGenVisitor* visitor = this->visit("def test(; Int, Int)\nend\n");
 
     EXPECT_EQ("", visitor->declarationsString());
@@ -48,6 +51,8 @@ TEST_F(CCodeGenTests_Tuples, CallFunctionWithMultipleReturns) {
               "void test(void);\n", visitor->internalHeaderString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
     EXPECT_EQ("const const_int_const_int_tuple_t foo(void) {\n"
+              "    int a;\n"
+              "    int b;\n"
               "    return (const const_int_const_int_tuple_t){1, 2};\n"
               "}\n\n"
               "void test(void) {\n"

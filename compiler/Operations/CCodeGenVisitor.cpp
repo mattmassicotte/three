@@ -44,6 +44,12 @@ namespace Three {
         _currentSource->print(functionString);
         _currentSource->printLineAndIndent(" {");
 
+        // create locals for the named returns, if any
+        node.eachNamedReturn([&] (const NewDataType& type) {
+            (*_currentSource) << CTypeCodeGenerator::codeGen(type, type.label());
+            _currentSource->printLine(";");
+        });
+
         this->visitChildren(node);
 
         _currentSource->outdentAndPrintLine("}");
@@ -834,11 +840,26 @@ namespace Three {
     }
 
     void CCodeGenVisitor::createDefinitionForTuple(const NewDataType& tupleType, CSource& source) {
+        uint32_t unlabeledCount = 1;
+
         source.printLineAndIndent("typedef struct {");
 
         tupleType.eachSubtypeWithLast([&] (const NewDataType& type, bool last) {
             source << CTypeCodeGenerator::codeGen(type);
-            source << " " << type.label();
+
+            if (type.label().size() == 0) {
+                // stupid hoop to jump through to get the uint32_t to print to the
+                // CSource
+                std::stringstream s;
+
+                s << " member_" << unlabeledCount;
+
+                source << s.str();
+
+                unlabeledCount++;
+            } else {
+                source << " " << type.label();
+            }
 
             source.printLine(";");
         });

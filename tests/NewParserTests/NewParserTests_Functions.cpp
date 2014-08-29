@@ -199,7 +199,7 @@ TEST_F(ParserTests_Functions, FunctionWithOneNamedReturn) {
 }
 
 TEST_F(ParserTests_Functions, FunctionNamedReturnIsALocal) {
-    ASTNode* node = this->parseSingleFunction("def foo(; Int! x)\n"
+    ASTNode* node = this->parseSingleFunction("def foo(; Int x)\n"
                                               "  x = 1\n"
                                               "  return x\n"
                                               "end\n");
@@ -210,6 +210,7 @@ TEST_F(ParserTests_Functions, FunctionNamedReturnIsALocal) {
     node = node->childAtIndex(0);
     ASSERT_EQ("Assign Operator", node->nodeName());
     ASSERT_EQ("Local Variable", node->childAtIndex(0)->nodeName());
+    ASSERT_EQ(NewDataType::Access::ReadWrite, node->childAtIndex(0)->dataType().access());
     ASSERT_EQ("Integer Literal", node->childAtIndex(1)->nodeName());
 }
 

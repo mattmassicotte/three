@@ -10,6 +10,14 @@ namespace Three {
         return ptr;
     }
 
+    NewDataType NewDataType::mutableVersion(const NewDataType& type) {
+        NewDataType newType(type);
+
+        newType.setAccess(NewDataType::Access::ReadWrite);
+
+        return newType;
+    }
+
     NewDataType::NewDataType(Kind k) :
         _kind(k),
         _widthSpecifier(0),

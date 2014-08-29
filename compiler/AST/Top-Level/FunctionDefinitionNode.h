@@ -32,6 +32,8 @@ namespace Three {
         std::string fullName() const;
         std::vector<std::string> namespaceComponents;
 
+        void eachNamedReturn(std::function<void (const NewDataType&)> block) const;
+
     private:
         void defineVariableForReturnType(NewScope* scope, const NewDataType& type) const;
         void defineParameterVariablesInScope(NewScope* scope) const;
