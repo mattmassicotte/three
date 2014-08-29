@@ -205,12 +205,30 @@ namespace Three {
         return &_bodyString;
     }
 
-    void FunctionDefinitionNode::defineParameterVariablesInScope(NewScope* scope) {
+    void FunctionDefinitionNode::defineVariableForReturnType(NewScope* scope, const NewDataType& type) const {
+        if (type.label().size() == 0) {
+            return;
+        }
+
+        scope->defineVariableTypeForName(type, type.label());
+    }
+
+    void FunctionDefinitionNode::defineParameterVariablesInScope(NewScope* scope) const {
         // create variables for all arguments in this scope, including the special self
         // variable if this is a method
         _functionType.eachParameterWithLast([&] (const NewDataType& type, bool last) {
             scope->defineVariableTypeForName(type, type.label());
         });
+
+        // now, create variables for each named return. And, we have to treat tuples
+        // special
+        if (_functionType.returnType().kind() == NewDataType::Kind::Tuple) {
+            _functionType.returnType().eachSubtypeWithLast([&] (const NewDataType& type, bool last) {
+                this->defineVariableForReturnType(scope, type);
+            });
+        } else {
+            this->defineVariableForReturnType(scope, _functionType.returnType());
+        }
     }
 
     bool FunctionDefinitionNode::parseBody(Parser& parser) {

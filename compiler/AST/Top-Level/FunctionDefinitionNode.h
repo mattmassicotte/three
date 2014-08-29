@@ -33,7 +33,8 @@ namespace Three {
         std::vector<std::string> namespaceComponents;
 
     private:
-        void defineParameterVariablesInScope(NewScope* scope);
+        void defineVariableForReturnType(NewScope* scope, const NewDataType& type) const;
+        void defineParameterVariablesInScope(NewScope* scope) const;
 
     private:
         NewDataType _functionType;

@@ -18,6 +18,7 @@ namespace Three {
         NewVariable* variable = parser.context()->scope()->variableForName(identifier);
         if (!variable) {
             parser.context()->addMessage(new UnrecognizedVariableMessage(identifier));
+            return nullptr;
         }
 
         if (parser.context()->functionForName(identifier).kind() != NewDataType::Kind::Undefined) {

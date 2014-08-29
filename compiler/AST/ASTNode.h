@@ -21,7 +21,7 @@ namespace Three {
         ASTNode(const ASTNode& other) = delete;
         virtual ~ASTNode();
 
-        void     addChild(ASTNode* node);
+        bool     addChild(ASTNode* node);
         ASTNode* childAtIndex(uint32_t i) const;
         ASTNode* lastChild() const;
         uint32_t childCount() const;

@@ -41,13 +41,7 @@ protected:
         _parser->parse(_lexer, _context);
 
         // handle messages
-        for (int i = 0; i < _context->messageCount(); ++i) {
-            std::cout << _context->messageAtIndex(i)->str() << std::endl;
-        }
-
-        if (_context->messageCount() > 0) {
-            return nullptr;
-        }
+        this->printMessagesIfPresent();
 
         return _context;
     }
@@ -56,6 +50,10 @@ protected:
         this->parse(input);
 
         _parser->parseFunctionBodies(_context);
+
+        // make sure to print messages here as well, because
+        // new things could have been added while parsing the bodies
+        this->printMessagesIfPresent();
 
         return _context;
     }
@@ -82,6 +80,26 @@ protected:
 
     void setSkipImports(bool value) {
         _skipImports = value;
+    }
+
+    uint32_t messageCount() const {
+        return _context->messageCount();
+    }
+
+    bool printMessagesIfPresent() const {
+        if (!this->messageCount()) {
+            return false;
+        }
+
+        this->printMessages();
+
+        return true;
+    }
+
+    void printMessages() const {
+        for (int i = 0; i < _context->messageCount(); ++i) {
+            std::cout << _context->messageAtIndex(i)->str() << std::endl;
+        }
     }
 
     std::istringstream* _stream;

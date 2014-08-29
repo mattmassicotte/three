@@ -16,10 +16,14 @@ namespace Three {
         }
     }
 
-    void ASTNode::addChild(ASTNode* node) {
-        assert(node && "argument cannot be NULL");
+    bool ASTNode::addChild(ASTNode* node) {
+        if (!node) {
+            return false;
+        }
 
         _childNodes.push_back(node);
+
+        return true;
     }
 
     ASTNode* ASTNode::childAtIndex(uint32_t i) const {

@@ -198,15 +198,19 @@ TEST_F(ParserTests_Functions, FunctionWithOneNamedReturn) {
     ASSERT_EQ("x", func->functionType().returnType().label());
 }
 
-TEST_F(ParserTests_Functions, DISABLED_FunctionNamedReturnIsALocal) {
-    ASTNode* node = this->parseNode("def foo(; Int! x)\n"
-                                    "  x = 1\n"
-                                    "  return x\n"
-                                    "end\n");
+TEST_F(ParserTests_Functions, FunctionNamedReturnIsALocal) {
+    ASTNode* node = this->parseSingleFunction("def foo(; Int! x)\n"
+                                              "  x = 1\n"
+                                              "  return x\n"
+                                              "end\n");
 
-    FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
+    ASSERT_EQ("Function Definition", node->nodeName());
+    ASSERT_EQ(2, node->childCount());
 
-    ASSERT_EQ("Function Definition", func->nodeName());
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Assign Operator", node->nodeName());
+    ASSERT_EQ("Local Variable", node->childAtIndex(0)->nodeName());
+    ASSERT_EQ("Integer Literal", node->childAtIndex(1)->nodeName());
 }
 
 TEST_F(ParserTests_Functions, FunctionWithFunctionParam) {

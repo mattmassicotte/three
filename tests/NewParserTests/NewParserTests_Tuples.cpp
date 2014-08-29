@@ -3,6 +3,21 @@
 class ParserTests_Tuples : public ParserTestsBase {
 };
 
+TEST_F(ParserTests_Tuples, FunctionNamedReturnsAreLocal) {
+    ASTNode* node = this->parseSingleFunction("def foo(; Int! x, Int y)\n"
+                                              "  x = y\n"
+                                              "  return x, y\n"
+                                              "end\n");
+
+    ASSERT_EQ("Function Definition", node->nodeName());
+    ASSERT_EQ(2, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Assign Operator", node->nodeName());
+    ASSERT_EQ("Local Variable", node->childAtIndex(0)->nodeName());
+    ASSERT_EQ("Local Variable", node->childAtIndex(1)->nodeName());
+}
+
 TEST_F(ParserTests_Tuples, ReturnTwoExpressions) {
     ASTNode* node = this->parseSingleFunction("def test(Int a; Int, Int)\n"
                                               "  return a + a, a\n"
