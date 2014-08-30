@@ -1,4 +1,5 @@
 #include "compiler/Preprocessing/Preprocessor.h"
+#include "runtime/platform.h"
 
 #include <assert.h>
 #include <gtest/gtest.h>
@@ -43,3 +44,12 @@ TEST_F(PreprocessorTest, PreprocessedString) {
     ASSERT_EQ("include \"abc\"\n", output);
 }
 
+TEST_F(PreprocessorTest, PreprocessorPlatformSelect) {
+#if THREE_PLATFORM_DARWIN
+    std::string output = this->preprocess("%if darwin\nabc\n%else\ndef\n%end\n");
+#else
+    std::string output = "unimplemented";
+#endif
+
+    ASSERT_EQ("abc\n", output);
+}
