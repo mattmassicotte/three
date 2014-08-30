@@ -27,6 +27,8 @@ namespace Three {
         void setCapturing(bool value);
         std::string scopedBasename() const;
         void setScopedBasename(const std::string& value);
+        void setCurrentFunctionReturnType(const NewDataType& type);
+        NewDataType currentFunctionReturnType() const;
         NewScope* parent() const;
         void setParent(NewScope* p);
 
@@ -49,6 +51,7 @@ namespace Three {
     private:
         NewScope* _parent;
         bool _capturing;
+        NewDataType _returnType;
 
         std::map<std::string, uint32_t> _scopedNames;
         std::string _scopedBasename;

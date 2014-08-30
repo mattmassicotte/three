@@ -40,6 +40,20 @@ namespace Three {
         _scopedBasename = value;
     }
 
+    void NewScope::setCurrentFunctionReturnType(const NewDataType& type) {
+        _returnType = type;
+    }
+
+    NewDataType NewScope::currentFunctionReturnType() const {
+        if (_returnType.defined()) {
+            return _returnType;
+        }
+
+        assert(_parent);
+
+        return _parent->currentFunctionReturnType();
+    }
+
     NewScope* NewScope::parent() const {
         return _parent;
     }

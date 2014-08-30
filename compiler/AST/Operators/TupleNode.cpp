@@ -1,7 +1,7 @@
 #include "TupleNode.h"
 
 namespace Three {
-    TupleNode* TupleNode::parse(Parser& parser, ASTNode* firstElement, bool fullExpressions) {
+    TupleNode* TupleNode::parse(Parser& parser, ASTNode* firstElement, bool fullExpressions, const NewDataType* expectedType) {
         assert(firstElement);
 
         TupleNode* node = new TupleNode();
@@ -49,15 +49,22 @@ namespace Three {
             return nullptr;
         }
 
-        // we now need to construct the type
-        NewDataType type = NewDataType(NewDataType::Kind::Tuple);
-        node->eachChildWithLast([&] (const ASTNode* child, bool last) {
-            type.addSubtype(child->dataType());
-        });
+        if (expectedType) {
+            node->_type = *expectedType;
+        } else {
+            // we now need to construct the type
+            NewDataType type = NewDataType(NewDataType::Kind::Tuple);
+            node->eachChildWithLast([&] (const ASTNode* child, bool last) {
+                type.addSubtype(child->dataType());
+            });
 
-        node->_type = type;
+            node->_type = type;
+        }
 
-        assert(type.subtypeCount() > 0);
+        // we must have more than one child
+        assert(node->childCount() > 0);
+
+        assert(node->childCount() == node->_type.subtypeCount() && "Message: tuple not compatible with expected type");
 
         return node;
     }

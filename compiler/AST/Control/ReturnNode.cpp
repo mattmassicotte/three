@@ -12,6 +12,8 @@ namespace Three {
 
         node->_transactionName = parser.context()->scope()->currentScopedName("tx");
 
+        NewDataType returnType = parser.context()->scope()->currentFunctionReturnType();
+
         ASTNode* child = nullptr;
 
         switch (parser.helper()->peek().type()) {
@@ -19,7 +21,7 @@ namespace Three {
             case Token::Type::KeywordIf: // for tailing ifs
                 break;
             default:
-                child = parser.parseExpressionWithTuples();
+                child = parser.parseExpressionWithTuples(&returnType);
                 if (child) {
                     node->addChild(child);
                 }

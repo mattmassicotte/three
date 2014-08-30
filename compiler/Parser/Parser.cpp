@@ -269,7 +269,7 @@ namespace Three {
         return node;
     }
 
-    ASTNode* Parser::parseExpressionWithTuples() {
+    ASTNode* Parser::parseExpressionWithTuples(const NewDataType* expectedType) {
         ASTNode* node = this->parseExpression();
 
         if (!node) {
@@ -277,7 +277,7 @@ namespace Three {
         }
 
         if (_helper->peek().type() == Token::Type::PunctuationComma) {
-            return TupleNode::parse(*this, node);
+            return TupleNode::parse(*this, node, true, expectedType);
         }
 
         return node;

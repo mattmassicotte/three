@@ -5,7 +5,7 @@
 namespace Three {
     class TupleNode : public ASTNode {
     public:
-        static TupleNode* parse(Parser& parser, ASTNode* firstElement, bool fullExpressions=true);
+        static TupleNode* parse(Parser& parser, ASTNode* firstElement, bool fullExpressions, const NewDataType* expectedType = nullptr);
 
     public:
         NewDataType dataType() const;

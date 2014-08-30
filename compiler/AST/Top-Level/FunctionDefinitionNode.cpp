@@ -244,6 +244,8 @@ namespace Three {
 
     bool FunctionDefinitionNode::parseBody(Parser& parser) {
         parser.context()->pushScope();
+        parser.context()->scope()->setCurrentFunctionReturnType(_functionType.returnType());
+
         parser.context()->scope()->setScopedBasename(this->name());
 
         this->defineParameterVariablesInScope(parser.context()->scope());

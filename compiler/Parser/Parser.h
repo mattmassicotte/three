@@ -40,7 +40,7 @@ namespace Three {
         ASTNode* parseTopLevelNode();
         ASTNode* parseStatement();
         ASTNode* parseExpressionStatement();
-        ASTNode* parseExpressionWithTuples();
+        ASTNode* parseExpressionWithTuples(const NewDataType* expectedType = nullptr);
         ASTNode* parseExpression(uint32_t precedence=Token::MinimumPrecedence);
         ASTNode* parseExpressionElement();
         ASTNode* parseExpressionElementWithoutTailingOperators();

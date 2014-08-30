@@ -41,7 +41,7 @@ TEST_F(ParserTests_Tuples, ReturnTwoExpressions) {
     ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(1).access());
 }
 
-TEST_F(ParserTests_Tuples, DISABLED_ReturnTwoExpressionsWithMutability) {
+TEST_F(ParserTests_Tuples, ReturnTwoExpressionsWithMutability) {
     ASTNode* node = this->parseSingleFunction("def test(Int a; Int, Int!)\n"
                                               "  return a + a, a\n"
                                               "end\n");
