@@ -32,6 +32,18 @@ TEST_F(PreprocessorTest, IfEndDirective) {
     ASSERT_EQ("abc\n", output);
 }
 
+TEST_F(PreprocessorTest, TextAfterEnd) {
+    std::string output = this->preprocess("%if true\nabc\n%end\ndef\n");
+
+    ASSERT_EQ("abc\ndef\n", output);
+}
+
+TEST_F(PreprocessorTest, TextBeforeIf) {
+    std::string output = this->preprocess("def\n%if true\nabc\n%end\n");
+
+    ASSERT_EQ("def\nabc\n", output);
+}
+
 TEST_F(PreprocessorTest, IfElseEndDirective) {
     std::string output = this->preprocess("%if false\nabc\n%else\ndef\n%end\n");
 
