@@ -56,6 +56,15 @@ TEST_F(ParserTests_Metafunctions, DISABLED_Cardinalityof) {
     ASSERT_TRUE(false);
 }
 
+TEST_F(ParserTests_Metafunctions, DISABLED_abiof) {
+    Three::ASTNode* node = this->parseSingleFunction("def test()\n"
+                                                     "  abiof(test)\n"
+                                                     "end\n");
+    
+    std::cout << node->recursiveStr() << std::endl;
+    ASSERT_TRUE(false);
+}
+
 TEST_F(ParserTests_Metafunctions, Cast) {
     Three::ASTNode* node = this->parseSingleFunction("def test(Int a)\n"
                                                      "  a = cast(Int, 5)\n"
