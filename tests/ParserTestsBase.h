@@ -1,6 +1,7 @@
 #include "compiler/Lexer/Lexer.h"
 #include "compiler/Parser/Parser.h"
 #include "compiler/Messages/Message.h"
+#include "compiler/Preprocessing/Preprocessor.h"
 
 class ParserTestsBase : public testing::Test {
 protected:
@@ -27,8 +28,13 @@ protected:
         assert(!_stream);
         _stream = new std::istringstream(inputString);
 
+        // pre-process
+        std::string preprocessedString = Three::Preprocessor::process(_stream);
+
+        std::istringstream stream(preprocessedString);
+
         assert(!_lexer);
-        _lexer = new Three::Lexer(_stream);
+        _lexer = new Three::Lexer(&stream);
 
         assert(!_parser);
         _parser = new Three::Parser();

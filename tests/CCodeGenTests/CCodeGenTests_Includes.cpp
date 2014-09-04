@@ -16,3 +16,11 @@ TEST_F(CCodeGenTests_Includes, PublicIncludeNode) {
     EXPECT_EQ("#include <stdio.h>\n#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
     EXPECT_EQ("", visitor->bodyString());
 }
+
+TEST_F(CCodeGenTests_Includes, ProcessorGuardedInclude) {
+    Three::CCodeGenVisitor* visitor = this->visit("%if true\npublic\ninclude <stdio.h>\n%end\n");
+
+    EXPECT_EQ("", visitor->internalHeaderString());
+    EXPECT_EQ("#include <stdio.h>\n#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
+    EXPECT_EQ("", visitor->bodyString());
+}

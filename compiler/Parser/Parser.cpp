@@ -3,18 +3,27 @@
 #include "compiler/constructs/NewDataType.h"
 #include "compiler/constructs/NewScope.h"
 #include "compiler/Lexer/Lexer.h"
+#include "compiler/Preprocessing/Preprocessor.h"
 
 #include "compiler/AST.h"
 
 #include "compiler/Messages/EmptyInputMessage.h"
 #include "compiler/Messages/UnparsableMessage.h"
+#include "compiler/Messages/UnableToCompleteParseMessage.h"
 
 #include <fstream>
 
 namespace Three {
     bool Parser::parse(const char* inputPath, ParseContext* context) {
         std::ifstream file(inputPath);
-        Three::Lexer lexer(&file);
+
+        // pre-process
+        std::string preprocessedString = Three::Preprocessor::process(&file);
+
+        std::istringstream stream(preprocessedString);
+
+        // create a lexer from the pre-processed stream
+        Three::Lexer lexer(&stream);
 
         Three::Parser parser;
 
@@ -92,13 +101,13 @@ namespace Three {
         _helper->parseUntil(false, [&] (const Token& token) {
             ASTNode* node = this->parseTopLevelNode();
 
-            if (!node) {
-                return true; // abort
-            }
-
-            _context->rootNode()->addChild(node);
-            return false; // continue
+            return !_context->rootNode()->addChild(node);
         });
+
+        // if there are tokens left here, its an error
+        if (!_helper->lexer()->atEnd()) {
+            _context->addMessage(new UnableToCompleteParseMessage());
+        }
     }
 
     bool Parser::parseFunctionBodies(ParseContext* context) {
