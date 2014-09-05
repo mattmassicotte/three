@@ -59,6 +59,7 @@ namespace Three {
             node->addChild(member);
 
             if (!parser.helper()->parseNewline()) {
+                std::cout << parser.helper()->peek().str() << std::endl;
                 assert(0 && "Message: composite type member must be followed by a newline");
             }
         });

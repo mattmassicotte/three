@@ -21,6 +21,23 @@ TEST_F(ParserTests_CustomTypes, Structure) {
     ASSERT_EQ(NewDataType::Kind::Structure, this->context()->typeKindWithName("MyStruct"));
 }
 
+TEST_F(ParserTests_CustomTypes, NamespacedStructure) {
+    ASTNode* node = this->parseNode("namespace Foo\n"
+                                    "  struct MyStruct\n"
+                                    "  end\n"
+                                    "end\n");
+
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Namespace", node->nodeName());
+
+    StructureNode* structNode = dynamic_cast<StructureNode*>(node->childAtIndex(0));
+
+    ASSERT_EQ("Structure Definition", structNode->nodeName());
+    ASSERT_EQ("MyStruct", structNode->name());
+}
+
 TEST_F(ParserTests_CustomTypes, StructureWithPacking) {
     ASTNode* node = this->parseNode("struct:4 MyStruct\n"
                                     "end\n");

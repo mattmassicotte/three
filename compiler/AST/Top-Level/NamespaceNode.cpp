@@ -10,21 +10,17 @@ namespace Three {
 
         NamespaceNode* node = new NamespaceNode();
 
-        assert(parser.helper()->peek().type() == Token::Type::Identifier);
-        if (!parser.isAtIdentifierAvailableForDefinition()) {
-            assert(0 && "Message: namespace name isn't avaiable for definition");
-        }
-
-        node->_name = parser.helper()->nextStr();
+        node->_name = parser.parseMultiPartIdentifier();
 
         if (!parser.helper()->parseNewline()) {
             assert(0 && "Message: new line expected after namespace definition");
         }
 
         parser.context()->pushScope();
-        parser.context()->scope()->namespaceString = node->_name;
+        parser.context()->scope()->namespaceString = node->name();
 
         parser.helper()->parseUntilEnd([&] () {
+            parser.helper()->parseNewlines();
             node->addChild(parser.parseTopLevelNode());
         });
 

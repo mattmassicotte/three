@@ -63,10 +63,12 @@ namespace Three {
             case NewDataType::Kind::Vararg:
             case NewDataType::Kind::Tuple:
             case NewDataType::Kind::CInt:
+            case NewDataType::Kind::CUnsignedInt:
             case NewDataType::Kind::Closure:
             case NewDataType::Kind::Structure:
             case NewDataType::Kind::Enumeration:
             case NewDataType::Kind::Union:
+            case NewDataType::Kind::CStructure:
             case NewDataType::Kind::CStructPrefixedStructure:
                 s << CTypeCodeGenerator::codeGenScalarType(type);
                 break;
@@ -93,7 +95,6 @@ namespace Three {
                 s << "void";
                 break;
             case NewDataType::Kind::Integer:
-            case NewDataType::Kind::CInt:
                 s << "int";
                 break;
             case NewDataType::Kind::Boolean:
@@ -129,10 +130,28 @@ namespace Three {
             case NewDataType::Kind::Structure:
             case NewDataType::Kind::Enumeration:
             case NewDataType::Kind::Union:
+            case NewDataType::Kind::CStructure:
                 s << type.name();
                 break;
             case NewDataType::Kind::CStructPrefixedStructure:
                 s << std::string("struct ") + type.name();
+                break;
+            case NewDataType::Kind::CUnsignedInt:
+                // This is a bit weird, but we need to preserve the type's name during codegen.
+                // The actual underlying type will be correct here, but its way easier to understand
+                // if we use any typedef'd name that was applied.
+                if (type.name().size() > 0) {
+                    s << type.name();
+                } else {
+                    s << "unsigned int";
+                }
+                break;
+            case NewDataType::Kind::CInt:
+                if (type.name().size() > 0) {
+                    s << type.name();
+                } else {
+                    s << "int";
+                }
                 break;
             default:
                 assert(0 && "Bug: unhandled scalar C type");

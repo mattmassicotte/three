@@ -211,20 +211,58 @@ namespace Three {
         }
 
         CXType cType = clang_getCursorType(declInfo->cursor);
+        bool isTypeDef = cType.kind == CXType_Typedef;
 
-        // resolve to underlying type, if we are at a typedef
-        if (cType.kind == CXType_Typedef) {
-            cType = clang_getTypedefDeclUnderlyingType(declInfo->cursor);
-        }
+        // resolve to underlying type
+        cType = clang_getCanonicalType(cType);
 
         NewDataType type;
 
+        type.setName(name);
+
         switch (cType.kind) {
+            case CXType_SChar:
+                type.setKind(NewDataType::Kind::CChar);
+                break;
+            case CXType_UChar:
+                type.setKind(NewDataType::Kind::CUnsignedChar);
+                break;
+            case CXType_Short:
+                type.setKind(NewDataType::Kind::CShort);
+                break;
+            case CXType_UShort:
+                type.setKind(NewDataType::Kind::CUnsignedShort);
+                break;
             case CXType_Int:
                 type.setKind(NewDataType::Kind::CInt);
                 break;
+            case CXType_UInt:
+                type.setKind(NewDataType::Kind::CUnsignedInt);
+                break;
+            case CXType_Long:
+                type.setKind(NewDataType::Kind::CLong);
+                break;
+            case CXType_ULong:
+                type.setKind(NewDataType::Kind::CUnsignedLong);
+                break;
+            case CXType_LongLong:
+                type.setKind(NewDataType::Kind::CLongLong);
+                break;
+            case CXType_ULongLong:
+                type.setKind(NewDataType::Kind::CUnsignedLongLong);
+                break;
+            case CXType_Record:
+                // if this is a typedef, we don't need the struct prefix
+                type.setKind(isTypeDef ? NewDataType::Kind::CStructure : NewDataType::Kind::CStructPrefixedStructure);
+                break;
+            case CXType_Pointer:
+                type.setKind(NewDataType::Kind::Pointer);
+                // TODO: use clang_getPointeeType to define the pointed-to type as well 
+                break;
             default:
-                // std::cout << "What do we do about " << clang_getCString(clang_getTypeKindSpelling(cType.kind)) << std::endl;
+                // if (verbose) {
+                    std::cout << "[Indexer] Unhandled C Type '" << clang_getCString(clang_getTypeKindSpelling(cType.kind)) << "'" << std::endl;
+                // }
                 return;
         }
 
@@ -400,9 +438,9 @@ static void indexDeclaration(CXClientData clientData, const CXIdxDeclInfo* declI
         case CXIdxEntity_Enum:
             break;
         case CXIdxEntity_Struct:
-            // if (name.length() > 0) {
-            //     index->addType(name, Three::DataType::Flavor::Structure);
-            // }
+            if (name.length() > 0) {
+               index->addType(name, declInfo);
+            }
             break;
         case CXIdxEntity_Union:
             // if (name.length() > 0) {

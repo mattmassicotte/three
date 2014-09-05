@@ -39,3 +39,36 @@ TEST_F(ParserTests_Directives, Namespace) {
     ASSERT_EQ("Namespace", node->nodeName());
     ASSERT_EQ("Foo", dynamic_cast<NamespaceNode*>(node)->name());
 }
+
+TEST_F(ParserTests_Directives, NestedNamespace) {
+    ASTNode* node = this->parseNode("namespace Foo::Bar\n"
+                                    "  def test(Int x)\n"
+                                    "  end\n"
+                                    "end\n");
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Namespace", node->nodeName());
+    ASSERT_EQ("Foo::Bar", dynamic_cast<NamespaceNode*>(node)->name());
+}
+
+TEST_F(ParserTests_Directives, EmptyNamespace) {
+    ASTNode* node = this->parseNode("namespace Foo\n"
+                                    "end\n");
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Namespace", node->nodeName());
+    ASSERT_EQ("Foo", dynamic_cast<NamespaceNode*>(node)->name());
+}
+
+TEST_F(ParserTests_Directives, EmptyNamespaceWithWhitespace) {
+    ASTNode* node = this->parseNode("namespace Foo\n"
+                                    "\n"
+                                    "end\n");
+
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Namespace", node->nodeName());
+    ASSERT_EQ("Foo", dynamic_cast<NamespaceNode*>(node)->name());
+}
+

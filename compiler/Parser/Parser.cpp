@@ -10,6 +10,7 @@
 #include "compiler/Messages/EmptyInputMessage.h"
 #include "compiler/Messages/UnparsableMessage.h"
 #include "compiler/Messages/UnableToCompleteParseMessage.h"
+#include "compiler/Messages/ExpectedIdentifierMessage.h"
 
 #include <fstream>
 
@@ -140,13 +141,11 @@ namespace Three {
     ASTNode* Parser::parseTopLevelNode() {
         ASTNode* node = nullptr;
 
+        // first thing is first, advance past newlines
+        _helper->parseNewlines();
+
         if (this->verbose()) {
             std::cout << "Parser: top level '" << this->helper()->peek().str() << "'" << std::endl;
-        }
-
-        // first thing is first, advance past newlines
-        if (_helper->peek().type() == Token::Type::Newline) {
-            _helper->parseNewlines();
         }
 
         // easy cases
@@ -179,6 +178,8 @@ namespace Three {
                 return VisibilityNode::parse(*this);
             case Token::Type::KeywordNamespace:
                 return NamespaceNode::parse(*this);
+            case Token::Type::KeywordEnd:
+                return nullptr;
             default:
                 break;
         }
@@ -450,7 +451,7 @@ namespace Three {
                 assert(0 && "Message: Invalid multi-part identifier");
             }
 
-            s << _helper->next().str();
+            s << _helper->nextStr();
 
             // need two successive colons to continue
             if (_helper->peek().type() != Token::Type::PunctuationColon) {
@@ -701,20 +702,16 @@ namespace Three {
             return false;
         }
 
-        // check to see if that identifier is a defined type
         if (!_context->definesTypeWithName(_helper->peek(*peekDepth).str())) {
             return false;
         }
 
         *peekDepth += 1;
 
-        // At this point, we know we have an identifier, but we might have
-        // specififers following it
-
         if (_helper->peek(*peekDepth).type() != Token::Type::PunctuationColon) {
             return true;
         }
-
+        
         *peekDepth += 1;
 
         // First specifier, could be an identifier, a number, or another colon
@@ -763,6 +760,9 @@ namespace Three {
     }
 
     NewDataType Parser::parseType() {
+        if (this->verbose()) {
+            std::cout << "Parser: parseType '" << this->helper()->peek().str() << "'" << std::endl;
+        }
         return this->parseAndApplyTypeAnnotations();
     }
 
@@ -883,6 +883,11 @@ namespace Three {
     }
 
     NewDataType Parser::parseTypeWithoutAnnotations() {
+        // Non-recurisve, so should be a type name
+        if (this->verbose()) {
+            std::cout << "Parser: parseTypeWithoutAnnotations '" << this->helper()->peek().str() << "'" << std::endl;
+        }
+
         // Handle recursive types (pointer and array)
         switch (_helper->peek().type()) {
             case Token::Type::OperatorStar:
@@ -892,11 +897,18 @@ namespace Three {
             case Token::Type::PunctuationOpenParen:
             case Token::Type::PunctuationOpenBrace:
                 return this->parseFunctionType();
+            case Token::Type::KeywordVararg:
+                _helper->next();
+                return NewDataType(NewDataType::Kind::Vararg);
             default:
                 break;
         }
 
-        // Non-recurisve, so should be a type name
+        if (this->helper()->peek().type() != Token::Type::Identifier) {
+            std::cout << this->helper()->peek().str() << std::endl;
+            assert(0 && "Should always be an identifier");
+        }
+
         NewDataType type = _context->dataTypeForName(_helper->peek().str());
 
         if (type.kind() == NewDataType::Kind::Undefined) {
@@ -1039,7 +1051,7 @@ namespace Three {
             NewDataType paramType;
 
             if (signature) {
-                std::string label = parseTypeIdentifierPair(paramType);
+                std::string label = this->parseTypeIdentifierPair(paramType);
                 paramType.setLabel(label);
             } else {
                 paramType = this->parseType();
@@ -1140,9 +1152,17 @@ namespace Three {
     }
 
     std::string Parser::parseTypeIdentifierPair(NewDataType& type) {
+        if (this->verbose()) {
+            std::cout << "Parser: parseTypeIdentifierPair '" << this->helper()->peek().str() << "'" << std::endl;
+        }
+
         // depth could be zero for untyped variables
         uint32_t depth = this->peekDepthIfAtType();
         if (depth > 0) {
+            if (this->verbose()) {
+                std::cout << "Parser: parseTypeIdentifierPair parsing type" << std::endl;
+            }
+
             switch (_helper->peek(depth).type()) {
                 case Token::Type::Identifier:
                 case Token::Type::KeywordVararg:
@@ -1199,8 +1219,8 @@ namespace Three {
 
     bool Parser::isAtIdentifierAvailableForDefinition() {
         if (_helper->peek().type() != Token::Type::Identifier) {
-            std::cout << _helper->peek().str() << std::endl;
-            assert(0 && "Message: expecting identifier");
+            _context->addMessage(new ExpectedIdentifierMessage(_helper->peek().str()));
+            return false;
         }
 
         return _context->identifierAvailableForDefinition(_helper->peek().str());

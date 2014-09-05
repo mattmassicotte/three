@@ -28,8 +28,18 @@ namespace Three {
             Union,
             Vararg,
             CFunction,
+            CStructure,
             CStructPrefixedStructure,
+            CChar,
+            CUnsignedChar,
+            CShort,
+            CUnsignedShort,
             CInt,
+            CUnsignedInt,
+            CLong,
+            CUnsignedLong,
+            CLongLong,
+            CUnsignedLongLong,
             CUnspecifiedMacro
         } Kind;
 
