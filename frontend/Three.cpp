@@ -19,6 +19,7 @@ typedef struct {
     bool debug;
     bool printAST;
     bool trace;
+    bool compileOnly;
 
     std::string outputFile;
     std::string compilerPath;
@@ -28,6 +29,7 @@ void getOptions(build_options_t* options, int argc, char** argv) {
     int32_t c;
 
     static struct option longopts[] = {
+        { "compile",   no_argument,       NULL, 'c' },
         { "debug",     no_argument,       NULL, 'd' },
         { "help",      no_argument,       NULL, 'h' },
         { "compiler",  required_argument, NULL, 'm' },
@@ -41,10 +43,14 @@ void getOptions(build_options_t* options, int argc, char** argv) {
     options->debug    = false;
     options->printAST = false;
     options->trace    = false;
+    options->compileOnly = false;
     options->compilerPath = std::string("cc");
 
-    while ((c = getopt_long(argc, argv, "dhm:o:ptv", longopts, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "cdhm:o:ptv", longopts, NULL)) != -1) {
         switch (c) {
+            case 'c':
+                options->compileOnly = true;
+                break;
             case 'd':
                 options->debug = true;
                 break;
@@ -68,6 +74,7 @@ void getOptions(build_options_t* options, int argc, char** argv) {
             default:
                 printf("usage: three [options] [--] [file] [arguments]\n");
                 printf("\n");
+                printf("  -c (--compile)    compile only, do not attempt to run or link\n");
                 printf("  -d (--debug)      disable optimizations\n");
                 printf("  -h (--help)       print this help message and exit\n");
                 printf("  -m (--compiler)   path to C compiler (default: cc)\n");
@@ -209,11 +216,6 @@ int linkExecutable(const std::string& linkerPath, const std::vector<std::string>
 }
 
 int buildExecutable(build_options_t* options, const std::string& inputFile, const Three::ParseContext& context) {
-    Three::CSourceEmitter::createSourcesAtPath(context, options->outputFile);
-
-    // compile main C source
-    compileCSource(options->compilerPath, options->outputFile + ".c", options->outputFile + ".o");
-
     // compile imported sources
     std::vector<std::string> objects;
 
@@ -303,6 +305,13 @@ int processInput(build_options_t* options, const std::string& inputFile) {
     }
 
     adjustOutputFileName(options, inputFile);
+
+    Three::CSourceEmitter::createSourcesAtPath(context, options->outputFile);
+    compileCSource(options->compilerPath, options->outputFile + ".c", options->outputFile + ".o");
+
+    if (options->compileOnly) {
+        return 0;
+    }
 
     if (true) {
         std::cout << "[Compile] Building executable" << std::endl;
