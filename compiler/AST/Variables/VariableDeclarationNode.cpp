@@ -18,6 +18,7 @@ namespace Three {
     
         node->global = true;
         node->visibility = parser.context()->visibility();
+        node->setStatement(true);
 
         return node;
     }

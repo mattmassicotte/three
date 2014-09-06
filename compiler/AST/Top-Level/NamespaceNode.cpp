@@ -19,10 +19,25 @@ namespace Three {
         parser.context()->pushScope();
         parser.context()->scope()->namespaceString = node->name();
 
+        bool parsedSuccessfully = true;
+
+        // TODO: the success conditions need to be improved here
         parser.helper()->parseUntilEnd([&] () {
-            parser.helper()->parseNewlines();
-            node->addChild(parser.parseTopLevelNode());
+            bool success = false;
+
+            if (!node->addChild(parser.parseTopLevelNode(&success))) {
+                parsedSuccessfully = success;
+                return true;
+            }
+
+            return false;
         });
+
+        if (!parsedSuccessfully) {
+            delete node;
+
+            return nullptr;
+        }
 
         parser.context()->popScope();
 

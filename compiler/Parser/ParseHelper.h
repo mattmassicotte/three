@@ -32,7 +32,7 @@ namespace Three {
         bool nextIf(const Token::Type& type);
         bool peekUntil(unsigned int* distance, std::function<bool (const Token& token)> func);
         bool parseUntil(bool advanceOnStop, std::function<bool (const Token& token)> func);
-        bool parseUntilEnd(std::function<void (void)> func);
+        bool parseUntilEnd(std::function<bool (void)> func);
         bool parseNewline();
         bool parseNewlines();
 

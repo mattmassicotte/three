@@ -76,15 +76,30 @@ namespace Three {
         return true;
     }
 
-    bool ParseHelper::parseUntilEnd(std::function<void (void)> func) {
-        return this->parseUntil(true, [&] (const Token& token) {
-            if (token.type() != Token::Type::KeywordEnd) {
-                func();
-                return false;
-            }
+    bool ParseHelper::parseUntilEnd(std::function<bool (void)> func) {
+        for (int i = 0; i < 100000; ++i) {
+            // skip past newlines
+            this->parseNewlines();
 
-            return true;
-        });
+            Token t = this->peek();
+            switch (t.type()) {
+                case Token::Type::EndOfInput:
+                case Token::Type::Undefined:
+                    return false; // this is a failure
+                case Token::Type::KeywordEnd:
+                    this->next();
+                    return true;
+                default:
+                    if (func()) {
+                        return true;
+                    }
+                    break;
+            }
+        }
+
+        assert(0 && "Exceeded the maximum number of attempts in parseUntilEnd");
+
+        return false;
     }
 
     bool ParseHelper::parseNewline() {

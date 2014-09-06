@@ -100,8 +100,11 @@ namespace Three {
 
     void Parser::startParse() {
         _helper->parseUntil(false, [&] (const Token& token) {
-            ASTNode* node = this->parseTopLevelNode();
+            bool success = false;
 
+            ASTNode* node = this->parseTopLevelNode(&success);
+
+            // there's no need to check success here
             return !_context->rootNode()->addChild(node);
         });
 
@@ -138,8 +141,9 @@ namespace Three {
         _helper = nullptr;
     }
 
-    ASTNode* Parser::parseTopLevelNode() {
-        ASTNode* node = nullptr;
+    ASTNode* Parser::parseTopLevelNode(bool* success) {
+        assert(success);
+        *success = false;
 
         // first thing is first, advance past newlines
         _helper->parseNewlines();
@@ -148,48 +152,63 @@ namespace Three {
             std::cout << "Parser: top level '" << this->helper()->peek().str() << "'" << std::endl;
         }
 
+        ASTNode* node = nullptr;
+
         // easy cases
         switch (this->helper()->peek().type()) {
             case Token::Type::Undefined:
             case Token::Type::EndOfInput:
                 // we're done here
+                *success = true;
                 return nullptr;
             case Token::Type::AnnotationBrief:
             case Token::Type::AnnotationSummary:
             case Token::Type::AnnotationParam:
             case Token::Type::AnnotationReturn:
             case Token::Type::AnnotationNoreturn:
-                return AnnotationNode::parse(*this);
+                node = AnnotationNode::parse(*this);
+                break;
             case Token::Type::KeywordDef:
-                return FunctionDefinitionNode::parse(*this);
+                node = FunctionDefinitionNode::parse(*this);
+                break;
             case Token::Type::KeywordImport:
-                return ImportNode::parse(*this);
+                node = ImportNode::parse(*this);
+                break;
             case Token::Type::KeywordInclude:
-                return IncludeNode::parse(*this);
+                node = IncludeNode::parse(*this);
+                break;
             case Token::Type::KeywordStructure:
             case Token::Type::KeywordEnumeration:
             case Token::Type::KeywordUnion:
-                return CompositeTypeDefinitionNode::parse(*this);
+                node = CompositeTypeDefinitionNode::parse(*this);
+                break;
             case Token::Type::KeywordLinkage:
             case Token::Type::KeywordModule:
                 assert(0 && "Unimplemented: directives");
+                break;
             case Token::Type::KeywordPublic:
             case Token::Type::KeywordPrivate:
-                return VisibilityNode::parse(*this);
+                node = VisibilityNode::parse(*this);
+                break;
             case Token::Type::KeywordNamespace:
-                return NamespaceNode::parse(*this);
+                node = NamespaceNode::parse(*this);
+                break;
             case Token::Type::KeywordEnd:
+                // Tokens that are invalid in a top-level context should go here.
+                // TODO: There are lots more.
                 return nullptr;
             default:
+                // last possibility, global variable definition
+                // TODO: similar to the comment above, there are only some
+                // tokens that could possibly allow for a global.
+                node = VariableDeclarationNode::parseGlobal(*this);
                 break;
         }
 
-        // global variable definition
-        node = VariableDeclarationNode::parseGlobal(*this);
-        node->setStatement(true);
-
         if (!node) {
             _context->addMessage(new UnparsableMessage());
+        } else {
+            *success = true;
         }
 
         return node;

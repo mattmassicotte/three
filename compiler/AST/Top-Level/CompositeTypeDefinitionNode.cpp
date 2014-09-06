@@ -56,12 +56,16 @@ namespace Three {
             VariableDeclarationNode* member = VariableDeclarationNode::parse(parser, false);
 
             node->_definedType.addSubtype(member->dataType());
-            node->addChild(member);
+            if (!node->addChild(member)) {
+                return true;
+            }
 
             if (!parser.helper()->parseNewline()) {
                 std::cout << parser.helper()->peek().str() << std::endl;
                 assert(0 && "Message: composite type member must be followed by a newline");
             }
+
+            return false;
         });
 
         if (!parser.helper()->parseNewline()) {

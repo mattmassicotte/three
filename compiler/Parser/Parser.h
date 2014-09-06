@@ -37,7 +37,7 @@ namespace Three {
         bool parse(Lexer* lexer, ParseContext* context);
         bool parseFunctionBodies(ParseContext* context);
 
-        ASTNode* parseTopLevelNode();
+        ASTNode* parseTopLevelNode(bool* success);
         ASTNode* parseStatement();
         ASTNode* parseExpressionStatement();
         ASTNode* parseExpressionWithTuples(const NewDataType* expectedType = nullptr);

@@ -63,7 +63,7 @@ namespace Three {
         }
 
         parser.helper()->parseUntilEnd([&] () {
-            node->addChild(parser.parseStatement());
+            return !node->addChild(parser.parseStatement());
         });
 
         return node;

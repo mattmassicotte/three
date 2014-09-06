@@ -335,3 +335,48 @@ TEST_F(ParserTests_Functions, FunctionWithStructParam) {
     ASSERT_EQ(NewDataType::Access::Read, func->functionType().parameterAtIndex(0).access());
     ASSERT_EQ("arg", func->functionType().parameterAtIndex(0).label());
 }
+
+TEST_F(ParserTests_Functions, NamespacedFunction) {
+    ASTNode* node = this->parseNode("namespace Bar\n"
+                                    "  def foo()\n"
+                                    "  end\n"
+                                    "end\n");
+
+    ASSERT_EQ(1, node->childCount());
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Namespace", node->nodeName());
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node);
+    ASSERT_EQ("foo", func->name());
+    ASSERT_EQ("Bar_3_foo", func->fullName());
+}
+
+TEST_F(ParserTests_Functions, NamespacedFunctionWithOverlappingName) {
+    ASTNode* node = this->parseNode("def foo()\n"
+                                    "end\n"
+                                    "namespace Bar\n"
+                                    "  def foo()\n"
+                                    "  end\n"
+                                    "end\n");
+
+    ASSERT_EQ(2, node->childCount());
+    ASSERT_EQ("Function Definition", node->childAtIndex(0)->nodeName());
+
+    FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
+    ASSERT_EQ("foo", func->name());
+    ASSERT_EQ("foo", func->fullName());
+
+    node = node->childAtIndex(1);
+    ASSERT_EQ("Namespace", node->nodeName());
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Function Definition", node->nodeName());
+    func = dynamic_cast<FunctionDefinitionNode*>(node);
+    ASSERT_EQ("foo", func->name());
+    ASSERT_EQ("Bar_3_foo", func->fullName());
+}

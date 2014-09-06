@@ -4,6 +4,8 @@
 #include "compiler/constructs/NewScope.h"
 #include "compiler/AST/Atomics/AtomicNode.h"
 
+#include "compiler/Messages/DuplicateFunctionMessage.h"
+
 #include <assert.h>
 #include <sstream>
 
@@ -52,8 +54,12 @@ namespace Three {
             node->_functionType.parameters.insert(node->_functionType.parameters.cbegin(), selfPtr);
         }
 
-        if (!parser.context()->defineFunctionForName(node->_functionType, node->_name)) {
-            assert(0 && "Message: function name already used");
+        if (!parser.context()->defineFunctionForName(node->_functionType, node->fullName())) {
+            parser.context()->addMessage(new DuplicateFunctionMessage(node->_name));
+
+            delete node;
+
+            return nullptr;
         }
 
         if (!parser.helper()->parseNewline()) {
