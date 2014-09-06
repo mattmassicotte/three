@@ -91,3 +91,14 @@ TEST_F(CCodeGenTests_Functions, MethodInvocation) {
               "    Int_3_foo(i, 5);\n"
               "}\n\n", visitor->bodyString());
 }
+
+TEST_F(CCodeGenTests_Functions, NestedNamespacedFunction) {
+    Three::CCodeGenVisitor* visitor = this->visit("namespace One::Two\n"
+                                                  "  def foo()\n"
+                                                  "  end\n"
+                                                  "end\n");
+
+    EXPECT_EQ("void One_3_Two_3_foo(void);\n", visitor->internalHeaderString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
+    EXPECT_EQ("void One_3_Two_3_foo(void) {\n}\n\n", visitor->bodyString());
+}

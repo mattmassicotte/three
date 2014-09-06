@@ -48,7 +48,7 @@ TEST_F(ParserTests_Directives, NestedNamespace) {
 
     node = node->childAtIndex(0);
     ASSERT_EQ("Namespace", node->nodeName());
-    ASSERT_EQ("Foo::Bar", dynamic_cast<NamespaceNode*>(node)->name());
+    ASSERT_EQ("Foo_3_Bar", dynamic_cast<NamespaceNode*>(node)->name());
 }
 
 TEST_F(ParserTests_Directives, EmptyNamespace) {

@@ -25,7 +25,7 @@ TEST_F(ParserTests_ExternalFiles, ImportStatementWithMultiPartIdentifier) {
     node = node->childAtIndex(0);
 
     ASSERT_EQ("Import", node->nodeName());
-    ASSERT_EQ("Foo::Bar::Baz", dynamic_cast<ImportNode*>(node)->argument());
+    ASSERT_EQ("Foo_3_Bar_3_Baz", dynamic_cast<ImportNode*>(node)->argument());
 }
 
 TEST_F(ParserTests_ExternalFiles, Include) {

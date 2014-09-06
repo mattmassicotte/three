@@ -484,7 +484,7 @@ namespace Three {
             _helper->next();
             _helper->next();
 
-            s << "::"; // this could be used to change the seperator
+            s << "_3_"; // this could be used to change the seperator
         }
 
         return s.str();

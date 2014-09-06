@@ -355,6 +355,25 @@ TEST_F(ParserTests_Functions, NamespacedFunction) {
     ASSERT_EQ("Bar_3_foo", func->fullName());
 }
 
+TEST_F(ParserTests_Functions, NestedNamespacedFunction) {
+    ASTNode* node = this->parseNode("namespace One::Bar\n"
+                                    "  def foo()\n"
+                                    "  end\n"
+                                    "end\n");
+
+    ASSERT_EQ(1, node->childCount());
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Namespace", node->nodeName());
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node);
+    ASSERT_EQ("foo", func->name());
+    ASSERT_EQ("One_3_Bar_3_foo", func->fullName());
+}
+
 TEST_F(ParserTests_Functions, NamespacedFunctionWithOverlappingName) {
     ASTNode* node = this->parseNode("def foo()\n"
                                     "end\n"
