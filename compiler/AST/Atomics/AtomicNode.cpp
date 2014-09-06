@@ -6,6 +6,19 @@
 #include <assert.h>
 
 namespace Three {
+    ASTNode* AtomicNode::parse(Parser& parser) {
+        if (!AtomicNode::isAtAtomicExpression(parser)) {
+            return AtomicStatementNode::parse(parser);
+        }
+
+        ASTNode* node = AtomicExpressionNode::parse(parser);
+        if (node) {
+            node->setStatement(true);
+        }
+
+        return node;
+    }
+
     void AtomicNode::parseOrdering(Parser& parser, AtomicNode* node) {
         if (!parser.helper()->nextIf(Token::Type::PunctuationColon)) {
             node->_ordering = AtomicNode::Ordering::SequentiallyConsistent;

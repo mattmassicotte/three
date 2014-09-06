@@ -30,6 +30,7 @@ TEST_F(ParserTests_Atomics, AtomicExpressionAssign) {
                                               "  atomic:ordered(a = a)\n"
                                               "end\n");
 
+    ASSERT_EQ(1, node->childCount());
     node = node->childAtIndex(0);
 
     ASSERT_EQ("Atomic Expression", node->nodeName());

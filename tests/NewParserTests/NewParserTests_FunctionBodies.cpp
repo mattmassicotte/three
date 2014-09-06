@@ -18,6 +18,15 @@ TEST_F(ParserTests_FunctionBodies, EmptyFunction) {
     ASSERT_EQ("", func->bodyStream()->str());
 }
 
+TEST_F(ParserTests_FunctionBodies, EmptyFunctionWithWhitespace) {
+    FunctionDefinitionNode* func = this->parseFunction("def foo()\n\nend\n");
+
+    ASSERT_EQ("Function Definition", func->nodeName());
+    ASSERT_EQ("foo", func->name());
+
+    ASSERT_EQ("\n", func->bodyStream()->str());
+}
+
 TEST_F(ParserTests_FunctionBodies, FunctionWithComment) {
     FunctionDefinitionNode* func = this->parseFunction("def foo()\n"
                                                        "  # abc def\n"
@@ -42,6 +51,16 @@ TEST_F(ParserTests_FunctionBodies, If) {
                                                        "end\n");
 
     ASSERT_EQ("  if abc\n  end\n", func->bodyStream()->str());
+}
+
+TEST_F(ParserTests_FunctionBodies, IfWithLeadingNewline) {
+    FunctionDefinitionNode* func = this->parseFunction("def foo()\n"
+                                                       "\n"
+                                                       "  if abc\n"
+                                                       "  end\n"
+                                                       "end\n");
+
+    ASSERT_EQ("\n  if abc\n  end\n", func->bodyStream()->str());
 }
 
 TEST_F(ParserTests_FunctionBodies, TailingIf) {

@@ -306,5 +306,9 @@ namespace Three {
 
         return Undefined;
     }
+
+    bool Token::mightBeClosedByEndKeyword() const {
+        return this->closingCounterpart() == Token::Type::KeywordEnd;
+    }
 }
     

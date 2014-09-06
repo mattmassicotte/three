@@ -86,93 +86,83 @@ namespace Three {
     bool FunctionDefinitionNode::bufferFunctionBody(Parser& parser, std::stringstream& stream) {
         parser.helper()->lexer()->setFilterWhitespace(false);
 
-        bool result = bufferOpenToCloseToken(parser, stream, Token::Type::KeywordEnd, false);
+        // bool result = bufferOpenToCloseToken(parser, stream, Token::Type::KeywordEnd, false);
+        bool result = newBufferOpenToCloseToken(parser, stream);
 
         parser.helper()->lexer()->setFilterWhitespace(true);
 
         return result;
     }
 
-    // This is a really complex function. The idea here is to scan all the tokens inside a function body,
-    // making sure to detect the closing "end" statement. Some features of the language make this particularly
-    // hard.
-    //
-    // The basic idea is, buffer up tokens, and if you find a token that gets paired with an 'end',
-    // recurse and continue.
-    bool FunctionDefinitionNode::bufferOpenToCloseToken(Parser& parser, std::stringstream& stream, Token::Type closingType, bool parseClosing) {
-        bool firstCall = !parseClosing;
+    bool FunctionDefinitionNode::newBufferOpenToCloseToken(Parser& parser, std::stringstream& stream) {
+        int nestedEnds = 0;
+        bool onlyWhitespaceSoFar = true;
 
-        for (;;) {
-            bool potentialFirstToken = scanToFirstToken(parser, stream, firstCall);
-
-            // can only be the first call once
-            if (firstCall) {
-                firstCall = false;
-            }
-
+        // guard against infinite loops
+        for (int i = 0; i < 100000; ++i) {
             Token t = parser.helper()->peek();
 
-            // maybe we're done?
-            if (t.type() == closingType) {
-                if (parseClosing) {
-                    stream << parser.helper()->nextStr();
-                }
-
-                return true;
-            }
-
-            // are we starting a new block?
-            // Note that the atomic keyword is ambigious here, so we have to check for that more carefully
-            if (potentialFirstToken && t.isOpeningSpan() && !AtomicNode::isAtAtomicExpression(parser)) {
-                Token::Type nestedType = t.closingCounterpart();
-                if (nestedType == Token::Type::Undefined) {
-                    return false;
-                }
-
-                stream << parser.helper()->nextStr(); // move past the opening
-
-                // recurse!
-                if (!bufferOpenToCloseToken(parser, stream, nestedType, true)) {
-                    return false;
-                } else {
-                    continue; // restart the loop and keep going
-                }
-            }
-
-            // look for unexpected types that should cause us to stop
             switch (t.type()) {
                 case Token::Type::KeywordDef:
+                case Token::Type::KeywordNamespace:
+                case Token::Type::KeywordImport:
+                case Token::Type::KeywordInclude:
                 case Token::Type::Undefined:
                 case Token::Type::EndOfInput:
+                    // all invalid inside a function
                     return false;
+                case Token::Type::Newline:
+                    // reset our check for non-whitespace tokens
+                    onlyWhitespaceSoFar = true;
+                    break;
+                case Token::Type::Whitespace:
+                    // skip this, because we have to maintain
+                    // our state about whitespace
+                    break;
+                case Token::Type::KeywordEnd:
+                    if (nestedEnds == 0) {
+                        return true;
+                    }
+
+                    assert(nestedEnds > 0);
+                    nestedEnds--;
+
+                    break;
                 default:
+                    // What's the deal with this whitespace stuff? Consider the following:
+                    // "x = 1 if true\n"
+                    // "if abc\n"
+                    // The first one does not need a terminating "end", but the second does.
+                    if (!onlyWhitespaceSoFar) {
+                        break;
+                    }
+
+                    onlyWhitespaceSoFar = false;
+
+                    // if this token isn't closed by an end, we have nothing to worry about
+                    if (!t.mightBeClosedByEndKeyword()) {
+                        break;
+                    }
+
+                    // The "atomic" keyword is another language construct that might or
+                    // might not be terminated by an end.
+                    if (AtomicNode::isAtAtomicExpression(parser)) {
+                        break;
+                    }
+
+                    // if we got here, we have encounterd a token that needs a matching
+                    // end
+                    nestedEnds++;
+
                     break;
             }
 
-            // buffer and continue
-            stream << parser.helper()->nextStr();
-        }
-    }
-
-    bool FunctionDefinitionNode::scanToFirstToken(Parser& parser, std::stringstream& stream, bool firstCall) {
-        // if firstCall is true, we've been called immediately after a function definition line,
-        // and there will be no newline
-        if (!firstCall) {
-            if (parser.helper()->peek().type() != Token::Type::Newline) {
-                return false;
-            }
-
             stream << parser.helper()->nextStr();
         }
 
-        // now, just scan for whitespace, and if we find any, we have a potential first token
-        bool potentialFirst = false;
-        while (parser.helper()->peek().type() == Token::Type::Whitespace) {
-            stream << parser.helper()->nextStr();
-            potentialFirst = true;
-        }
+        assert(0 && "Exceeded maximum number of tokens inside a function");
 
-        return potentialFirst;
+        return false;
     }
 
     std::string FunctionDefinitionNode::nodeName() const {

@@ -220,6 +220,10 @@ namespace Three {
         // advance past newlines here
         _helper->parseNewlines();
 
+        if (this->verbose()) {
+            std::cout << "Parser: statement '" << this->helper()->peek().str() << "'" << std::endl;
+        }
+
         // Checking for tailing ifs is a little tricky here.  Certain things
         // can have them, certain ones cannot.
         switch (_helper->peek().type()) {
@@ -245,7 +249,7 @@ namespace Three {
                 node = SwitchNode::parse(*this);
                 break;
             case Token::Type::KeywordAtomic:
-                node = AtomicStatementNode::parse(*this);
+                node = AtomicNode::parse(*this);
                 break;
             case Token::Type::KeywordAbort:
                 node = IfNode::parseTailing(*this, AbortStatementNode::parse(*this));
@@ -254,17 +258,14 @@ namespace Three {
                 node = IfNode::parseTailing(*this, BarrierNode::parse(*this));
                 break;
             default:
+                if (this->isAtType()) {
+                    node = VariableDeclarationNode::parse(*this);
+                    node->setStatement(true);
+                } else {
+                    node = this->parseExpressionStatement();
+                }
                 break;
 
-        }
-
-        if (!node && this->isAtType()) {
-            node = VariableDeclarationNode::parse(*this);
-            node->setStatement(true);
-        }
-
-        if (!node) {
-            node = this->parseExpressionStatement();
         }
 
         // parse newline(s), which should always appear at the end of statement, unless

@@ -186,6 +186,7 @@ namespace Three {
 
         bool isOpeningSpan() const;
         Token::Type closingCounterpart() const;
+        bool mightBeClosedByEndKeyword() const;
 
     private:
         Token::Type _type;
