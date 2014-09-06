@@ -954,6 +954,20 @@ TEST_F(LexerTest, AnnotationTodo) {
     ASSERT_NEXT_TOKEN(Undefined, "");
 }
 
+TEST_F(LexerTest, AnnotationSensitive) {
+    this->lex("@sensitive");
+
+    ASSERT_NEXT_TOKEN(AnnotationSensitive, "@sensitive");
+    ASSERT_NEXT_TOKEN(Undefined, "");
+}
+
+TEST_F(LexerTest, AnnotationUntrusted) {
+    this->lex("@untrusted");
+
+    ASSERT_NEXT_TOKEN(AnnotationUntrusted, "@untrusted");
+    ASSERT_NEXT_TOKEN(Undefined, "");
+}
+
 // Combinations
 TEST_F(LexerTest, IdentifierColonNumber) {
     this->lex("Int:32");

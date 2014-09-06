@@ -85,6 +85,8 @@ namespace Three {
         _annotationMap["param"] = Token::Type::AnnotationParam;
         _annotationMap["return"] = Token::Type::AnnotationReturn;
         _annotationMap["todo"] = Token::Type::AnnotationTodo;
+        _annotationMap["sensitive"] = Token::Type::AnnotationSensitive;
+        _annotationMap["untrusted"] = Token::Type::AnnotationUntrusted;
 
         _filterWhitespace = true;
     }

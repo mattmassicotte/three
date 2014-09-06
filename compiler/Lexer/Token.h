@@ -146,6 +146,8 @@ namespace Three {
             AnnotationOptimize,
             AnnotationInline,
             AnnotationPrefetch,
+            AnnotationSensitive,
+            AnnotationUntrusted,
 
             AnnotationPure,
             AnnotationThrows,
