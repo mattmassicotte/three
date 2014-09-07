@@ -19,6 +19,7 @@ namespace Three {
                 pointerStr += " const";
             }
 
+            assert(usedType.subtypeCount() == 1 && "Error: a pointer must have exactly one subtype");
             usedType = usedType.subtypeAtIndex(0);
 
             // pre-pend the value, because we are working our way in

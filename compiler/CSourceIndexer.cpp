@@ -147,6 +147,10 @@ namespace Three {
 
         this->_context = context; // set the context before visiting
 
+        if (verbose) {
+            std::cout << "[Indexer] scanning " << path << std::endl;
+        }
+
         int result = clang_indexSourceFile(action,
                                            this,
                                            &callbacks,
@@ -174,51 +178,17 @@ namespace Three {
         return result == 0;
     }
 
-    void CSourceIndexer::addFunction(const std::string& name, const void* declInfoPtr) {
-        const CXIdxDeclInfo* declInfo = static_cast<const CXIdxDeclInfo*>(declInfoPtr);
+    NewDataType CSourceIndexer::dataTypeForCType(void* typePtr) {
+        assert(typePtr);
 
-        NewDataType functionType(NewDataType::Kind::CFunction);
+        CXType cType = *static_cast<CXType*>(typePtr);
 
-        // std::cout << "defining function " << name << std::endl;
-        if (!_context->defineFunctionForName(functionType, name)) {
-            std::cout << "Failed to define C function '" << name << "'" << std::endl;
-        }
-
-        // Function* fn;
-        // 
-        // _currentCompoundType = nullptr;
-        // _fields.clear();
-        // 
-        // if (_module->functionForName(name)) {
-        //     _module->removeFunctionForName(name);
-        //     std::cout << "[Indexer] Redefining function '" << name << "' " << std::endl;
-        // }
-        // 
-        // fn = new Function();
-        // fn->setName(name);
-        // 
-        // // TODO: this is bogus!!! But, all functions need a return type at minimum.
-        // fn->setReturnType(TypeReference::ref(_module, "Void", 0));
-        // 
-        // _module->addFunction(name, fn);
-    }
-
-    void CSourceIndexer::addType(const std::string& name, const void* declInfoPtr) {
-        const CXIdxDeclInfo* declInfo = static_cast<const CXIdxDeclInfo*>(declInfoPtr);
-
-        if (verbose) {
-            std::cout << "[Indexer] creating type '" << name << "'" << std::endl;
-        }
-
-        CXType cType = clang_getCursorType(declInfo->cursor);
         bool isTypeDef = cType.kind == CXType_Typedef;
 
         // resolve to underlying type
         cType = clang_getCanonicalType(cType);
 
         NewDataType type;
-
-        type.setName(name);
 
         switch (cType.kind) {
             case CXType_SChar:
@@ -257,14 +227,69 @@ namespace Three {
                 break;
             case CXType_Pointer:
                 type.setKind(NewDataType::Kind::Pointer);
-                // TODO: use clang_getPointeeType to define the pointed-to type as well 
+                cType = clang_getPointeeType(cType);
+
+                type.addSubtype(this->dataTypeForCType(static_cast<void*>(&cType)));
                 break;
             default:
-                // if (verbose) {
+                if (verbose) {
                     std::cout << "[Indexer] Unhandled C Type '" << clang_getCString(clang_getTypeKindSpelling(cType.kind)) << "'" << std::endl;
-                // }
-                return;
+                }
+                break;
         }
+
+        return type;
+    }
+
+    void CSourceIndexer::addFunction(const std::string& name, const void* declInfoPtr) {
+        const CXIdxDeclInfo* declInfo = static_cast<const CXIdxDeclInfo*>(declInfoPtr);
+
+        if (verbose) {
+            std::cout << "[Indexer] creating function '" << name << "'" << std::endl;
+        }
+
+        NewDataType functionType(NewDataType::Kind::CFunction);
+
+        // std::cout << "defining function " << name << std::endl;
+        if (!_context->defineFunctionForName(functionType, name)) {
+            std::cout << "Failed to define C function '" << name << "'" << std::endl;
+        }
+
+        // Function* fn;
+        // 
+        // _currentCompoundType = nullptr;
+        // _fields.clear();
+        // 
+        // if (_module->functionForName(name)) {
+        //     _module->removeFunctionForName(name);
+        //     std::cout << "[Indexer] Redefining function '" << name << "' " << std::endl;
+        // }
+        // 
+        // fn = new Function();
+        // fn->setName(name);
+        // 
+        // // TODO: this is bogus!!! But, all functions need a return type at minimum.
+        // fn->setReturnType(TypeReference::ref(_module, "Void", 0));
+        // 
+        // _module->addFunction(name, fn);
+    }
+
+    void CSourceIndexer::addType(const std::string& name, const void* declInfoPtr) {
+        const CXIdxDeclInfo* declInfo = static_cast<const CXIdxDeclInfo*>(declInfoPtr);
+
+        if (verbose) {
+            std::cout << "[Indexer] creating type '" << name << "'" << std::endl;
+        }
+
+        // CXFile file;
+        // clang_getExpansionLocation(clang_getCursorLocation(declInfo->cursor), &file, nullptr, nullptr, nullptr);
+        // 
+        // std::cout << clang_getCString(clang_getFileName(file)) << std::endl;
+
+        CXType cType = clang_getCursorType(declInfo->cursor);
+
+        NewDataType type = this->dataTypeForCType(static_cast<void*>(&cType));
+        type.setName(name);
 
         if (type.kind() == NewDataType::Kind::Undefined) {
             std::cout << "Unable to map C type '" << name << "' to 3 type" << std::endl;
@@ -363,9 +388,9 @@ namespace Three {
     }
 
     void CSourceIndexer::addMacro(const std::string& name) {
-        if (verbose) {
-            std::cout << "[Indexer] defining macro " << name << std::endl;
-        }
+        // if (verbose) {
+        //     std::cout << "[Indexer] defining macro " << name << std::endl;
+        // }
 
         NewDataType type(NewDataType::Kind::CUnspecifiedMacro);
 

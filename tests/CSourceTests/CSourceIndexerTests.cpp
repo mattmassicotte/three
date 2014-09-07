@@ -49,3 +49,14 @@ TEST_F(CSourceIndexerTest, HandleTypedef) {
     NewDataType type = this->context()->dataTypeForName("MyInt");
     EXPECT_EQ(NewDataType::Kind::CInt, type.kind());
 }
+
+TEST_F(CSourceIndexerTest, HandleTypedefForPointer) {
+    Three::CSourceIndexer* idx = this->indexCSource("typedef int* MyInt;");
+
+    ASSERT_TRUE(idx != nullptr);
+
+    NewDataType type = this->context()->dataTypeForName("MyInt");
+    ASSERT_EQ(NewDataType::Kind::Pointer, type.kind());
+    ASSERT_EQ(1, type.subtypeCount());
+    ASSERT_EQ(NewDataType::Kind::CInt, type.subtypeAtIndex(0).kind());
+}
