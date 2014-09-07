@@ -52,8 +52,13 @@ namespace Three {
         // have recursive types
         parser.context()->defineTypeForName(node->_definedType, node->_name);
 
+        bool success = true;
         parser.helper()->parseUntilEnd([&] () {
             VariableDeclarationNode* member = VariableDeclarationNode::parse(parser, false);
+            if (!member) {
+                success = false;
+                return true;
+            }
 
             node->_definedType.addSubtype(member->dataType());
             if (!node->addChild(member)) {
@@ -67,6 +72,11 @@ namespace Three {
 
             return false;
         });
+
+        if (!success) {
+            delete node;
+            return nullptr;
+        }
 
         if (!parser.helper()->parseNewline()) {
             assert(0 && "Message: end keyword must be followed by a newline");

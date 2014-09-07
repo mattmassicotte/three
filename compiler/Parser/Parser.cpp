@@ -11,6 +11,7 @@
 #include "compiler/Messages/UnparsableMessage.h"
 #include "compiler/Messages/UnableToCompleteParseMessage.h"
 #include "compiler/Messages/ExpectedIdentifierMessage.h"
+#include "compiler/Messages/ExpectedTypeIdentifierPairMessage.h"
 
 #include <fstream>
 
@@ -1072,6 +1073,10 @@ namespace Three {
 
             if (signature) {
                 std::string label = this->parseTypeIdentifierPair(paramType);
+                if (label.size() == 0) {
+                    return NewDataType();
+                }
+
                 paramType.setLabel(label);
             } else {
                 paramType = this->parseType();
@@ -1198,7 +1203,7 @@ namespace Three {
             return _helper->nextStr();
         }
 
-        assert(0 && "Message: Expected a type-identifier or identifier");
+        _context->addMessage(new ExpectedTypeIdentifierPairMessage(""));
 
         return "";
     }

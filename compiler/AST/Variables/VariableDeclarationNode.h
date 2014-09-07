@@ -12,7 +12,7 @@ namespace Three {
         static VariableDeclarationNode* parseGlobal(Parser& parser);
 
     private:
-        static void parseVariable(Parser& parser, VariableDeclarationNode& node, bool createVariable = true);
+        static bool parseVariable(Parser& parser, VariableDeclarationNode& node, bool createVariable = true);
 
     public:
         VariableDeclarationNode();

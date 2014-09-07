@@ -8,7 +8,10 @@ namespace Three {
     VariableDeclarationNode* VariableDeclarationNode::parse(Parser& parser, bool createVariable) {
         VariableDeclarationNode* node = new VariableDeclarationNode();
 
-        VariableDeclarationNode::parseVariable(parser, *node, createVariable);
+        if (!VariableDeclarationNode::parseVariable(parser, *node, createVariable)) {
+            delete node;
+            node = nullptr;
+        }
 
         return node;
     }
@@ -23,27 +26,32 @@ namespace Three {
         return node;
     }
 
-    void VariableDeclarationNode::parseVariable(Parser& parser, VariableDeclarationNode& node, bool createVariable) {
+    bool VariableDeclarationNode::parseVariable(Parser& parser, VariableDeclarationNode& node, bool createVariable) {
         // Here's the form of a variable declaration:
         // (<type>) var (= <expression>)\n
 
         // TODO: this is fairly messy
         node._name = parser.parseTypeIdentifierPair(node._declaredType);
+        if (node._name.size() == 0) {
+            return false;
+        }
+
         node._declaredType.setLabel(node._name);
 
         if (parser.helper()->nextIf(Token::Type::OperatorAssign)) {
             node._initializerExpression = parser.parseExpression();
         }
 
-        if (createVariable) {
-            node._variable = new NewVariable();
-
-            node._variable->name = node.name();
-            node._variable->type = node.dataType();
-            
-
-            parser.context()->scope()->defineVariable(node._variable);
+        if (!createVariable) {
+            return true;
         }
+
+        node._variable = new NewVariable();
+
+        node._variable->name = node.name();
+        node._variable->type = node.dataType();
+
+        return parser.context()->scope()->defineVariable(node._variable);
     }
 
     VariableDeclarationNode::VariableDeclarationNode() :
