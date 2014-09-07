@@ -206,9 +206,7 @@ namespace Three {
                 break;
         }
 
-        if (!node) {
-            _context->addMessage(new UnparsableMessage());
-        } else {
+        if (node) {
             *success = true;
         }
 

@@ -34,8 +34,20 @@ namespace Three {
             return node;
         }
 
+        std::string fullPath(node->_argument);
+
+        if (node->_useSearchPaths) {
+            fullPath = CSourceIndexer::resolveCHeaderPath(fullPath);
+        }
+
+        if (parser.context()->hasImported(fullPath)) {
+            return node;
+        }
+
+        CSourceIndexer indexer;
+
         // now, actually index the source
-        if (!CSourceIndexer::resolvePathAndIndex(node->_argument, node->_useSearchPaths, parser.context())) {
+        if (!indexer.indexFileAtPath(fullPath, parser.context())) {
             assert(0 && "Message: Unable to index C source from include directive");
         }
 

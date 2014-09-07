@@ -33,6 +33,7 @@ namespace Three {
         void addImportSearchPath(const std::string& name);
         std::string resolveImportPath(const std::string& name);
         std::vector<std::string> importedPaths() const;
+        bool hasImported(const std::string& path) const;
 
         void setVisibility(TranslationUnit::Visibility visibility);
         TranslationUnit::Visibility visibility() const;

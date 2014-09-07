@@ -77,37 +77,43 @@ namespace Three {
 
         // resolve name
         std::string path = this->resolveImportPath(name);
+        if (this->hasImported(path + ".h")) {
+            std::cout << "Duplicate import '" << name << "'" << std::endl;
+            return true;
+        }
 
-        ParseContext* importedContext = new ParseContext();
+        std::unique_ptr<ParseContext> importedContext(new ParseContext());
 
         // if we find a .3 file, but not a .h file, we have to compile it first
-        if (!Parser::parse(std::string(path + ".3").c_str(), importedContext)) {
+        if (!Parser::parse(std::string(path + ".3").c_str(), importedContext.get())) {
             std::cout << "Unable to parse import" << std::endl;
+            return false;
         }
 
         // now, actually index the source
-        if (!CSourceEmitter::createSourcesAtPath(*importedContext, path)) {
+        if (!CSourceEmitter::createSourcesAtPath(*importedContext.get(), path)) {
             std::cout << "Unable to emit C sources for import" << std::endl;
+            return false;
         }
 
         // make things in the current context visible
-        _importedContexts.push_back(importedContext);
+        _importedContexts.push_back(importedContext.release());
 
         // need to create function variables for non-C functions
-        for (std::pair<std::string, NewDataType> fnPair: importedContext->_functions) {
-            if (fnPair.second.kind() == NewDataType::Kind::CFunction) {
-                continue;
-            }
+        // for (std::pair<std::string, NewDataType> fnPair: importedContext->_functions) {
+        //     if (fnPair.second.kind() == NewDataType::Kind::CFunction) {
+        //         continue;
+        //     }
+        // 
+        //     this->scope()->defineVariableTypeForName(fnPair.second, fnPair.first);
+        // }
 
-            this->scope()->defineVariableTypeForName(fnPair.second, fnPair.first);
-        }
-
-        CSourceIndexer indexer;
-
-        if (!indexer.indexFileAtPath(path + ".h", this)) {
-            std::cout << "Unable to index import header" << std::endl;
-            return false;
-        }
+        // CSourceIndexer indexer;
+        // 
+        // if (!indexer.indexFileAtPath(path + ".h", this)) {
+        //     std::cout << "Unable to index import header" << std::endl;
+        //     return false;
+        // }
 
         _importedPaths.push_back(path);
 
@@ -135,6 +141,10 @@ namespace Three {
 
     std::vector<std::string> ParseContext::importedPaths() const {
         return _importedPaths;
+    }
+
+    bool ParseContext::hasImported(const std::string& path) const {
+        return std::find(_importedPaths.cbegin(), _importedPaths.cend(), path) != _importedPaths.cend();
     }
 
     void ParseContext::setVisibility(TranslationUnit::Visibility visibility) {
@@ -236,10 +246,14 @@ namespace Three {
             return false;
         }
 
+        // now, define this function as a "variable" in the current scope
+        if (!this->scope()->defineVariableTypeForName(type, name)) {
+            return false;
+        }
+
         _functions[name] = type;
 
-        // now, define this function as a "variable" in the current scope
-        return this->scope()->defineVariableTypeForName(type, name);
+        return true;
     }
 
     NewScope* ParseContext::scope() const {

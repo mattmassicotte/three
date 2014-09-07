@@ -18,7 +18,10 @@ namespace Three {
 
     VariableDeclarationNode* VariableDeclarationNode::parseGlobal(Parser& parser) {
         VariableDeclarationNode* node = VariableDeclarationNode::parse(parser, true);
-    
+        if (!node) {
+            return nullptr;
+        }
+
         node->global = true;
         node->visibility = parser.context()->visibility();
         node->setStatement(true);

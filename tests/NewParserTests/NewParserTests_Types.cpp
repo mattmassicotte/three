@@ -382,6 +382,17 @@ TEST_F(ParserTests_Types, GlobalPointerToFunction) {
     ASSERT_EQ(NewDataType::Function, node->dataType().subtypeAtIndex(0).kind());
 }
 
+TEST_F(ParserTests_Types, GlobalPointerToFunctionWithPointerArg) {
+    ASTNode* node = this->parseNode("*(*Void) value\n");
+
+    ASSERT_EQ(1, node->childCount());
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ(NewDataType::Pointer, node->dataType().kind());
+    ASSERT_EQ(1, node->dataType().subtypeCount());
+    ASSERT_EQ(NewDataType::Function, node->dataType().subtypeAtIndex(0).kind());
+}
+
 TEST_F(ParserTests_Types, GlobalClosure) {
     ASTNode* node = this->parseNode("{} value\n");
 
