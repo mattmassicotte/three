@@ -27,6 +27,10 @@ namespace Three {
             Enumeration,
             Union,
             Vararg,
+            Generic,
+            GenericArray,
+            GenericPointer,
+            GenericNullablePointer,
             CFunction,
             CStructure,
             CStructPrefixedStructure,
@@ -62,6 +66,7 @@ namespace Three {
         } Access;
 
     public:
+        static NewDataType wrapInType(Kind k, const NewDataType& subtype, const std::string& label = "");
         static NewDataType wrapInPointer(const NewDataType& type, const std::string& label = "");
         static NewDataType mutableVersion(const NewDataType& type);
 
@@ -115,6 +120,11 @@ namespace Three {
         void addReturn(NewDataType t);
         void eachReturnWithLast(std::function<void (const NewDataType&, bool)> func) const;
 
+        bool isGeneric() const;
+        uint32_t genericParameterCount() const;
+        NewDataType genericParameterAtIndex(uint32_t idx) const;
+        void addGenericParameter(NewDataType t);
+
     public:
         std::vector<NewDataType> subtypes;
         std::vector<NewDataType> parameters;
@@ -137,5 +147,7 @@ namespace Three {
 
         // For functions/closures
         std::vector<NewDataType> _returns;
+
+        std::vector<NewDataType> _genericParameters;
     };
 }

@@ -1,13 +1,17 @@
 #include "NewDataType.h"
 
 namespace Three {
+    NewDataType NewDataType::wrapInType(Kind k, const NewDataType& subtype, const std::string& label) {
+        NewDataType type(k);
+
+        type.addSubtype(subtype);
+        type.setLabel(label);
+
+        return type;
+    }
+
     NewDataType NewDataType::wrapInPointer(const NewDataType& type, const std::string& label) {
-        NewDataType ptr(NewDataType::Kind::Pointer);
-
-        ptr.addSubtype(type);
-        ptr.setLabel(label);
-
-        return ptr;
+        return wrapInType(NewDataType::Kind::Pointer, type, label);
     }
 
     NewDataType NewDataType::mutableVersion(const NewDataType& type) {
@@ -23,6 +27,7 @@ namespace Three {
         _widthSpecifier(0),
         _alignmentSpecifier(0),
         _vectorSizeSpecifier(0),
+        _arrayCount(0),
         _characterEncoding(NewDataType::CharacterEncoding::UTF8),
         _access(NewDataType::Access::Read),
         _volatility(NewDataType::Access::None),
@@ -195,5 +200,21 @@ namespace Three {
         for (uint32_t i = 0; i < this->returnCount(); ++i) {
             func(this->returnAtIndex(i), lastIndex == i);
         }
+    }
+
+    bool NewDataType::isGeneric() const {
+        return this->genericParameterCount() > 0;
+    }
+
+    uint32_t NewDataType::genericParameterCount() const {
+        return _genericParameters.size();
+    }
+
+    NewDataType NewDataType::genericParameterAtIndex(uint32_t idx) const {
+        return _genericParameters.at(idx);
+    }
+
+    void NewDataType::addGenericParameter(NewDataType t) {
+        _genericParameters.push_back(t);
     }
 }

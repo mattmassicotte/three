@@ -28,6 +28,8 @@ namespace Three {
                 break;
         }
 
+        node->visibility = parser.context()->visibility();
+
         parser.helper()->next();
 
         if (parser.helper()->nextIf(":")) {
@@ -38,15 +40,20 @@ namespace Three {
             assert(0 && "Message: Composite type name must start with an identifier");
         }
 
+        // parse the name and create the type
         node->_name = parser.helper()->nextStr();
-        node->visibility = parser.context()->visibility();
+        node->_definedType = NewDataType(typeKind);
+        node->_definedType.setName(node->_name);
+
+        if (parser.helper()->peek().type() == Token::Type::OperatorLessThan) {
+            if (!parser.parseGenericParameters(node->_definedType)) {
+                assert(0 && "Message: Unable to parse generic parameters");
+            }
+        }
 
         if (!parser.helper()->parseNewline()) {
             assert(0 && "Message: Composite type must be followed by a newline");
         }
-
-        node->_definedType = NewDataType(typeKind);
-        node->_definedType.setName(node->_name);
 
         // define the type here, before parsing the internals, so we can
         // have recursive types

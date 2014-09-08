@@ -778,14 +778,14 @@ namespace Three {
         return true;
     }
 
-    NewDataType Parser::parseType() {
+    NewDataType Parser::parseType(bool genericParam) {
         if (this->verbose()) {
             std::cout << "Parser: parseType '" << this->helper()->peek().str() << "'" << std::endl;
         }
-        return this->parseAndApplyTypeAnnotations();
+        return this->parseAndApplyTypeAnnotations(genericParam);
     }
 
-    NewDataType Parser::parseAndApplyTypeAnnotations() {
+    NewDataType Parser::parseAndApplyTypeAnnotations(bool genericParam) {
         bool foundConst = false;
         bool foundRestrict = false;
         bool foundVolatile = false;
@@ -863,8 +863,8 @@ namespace Three {
         }
 
         // now that we've parsed all the annotations, we can proceed to the type itself
-        NewDataType type = this->parseTypeWithoutAnnotations();
-        type = this->parseTypePostfixes(type, true);
+        NewDataType type = this->parseTypeWithoutAnnotations(genericParam);
+        type = this->parseTypePostfixes(type);
 
         if (foundConst && foundAccess) {
             assert(0 && "Message: @const and @access cannot be applied at the same time");
@@ -901,7 +901,7 @@ namespace Three {
         return type;
     }
 
-    NewDataType Parser::parseTypeWithoutAnnotations() {
+    NewDataType Parser::parseTypeWithoutAnnotations(bool genericParam) {
         // Non-recurisve, so should be a type name
         if (this->verbose()) {
             std::cout << "Parser: parseTypeWithoutAnnotations '" << this->helper()->peek().str() << "'" << std::endl;
@@ -910,13 +910,15 @@ namespace Three {
         // Handle recursive types (pointer and array)
         switch (_helper->peek().type()) {
             case Token::Type::OperatorStar:
-                return this->parsePointerType();
+                return this->parsePointerType(genericParam);
             case Token::Type::PunctuationOpenBracket:
-                return this->parseArrayType();
+                return this->parseArrayType(genericParam);
             case Token::Type::PunctuationOpenParen:
             case Token::Type::PunctuationOpenBrace:
+                assert(!genericParam && "Message: function types be a generic parameter");
                 return this->parseFunctionType();
             case Token::Type::KeywordVararg:
+                assert(!genericParam && "Message: vararg cannot be a generic parameter");
                 _helper->next();
                 return NewDataType(NewDataType::Kind::Vararg);
             default:
@@ -925,17 +927,27 @@ namespace Three {
 
         if (this->helper()->peek().type() != Token::Type::Identifier) {
             std::cout << this->helper()->peek().str() << std::endl;
-            assert(0 && "Should always be an identifier");
+            assert(0 && "Message: type should always be an identifier");
         }
 
-        NewDataType type = _context->dataTypeForName(_helper->peek().str());
+        std::string typeIdentifier = _helper->nextStr();
+
+        NewDataType type;
+        if (genericParam) {
+            type = NewDataType(NewDataType::Kind::Generic);
+            if (!_context->identifierAvailableForDefinition(typeIdentifier)) {
+                assert(0 && "Message: generic parameter identifier already defined in this scope");
+            }
+
+            type.setName(typeIdentifier);
+        } else {
+            type = _context->dataTypeForName(typeIdentifier);
+        }
 
         if (type.kind() == NewDataType::Kind::Undefined) {
-            std::cout << _helper->peek().str() << std::endl;
+            std::cout << typeIdentifier << std::endl;
             assert(0 && "Message: failed to parse type");
         }
-
-        _helper->next();
 
         // handle character specifiers
         if (type.kind() == NewDataType::Kind::Character) {
@@ -946,6 +958,12 @@ namespace Three {
             return type;
         }
 
+        this->parseTypeSpecifiers(type);
+
+        return type;
+    }
+
+    void Parser::parseTypeSpecifiers(NewDataType& type) {
         // width specifier (or, colon)
         if (_helper->nextIf(Token::Type::PunctuationColon)) {
             if (_helper->peek().type() != Token::Type::PunctuationColon) {
@@ -964,11 +982,9 @@ namespace Three {
         if (_helper->nextIf(Token::Type::PunctuationColon)) {
             type.setVectorSizeSpecifier(this->parseIntegerSpecifier());
         }
-
-        return type;
     }
 
-    NewDataType Parser::parseTypePostfixes(const NewDataType& type, bool optionalWrapping) {
+    NewDataType Parser::parseTypePostfixes(const NewDataType& type) {
         NewDataType newType(type);
 
         if (_helper->nextIf(Token::Type::OperatorNot)) {
@@ -976,46 +992,51 @@ namespace Three {
         }
 
         if (_helper->nextIf(Token::Type::OperatorQuestionMark)) {
-            if (optionalWrapping) {
-                NewDataType ptr(NewDataType::Kind::NullablePointer);
-
-                ptr.addSubtype(newType);
-                ptr.setLabel(newType.label());
-
-                newType = ptr;
-            } else {
-                assert(newType.kind() == NewDataType::Kind::Pointer);
-                newType.setKind(NewDataType::Kind::NullablePointer);
+            switch (type.kind()) {
+                case NewDataType::Kind::Pointer:
+                    newType.setKind(NewDataType::Kind::NullablePointer);
+                    break;
+                case NewDataType::Kind::GenericPointer:
+                    newType.setKind(NewDataType::Kind::GenericNullablePointer);
+                    break;
+                case NewDataType::Kind::Generic:
+                    newType = NewDataType::wrapInType(NewDataType::Kind::GenericNullablePointer, newType);
+                    break;
+                default:
+                    newType = NewDataType::wrapInType(NewDataType::Kind::NullablePointer, newType);
+                    break;
             }
         }
 
         return newType;
     }
 
-    NewDataType Parser::parsePointerType() {
+    NewDataType Parser::parsePointerType(bool genericParam) {
         assert(_helper->next().type() == Token::Type::OperatorStar);
 
-        NewDataType type = NewDataType(NewDataType::Kind::Pointer);
+        NewDataType type = NewDataType(genericParam ? NewDataType::Kind::GenericPointer : NewDataType::Kind::Pointer);
 
-        type = this->parseTypePostfixes(type, false);
+        type = this->parseTypePostfixes(type);
 
-        type.addSubtype(this->parseType());
+        type.addSubtype(this->parseType(genericParam));
 
         return type;
     }
 
-    NewDataType Parser::parseArrayType() {
+    NewDataType Parser::parseArrayType(bool genericParam) {
         assert(_helper->next().type() == Token::Type::PunctuationOpenBracket);
 
-        NewDataType type = NewDataType(NewDataType::Kind::Array);
+        NewDataType type = NewDataType(genericParam ? NewDataType::Kind::GenericArray : NewDataType::Kind::Array);
 
-        type.setArrayCount(this->parseIntegerSpecifier());
+        if (_helper->peek().type() != Token::Type::PunctuationCloseBracket) {
+            type.setArrayCount(this->parseIntegerSpecifier());
+        }
 
         if (!_helper->nextIf(Token::Type::PunctuationCloseBracket)) {
             assert(0 && "Message: array type element count should be followed by a close bracket");
         }
 
-        type.addSubtype(this->parseType());
+        type.addSubtype(this->parseType(genericParam));
 
         return type;
     }
@@ -1238,6 +1259,28 @@ namespace Three {
         }
 
         return it->second;
+    }
+
+    bool Parser::parseGenericParameters(NewDataType& type) {
+        assert(_helper->nextIf(Token::Type::OperatorLessThan));
+
+        type.addGenericParameter(Parser::parseType(true));
+
+        return _helper->parseUntil(true, [&] (const Token& token) {
+            switch (token.type()) {
+                case Token::Type::OperatorGreaterThan:
+                    return true;
+                case Token::Type::PunctuationComma:
+                    _helper->next();
+                    type.addGenericParameter(Parser::parseType(true));
+                    return false;
+                default:
+                    assert(0 && "Message: Unexpected token while parsing generic parameters");
+                    break;
+            }
+
+            return true;
+        });
     }
 
     bool Parser::isAtIdentifierAvailableForDefinition() {

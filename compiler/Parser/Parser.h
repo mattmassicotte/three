@@ -58,18 +58,20 @@ namespace Three {
         bool peekTypeAnnotations(unsigned int* peekDepth);
         bool peekFunctionType(unsigned int* peekDepth);
         bool peekNonFunctionType(unsigned int* peekDepth);
-        NewDataType parseType();
-        NewDataType parseAndApplyTypeAnnotations();
-        NewDataType parseTypeWithoutAnnotations();
-        NewDataType parseTypePostfixes(const NewDataType& type, bool optionalWrapping);
-        NewDataType parsePointerType();
-        NewDataType parseArrayType();
+        NewDataType parseType(bool genericParam = false);
+        NewDataType parseAndApplyTypeAnnotations(bool genericParam = false);
+        NewDataType parseTypeWithoutAnnotations(bool genericParam = false);
+        void parseTypeSpecifiers(NewDataType& type);
+        NewDataType parseTypePostfixes(const NewDataType& type);
+        NewDataType parsePointerType(bool genericParam = false);
+        NewDataType parseArrayType(bool genericParam = false);
         NewDataType parseFunctionType(bool signature = false, std::vector<std::string>* references = nullptr);
         NewDataType parseFunctionSignatureType();
         uint32_t parseIntegerSpecifier();
         std::string parseTypeIdentifierPair(NewDataType& type);
         NewDataType::Access parseAnnotationAccess();
         NewDataType::CharacterEncoding parseCharacterEncodingSpecifier();
+        bool parseGenericParameters(NewDataType& type);
 
         bool isAtIdentifierAvailableForDefinition();
 

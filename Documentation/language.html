@@ -479,6 +479,40 @@ x ? y : z
                     </code></pre>
                 </td>
             </tr>
+            <tr><th colspan="2">Generics</th></tr>
+            <tr>
+                <td>
+                    <pre><code>
+<span class="comment"># Generic Type</span>
+<span class="keyword">struct</span> <span class="entity">MyStructure</span>&lt;<span class="entity">T</span>, <span class="entity">U</span>&gt;
+  <span class="entity">T</span> typeT
+  <span class="entity">U</span> typeU
+<span class="keyword">end</span>
+
+<span class="comment"># Generic Type usage</span>
+<span class="entity">MyStructure</span>&lt;<span class="entity">Int</span>, <span class="entity">Natural</span>&gt; x
+
+<span class="comment"># Generic Function</span>
+<span class="keyword">def</span> foo&lt;<span class="entity">T</span>&gt;(<span class="entity">T</span> x; <span class="entity">T</span>)
+  <span class="keyword">return</span> x
+<span class="keyword">end</span>
+
+<span class="comment"># Generic Constraints</span>
+<span class="comment"># By Size, mutability, nullability,</span>
+<span class="comment"># indirection and cardinality</span>
+<span class="keyword">struct</span> <span class="entity">Example</span>&lt;<span class="entity">T</span>:32, <span class="entity">U</span><span class="keyword">!</span>, *<span class="keyword">?</span><span class="entity">V</span>, []<span class="entity">W</span>&gt;
+  <span class="entity">T</span> typesSized32BitsOnly
+  <span class="entity">U</span> mutableTypesOnly
+  <span class="entity">V</span> nullablePointerTypesOnly
+<span class="keyword">end</span>
+                    </code></pre>
+                </td>
+                <td>
+                    <pre><code>
+<em>No Equivalent*</em>
+                    </code></pre>
+                </td>
+            </tr>
             <tr><th colspan="2">Closures</th></tr>
             <tr>
                 <td>
