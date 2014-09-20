@@ -722,6 +722,42 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
             <tr>
                 <td>
                     <pre><code>
+<span class="annotation">@access</span>
+<span class="annotation">@volatile</span>
+<span class="annotation">@alias</span>
+<span class="annotation">@read</span>
+<span class="annotation">@write</span>
+<span class="annotation">@assert</span>
+<span class="annotation">@unit</span>
+<span class="annotation">@sentinel</span>
+<span class="annotation">@checked</span>
+<span class="annotation">@null</span>
+<span class="annotation">@success</span>
+<span class="annotation">@global</span>
+<span class="annotation">@thread</span>
+<span class="annotation">@io</span>
+<span class="annotation">@register</span>
+<span class="annotation">@memory</span>
+<span class="annotation">@flow</span>
+<span class="annotation">@available</span>
+<span class="annotation">@noreturn</span>
+<span class="annotation">@common</span>
+<span class="annotation">@uncommon</span>
+<span class="annotation">@optimize</span>
+<span class="annotation">@inline</span>
+<span class="annotation">@prefetch</span>
+<span class="annotation">@pure</span>
+<span class="annotation">@throws</span>
+<span class="annotation">@const</span>
+<span class="annotation">@restrict</span>
+<span class="annotation">@brief</span>
+<span class="annotation">@summary</span>
+<span class="annotation">@param</span>
+<span class="annotation">@return</span>
+<span class="annotation">@todo</span>
+<span class="annotation">@sensitive</span>
+<span class="annotation">@untrusted</span>
+
 <span class="annotation">@noreturn</span>
 <span class="keyword">def</span>:func f()
 
@@ -744,24 +780,8 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
                 </td>
                 <td>
                     <pre><code>
-<span class="entity">void</span> f() <span class="annotation">__attribute__((noreturn))</span>;
-
-
-<span class="entity">void</span> g() <span class="annotation">__attribute__((deprecated))</span>;
-
-
-
-<span class="keyword">if</span> (__builtin_expect(x > <span class="literal">0</span>, <span class="literal">1</span>)) {
-    <em>body</em>
-} <span class="keyword">else</span> {
-    <em>body</em>
-}
-
-
-
-
-
-<span class="entity">void</span> foo(<span class="entity">int</span> someArray[<span class="keyword">static</span> <span class="literal">5</span>]);
+<span class="annotation">__attribute__((noreturn))</span>
+<span class="annotation">__attribute__((deprecated))</span>
                     </code></pre>
                 </td>
             </tr>
