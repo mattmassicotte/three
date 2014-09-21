@@ -1,4 +1,4 @@
-LLVM_VERSION    = '3.3'
+LLVM_VERSION    = '3.5.0'
 LLVM_DIR        = "#{VENDOR_DIR}/llvm"
 LLVM_TOOLS_PATH = "#{LLVM_DIR}/tools"
 LLVM_BUILD_DIR  = "#{BUILD_DIR}/llvm"
@@ -17,22 +17,22 @@ namespace :llvm do
   desc "Downloads the llvm/clang #{LLVM_VERSION} sources"
   task :download => VENDOR_DIR do
     Dir.chdir(VENDOR_DIR) do
-      path = "llvm-#{LLVM_VERSION}.src.tar.gz"
+      path = "llvm-#{LLVM_VERSION}.src.tar.xz"
 
       RakeCompile.log('DOWNLOAD'.red, "llvm-#{LLVM_VERSION}")
       sh("curl -o '#{path}' 'http://llvm.org/releases/#{LLVM_VERSION}/#{path}'")
-      sh("tar -xzf '#{path}'")
+      sh("tar -xf '#{path}'")
 
       FileUtils.rm_f(path)
       FileUtils.mv("llvm-#{LLVM_VERSION}.src", 'llvm')
     end
 
     Dir.chdir(LLVM_TOOLS_PATH) do
-      path = "cfe-#{LLVM_VERSION}.src.tar.gz"
+      path = "cfe-#{LLVM_VERSION}.src.tar.xz"
 
       RakeCompile.log('DOWNLOAD'.red, "cfe-#{LLVM_VERSION}")
       sh("curl -o '#{path}' 'http://llvm.org/releases/#{LLVM_VERSION}/#{path}'")
-      sh("tar -xzf '#{path}'")
+      sh("tar -xf '#{path}'")
 
       FileUtils.rm_f(path)
       FileUtils.mv("cfe-#{LLVM_VERSION}.src", 'clang')

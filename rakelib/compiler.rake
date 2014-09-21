@@ -10,6 +10,8 @@ COMPILER_TEST_BIN = "#{BUILD_DIR}/three_compiler_test"
 FRONTEND_SOURCES = FileList['frontend/**/*.cpp']
 FRONTEND_BIN = "#{BUILD_DIR}/three"
 
+LLVM_REQUIRED_LIBS = '-lpthread -ldl -lz -lcurses'
+
 # These dependencies are defined here, in this way, for two reasons:
 # - these tasks cannot even be defined without first downloading llvm and gtest
 # - the constants are in .rake files, and the load order of those isn't well-defined
@@ -36,14 +38,14 @@ namespace :compiler do
     link_library COMPILER_LIB
     link_library GTEST_LIB
     link_library LLVM_LIB
-    ld_flags '-lpthread -ldl'
+    ld_flags LLVM_REQUIRED_LIBS
     executable COMPILER_TEST_BIN do |target|
       target.add_objects_from_sources COMPILER_TEST_SOURCES
     end
 
     link_library COMPILER_LIB
     link_library LLVM_LIB
-    ld_flags '-lpthread -ldl'
+    ld_flags LLVM_REQUIRED_LIBS
     executable FRONTEND_BIN do |target|
       target.add_objects_from_sources FRONTEND_SOURCES
     end
