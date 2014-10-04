@@ -76,11 +76,13 @@ namespace Three {
     public:
         std::string name() const;
         void setName(const std::string& value);
+        bool hasName() const;
         Kind kind() const;
         void setKind(Kind k);
 
         bool defined() const;
         bool isPointer() const;
+        bool isCScalar() const;
 
         uint32_t widthSpecifier() const;
         void setWidthSpecifier(uint32_t width);

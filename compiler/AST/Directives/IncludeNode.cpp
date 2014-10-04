@@ -97,7 +97,7 @@ namespace Three {
     }
 
     bool IncludeNode::relative() const {
-        return false;
+        return !this->useSearchPaths();
     }
 
     bool IncludeNode::useSearchPaths() const {

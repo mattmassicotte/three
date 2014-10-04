@@ -8,7 +8,10 @@ namespace Three {
 
         std::string innerStr;
 
-        while (usedType.kind() == NewDataType::Kind::Pointer || usedType.kind() == NewDataType::Kind::NullablePointer) {
+        // The check for a name catches aliased pointer types. Without doing this, we'll loose the
+        // alias, and render the underlying type. That's not incorrect, but its much less readable,
+        // and often surprising when inspecting the C code.
+        while (usedType.isPointer() && !usedType.hasName()) {
             std::string pointerStr = "*";
 
             if (usedType.kind() == NewDataType::Kind::NullablePointer) {
@@ -64,6 +67,7 @@ namespace Three {
             case NewDataType::Kind::Vararg:
             case NewDataType::Kind::Tuple:
             case NewDataType::Kind::CInt:
+            case NewDataType::Kind::CChar:
             case NewDataType::Kind::CUnsignedInt:
             case NewDataType::Kind::Closure:
             case NewDataType::Kind::Structure:
@@ -74,6 +78,19 @@ namespace Three {
                 s << CTypeCodeGenerator::codeGenScalarType(type);
                 break;
             case NewDataType::Kind::Array:
+                break;
+            case NewDataType::Kind::Pointer:
+            case NewDataType::Kind::NullablePointer:
+                // Normally, we don't take this path. But,
+                // if a pointer is a named type (aliased), we want to use
+                // that in the C source.
+                assert(type.hasName());
+
+                if (CTypeCodeGenerator::typeCanBeConst(type)) {
+                    s << "const ";
+                }
+
+                s << type.name();
                 break;
             default:
                 std::cout << type.kind() << std::endl;
@@ -89,6 +106,11 @@ namespace Three {
 
         if (CTypeCodeGenerator::typeCanBeConst(type)) {
             s << "const ";
+        }
+
+        if (type.isCScalar()) {
+            s << CTypeCodeGenerator::codeGenCScalarType(type);
+            return s.str();
         }
 
         switch (type.kind()) {
@@ -137,29 +159,38 @@ namespace Three {
             case NewDataType::Kind::CStructPrefixedStructure:
                 s << std::string("struct ") + type.name();
                 break;
-            case NewDataType::Kind::CUnsignedInt:
-                // This is a bit weird, but we need to preserve the type's name during codegen.
-                // The actual underlying type will be correct here, but its way easier to understand
-                // if we use any typedef'd name that was applied.
-                if (type.name().size() > 0) {
-                    s << type.name();
-                } else {
-                    s << "unsigned int";
-                }
-                break;
-            case NewDataType::Kind::CInt:
-                if (type.name().size() > 0) {
-                    s << type.name();
-                } else {
-                    s << "int";
-                }
-                break;
             default:
-                assert(0 && "Bug: unhandled scalar C type");
+                assert(0 && "Bug: unhandled scalar type");
                 break;
         }
 
         return s.str();
+    }
+
+    std::string CTypeCodeGenerator::codeGenCScalarType(const NewDataType& type) {
+        assert(type.isCScalar());
+
+        if (type.hasName()) {
+            // This is a bit weird, but we need to preserve the type's name during codegen.
+            // The actual underlying type will be correct here, but its way easier to understand
+            // if we use any typedef'd name that was applied.
+            return type.name();
+        }
+
+        switch (type.kind()) {
+            case NewDataType::Kind::CUnsignedInt:
+                return "unsigned int";
+            case NewDataType::Kind::CInt:
+                return "int";
+            case NewDataType::Kind::CChar:
+                return "char";
+            default:
+                break;
+        }
+
+        assert(0 && "Bug: unhandled scalar C type");
+
+        return "";
     }
 
     std::string CTypeCodeGenerator::codeGenFunction(const NewDataType& type, const std::string& leadingString) {

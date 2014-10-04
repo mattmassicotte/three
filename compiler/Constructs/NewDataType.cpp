@@ -35,20 +35,28 @@ namespace Three {
     }
 
     std::string NewDataType::name() const {
-        if (_name.size() > 0) {
+        if (this->hasName()) {
             return _name;
         }
 
         switch (_kind) {
-            case Undefined: return "Undefined";
-            case Integer:   return "Int";
-            case Boolean:   return "Bool";
-            default:        return "Unspecified";
+            case Kind::Integer: return "Int";
+            case Kind::Boolean: return "Bool";
+            case Kind::Natural: return "Natural";
+            case Kind::Float:   return "Float";
+            case Kind::Real:    return "Real";
+            default: break;
         }
+
+        return "";
     }
 
     void NewDataType::setName(const std::string& value) {
         _name = value;
+    }
+
+    bool NewDataType::hasName() const {
+        return _name.size() > 0;
     }
 
     NewDataType::Kind NewDataType::kind() const {
@@ -64,7 +72,35 @@ namespace Three {
     }
 
     bool NewDataType::isPointer() const {
-        return _kind == Kind::Pointer || _kind == Kind::Function;
+        switch (this->kind()) {
+            case Kind::Pointer:
+            case Kind::NullablePointer:
+            case Kind::GenericPointer:
+            case Kind::GenericNullablePointer:
+                return true;
+            default:
+                break;
+        }
+
+        return false;
+    }
+
+    bool NewDataType::isCScalar() const {
+        switch (this->kind()) {
+            case Kind::CChar:
+            case Kind::CUnsignedChar:
+            case Kind::CShort:
+            case Kind::CUnsignedShort:
+            case Kind::CInt:
+            case Kind::CUnsignedInt:
+            case Kind::CLong:
+            case Kind::CUnsignedLong:
+            case Kind::CLongLong:
+            case Kind::CUnsignedLongLong:
+                return true;
+            default:
+                return false;
+        }
     }
 
     uint32_t NewDataType::widthSpecifier() const {

@@ -36,6 +36,7 @@ TEST_F(ParserTests_ExternalFiles, Include) {
     ASSERT_EQ("Include", includeNode->nodeName());
     ASSERT_EQ("/a/b/c.h", includeNode->argument());
     ASSERT_FALSE(includeNode->useSearchPaths());
+    ASSERT_TRUE(includeNode->relative());
 }
 
 TEST_F(ParserTests_ExternalFiles, IncludeWithSearchPaths) {
@@ -46,4 +47,5 @@ TEST_F(ParserTests_ExternalFiles, IncludeWithSearchPaths) {
     ASSERT_EQ("Include", includeNode->nodeName());
     ASSERT_EQ("file.h", includeNode->argument());
     ASSERT_TRUE(includeNode->useSearchPaths());
+    ASSERT_FALSE(includeNode->relative());
 }
