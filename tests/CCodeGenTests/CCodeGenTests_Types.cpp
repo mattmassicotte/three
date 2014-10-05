@@ -10,8 +10,8 @@ TEST_F(CCodeGenTests_Types, Structure) {
                                                   "end\n");
 
     EXPECT_EQ("typedef struct Foo {\n"
-              "    const int x;\n"
-              "    const int y;\n"
+              "    int x;\n"
+              "    int y;\n"
               "} Foo;\n\n", visitor->internalHeaderString());
     EXPECT_EQ("", visitor->bodyString());
 }
@@ -24,8 +24,8 @@ TEST_F(CCodeGenTests_Types, PublicStructure) {
                                                   "end\n");
 
     EXPECT_EQ("typedef struct Foo {\n"
-              "    const int x;\n"
-              "    const int y;\n"
+              "    int x;\n"
+              "    int y;\n"
               "} Foo;\n\n", visitor->internalHeaderString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n"
               "typedef struct Foo Foo;\n\n", visitor->externalHeaderString());
@@ -38,7 +38,7 @@ TEST_F(CCodeGenTests_Types, PrivateStructure) {
                                                   "  Int x\n"
                                                   "end\n");
 
-    EXPECT_EQ("typedef struct Foo {\n    const int x;\n} Foo;\n\n", visitor->internalHeaderString());
+    EXPECT_EQ("typedef struct Foo {\n    int x;\n} Foo;\n\n", visitor->internalHeaderString());
     EXPECT_EQ("", visitor->declarationsString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
     EXPECT_EQ("", visitor->bodyString());
@@ -53,8 +53,8 @@ TEST_F(CCodeGenTests_Types, PackedStructure) {
     EXPECT_EQ("#pragma pack(push)\n"
               "#pragma pack(4)\n"
               "typedef struct Foo {\n"
-              "    const int x;\n"
-              "    const int y;\n"
+              "    int x;\n"
+              "    int y;\n"
               "} Foo;\n"
               "#pragma pack(pop)\n\n", visitor->internalHeaderString());
     EXPECT_EQ("", visitor->bodyString());

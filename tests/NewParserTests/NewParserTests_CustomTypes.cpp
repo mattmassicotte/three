@@ -68,6 +68,7 @@ TEST_F(ParserTests_CustomTypes, StructureWithOneTypedMember) {
     ASSERT_EQ(NewDataType::Kind::Structure, structNode->definedType().kind());
     ASSERT_EQ(1, structNode->definedType().subtypeCount());
     ASSERT_EQ(NewDataType::Kind::Integer, structNode->definedType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(NewDataType::Access::ReadWrite, structNode->definedType().subtypeAtIndex(0).access());
 
     ASSERT_EQ(1, structNode->childCount());
 

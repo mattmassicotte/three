@@ -67,7 +67,8 @@ namespace Three {
                 return true;
             }
 
-            node->_definedType.addSubtype(member->dataType());
+            // make the members mutable, so mutability is controlled from the structure as a whole
+            node->_definedType.addSubtype(NewDataType::mutableVersion(member->dataType()));
             if (!node->addChild(member)) {
                 return true;
             }

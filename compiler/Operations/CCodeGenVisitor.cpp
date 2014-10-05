@@ -315,10 +315,12 @@ namespace Three {
             source.print(node.name());
             source.printLineAndIndent(" {");
 
-            CSource* oldSource = _currentSource;
-            _currentSource = &source;
-            this->visitChildren(node, true);
-            _currentSource = oldSource;
+            assert(node.definedType().subtypeCount() == node.childCount());
+
+            node.definedType().eachSubtypeWithLast([&] (const NewDataType& subtype, bool last) {
+                source << CTypeCodeGenerator::codeGen(subtype, subtype.label());
+                source.printLine(";");
+            });
 
             source.outdentAndPrintLine("} " + node.name() + ";");
 

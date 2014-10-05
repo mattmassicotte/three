@@ -11,7 +11,10 @@ TEST_F(CCodeGenTests_Operators, MemberAccess) {
                                                   "  f.a = 0\n"
                                                   "end\n");
 
-    EXPECT_EQ("typedef struct Foo {\n    const uint32_t a;\n} Foo;\n\nvoid test(Foo f);\n", visitor->internalHeaderString());
+    EXPECT_EQ("typedef struct Foo {\n"
+              "    uint32_t a;\n"
+              "} Foo;\n\n"
+              "void test(Foo f);\n", visitor->internalHeaderString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
     EXPECT_EQ("void test(Foo f) {\n    f.a = 0;\n}\n\n", visitor->bodyString());
 }
@@ -25,7 +28,7 @@ TEST_F(CCodeGenTests_Operators, FunctionCallOperator) {
                                                   "end\n");
 
     EXPECT_EQ("typedef struct Foo {\n"
-              "    void (* const fn)(const int);\n"
+              "    void (* fn)(const int);\n"
               "} Foo;\n\n"
               "void test(const Foo f);\n", visitor->internalHeaderString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
@@ -41,7 +44,7 @@ TEST_F(CCodeGenTests_Operators, StructMemberWithUnaryOperators) {
                                                   "end\n");
 
     EXPECT_EQ("typedef struct Foo {\n"
-              "    const int a;\n"
+              "    int a;\n"
               "} Foo;\n\n"
               "void test(const Foo* const* f);\n", visitor->internalHeaderString());
     EXPECT_EQ("void test(const Foo* const* f) {\n"
