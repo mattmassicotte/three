@@ -359,7 +359,13 @@ namespace Three {
     }
 
     ASTNode* Parser::parseExpressionElement() {
-        return OperatorNode::parseTailing(*this, this->parseExpressionElementWithoutTailingOperators());
+        ASTNode* node = this->parseExpressionElementWithoutTailingOperators();
+
+        if (!node) {
+            return nullptr;
+        }
+
+        return OperatorNode::parseTailing(*this, node);
     }
 
     ASTNode* Parser::parseExpressionElementWithoutTailingOperators() {
@@ -427,7 +433,9 @@ namespace Three {
     ASTNode* Parser::parseExpressionIdentifier() {
         assert(_helper->peek().type() == Token::Type::Identifier);
 
-        std::string identifier = _helper->nextStr();
+        QualifiedName name = this->parseMultiPartIdentifierComponents();
+    
+        assert(name.components.size() > 0);
 
         // at this point, we could have:
         // - function
@@ -438,15 +446,15 @@ namespace Three {
         // - local variable
 
         // TODO: I think at this point we really need some kind of symbol table. Dealing
-        // with C symbols is tough, and that could  reduce the number of heurestics needed.
-        NewVariable* variable = _context->scope()->variableForName(identifier);
+        // with C symbols is tough, and that could reduce the number of heurestics needed.
+        NewVariable* variable = _context->scope()->variableForName(name.to_s());
         if (variable) {
             if (variable->type.kind() == NewDataType::Kind::CUnspecifiedMacro) {
-                return new CMacroNode(identifier);
+                return new CMacroNode(name.to_s());
             }
         }
 
-        ASTNode* node = VariableNode::parse(*this, identifier);
+        ASTNode* node = VariableNode::parse(*this, name);
 
         return node;
     }
@@ -462,7 +470,11 @@ namespace Three {
     }
 
     std::string Parser::parseMultiPartIdentifier() {
-        std::stringstream s;
+        return this->parseMultiPartIdentifierComponents().to_s();
+    }
+
+    QualifiedName Parser::parseMultiPartIdentifierComponents() {
+        QualifiedName name;
 
         for (;;) {
             // have to start with an identifier
@@ -470,7 +482,7 @@ namespace Three {
                 assert(0 && "Message: Invalid multi-part identifier");
             }
 
-            s << _helper->nextStr();
+            name.components.push_back(_helper->nextStr());
 
             // need two successive colons to continue
             if (_helper->peek().type() != Token::Type::PunctuationColon) {
@@ -483,11 +495,9 @@ namespace Three {
 
             _helper->next();
             _helper->next();
-
-            s << "_3_"; // this could be used to change the seperator
         }
 
-        return s.str();
+        return name;
     }
 
     bool Parser::parseBodyWithElse(const std::string& label, ASTNode** elseNode, std::function<void (void)> func) {

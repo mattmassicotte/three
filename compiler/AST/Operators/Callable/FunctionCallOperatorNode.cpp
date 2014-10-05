@@ -7,6 +7,7 @@
 namespace Three {
     FunctionCallOperatorNode* FunctionCallOperatorNode::parse(Parser& parser, ASTNode* receiver, ASTNode* firstArg) {
         assert(parser.helper()->peek().type() == Token::Type::PunctuationOpenParen);
+        assert(receiver);
 
         FunctionCallOperatorNode* node = new FunctionCallOperatorNode();
 

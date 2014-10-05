@@ -11,6 +11,7 @@ namespace Three {
     class ASTNode;
     class Lexer;
     class FunctionDefinitionNode;
+    class QualifiedName;
 }
 
 namespace Three {
@@ -47,6 +48,7 @@ namespace Three {
         ASTNode* parseExpressionIdentifier();
         bool parseParentheses(std::function<void (void)> func);
         std::string parseMultiPartIdentifier();
+        QualifiedName parseMultiPartIdentifierComponents();
         bool parseBodyWithElse(const std::string& label, ASTNode** elseNode, std::function<void (void)> func);
         bool parseBodyWithElse(ASTNode* node, ASTNode** elseNode);
 

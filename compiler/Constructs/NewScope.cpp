@@ -1,5 +1,6 @@
 #include "NewScope.h"
 #include "NewVariable.h"
+#include "QualifiedName.h"
 
 #include <sstream>
 
@@ -95,7 +96,7 @@ namespace Three {
         return s.str();
     }
 
-    NewVariable* NewScope::variableForName(const std::string& name) const {
+    NewVariable* NewScope::variableForExactName(const std::string& name) const {
         auto it = _variables.find(name);
 
         if (it != _variables.cend()) {
@@ -108,6 +109,27 @@ namespace Three {
         }
 
         return _parent->variableForName(name);
+    }
+
+    NewVariable* NewScope::variableForName(const QualifiedName& name) const {
+        std::cout << "starting " << name.to_s() << " (" << this->fullNamespace().to_s() << ")" << std::endl;
+
+        // first, search for given name
+        NewVariable* v = this->variableForExactName(name.to_s());
+        if (v) {
+            return v;
+        }
+
+        // ok, not found. Try applying this scope's namespace
+        if (_namespace.numberOfComponents() == 0) {
+            return nullptr;
+        }
+
+        QualifiedName namespacedName(name);
+
+        namespacedName.prependName(_namespace);
+
+        return this->variableForExactName(namespacedName.to_s());
     }
 
     bool NewScope::defineVariable(NewVariable* variable) {
@@ -187,18 +209,28 @@ namespace Three {
         return _capturedVariables;
     }
 
-    std::vector<std::string> NewScope::fullNamespace() const {
-        std::vector<std::string> components;
+    QualifiedName NewScope::fullNamespace() const {
+        QualifiedName name(_namespace);
 
-        const NewScope* scope = this;
+        NewScope* scope = this->parent();
         while (scope) {
-            if (scope->namespaceString.size() > 0) {
-                components.insert(components.cbegin(), scope->namespaceString);
-            }
+            name.prependName(scope->_namespace);
 
             scope = scope->parent();
         }
 
-        return components;
+        return name;
+    }
+
+    void NewScope::setNamespace(const QualifiedName& name) {
+        _namespace = name;
+    }
+
+    QualifiedName NewScope::qualifiedNameWithIdentifier(const std::string& name) {
+        QualifiedName fullName(name);
+
+        fullName.prependName(this->fullNamespace());
+
+        return fullName;
     }
 }

@@ -2,6 +2,7 @@
 
 #include "DefinitionNode.h"
 #include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/QualifiedName.h"
 #include "compiler/Lexer/Token.h"
 
 namespace Three {
@@ -31,7 +32,6 @@ namespace Three {
         bool parseBody(Parser& parser);
 
         std::string fullName() const;
-        std::vector<std::string> namespaceComponents;
 
         void eachNamedReturn(std::function<void (const NewDataType&)> block) const;
 
@@ -42,7 +42,8 @@ namespace Three {
     private:
         NewDataType _functionType;
         NewDataType _methodOnType;
-        std::string _name;
+        QualifiedName _name;
+        QualifiedName _scopedNamespace;
         std::stringstream _bodyString;
     };
 }

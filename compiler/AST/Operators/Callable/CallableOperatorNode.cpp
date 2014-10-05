@@ -23,6 +23,10 @@ namespace Three {
         return success;
     }
 
+    CallableOperatorNode::CallableOperatorNode() : _receiver(nullptr) {
+        
+    }
+
     CallableOperatorNode::~CallableOperatorNode() {
         assert(_receiver);
         delete _receiver;
@@ -41,7 +45,8 @@ namespace Three {
     }
 
     void CallableOperatorNode::setReceiver(ASTNode* node) {
-        assert(_receiver != node);
+        assert(node && "Node cannot be null");
+        assert(_receiver != node && "Cannot set receiver to be itself");
 
         if (_receiver) {
             delete _receiver;

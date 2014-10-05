@@ -3,11 +3,12 @@
 #include "../ASTNode.h"
 #include "compiler/constructs/NewDataType.h"
 #include "compiler/constructs/NewVariable.h"
+#include "compiler/constructs/QualifiedName.h"
 
 namespace Three {
     class VariableNode : public ASTNode {
     public:
-        static VariableNode* parse(Parser& parser, const std::string& identifier);
+        static VariableNode* parse(Parser& parser, const QualifiedName& name);
 
     public:
         VariableNode();

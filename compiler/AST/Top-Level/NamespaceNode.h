@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../ASTNode.h"
+#include "compiler/Constructs/QualifiedName.h"
 
 namespace Three {
     class NamespaceNode : public ASTNode {
@@ -10,8 +11,9 @@ namespace Three {
     public:
         std::string nodeName() const;
         std::string name() const;
+        QualifiedName qualifiedName() const;
 
     private:
-        std::string _name;
+        QualifiedName _name;
     };
 }

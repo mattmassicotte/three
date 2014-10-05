@@ -2,6 +2,7 @@
 #include "compiler/Parser/Parser.h"
 #include "compiler/Lexer/Lexer.h"
 #include "compiler/constructs/NewScope.h"
+#include "compiler/constructs/QualifiedName.h"
 #include "compiler/AST/Atomics/AtomicNode.h"
 
 #include "compiler/Messages/DuplicateFunctionMessage.h"
@@ -16,7 +17,6 @@ namespace Three {
         FunctionDefinitionNode* node = new FunctionDefinitionNode();
 
         node->setVisibility(parser.context()->visibility());
-        node->namespaceComponents = parser.context()->scope()->fullNamespace();
 
         if (parser.helper()->peek().type() != Token::Type::Identifier) {
             assert(0 && "Message: Expected function name or method type");
@@ -40,7 +40,18 @@ namespace Three {
             assert(0 && "Message: function name isn't avaiable for definition");
         }
 
-        node->_name = parser.helper()->nextStr();
+        // We have to store this, because we loose the scope when we pass over the function body.
+        node->_scopedNamespace = parser.context()->scope()->fullNamespace();
+
+        node->_name = QualifiedName(parser.helper()->nextStr());
+
+        // If this is a method, insert the Type name into to functions full name. I think
+        // this is a bit of a hack actually.
+        if (node->_methodOnType.kind() != NewDataType::Kind::Undefined) {
+            node->_name.prependName(QualifiedName(node->_methodOnType.name()));
+        }
+
+        node->_name.prependName(parser.context()->scope()->fullNamespace());
 
         // parse signature
         node->_functionType = parser.parseFunctionSignatureType();
@@ -55,7 +66,7 @@ namespace Three {
         }
 
         if (!parser.context()->defineFunctionForName(node->_functionType, node->fullName())) {
-            parser.context()->addMessage(new DuplicateFunctionMessage(node->_name));
+            parser.context()->addMessage(new DuplicateFunctionMessage(node->fullName()));
 
             delete node;
 
@@ -170,13 +181,13 @@ namespace Three {
     }
 
     std::string FunctionDefinitionNode::name() const {
-        return _name;
+        return _name.lastComponent();
     }
 
     std::string FunctionDefinitionNode::str() const {
         std::stringstream s;
 
-        s << "Function: " << this->name();
+        s << "Function: " << this->fullName();
 
         return s.str();
     }
@@ -242,7 +253,14 @@ namespace Three {
         parser.context()->pushScope();
         parser.context()->scope()->setCurrentFunctionReturnType(_functionType.returnType());
 
+        // create a scope that reflects the state at the time of parse, including
+        // the namespace, if any
+        parser.context()->scope()->setNamespace(_scopedNamespace);
         parser.context()->scope()->setScopedBasename(this->name());
+
+        // Ok, this is pretty wack. We've already done this, but the scope might have been destroyed, so
+        // we cannot reference ourselves. If the scope still exists, this will fail, which is ok.
+        parser.context()->scope()->defineVariableTypeForName(_functionType, this->fullName());
 
         this->defineParameterVariablesInScope(parser.context()->scope());
 
@@ -264,18 +282,9 @@ namespace Three {
     }
 
     std::string FunctionDefinitionNode::fullName() const {
-        std::stringstream s;
-
-        for (const std::string& part : namespaceComponents) {
-            s << part << "_3_";
-        }
-
         if (_methodOnType.kind() != NewDataType::Kind::Undefined) {
-            s << _methodOnType.name() << "_3_";
         }
 
-        s << this->name();
-
-        return s.str();
+        return _name.to_s();
     }
 }

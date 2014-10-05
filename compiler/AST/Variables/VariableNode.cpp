@@ -12,31 +12,31 @@
 #include <assert.h>
 
 namespace Three {
-    VariableNode* VariableNode::parse(Parser& parser, const std::string& identifier) {
+    VariableNode* VariableNode::parse(Parser& parser, const QualifiedName& name) {
         VariableNode* node = nullptr;
 
-        NewVariable* variable = parser.context()->scope()->variableForName(identifier);
+        NewVariable* variable = parser.context()->scope()->variableForName(name.to_s());
         if (!variable) {
-            parser.context()->addMessage(new UnrecognizedVariableMessage(identifier));
+            parser.context()->addMessage(new UnrecognizedVariableMessage(name.to_s()));
             return nullptr;
         }
 
-        if (parser.context()->functionForName(identifier).kind() != NewDataType::Kind::Undefined) {
+        if (parser.context()->functionForName(name.to_s()).kind() != NewDataType::Kind::Undefined) {
             node = new FunctionVariableNode();
-        } else if (parser.context()->scope()->referencedVariable(identifier)) {
+        } else if (parser.context()->scope()->referencedVariable(name.to_s())) {
             node = new ReferencedVariableNode();
-        } else if (parser.context()->scope()->capturedVariable(identifier)) {
+        } else if (parser.context()->scope()->capturedVariable(name.to_s())) {
             node = new CapturedVariableNode();
 
             // TODO: this is weird
-            parser.context()->scope()->captureVariable(identifier);
-        } else if (identifier == "self") {
+            parser.context()->scope()->captureVariable(name.to_s());
+        } else if (name.to_s() == "self") {
             node = new SelfVariableNode();
         } else {
             node = new LocalVariableNode();
         }
 
-        node->_name = identifier;
+        node->_name = name.to_s();
         node->_newVariable= variable;
 
         return node;

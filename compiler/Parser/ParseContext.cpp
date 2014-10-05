@@ -3,6 +3,8 @@
 #include "compiler/AST/RootNode.h"
 #include "compiler/constructs/NewDataType.h"
 #include "compiler/constructs/NewScope.h"
+#include "compiler/constructs/QualifiedName.h"
+#include "compiler/constructs/NewVariable.h"
 #include "compiler/CSourceIndexer.h"
 #include "compiler/CSourceEmitter.h"
 #include "compiler/Parser/Parser.h"
@@ -90,7 +92,6 @@ namespace Three {
             return false;
         }
 
-        // now, actually index the source
         if (!CSourceEmitter::createSourcesAtPath(*importedContext.get(), path)) {
             std::cout << "Unable to emit C sources for import" << std::endl;
             return false;
@@ -254,6 +255,43 @@ namespace Three {
         _functions[name] = type;
 
         return true;
+    }
+
+    NewVariable* ParseContext::variableForName(const QualifiedName& name) const {
+        auto it = _variables.find(name.to_s());
+
+        if (it != _variables.cend()) {
+            return it->second;
+        }
+
+        for (ParseContext* subcontext : _importedContexts) {
+            NewVariable* v = subcontext->variableForName(name.to_s());
+
+            if (v) {
+                return v;
+            }
+        }
+
+        return nullptr;
+    }
+
+    bool ParseContext::defineVariable(NewVariable* variable) {
+        if (this->variableForName(QualifiedName(variable->name))) {
+            return false;
+        }
+
+        _variables[variable->name] = variable;
+
+        return true;
+    }
+
+    bool ParseContext::defineVariableTypeForName(const NewDataType& type, const std::string& name) {
+        NewVariable* variable = new NewVariable();
+
+        variable->name = name;
+        variable->type = type;
+
+        return this->defineVariable(variable);
     }
 
     NewScope* ParseContext::scope() const {

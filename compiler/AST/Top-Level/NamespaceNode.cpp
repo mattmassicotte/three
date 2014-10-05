@@ -3,6 +3,7 @@
 #include "compiler/constructs/NewScope.h"
 
 #include <assert.h>
+#include <sstream>
 
 namespace Three {
     NamespaceNode* NamespaceNode::parse(Parser& parser) {
@@ -10,14 +11,14 @@ namespace Three {
 
         NamespaceNode* node = new NamespaceNode();
 
-        node->_name = parser.parseMultiPartIdentifier();
+        node->_name = parser.parseMultiPartIdentifierComponents();
 
         if (!parser.helper()->parseNewline()) {
             assert(0 && "Message: new line expected after namespace definition");
         }
 
         parser.context()->pushScope();
-        parser.context()->scope()->namespaceString = node->name();
+        parser.context()->scope()->setNamespace(node->_name);
 
         bool parsedSuccessfully = true;
 
@@ -49,6 +50,10 @@ namespace Three {
     }
 
     std::string NamespaceNode::name() const {
+        return _name.to_s();
+    }
+
+    QualifiedName NamespaceNode::qualifiedName() const {
         return _name;
     }
 }

@@ -8,6 +8,7 @@ namespace Three {
         static bool parseArguments(Parser& parser, CallableOperatorNode* node);
 
     public:
+        CallableOperatorNode();
         virtual ~CallableOperatorNode();
 
         NewDataType dataType() const;

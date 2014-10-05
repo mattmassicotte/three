@@ -69,3 +69,26 @@ TEST_F(ParserTests_CInterop, UsingTypedefTypeDefinedInCHeader) {
     ASSERT_EQ(NewDataType::Kind::CChar, var->dataType().kind());
     ASSERT_EQ("int_least8_t", var->dataType().name());
 }
+
+TEST_F(ParserTests_CInterop, UsingFunctionDefinedInHeader) {
+    ASTNode* node = parseNodeWithBodies("include <stdio.h>\n\n"
+                                        "def test()\n"
+                                        "  printf(\"yo\")\n"
+                                        "end\n");
+
+    ASSERT_EQ(2, node->childCount());
+
+    node = node->childAtIndex(1);
+    ASSERT_EQ("Function Definition", node->nodeName());
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Function Call Operator", node->nodeName());
+
+    FunctionCallOperatorNode* fnCall = dynamic_cast<FunctionCallOperatorNode*>(node);
+
+    ASSERT_EQ("Function Call Operator", fnCall->nodeName());
+    ASSERT_EQ("Function Variable", fnCall->receiver()->nodeName());
+    ASSERT_EQ("printf", fnCall->receiver()->name());
+    ASSERT_EQ(1, fnCall->childCount());
+}
