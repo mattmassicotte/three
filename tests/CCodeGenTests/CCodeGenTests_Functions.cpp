@@ -102,3 +102,21 @@ TEST_F(CCodeGenTests_Functions, NestedNamespacedFunction) {
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
     EXPECT_EQ("void One_3_Two_3_foo(void) {\n}\n\n", visitor->bodyString());
 }
+
+TEST_F(CCodeGenTests_Functions, CallingNamespacedFunction) {
+    Three::CCodeGenVisitor* visitor = this->visit("namespace One::Two\n"
+                                                  "  def foo()\n"
+                                                  "  end\n"
+                                                  "  def bar()\n"
+                                                  "    foo()\n"
+                                                  "  end\n"
+                                                  "end\n");
+
+    EXPECT_EQ("void One_3_Two_3_foo(void);\n"
+              "void One_3_Two_3_bar(void);\n", visitor->internalHeaderString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
+    EXPECT_EQ("void One_3_Two_3_foo(void) {\n}\n\n"
+              "void One_3_Two_3_bar(void) {\n"
+              "    One_3_Two_3_foo();\n"
+              "}\n\n", visitor->bodyString());
+}

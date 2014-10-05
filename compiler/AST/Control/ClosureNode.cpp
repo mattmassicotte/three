@@ -37,7 +37,7 @@ namespace Three {
 
         // handle references
         for (const std::string& name : referenceNames) {
-            NewVariable* v = parser.context()->scope()->variableForName(name);
+            NewVariable* v = parser.context()->variableForName(name);
 
             // this must be writable, because that's the point
             NewDataType type = v->type;
@@ -75,7 +75,7 @@ namespace Three {
         });
 
         for (const std::string& name : parser.context()->scope()->capturedVariables()) {
-            NewVariable* v = parser.context()->scope()->variableForName(name);
+            NewVariable* v = parser.context()->variableForName(name);
 
             NewDataType capturedType = v->type;
             capturedType.setAccess(NewDataType::Access::Read); // make contant

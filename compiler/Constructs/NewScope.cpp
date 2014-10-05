@@ -96,7 +96,7 @@ namespace Three {
         return s.str();
     }
 
-    NewVariable* NewScope::variableForExactName(const std::string& name) const {
+    NewVariable* NewScope::variableForName(const std::string& name) const {
         auto it = _variables.find(name);
 
         if (it != _variables.cend()) {
@@ -109,27 +109,6 @@ namespace Three {
         }
 
         return _parent->variableForName(name);
-    }
-
-    NewVariable* NewScope::variableForName(const QualifiedName& name) const {
-        std::cout << "starting " << name.to_s() << " (" << this->fullNamespace().to_s() << ")" << std::endl;
-
-        // first, search for given name
-        NewVariable* v = this->variableForExactName(name.to_s());
-        if (v) {
-            return v;
-        }
-
-        // ok, not found. Try applying this scope's namespace
-        if (_namespace.numberOfComponents() == 0) {
-            return nullptr;
-        }
-
-        QualifiedName namespacedName(name);
-
-        namespacedName.prependName(_namespace);
-
-        return this->variableForExactName(namespacedName.to_s());
     }
 
     bool NewScope::defineVariable(NewVariable* variable) {

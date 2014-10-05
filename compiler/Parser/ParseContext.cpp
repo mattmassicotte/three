@@ -247,8 +247,8 @@ namespace Three {
             return false;
         }
 
-        // now, define this function as a "variable" in the current scope
-        if (!this->scope()->defineVariableTypeForName(type, name)) {
+        // now, define this function as a "variable" in the global scope
+        if (!this->defineVariableTypeForName(type, name, false)) {
             return false;
         }
 
@@ -258,24 +258,47 @@ namespace Three {
     }
 
     NewVariable* ParseContext::variableForName(const QualifiedName& name) const {
-        auto it = _variables.find(name.to_s());
+        // first, search for given name
+        NewVariable* v = this->variableForExactName(name.to_s());
+        if (v) {
+            return v;
+        }
+
+        // ok, not found. Try applying this scope's namespace
+        if (this->scope()->fullNamespace().numberOfComponents() == 0) {
+            return nullptr;
+        }
+
+        QualifiedName namespacedName(name);
+
+        namespacedName.prependName(this->scope()->fullNamespace());
+
+        return this->variableForExactName(namespacedName.to_s());
+    }
+
+    NewVariable* ParseContext::variableForExactName(const std::string& name) const {
+        auto it = _variables.find(name);
 
         if (it != _variables.cend()) {
             return it->second;
         }
 
         for (ParseContext* subcontext : _importedContexts) {
-            NewVariable* v = subcontext->variableForName(name.to_s());
+            NewVariable* v = subcontext->variableForName(name);
 
             if (v) {
                 return v;
             }
         }
 
-        return nullptr;
+        return this->scope()->variableForName(name);
     }
 
-    bool ParseContext::defineVariable(NewVariable* variable) {
+    bool ParseContext::defineVariable(NewVariable* variable, bool scoped) {
+        if (scoped) {
+            return this->scope()->defineVariable(variable);
+        }
+
         if (this->variableForName(QualifiedName(variable->name))) {
             return false;
         }
@@ -285,13 +308,13 @@ namespace Three {
         return true;
     }
 
-    bool ParseContext::defineVariableTypeForName(const NewDataType& type, const std::string& name) {
+    bool ParseContext::defineVariableTypeForName(const NewDataType& type, const std::string& name, bool scoped) {
         NewVariable* variable = new NewVariable();
 
         variable->name = name;
         variable->type = type;
 
-        return this->defineVariable(variable);
+        return this->defineVariable(variable, scoped);
     }
 
     NewScope* ParseContext::scope() const {

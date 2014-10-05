@@ -52,8 +52,8 @@ namespace Three {
         bool defineFunctionForName(const NewDataType& type, const std::string& name);
 
         NewVariable* variableForName(const QualifiedName& name) const;
-        bool defineVariable(NewVariable* variable);
-        bool defineVariableTypeForName(const NewDataType& type, const std::string& name);
+        bool defineVariable(NewVariable* variable, bool scoped=true);
+        bool defineVariableTypeForName(const NewDataType& type, const std::string& name, bool scoped=true);
 
         NewScope* scope() const;
         void pushScope();
@@ -61,6 +61,9 @@ namespace Three {
         NewScope* rootScope() const;
 
         void postProcessAST();
+
+    private:
+        NewVariable* variableForExactName(const std::string& name) const;
 
     public:
         // for testing

@@ -15,7 +15,7 @@ namespace Three {
     VariableNode* VariableNode::parse(Parser& parser, const QualifiedName& name) {
         VariableNode* node = nullptr;
 
-        NewVariable* variable = parser.context()->scope()->variableForName(name.to_s());
+        NewVariable* variable = parser.context()->variableForName(name.to_s());
         if (!variable) {
             parser.context()->addMessage(new UnrecognizedVariableMessage(name.to_s()));
             return nullptr;

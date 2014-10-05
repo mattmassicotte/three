@@ -37,7 +37,7 @@ namespace Three {
         std::string scopedName(const std::string& basename);
         std::string currentScopedName(const std::string& basename);
 
-        NewVariable* variableForName(const QualifiedName& name) const;
+        NewVariable* variableForName(const std::string& name) const;
         bool defineVariable(NewVariable* variable);
         bool defineVariableTypeForName(const NewDataType& type, const std::string& name);
 
@@ -50,9 +50,6 @@ namespace Three {
         QualifiedName fullNamespace() const;
         void setNamespace(const QualifiedName& name);
         QualifiedName qualifiedNameWithIdentifier(const std::string& name);
-
-    private:
-        NewVariable* variableForExactName(const std::string& name) const;
 
     private:
         NewScope* _parent;
