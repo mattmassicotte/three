@@ -100,6 +100,34 @@ TEST_F(ParserTests_FunctionCalls, MethodInvocation) {
     EXPECT_EQ("Integer Literal", method->childAtIndex(0)->nodeName());
 }
 
+TEST_F(ParserTests_FunctionCalls, InvokeMethodDefinedInPreviousNamespace) {
+    Three::ASTNode* node = this->parseNodeWithBodies("namespace Foo\n"
+                                                     "  def Int.something()\n"
+                                                     "  end\n"
+                                                     "end\n"
+                                                     "namespace Foo\n"
+                                                     "  def test(*Int a)\n"
+                                                     "    a.something()\n"
+                                                     "  end\n"
+                                                     "end\n");
+
+    ASSERT_EQ(2, node->childCount());
+
+    node = node->childAtIndex(1);
+    ASSERT_EQ("Namespace", node->nodeName());
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Function Definition", node->nodeName());
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Method Call Operator", node->nodeName());
+    auto method = dynamic_cast<MethodCallOperatorNode*>(node);
+
+    ASSERT_EQ("something", method->name());
+}
+
 TEST_F(ParserTests_FunctionCalls, InvokeVariableAsFunction) {
     Three::ASTNode* node = this->parseSingleFunction("def test()\n"
                                                      "  (Int) func\n"
