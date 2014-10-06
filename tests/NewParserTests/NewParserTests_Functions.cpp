@@ -274,11 +274,27 @@ TEST_F(ParserTests_Functions, MethodDefinition) {
 }
 
 TEST_F(ParserTests_Functions, SelfInMethodDefinition) {
-    Three::ASTNode* node = this->parseSingleFunction("def Int.test()\n"
+    Three::ASTNode* node = this->parseSingleFunction("def Int.test(; Int)\n"
+                                                     "  return self\n"
+                                                     "end\n");
+
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Return", node->nodeName());
+    ASSERT_EQ("Self Variable", node->childAtIndex(0)->nodeName());
+}
+
+TEST_F(ParserTests_Functions, MutableSelfInMethodDefinition) {
+    Three::ASTNode* node = this->parseSingleFunction("def Int!.test(; Int)\n"
                                                      "  *self + 1\n"
                                                      "end\n");
 
     ASSERT_EQ("Function Definition", node->nodeName());
+
+    auto fnNode = dynamic_cast<FunctionDefinitionNode*>(node);
+    ASSERT_EQ(NewDataType::Kind::Integer, fnNode->methodOnType().kind());
+    ASSERT_EQ(NewDataType::Access::ReadWrite, fnNode->methodOnType().access());
 
     node = node->childAtIndex(0);
     ASSERT_EQ("Addition Operator", node->nodeName());

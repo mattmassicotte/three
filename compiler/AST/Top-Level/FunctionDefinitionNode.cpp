@@ -23,12 +23,8 @@ namespace Three {
         }
 
         // we have a method
-        if (parser.helper()->peek(2).type() == Token::Type::OperatorDot) {
-            if (!parser.context()->definesTypeWithName(parser.helper()->peek().str())) {
-                assert(0 && "Message: Method found, but type not recognized");
-            }
-
-            node->_methodOnType = parser.context()->dataTypeForName(parser.helper()->nextStr());
+        if (parser.isAtType()) {
+            node->_methodOnType = parser.parseType();
 
             assert(parser.helper()->nextIf(Token::Type::OperatorDot));
         }
