@@ -46,7 +46,7 @@ TEST_F(CSourceIndexerTest, HandleTypedef) {
 
     ASSERT_TRUE(idx != nullptr);
 
-    NewDataType type = this->context()->dataTypeForName("MyInt");
+    NewDataType type = this->context()->dataTypeForName(QualifiedName("MyInt"));
     EXPECT_EQ(NewDataType::Kind::CInt, type.kind());
 }
 
@@ -55,7 +55,7 @@ TEST_F(CSourceIndexerTest, HandleTypedefForPointer) {
 
     ASSERT_TRUE(idx != nullptr);
 
-    NewDataType type = this->context()->dataTypeForName("MyInt");
+    NewDataType type = this->context()->dataTypeForName(QualifiedName("MyInt"));
     ASSERT_EQ(NewDataType::Kind::Pointer, type.kind());
     ASSERT_EQ(1, type.subtypeCount());
     ASSERT_EQ(NewDataType::Kind::CInt, type.subtypeAtIndex(0).kind());

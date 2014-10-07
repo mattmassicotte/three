@@ -44,6 +44,9 @@ namespace Three {
         return vector;
     }
 
+    void QualifiedName::appendComponent(const std::string& path) {
+        components.push_back(path);
+    }
     void QualifiedName::prependName(const QualifiedName& prefix) {
         components.insert(components.cbegin(), prefix.components.cbegin(), prefix.components.cend());
     }

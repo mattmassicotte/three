@@ -1,5 +1,6 @@
 #include "CompositeTypeDefinitionNode.h"
 #include "compiler/Parser/Parser.h"
+#include "compiler/Constructs/NewScope.h"
 #include "../Variables/VariableDeclarationNode.h"
 #include "StructureNode.h"
 #include "EnumerationNode.h"
@@ -41,9 +42,9 @@ namespace Three {
         }
 
         // parse the name and create the type
-        node->_name = parser.helper()->nextStr();
+        node->_name = parser.context()->scope()->qualifiedNameWithIdentifier(parser.helper()->nextStr());
         node->_definedType = NewDataType(typeKind);
-        node->_definedType.setName(node->_name);
+        node->_definedType.setName(node->fullName());
 
         if (parser.helper()->peek().type() == Token::Type::OperatorLessThan) {
             if (!parser.parseGenericParameters(node->_definedType)) {
@@ -57,7 +58,7 @@ namespace Three {
 
         // define the type here, before parsing the internals, so we can
         // have recursive types
-        parser.context()->defineTypeForName(node->_definedType, node->_name);
+        parser.context()->defineTypeForName(node->_definedType, node->fullName());
 
         bool success = true;
         parser.helper()->parseUntilEnd([&] () {
@@ -91,16 +92,24 @@ namespace Three {
         }
 
         // and now that are done, redefine the type, which will fill in the members
-        parser.context()->redefineTypeForName(node->_definedType, node->_name);
+        parser.context()->redefineTypeForName(node->_definedType, node->fullName());
 
         return node;
     }
 
     std::string CompositeTypeDefinitionNode::name() const {
-        return _name;
+        return _name.lastComponent();
     }
 
     NewDataType CompositeTypeDefinitionNode::definedType() const {
         return _definedType;
+    }
+
+    std::string CompositeTypeDefinitionNode::fullName() const {
+        return _name.to_s();
+    }
+
+    QualifiedName CompositeTypeDefinitionNode::qualifiedName() const {
+        return _name;
     }
 }

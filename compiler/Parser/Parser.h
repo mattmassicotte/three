@@ -60,6 +60,7 @@ namespace Three {
         bool peekTypeAnnotations(unsigned int* peekDepth);
         bool peekFunctionType(unsigned int* peekDepth);
         bool peekNonFunctionType(unsigned int* peekDepth);
+        bool peekScopedIdentifier(unsigned int* peekDepth, QualifiedName& peekedName);
         NewDataType parseType(bool genericParam = false);
         NewDataType parseAndApplyTypeAnnotations(bool genericParam = false);
         NewDataType parseTypeWithoutAnnotations(bool genericParam = false);

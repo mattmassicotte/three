@@ -198,6 +198,7 @@ namespace Three {
     }
 
     void CCodeGenVisitor::visit(MethodCallOperatorNode& node) {
+        // must be a pointer
         assert(node.receiverDataType().subtypeCount() == 1);
 
         *_currentSource << node.receiverDataType().subtypeAtIndex(0).name() + "_3_" + node.name();

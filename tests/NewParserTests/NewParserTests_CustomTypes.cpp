@@ -17,6 +17,7 @@ TEST_F(ParserTests_CustomTypes, Structure) {
     ASSERT_EQ(NewDataType::Kind::Structure, structNode->definedType().kind());
     ASSERT_EQ(NewDataType::Access::Read, structNode->definedType().access());
     ASSERT_EQ(0, structNode->definedType().subtypeCount());
+    ASSERT_EQ("MyStruct", structNode->definedType().name());
 
     ASSERT_EQ(NewDataType::Kind::Structure, this->context()->typeKindWithName("MyStruct"));
 }
@@ -36,6 +37,51 @@ TEST_F(ParserTests_CustomTypes, NamespacedStructure) {
 
     ASSERT_EQ("Structure Definition", structNode->nodeName());
     ASSERT_EQ("MyStruct", structNode->name());
+    ASSERT_EQ("Foo_3_MyStruct", structNode->fullName());
+    ASSERT_EQ("Foo_3_MyStruct", structNode->definedType().name());
+}
+
+TEST_F(ParserTests_CustomTypes, NamespacedStructureUsedWithoutFullName) {
+    ASTNode* node = this->parseNode("namespace Foo\n"
+                                    "  struct MyStruct\n"
+                                    "  end\n"
+                                    "  MyStruct global\n"
+                                    "end\n");
+
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Namespace", node->nodeName());
+    // ASSERT_EQ(2, node->childCount());
+
+    ASSERT_EQ("Structure Definition", node->childAtIndex(0)->nodeName());
+    ASSERT_EQ("Variable Declaration", node->childAtIndex(1)->nodeName());
+
+    // this is essentially testing that it is possible to parse a namespaced type
+    auto var = dynamic_cast<VariableDeclarationNode*>(node->childAtIndex(1));
+    ASSERT_EQ("global", var->name());
+    ASSERT_EQ(NewDataType::Kind::Structure, var->dataType().kind());
+    ASSERT_EQ("Foo_3_MyStruct", var->dataType().name());
+}
+
+TEST_F(ParserTests_CustomTypes, NamespacedStructureUsedWithFullName) {
+    ASTNode* node = this->parseNode("namespace Foo\n"
+                                    "  struct MyStruct\n"
+                                    "  end\n"
+                                    "end\n"
+                                    "Foo::MyStruct global\n");
+
+    ASSERT_EQ(2, node->childCount());
+    ASSERT_EQ("Namespace", node->childAtIndex(0)->nodeName());
+
+    node = node->childAtIndex(1);
+    ASSERT_EQ("Variable Declaration", node->nodeName());
+
+    // this is essentially testing that it is possible to parse a namespaced type
+    auto var = dynamic_cast<VariableDeclarationNode*>(node);
+    ASSERT_EQ("global", var->name());
+    ASSERT_EQ(NewDataType::Kind::Structure, var->dataType().kind());
+    ASSERT_EQ("Foo_3_MyStruct", var->dataType().name());
 }
 
 TEST_F(ParserTests_CustomTypes, StructureWithPacking) {

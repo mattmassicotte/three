@@ -15,6 +15,7 @@ namespace Three {
         bool namespaced() const;
         std::vector<std::string> namespaceComponents() const;
 
+        void appendComponent(const std::string& path);
         void prependName(const QualifiedName& prefix);
 
         std::vector<std::string> components;

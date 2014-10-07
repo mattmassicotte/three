@@ -156,7 +156,26 @@ namespace Three {
         return _visibility;
     }
 
-    NewDataType ParseContext::dataTypeForName(const std::string& name) const {
+    NewDataType ParseContext::dataTypeForName(const QualifiedName& name) const {
+        // first, search for given name
+        NewDataType type = this->dataTypeForExactName(name.to_s());
+        if (type.defined()) {
+            return type;
+        }
+
+        // ok, not found. Try applying this scope's namespace
+        if (this->scope()->fullNamespace().numberOfComponents() == 0) {
+            return NewDataType();
+        }
+
+        QualifiedName namespacedName(name);
+
+        namespacedName.prependName(this->scope()->fullNamespace());
+
+        return this->dataTypeForExactName(namespacedName.to_s());
+    }
+
+    NewDataType ParseContext::dataTypeForExactName(const std::string& name) const {
         auto it = _dataTypeMap.find(name);
 
         if (it != _dataTypeMap.cend()) {
@@ -196,6 +215,24 @@ namespace Three {
 
     NewDataType::Kind ParseContext::typeKindWithName(const std::string& name) const {
         return this->dataTypeForName(name).kind();
+    }
+
+    bool ParseContext::definesTypeWithName(const QualifiedName& name) const {
+        // first, search for given name
+        if (this->definesTypeWithName(name.to_s())) {
+            return true;
+        }
+
+        // ok, not found. Try applying this scope's namespace
+        if (this->scope()->fullNamespace().numberOfComponents() == 0) {
+            return false;
+        }
+
+        QualifiedName namespacedName(name);
+
+        namespacedName.prependName(this->scope()->fullNamespace());
+
+        return this->definesTypeWithName(namespacedName.to_s());
     }
 
     bool ParseContext::definesTypeWithName(const std::string& name) const {

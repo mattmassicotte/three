@@ -482,7 +482,7 @@ namespace Three {
                 assert(0 && "Message: Invalid multi-part identifier");
             }
 
-            name.components.push_back(_helper->nextStr());
+            name.appendComponent(_helper->nextStr());
 
             // need two successive colons to continue
             if (_helper->peek().type() != Token::Type::PunctuationColon) {
@@ -490,6 +490,11 @@ namespace Three {
             }
 
             if (_helper->peek(2).type() != Token::Type::PunctuationColon) {
+                break;
+            }
+
+            // check for and handle the case of empty specifiers
+            if (_helper->peek(3).type() != Token::Type::Identifier) {
                 break;
             }
 
@@ -726,16 +731,21 @@ namespace Three {
             return true;
         }
 
-        // We have to lead with an identifier
-        if (_helper->peek(*peekDepth).type() != Token::Type::Identifier) {
+        // We have to lead with an identifier. We also need to do a little
+        // dance with the peekDepth, because we could be at an identifier
+        // that isn't a type, and that will change peekDepth;
+        QualifiedName name;
+        unsigned int depth = *peekDepth;
+        if (!this->peekScopedIdentifier(&depth, name)) {
             return false;
         }
 
-        if (!_context->definesTypeWithName(_helper->peek(*peekDepth).str())) {
+        if (!_context->definesTypeWithName(name)) {
             return false;
         }
 
-        *peekDepth += 1;
+        // assign the depth value, now that we have a confirmed type
+        *peekDepth = depth;
 
         if (_helper->peek(*peekDepth).type() != Token::Type::PunctuationColon) {
             return true;
@@ -786,6 +796,39 @@ namespace Three {
         *peekDepth += 1;
 
         return true;
+    }
+
+    bool Parser::peekScopedIdentifier(unsigned int* peekDepth, QualifiedName& peekedName) {
+        assert(peekDepth);
+
+        for (;;) {
+            // We have to lead with an identifier
+            if (_helper->peek(*peekDepth).type() != Token::Type::Identifier) {
+                return false;
+            }
+
+            peekedName.appendComponent(_helper->peek(*peekDepth).str());
+            *peekDepth += 1;
+
+            // check for "::"
+            if (_helper->peek(*peekDepth).type() != Token::Type::PunctuationColon) {
+                return true;
+            }
+
+            if (_helper->peek(*peekDepth + 1).type() != Token::Type::PunctuationColon) {
+                return true;
+            }
+
+            // Check for the empty specifier case of "Int::4"
+            if (_helper->peek(*peekDepth + 2).type() != Token::Type::Identifier) {
+                return true;
+            }
+
+            // move past the "::", and check for the next identifier part
+            *peekDepth += 2;
+        }
+
+        return false;
     }
 
     NewDataType Parser::parseType(bool genericParam) {
@@ -940,22 +983,22 @@ namespace Three {
             assert(0 && "Message: type should always be an identifier");
         }
 
-        std::string typeIdentifier = _helper->nextStr();
+        QualifiedName name = this->parseMultiPartIdentifierComponents();
 
         NewDataType type;
         if (genericParam) {
             type = NewDataType(NewDataType::Kind::Generic);
-            if (!_context->identifierAvailableForDefinition(typeIdentifier)) {
+            if (!_context->identifierAvailableForDefinition(name.to_s())) {
                 assert(0 && "Message: generic parameter identifier already defined in this scope");
             }
 
-            type.setName(typeIdentifier);
+            type.setName(name.to_s());
         } else {
-            type = _context->dataTypeForName(typeIdentifier);
+            type = _context->dataTypeForName(name.to_s());
         }
 
         if (type.kind() == NewDataType::Kind::Undefined) {
-            std::cout << typeIdentifier << std::endl;
+            std::cout << name.to_s() << std::endl;
             assert(0 && "Message: failed to parse type");
         }
 

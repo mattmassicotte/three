@@ -39,10 +39,11 @@ namespace Three {
         void setVisibility(TranslationUnit::Visibility visibility);
         TranslationUnit::Visibility visibility() const;
 
-        NewDataType dataTypeForName(const std::string& name) const;
+        NewDataType dataTypeForName(const QualifiedName& name) const;
         bool identifierAvailableForDefinition(const std::string& name) const;
 
         bool definesTypeWithName(const std::string& name) const;
+        bool definesTypeWithName(const QualifiedName& name) const;
         NewDataType::Kind typeKindWithName(const std::string& name) const;
 
         bool defineTypeForName(NewDataType type, const std::string& name);
@@ -64,6 +65,7 @@ namespace Three {
 
     private:
         NewVariable* variableForExactName(const std::string& name) const;
+        NewDataType dataTypeForExactName(const std::string& name) const;
 
     public:
         // for testing
