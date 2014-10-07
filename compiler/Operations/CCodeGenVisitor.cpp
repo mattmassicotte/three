@@ -293,9 +293,9 @@ namespace Three {
             this->sourceForVisibility(TranslationUnit::Visibility::External, [&node] (CSource& source) {
                 // create an opaque structure declaration
                 source.print("typedef struct ");
-                source.print(node.name());
+                source.print(node.fullName());
                 source.print(" ");
-                source.print(node.name());
+                source.print(node.fullName());
                 source.printLine(";");
                 source.printLine(""); 
             });
@@ -313,7 +313,7 @@ namespace Three {
             }
 
             source.print("typedef struct ");
-            source.print(node.name());
+            source.print(node.fullName());
             source.printLineAndIndent(" {");
 
             assert(node.definedType().subtypeCount() == node.childCount());
@@ -323,7 +323,7 @@ namespace Three {
                 source.printLine(";");
             });
 
-            source.outdentAndPrintLine("} " + node.name() + ";");
+            source.outdentAndPrintLine("} " + node.fullName() + ";");
 
             if (node.packing() != 0) {
                 source.printLine("#pragma pack(pop)");

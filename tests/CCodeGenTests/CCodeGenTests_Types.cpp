@@ -60,6 +60,21 @@ TEST_F(CCodeGenTests_Types, PackedStructure) {
     EXPECT_EQ("", visitor->bodyString());
 }
 
+TEST_F(CCodeGenTests_Types, NamespacedStructure) {
+    Three::CCodeGenVisitor* visitor = this->visit("namespace Bar\n"
+                                                  "  struct Foo\n"
+                                                  "    Int x\n"
+                                                  "    Int y\n"
+                                                  "  end\n"
+                                                  "end\n");
+
+    EXPECT_EQ("typedef struct Bar_3_Foo {\n"
+              "    int x;\n"
+              "    int y;\n"
+              "} Bar_3_Foo;\n\n", visitor->internalHeaderString());
+    EXPECT_EQ("", visitor->bodyString());
+}
+
 TEST_F(CCodeGenTests_Types, Enumeration) {
     Three::CCodeGenVisitor* visitor = this->visit("enum Bar\n"
                                                   "  A\n"
