@@ -119,3 +119,20 @@ TEST_F(ParserTests_FunctionBodies, CASOperatorWithType) {
 
     ASSERT_EQ("  a cas b : c\n", func->bodyStream()->str());
 }
+
+TEST_F(ParserTests_FunctionBodies, Closure) {
+    FunctionDefinitionNode* func = this->parseFunction("def test(Int a)\n"
+                                                       "  fn(do (Int b;; a) {})\n"
+                                                       "end\n");
+
+    ASSERT_EQ("  fn(do (Int b;; a) {})\n", func->bodyStream()->str());
+}
+
+TEST_F(ParserTests_FunctionBodies, TailingClosure) {
+    FunctionDefinitionNode* func = this->parseFunction("def test(Int a)\n"
+                                                       "  fn() do (Int b;; a) {\n"
+                                                       "  }\n"
+                                                       "end\n");
+
+    ASSERT_EQ("  fn() do (Int b;; a) {\n  }\n", func->bodyStream()->str());
+}

@@ -25,6 +25,29 @@ TEST_F(ParserTests_Closures, InlineClosureWithNoArguments) {
     ASSERT_EQ(0, closure->dataType().returnCount());
 }
 
+TEST_F(ParserTests_Closures, TailingClosureWithNoArguments) {
+    ASTNode* node = this->parseNodeWithBodies("def foo({} c)\n"
+                                              "end\n"
+                                              "def test()\n"
+                                              "  foo() do {\n"
+                                              "  }\n"
+                                              "end\n");
+
+    node = node->childAtIndex(1);
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Function Call Operator", node->nodeName());
+
+    ClosureNode* closure = dynamic_cast<ClosureNode*>(node->childAtIndex(0));
+    ASSERT_EQ("Closure", closure->nodeName());
+    ASSERT_EQ("test_closure_1", closure->name());
+    ASSERT_EQ(NewDataType::Kind::Closure, closure->dataType().kind());
+    ASSERT_EQ(0, closure->dataType().subtypeCount());
+    ASSERT_EQ(1, closure->dataType().parameterCount());
+    ASSERT_EQ(0, closure->dataType().returnCount());
+}
+
 TEST_F(ParserTests_Closures, InlineClosureWithOneArgument) {
     ASTNode* node = this->parseNodeWithBodies("def foo({} c)\n"
                                               "end\n"
@@ -178,9 +201,9 @@ TEST_F(ParserTests_Closures, NestedClosureVariableWithCapture) {
 
 TEST_F(ParserTests_Closures, ClosureWithEmptyBody) {
     ASTNode* node = this->parseNodeWithBodies("def test()\n"
-                                                  "  {} closure = do () {\n"
-                                                  "  }\n"
-                                                  "end\n");
+                                              "  {} closure = do () {\n"
+                                              "  }\n"
+                                              "end\n");
 
     node = node->childAtIndex(0);
     ASSERT_EQ("Function Definition", node->nodeName());

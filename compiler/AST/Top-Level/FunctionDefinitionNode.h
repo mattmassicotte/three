@@ -14,8 +14,7 @@ namespace Three {
     public:
         static FunctionDefinitionNode* parse(Parser& parser);
         static bool bufferFunctionBody(Parser& parser, std::stringstream& stream);
-        static bool bufferOpenToCloseToken(Parser& parser, std::stringstream& stream, Token::Type closingType, bool parseClosing);
-        static bool newBufferOpenToCloseToken(Parser& parser, std::stringstream& stream);
+        static bool bufferOpenToCloseToken(Parser& parser, std::stringstream& stream);
         static bool scanToFirstToken(Parser& parser, std::stringstream& stream, bool firstCall);
 
     public:

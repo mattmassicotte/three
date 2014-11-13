@@ -93,15 +93,14 @@ namespace Three {
     bool FunctionDefinitionNode::bufferFunctionBody(Parser& parser, std::stringstream& stream) {
         parser.helper()->lexer()->setFilterWhitespace(false);
 
-        // bool result = bufferOpenToCloseToken(parser, stream, Token::Type::KeywordEnd, false);
-        bool result = newBufferOpenToCloseToken(parser, stream);
+        bool result = bufferOpenToCloseToken(parser, stream);
 
         parser.helper()->lexer()->setFilterWhitespace(true);
 
         return result;
     }
 
-    bool FunctionDefinitionNode::newBufferOpenToCloseToken(Parser& parser, std::stringstream& stream) {
+    bool FunctionDefinitionNode::bufferOpenToCloseToken(Parser& parser, std::stringstream& stream) {
         int nestedEnds = 0;
         bool onlyWhitespaceSoFar = true;
 

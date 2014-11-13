@@ -1,6 +1,7 @@
 #include "CallableOperatorNode.h"
 #include "compiler/constructs/NewDataType.h"
 #include "compiler/Parser/Parser.h"
+#include "compiler/AST/Control/ClosureNode.h"
 
 namespace Three {
     bool CallableOperatorNode::parseArguments(Parser& parser, CallableOperatorNode* node) {
@@ -18,7 +19,12 @@ namespace Three {
             return !parser.helper()->nextIf(",");
         });
 
-        // here we've ended including parsing the close-paren
+        // Here we've ended including parsing the close-paren. But, we
+        // could encounter a tailing closure, so check for that.
+
+        if (parser.helper()->peek().type() == Token::Type::KeywordClosure) {
+            node->addChild(ClosureNode::parse(parser));
+        }
 
         return success;
     }
