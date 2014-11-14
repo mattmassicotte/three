@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ASTNode.h"
-#include "compiler/constructs/NewVariable.h"
+#include "compiler/constructs/Variable.h"
 
 namespace Three {
     class ForNode : public ASTNode {
@@ -20,7 +20,7 @@ namespace Three {
         ASTNode* rangeStartExpression() const;
         ASTNode* rangeEndExpression() const;
 
-        NewVariable* rangeLoopVariable() const;
+        Variable* rangeLoopVariable() const;
 
     public:
         ASTNode* _startExpression;

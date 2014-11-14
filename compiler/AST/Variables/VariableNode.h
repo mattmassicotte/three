@@ -2,7 +2,7 @@
 
 #include "../ASTNode.h"
 #include "compiler/constructs/DataType.h"
-#include "compiler/constructs/NewVariable.h"
+#include "compiler/constructs/Variable.h"
 #include "compiler/constructs/QualifiedName.h"
 
 namespace Three {
@@ -20,12 +20,12 @@ namespace Three {
         std::string name() const;
         std::string str() const;
 
-        NewVariable* newVariable() const;
+        Variable* newVariable() const;
         bool closed() const;
         bool referenced() const;
 
     private:
-        NewVariable* _newVariable;
+        Variable* _newVariable;
         bool      _referenced;
         bool      _closed;
         std::string _name;

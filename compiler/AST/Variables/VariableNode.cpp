@@ -15,7 +15,7 @@ namespace Three {
     VariableNode* VariableNode::parse(Parser& parser, const QualifiedName& name) {
         VariableNode* node = nullptr;
 
-        NewVariable* variable = parser.context()->variableForName(name.to_s());
+        Variable* variable = parser.context()->variableForName(name.to_s());
         if (!variable) {
             parser.context()->addMessage(new UnrecognizedVariableMessage(name.to_s()));
             return nullptr;
@@ -70,7 +70,7 @@ namespace Three {
         return this->nodeName() + ": " + this->name();
     }
 
-    NewVariable* VariableNode::newVariable() const {
+    Variable* VariableNode::newVariable() const {
         return _newVariable;
     }
 

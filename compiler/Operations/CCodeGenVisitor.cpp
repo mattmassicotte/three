@@ -827,7 +827,7 @@ namespace Three {
 
         s << "THREE_CAPTURE_ENV(" << node.name() << "_env";
 
-        node.eachCapturedVariable([&s] (NewVariable* v, bool ref, bool last) {
+        node.eachCapturedVariable([&s] (Variable* v, bool ref, bool last) {
             s << ", ";
 
             if (ref) {

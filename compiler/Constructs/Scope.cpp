@@ -1,5 +1,5 @@
 #include "Scope.h"
-#include "NewVariable.h"
+#include "Variable.h"
 #include "QualifiedName.h"
 
 #include <sstream>
@@ -96,7 +96,7 @@ namespace Three {
         return s.str();
     }
 
-    NewVariable* Scope::variableForName(const std::string& name) const {
+    Variable* Scope::variableForName(const std::string& name) const {
         auto it = _variables.find(name);
 
         if (it != _variables.cend()) {
@@ -111,14 +111,14 @@ namespace Three {
         return _parent->variableForName(name);
     }
 
-    bool Scope::defineVariable(NewVariable* variable) {
+    bool Scope::defineVariable(Variable* variable) {
         _variables[variable->name] = variable;
 
         return true;
     }
 
     bool Scope::defineVariableTypeForName(const DataType& type, const std::string& name) {
-        NewVariable* variable = new NewVariable();
+        Variable* variable = new Variable();
 
         variable->name = name;
         variable->type = type;

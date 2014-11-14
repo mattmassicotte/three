@@ -7,7 +7,7 @@
 #include <map>
 
 namespace Three {
-    class NewVariable;
+    class Variable;
     class DataType;
 }
 
@@ -37,8 +37,8 @@ namespace Three {
         std::string scopedName(const std::string& basename);
         std::string currentScopedName(const std::string& basename);
 
-        NewVariable* variableForName(const std::string& name) const;
-        bool defineVariable(NewVariable* variable);
+        Variable* variableForName(const std::string& name) const;
+        bool defineVariable(Variable* variable);
         bool defineVariableTypeForName(const DataType& type, const std::string& name);
 
         bool referencedVariable(const std::string& name, bool passedOverCapturing=false) const;
@@ -61,7 +61,7 @@ namespace Three {
         std::map<std::string, uint32_t> _scopedNames;
         std::string _scopedBasename;
 
-        std::map<std::string, NewVariable*> _variables;
+        std::map<std::string, Variable*> _variables;
 
         std::vector<std::string> _referencedVariables;
         std::vector<std::string> _capturedVariables;

@@ -1,6 +1,6 @@
 #include "CSourceIndexer.h"
 #include "runtime/platform.h"
-#include "compiler/Constructs/NewVariable.h"
+#include "compiler/Constructs/Variable.h"
 #include "compiler/Constructs/Scope.h"
 
 #include <assert.h>

@@ -4,7 +4,7 @@
 #include "compiler/constructs/DataType.h"
 #include "compiler/constructs/Scope.h"
 #include "compiler/constructs/QualifiedName.h"
-#include "compiler/constructs/NewVariable.h"
+#include "compiler/constructs/Variable.h"
 #include "compiler/CSourceIndexer.h"
 #include "compiler/CSourceEmitter.h"
 #include "compiler/Parser/Parser.h"
@@ -294,9 +294,9 @@ namespace Three {
         return true;
     }
 
-    NewVariable* ParseContext::variableForName(const QualifiedName& name) const {
+    Variable* ParseContext::variableForName(const QualifiedName& name) const {
         // first, search for given name
-        NewVariable* v = this->variableForExactName(name.to_s());
+        Variable* v = this->variableForExactName(name.to_s());
         if (v) {
             return v;
         }
@@ -313,7 +313,7 @@ namespace Three {
         return this->variableForExactName(namespacedName.to_s());
     }
 
-    NewVariable* ParseContext::variableForExactName(const std::string& name) const {
+    Variable* ParseContext::variableForExactName(const std::string& name) const {
         auto it = _variables.find(name);
 
         if (it != _variables.cend()) {
@@ -321,7 +321,7 @@ namespace Three {
         }
 
         for (ParseContext* subcontext : _importedContexts) {
-            NewVariable* v = subcontext->variableForName(name);
+            Variable* v = subcontext->variableForName(name);
 
             if (v) {
                 return v;
@@ -331,7 +331,7 @@ namespace Three {
         return this->scope()->variableForName(name);
     }
 
-    bool ParseContext::defineVariable(NewVariable* variable, bool scoped) {
+    bool ParseContext::defineVariable(Variable* variable, bool scoped) {
         if (scoped) {
             return this->scope()->defineVariable(variable);
         }
@@ -346,7 +346,7 @@ namespace Three {
     }
 
     bool ParseContext::defineVariableTypeForName(const DataType& type, const std::string& name, bool scoped) {
-        NewVariable* variable = new NewVariable();
+        Variable* variable = new Variable();
 
         variable->name = name;
         variable->type = type;

@@ -11,7 +11,7 @@ namespace Three {
     class RootNode;
     class Message;
     class Scope;
-    class NewVariable;
+    class Variable;
     class QualifiedName;
 }
 
@@ -52,8 +52,8 @@ namespace Three {
         DataType functionForName(const std::string& name) const;
         bool defineFunctionForName(const DataType& type, const std::string& name);
 
-        NewVariable* variableForName(const QualifiedName& name) const;
-        bool defineVariable(NewVariable* variable, bool scoped=true);
+        Variable* variableForName(const QualifiedName& name) const;
+        bool defineVariable(Variable* variable, bool scoped=true);
         bool defineVariableTypeForName(const DataType& type, const std::string& name, bool scoped=true);
 
         Scope* scope() const;
@@ -64,7 +64,7 @@ namespace Three {
         void postProcessAST();
 
     private:
-        NewVariable* variableForExactName(const std::string& name) const;
+        Variable* variableForExactName(const std::string& name) const;
         DataType dataTypeForExactName(const std::string& name) const;
 
     public:
@@ -81,7 +81,7 @@ namespace Three {
         std::vector<Message*> _messages;
         std::map<std::string, DataType> _dataTypeMap;
         std::map<std::string, DataType> _functions;
-        std::map<std::string, NewVariable*> _variables;
+        std::map<std::string, Variable*> _variables;
 
         std::vector<ParseContext*> _importedContexts;
         std::vector<std::string> _importedPaths;

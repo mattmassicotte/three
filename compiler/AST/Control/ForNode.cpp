@@ -115,7 +115,7 @@ namespace Three {
         return _rangeEndExpression;
     }
 
-    NewVariable* ForNode::rangeLoopVariable() const {
+    Variable* ForNode::rangeLoopVariable() const {
         return dynamic_cast<VariableDeclarationNode*>(this->startExpression())->variable();
     }
 }

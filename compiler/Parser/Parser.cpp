@@ -453,7 +453,7 @@ namespace Three {
 
         // TODO: I think at this point we really need some kind of symbol table. Dealing
         // with C symbols is tough, and that could reduce the number of heurestics needed.
-        NewVariable* variable = _context->variableForName(name.to_s());
+        Variable* variable = _context->variableForName(name.to_s());
         if (variable) {
             if (variable->type.kind() == DataType::Kind::CUnspecifiedMacro) {
                 return new CMacroNode(name.to_s());

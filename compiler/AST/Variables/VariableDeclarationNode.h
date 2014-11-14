@@ -2,7 +2,7 @@
 
 #include "../ASTNode.h"
 #include "compiler/constructs/DataType.h"
-#include "compiler/constructs/NewVariable.h"
+#include "compiler/constructs/Variable.h"
 #include "compiler/constructs/TranslationUnit.h"
 
 namespace Three {
@@ -25,7 +25,7 @@ namespace Three {
         std::string name() const;
         ASTNode* initializerExpression() const;
 
-        NewVariable* variable() const;
+        Variable* variable() const;
 
         bool global;
         TranslationUnit::Visibility visibility;
@@ -34,6 +34,6 @@ namespace Three {
         ASTNode* _initializerExpression;
         DataType _declaredType;
         std::string _name;
-        NewVariable* _variable;
+        Variable* _variable;
     };
 }

@@ -37,7 +37,7 @@ namespace Three {
 
         // handle references
         for (const std::string& name : referenceNames) {
-            NewVariable* v = parser.context()->variableForName(name);
+            Variable* v = parser.context()->variableForName(name);
 
             // this must be writable, because that's the point
             DataType type = v->type;
@@ -48,7 +48,7 @@ namespace Three {
             // track the variable as referenced in this scope
             parser.context()->scope()->addReferencedVariable(name);
 
-            node->_referencedNewVariables.push_back(v);
+            node->_referencedVariables.push_back(v);
         }
 
         // fix up the type, which was a function
@@ -75,7 +75,7 @@ namespace Three {
         });
 
         for (const std::string& name : parser.context()->scope()->capturedVariables()) {
-            NewVariable* v = parser.context()->variableForName(name);
+            Variable* v = parser.context()->variableForName(name);
 
             DataType capturedType = v->type;
             capturedType.setAccess(DataType::Access::Read); // make contant
@@ -84,7 +84,7 @@ namespace Three {
             // add it to the closure's environment struct
             envStruct.addSubtype(capturedType);
 
-            node->_capturedNewVariables.push_back(v);
+            node->_capturedVariables.push_back(v);
         }
 
         node->environmentType = DataType::wrapInPointer(envStruct);
@@ -114,7 +114,7 @@ namespace Three {
     }
 
     bool ClosureNode::hasReferences() const {
-        return _referencedNewVariables.size() > 0;
+        return _referencedVariables.size() > 0;
     }
 
     DataType ClosureNode::environmentStructureType() const {
@@ -125,18 +125,18 @@ namespace Three {
         visitor.visit(*this);
     }
 
-    void ClosureNode::eachCapturedVariable(std::function<void (NewVariable*, bool, bool)> func) const {
-        uint32_t refSize    = this->_referencedNewVariables.size();
-        uint32_t closedSize = this->_capturedNewVariables.size();
+    void ClosureNode::eachCapturedVariable(std::function<void (Variable*, bool, bool)> func) const {
+        uint32_t refSize    = this->_referencedVariables.size();
+        uint32_t closedSize = this->_capturedVariables.size();
 
         for (uint32_t i = 0; i < refSize; ++i) {
-            NewVariable* v = this->_referencedNewVariables.at(i);
+            Variable* v = this->_referencedVariables.at(i);
 
             func(v, true, i == (refSize - 1) && closedSize == 0);
         }
 
         uint32_t i = 0;
-        for (NewVariable* v : this->_capturedNewVariables) {
+        for (Variable* v : this->_capturedVariables) {
 
             func(v, false, i == (closedSize - 1));
             i += 1;

@@ -49,7 +49,7 @@ namespace Three {
             return true;
         }
 
-        node._variable = new NewVariable();
+        node._variable = new Variable();
 
         node._variable->name = node.name();
         node._variable->type = node.dataType();
@@ -94,7 +94,7 @@ namespace Three {
         return _initializerExpression;
     }
 
-    NewVariable* VariableDeclarationNode::variable() const {
+    Variable* VariableDeclarationNode::variable() const {
         return _variable;
     }
 }
