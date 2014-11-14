@@ -87,7 +87,7 @@ namespace Three {
         void closureEnvironmentStructure(class ClosureNode& node, CSource& source);
         std::string closureEnvironmentCapture(class ClosureNode& node);
 
-        void createDefinitionForTuple(const class NewDataType& tupleType, CSource& source);
+        void createDefinitionForTuple(const class DataType& tupleType, CSource& source);
 
         void sourceForVisibility(TranslationUnit::Visibility v, std::function<void (CSource&)> func);
 
@@ -100,7 +100,7 @@ namespace Three {
         CSource* _currentSource;
 
         uint32_t _tmpReturnValueCounter;
-        NewDataType _currentFunctionType;
+        DataType _currentFunctionType;
         std::map<std::string, bool> _tupleDefinitionMap;
     };
 }

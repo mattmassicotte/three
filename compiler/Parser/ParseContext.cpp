@@ -1,7 +1,7 @@
 #include "ParseContext.h"
 #include "compiler/Messages/Message.h"
 #include "compiler/AST/RootNode.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 #include "compiler/constructs/NewScope.h"
 #include "compiler/constructs/QualifiedName.h"
 #include "compiler/constructs/NewVariable.h"
@@ -18,14 +18,14 @@ namespace Three {
         _currentScope = _rootScope;
         _visibility = TranslationUnit::Visibility::Default;
 
-        _dataTypeMap["Void"]    = NewDataType(NewDataType::Kind::Void);
-        _dataTypeMap["Bool"]    = NewDataType(NewDataType::Kind::Boolean);
-        _dataTypeMap["Int"]     = NewDataType(NewDataType::Kind::Integer);
-        _dataTypeMap["Natural"] = NewDataType(NewDataType::Kind::Natural);
-        _dataTypeMap["Float"]   = NewDataType(NewDataType::Kind::Float);
-        _dataTypeMap["Real"]    = NewDataType(NewDataType::Kind::Real);
-        _dataTypeMap["Char"]    = NewDataType(NewDataType::Kind::Character);
-        _dataTypeMap["Vararg"]  = NewDataType(NewDataType::Kind::Vararg);
+        _dataTypeMap["Void"]    = DataType(DataType::Kind::Void);
+        _dataTypeMap["Bool"]    = DataType(DataType::Kind::Boolean);
+        _dataTypeMap["Int"]     = DataType(DataType::Kind::Integer);
+        _dataTypeMap["Natural"] = DataType(DataType::Kind::Natural);
+        _dataTypeMap["Float"]   = DataType(DataType::Kind::Float);
+        _dataTypeMap["Real"]    = DataType(DataType::Kind::Real);
+        _dataTypeMap["Char"]    = DataType(DataType::Kind::Character);
+        _dataTypeMap["Vararg"]  = DataType(DataType::Kind::Vararg);
     }
 
     ParseContext::~ParseContext() {
@@ -101,8 +101,8 @@ namespace Three {
         _importedContexts.push_back(importedContext.release());
 
         // need to create function variables for non-C functions
-        // for (std::pair<std::string, NewDataType> fnPair: importedContext->_functions) {
-        //     if (fnPair.second.kind() == NewDataType::Kind::CFunction) {
+        // for (std::pair<std::string, DataType> fnPair: importedContext->_functions) {
+        //     if (fnPair.second.kind() == DataType::Kind::CFunction) {
         //         continue;
         //     }
         // 
@@ -156,16 +156,16 @@ namespace Three {
         return _visibility;
     }
 
-    NewDataType ParseContext::dataTypeForName(const QualifiedName& name) const {
+    DataType ParseContext::dataTypeForName(const QualifiedName& name) const {
         // first, search for given name
-        NewDataType type = this->dataTypeForExactName(name.to_s());
+        DataType type = this->dataTypeForExactName(name.to_s());
         if (type.defined()) {
             return type;
         }
 
         // ok, not found. Try applying this scope's namespace
         if (this->scope()->fullNamespace().numberOfComponents() == 0) {
-            return NewDataType();
+            return DataType();
         }
 
         QualifiedName namespacedName(name);
@@ -175,7 +175,7 @@ namespace Three {
         return this->dataTypeForExactName(namespacedName.to_s());
     }
 
-    NewDataType ParseContext::dataTypeForExactName(const std::string& name) const {
+    DataType ParseContext::dataTypeForExactName(const std::string& name) const {
         auto it = _dataTypeMap.find(name);
 
         if (it != _dataTypeMap.cend()) {
@@ -184,14 +184,14 @@ namespace Three {
 
         // search imported context
         for (ParseContext* subcontext : _importedContexts) {
-            NewDataType type = subcontext->dataTypeForName(name);
+            DataType type = subcontext->dataTypeForName(name);
 
             if (type.defined()) {
                 return type;
             }
         }
 
-        return NewDataType();
+        return DataType();
     }
 
     bool ParseContext::identifierAvailableForDefinition(const std::string& name) const {
@@ -213,7 +213,7 @@ namespace Three {
         return true;
     }
 
-    NewDataType::Kind ParseContext::typeKindWithName(const std::string& name) const {
+    DataType::Kind ParseContext::typeKindWithName(const std::string& name) const {
         return this->dataTypeForName(name).kind();
     }
 
@@ -236,10 +236,10 @@ namespace Three {
     }
 
     bool ParseContext::definesTypeWithName(const std::string& name) const {
-        return this->typeKindWithName(name) != NewDataType::Kind::Undefined;
+        return this->typeKindWithName(name) != DataType::Kind::Undefined;
     }
 
-    bool ParseContext::defineTypeForName(NewDataType type, const std::string& name) {
+    bool ParseContext::defineTypeForName(DataType type, const std::string& name) {
         if (this->definesTypeWithName(name)) {
             return false;
         }
@@ -249,7 +249,7 @@ namespace Three {
         return true;
     }
 
-    bool ParseContext::redefineTypeForName(NewDataType type, const std::string& name) {
+    bool ParseContext::redefineTypeForName(DataType type, const std::string& name) {
         if (!this->definesTypeWithName(name)) {
             return false;
         }
@@ -259,7 +259,7 @@ namespace Three {
         return true;
     }
 
-    NewDataType ParseContext::functionForName(const std::string& name) const {
+    DataType ParseContext::functionForName(const std::string& name) const {
         auto it = _functions.find(name);
 
         if (it != _functions.cend()) {
@@ -267,20 +267,20 @@ namespace Three {
         }
 
         for (ParseContext* subcontext : _importedContexts) {
-            NewDataType fnType = subcontext->functionForName(name);
+            DataType fnType = subcontext->functionForName(name);
 
             if (fnType.defined()) {
                 return fnType;
             }
         }
 
-        return NewDataType();
+        return DataType();
     }
 
-    bool ParseContext::defineFunctionForName(const NewDataType& type, const std::string& name) {
-        assert((type.kind() == NewDataType::Kind::Function) || (type.kind() == NewDataType::Kind::CFunction));
+    bool ParseContext::defineFunctionForName(const DataType& type, const std::string& name) {
+        assert((type.kind() == DataType::Kind::Function) || (type.kind() == DataType::Kind::CFunction));
 
-        if (this->functionForName(name).kind() != NewDataType::Kind::Undefined) {
+        if (this->functionForName(name).kind() != DataType::Kind::Undefined) {
             return false;
         }
 
@@ -345,7 +345,7 @@ namespace Three {
         return true;
     }
 
-    bool ParseContext::defineVariableTypeForName(const NewDataType& type, const std::string& name, bool scoped) {
+    bool ParseContext::defineVariableTypeForName(const DataType& type, const std::string& name, bool scoped) {
         NewVariable* variable = new NewVariable();
 
         variable->name = name;

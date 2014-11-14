@@ -20,11 +20,11 @@ TEST_F(ParserTests_CInterop, UsingConstantMacroFromCHeader) {
 
     VariableDeclarationNode* var = dynamic_cast<VariableDeclarationNode*>(node);
     ASSERT_EQ("x", var->name());
-    ASSERT_EQ(NewDataType::Kind::Integer, var->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Integer, var->dataType().kind());
 
     node = var->initializerExpression();
     ASSERT_EQ("C Macro", node->nodeName());
-    ASSERT_EQ(NewDataType::Kind::CUnspecifiedMacro, node->dataType().kind());
+    ASSERT_EQ(DataType::Kind::CUnspecifiedMacro, node->dataType().kind());
 }
 
 TEST_F(ParserTests_CInterop, UsingTypeDefinedInCHeader) {
@@ -44,8 +44,8 @@ TEST_F(ParserTests_CInterop, UsingTypeDefinedInCHeader) {
 
     VariableDeclarationNode* var = dynamic_cast<VariableDeclarationNode*>(node);
     ASSERT_EQ("x", var->name());
-    ASSERT_EQ(NewDataType::Kind::Pointer, var->dataType().kind());
-    ASSERT_EQ(NewDataType::Kind::CStructure, var->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Pointer, var->dataType().kind());
+    ASSERT_EQ(DataType::Kind::CStructure, var->dataType().subtypeAtIndex(0).kind());
     ASSERT_EQ("FILE", var->dataType().subtypeAtIndex(0).name());
 }
 
@@ -66,7 +66,7 @@ TEST_F(ParserTests_CInterop, UsingTypedefTypeDefinedInCHeader) {
 
     VariableDeclarationNode* var = dynamic_cast<VariableDeclarationNode*>(node);
     ASSERT_EQ("x", var->name());
-    ASSERT_EQ(NewDataType::Kind::CChar, var->dataType().kind());
+    ASSERT_EQ(DataType::Kind::CChar, var->dataType().kind());
     ASSERT_EQ("int_least8_t", var->dataType().name());
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ASTNode.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 #include "compiler/constructs/NewVariable.h"
 #include "compiler/constructs/QualifiedName.h"
 
@@ -13,7 +13,7 @@ namespace Three {
     public:
         VariableNode();
 
-        NewDataType dataType() const;
+        DataType dataType() const;
         virtual std::string nodeName() const;
         void accept(ASTVisitor& visitor);
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 #include "compiler/Constructs/TranslationUnit.h"
 
 #include <string>
@@ -39,22 +39,22 @@ namespace Three {
         void setVisibility(TranslationUnit::Visibility visibility);
         TranslationUnit::Visibility visibility() const;
 
-        NewDataType dataTypeForName(const QualifiedName& name) const;
+        DataType dataTypeForName(const QualifiedName& name) const;
         bool identifierAvailableForDefinition(const std::string& name) const;
 
         bool definesTypeWithName(const std::string& name) const;
         bool definesTypeWithName(const QualifiedName& name) const;
-        NewDataType::Kind typeKindWithName(const std::string& name) const;
+        DataType::Kind typeKindWithName(const std::string& name) const;
 
-        bool defineTypeForName(NewDataType type, const std::string& name);
-        bool redefineTypeForName(NewDataType type, const std::string& name);
+        bool defineTypeForName(DataType type, const std::string& name);
+        bool redefineTypeForName(DataType type, const std::string& name);
 
-        NewDataType functionForName(const std::string& name) const;
-        bool defineFunctionForName(const NewDataType& type, const std::string& name);
+        DataType functionForName(const std::string& name) const;
+        bool defineFunctionForName(const DataType& type, const std::string& name);
 
         NewVariable* variableForName(const QualifiedName& name) const;
         bool defineVariable(NewVariable* variable, bool scoped=true);
-        bool defineVariableTypeForName(const NewDataType& type, const std::string& name, bool scoped=true);
+        bool defineVariableTypeForName(const DataType& type, const std::string& name, bool scoped=true);
 
         NewScope* scope() const;
         void pushScope();
@@ -65,7 +65,7 @@ namespace Three {
 
     private:
         NewVariable* variableForExactName(const std::string& name) const;
-        NewDataType dataTypeForExactName(const std::string& name) const;
+        DataType dataTypeForExactName(const std::string& name) const;
 
     public:
         // for testing
@@ -79,8 +79,8 @@ namespace Three {
         TranslationUnit::Visibility _visibility;
 
         std::vector<Message*> _messages;
-        std::map<std::string, NewDataType> _dataTypeMap;
-        std::map<std::string, NewDataType> _functions;
+        std::map<std::string, DataType> _dataTypeMap;
+        std::map<std::string, DataType> _functions;
         std::map<std::string, NewVariable*> _variables;
 
         std::vector<ParseContext*> _importedContexts;

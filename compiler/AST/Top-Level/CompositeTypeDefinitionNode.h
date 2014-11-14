@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ASTNode.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 #include "compiler/Constructs/TranslationUnit.h"
 #include "compiler/Constructs/QualifiedName.h"
 
@@ -12,7 +12,7 @@ namespace Three {
 
     public:
         std::string name() const;
-        NewDataType definedType() const;
+        DataType definedType() const;
 
         TranslationUnit::Visibility visibility;
 
@@ -24,6 +24,6 @@ namespace Three {
 
     private:
         QualifiedName _name;
-        NewDataType _definedType;
+        DataType _definedType;
     };
 }

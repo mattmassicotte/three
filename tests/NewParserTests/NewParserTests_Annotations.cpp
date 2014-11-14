@@ -1,5 +1,5 @@
 #include "../ParserTestsBase.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 #include "compiler/AST/Annotations/Annotations.h"
 
 class ParserTests_Annotations : public ParserTestsBase {
@@ -12,8 +12,8 @@ TEST_F(ParserTests_Annotations, GlobalConstBoolean) {
 
     ASSERT_EQ("Variable Declaration", node->nodeName());
     ASSERT_EQ("value", node->name());
-    ASSERT_EQ(NewDataType::Boolean, node->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
+    ASSERT_EQ(DataType::Boolean, node->dataType().kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().access());
 }
 
 TEST_F(ParserTests_Annotations, GlobalConstPointerToBoolean) {
@@ -21,10 +21,10 @@ TEST_F(ParserTests_Annotations, GlobalConstPointerToBoolean) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
-    ASSERT_EQ(NewDataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
+    ASSERT_EQ(DataType::Pointer, node->dataType().kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().access());
+    ASSERT_EQ(DataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
 }
 
 TEST_F(ParserTests_Annotations, GlobalPointerToConstBoolean) {
@@ -32,10 +32,10 @@ TEST_F(ParserTests_Annotations, GlobalPointerToConstBoolean) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
-    ASSERT_EQ(NewDataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
+    ASSERT_EQ(DataType::Pointer, node->dataType().kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().access());
+    ASSERT_EQ(DataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
 }
 
 TEST_F(ParserTests_Annotations, GlobalConstPointerToConstBoolean) {
@@ -43,10 +43,10 @@ TEST_F(ParserTests_Annotations, GlobalConstPointerToConstBoolean) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
-    ASSERT_EQ(NewDataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
+    ASSERT_EQ(DataType::Pointer, node->dataType().kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().access());
+    ASSERT_EQ(DataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
 }
 
 TEST_F(ParserTests_Annotations, GlobalRestrictedPointer) {
@@ -54,11 +54,11 @@ TEST_F(ParserTests_Annotations, GlobalRestrictedPointer) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
+    ASSERT_EQ(DataType::Pointer, node->dataType().kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().access());
     ASSERT_TRUE(node->dataType().potentiallyAliased());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
+    ASSERT_EQ(DataType::Integer, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
 }
 
 TEST_F(ParserTests_Annotations, GlobalVolatileBool) {
@@ -66,9 +66,9 @@ TEST_F(ParserTests_Annotations, GlobalVolatileBool) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Boolean, node->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
-    ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().volatility());
+    ASSERT_EQ(DataType::Boolean, node->dataType().kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().access());
+    ASSERT_EQ(DataType::Access::ReadWrite, node->dataType().volatility());
 }
 
 TEST_F(ParserTests_Annotations, GlobalVolatileNoneBool) {
@@ -76,8 +76,8 @@ TEST_F(ParserTests_Annotations, GlobalVolatileNoneBool) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Boolean, node->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::None, node->dataType().volatility());
+    ASSERT_EQ(DataType::Boolean, node->dataType().kind());
+    ASSERT_EQ(DataType::Access::None, node->dataType().volatility());
 }
 
 TEST_F(ParserTests_Annotations, GlobalVolatileReadBool) {
@@ -85,8 +85,8 @@ TEST_F(ParserTests_Annotations, GlobalVolatileReadBool) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Boolean, node->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().volatility());
+    ASSERT_EQ(DataType::Boolean, node->dataType().kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().volatility());
 }
 
 TEST_F(ParserTests_Annotations, GlobalVolatileWriteBool) {
@@ -94,8 +94,8 @@ TEST_F(ParserTests_Annotations, GlobalVolatileWriteBool) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Boolean, node->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::Write, node->dataType().volatility());
+    ASSERT_EQ(DataType::Boolean, node->dataType().kind());
+    ASSERT_EQ(DataType::Access::Write, node->dataType().volatility());
 }
 
 TEST_F(ParserTests_Annotations, GlobalVolatileReadWriteBool) {
@@ -103,8 +103,8 @@ TEST_F(ParserTests_Annotations, GlobalVolatileReadWriteBool) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Boolean, node->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().volatility());
+    ASSERT_EQ(DataType::Boolean, node->dataType().kind());
+    ASSERT_EQ(DataType::Access::ReadWrite, node->dataType().volatility());
 }
 
 TEST_F(ParserTests_Annotations, GlobalAccessReadShortBool) {
@@ -112,8 +112,8 @@ TEST_F(ParserTests_Annotations, GlobalAccessReadShortBool) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Access::None, node->dataType().volatility());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
+    ASSERT_EQ(DataType::Access::None, node->dataType().volatility());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().access());
 }
 
 TEST_F(ParserTests_Annotations, GlobalAccessReadBool) {
@@ -121,8 +121,8 @@ TEST_F(ParserTests_Annotations, GlobalAccessReadBool) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Access::None, node->dataType().volatility());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
+    ASSERT_EQ(DataType::Access::None, node->dataType().volatility());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().access());
 }
 
 TEST_F(ParserTests_Annotations, GlobalAccessWriteShortBool) {
@@ -130,7 +130,7 @@ TEST_F(ParserTests_Annotations, GlobalAccessWriteShortBool) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Access::Write, node->dataType().access());
+    ASSERT_EQ(DataType::Access::Write, node->dataType().access());
 }
 
 TEST_F(ParserTests_Annotations, GlobalAccessWriteBool) {
@@ -138,7 +138,7 @@ TEST_F(ParserTests_Annotations, GlobalAccessWriteBool) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Access::Write, node->dataType().access());
+    ASSERT_EQ(DataType::Access::Write, node->dataType().access());
 }
 
 TEST_F(ParserTests_Annotations, GlobalAccessReadWriteShortBool) {
@@ -146,7 +146,7 @@ TEST_F(ParserTests_Annotations, GlobalAccessReadWriteShortBool) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().access());
+    ASSERT_EQ(DataType::Access::ReadWrite, node->dataType().access());
 }
 
 TEST_F(ParserTests_Annotations, GlobalAccessReadWriteBool) {
@@ -154,7 +154,7 @@ TEST_F(ParserTests_Annotations, GlobalAccessReadWriteBool) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().access());
+    ASSERT_EQ(DataType::Access::ReadWrite, node->dataType().access());
 }
 
 TEST_F(ParserTests_Annotations, GlobalAccessNoneWriteBool) {
@@ -162,7 +162,7 @@ TEST_F(ParserTests_Annotations, GlobalAccessNoneWriteBool) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Access::None, node->dataType().access());
+    ASSERT_EQ(DataType::Access::None, node->dataType().access());
 }
 
 TEST_F(ParserTests_Annotations, BriefAnnotation) {

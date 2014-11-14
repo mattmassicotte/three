@@ -1,5 +1,5 @@
 #include "../ParserTestsBase.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 
 class ParserTests_Metafunctions : public ParserTestsBase {
 };
@@ -13,7 +13,7 @@ TEST_F(ParserTests_Metafunctions, Sizeof) {
     ASSERT_EQ("Sizeof Metafunction", node->nodeName());
 
     Three::SizeofNode* metaFn = dynamic_cast<Three::SizeofNode*>(node);
-    EXPECT_EQ(NewDataType::Kind::Integer, metaFn->dataTypeArgument.kind());
+    EXPECT_EQ(DataType::Kind::Integer, metaFn->dataTypeArgument.kind());
     EXPECT_EQ(0, metaFn->childCount());
 }
 
@@ -77,7 +77,7 @@ TEST_F(ParserTests_Metafunctions, Cast) {
     ASSERT_EQ("Cast Metafunction", node->nodeName());
 
     Three::CastNode* cast = dynamic_cast<Three::CastNode*>(node);
-    EXPECT_EQ(NewDataType::Kind::Integer, cast->dataTypeArgument.kind());
+    EXPECT_EQ(DataType::Kind::Integer, cast->dataTypeArgument.kind());
     ASSERT_EQ(1, cast->childCount());
     EXPECT_EQ("Integer Literal", cast->childAtIndex(0)->nodeName());
 }
@@ -94,7 +94,7 @@ TEST_F(ParserTests_Metafunctions, Nextarg) {
     ASSERT_EQ("Nextarg Metafunction", node->nodeName());
 
     Three::NextargNode* nextarg = dynamic_cast<Three::NextargNode*>(node);
-    EXPECT_EQ(NewDataType::Kind::Integer, nextarg->dataTypeArgument.kind());
+    EXPECT_EQ(DataType::Kind::Integer, nextarg->dataTypeArgument.kind());
     ASSERT_EQ(1, nextarg->childCount());
     EXPECT_EQ("Local Variable", nextarg->childAtIndex(0)->nodeName());
 }

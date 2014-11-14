@@ -1,5 +1,5 @@
 #include "../ParserTestsBase.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 
 class ParserTests_Literals : public ParserTestsBase {
 };
@@ -17,9 +17,9 @@ TEST_F(ParserTests_Literals, IntegerLiteral) {
     IntegerLiteralNode* literal = dynamic_cast<IntegerLiteralNode*>(node->childAtIndex(1));
 
     ASSERT_EQ(1, literal->value());
-    ASSERT_EQ(NewDataType::Kind::Integer, literal->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Integer, literal->dataType().kind());
     ASSERT_EQ(0, literal->dataType().widthSpecifier());
-    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
+    ASSERT_EQ(DataType::Access::Read, literal->dataType().access());
 }
 
 TEST_F(ParserTests_Literals, NegativeIntegerLiteral) {
@@ -38,8 +38,8 @@ TEST_F(ParserTests_Literals, NegativeIntegerLiteral) {
     IntegerLiteralNode* literal = dynamic_cast<IntegerLiteralNode*>(node->childAtIndex(0));
 
     ASSERT_EQ(1, literal->value());
-    ASSERT_EQ(NewDataType::Kind::Integer, literal->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
+    ASSERT_EQ(DataType::Kind::Integer, literal->dataType().kind());
+    ASSERT_EQ(DataType::Access::Read, literal->dataType().access());
 }
 
 TEST_F(ParserTests_Literals, IntegerLiteralWithTypeSpecifier) {
@@ -55,9 +55,9 @@ TEST_F(ParserTests_Literals, IntegerLiteralWithTypeSpecifier) {
     IntegerLiteralNode* literal = dynamic_cast<IntegerLiteralNode*>(node->childAtIndex(1));
 
     ASSERT_EQ(1, literal->value());
-    ASSERT_EQ(NewDataType::Kind::Natural, literal->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Natural, literal->dataType().kind());
     ASSERT_EQ(64, literal->dataType().widthSpecifier());
-    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
+    ASSERT_EQ(DataType::Access::Read, literal->dataType().access());
 }
 
 TEST_F(ParserTests_Literals, FloatLiteral) {
@@ -73,9 +73,9 @@ TEST_F(ParserTests_Literals, FloatLiteral) {
     RealLiteralNode* literal = dynamic_cast<RealLiteralNode*>(node->childAtIndex(1));
 
     ASSERT_EQ(1.0, literal->value());
-    ASSERT_EQ(NewDataType::Kind::Float, literal->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Float, literal->dataType().kind());
     ASSERT_EQ(0, literal->dataType().widthSpecifier());
-    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
+    ASSERT_EQ(DataType::Access::Read, literal->dataType().access());
 }
 
 TEST_F(ParserTests_Literals, FloatLiteralWithTypeSpecifier) {
@@ -91,9 +91,9 @@ TEST_F(ParserTests_Literals, FloatLiteralWithTypeSpecifier) {
     RealLiteralNode* literal = dynamic_cast<RealLiteralNode*>(node->childAtIndex(1));
 
     ASSERT_EQ(1.0, literal->value());
-    ASSERT_EQ(NewDataType::Kind::Real, literal->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Real, literal->dataType().kind());
     ASSERT_EQ(64, literal->dataType().widthSpecifier());
-    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
+    ASSERT_EQ(DataType::Access::Read, literal->dataType().access());
 }
 
 TEST_F(ParserTests_Literals, HexLiteral) {
@@ -109,9 +109,9 @@ TEST_F(ParserTests_Literals, HexLiteral) {
     IntegerLiteralNode* literal = dynamic_cast<IntegerLiteralNode*>(node->childAtIndex(1));
 
     ASSERT_EQ(1234, literal->value());
-    ASSERT_EQ(NewDataType::Kind::Integer, literal->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Integer, literal->dataType().kind());
     ASSERT_EQ(0, literal->dataType().widthSpecifier());
-    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
+    ASSERT_EQ(DataType::Access::Read, literal->dataType().access());
 }
 
 TEST_F(ParserTests_Literals, BinaryLiteral) {
@@ -127,9 +127,9 @@ TEST_F(ParserTests_Literals, BinaryLiteral) {
     IntegerLiteralNode* literal = dynamic_cast<IntegerLiteralNode*>(node->childAtIndex(1));
 
     ASSERT_EQ(1234, literal->value());
-    ASSERT_EQ(NewDataType::Kind::Integer, literal->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Integer, literal->dataType().kind());
     ASSERT_EQ(0, literal->dataType().widthSpecifier());
-    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
+    ASSERT_EQ(DataType::Access::Read, literal->dataType().access());
 }
 
 TEST_F(ParserTests_Literals, NullLiteral) {
@@ -144,11 +144,11 @@ TEST_F(ParserTests_Literals, NullLiteral) {
 
     NullLiteralNode* literal = dynamic_cast<NullLiteralNode*>(node->childAtIndex(1));
 
-    ASSERT_EQ(NewDataType::Kind::Pointer, literal->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
+    ASSERT_EQ(DataType::Kind::Pointer, literal->dataType().kind());
+    ASSERT_EQ(DataType::Access::Read, literal->dataType().access());
     ASSERT_EQ(1, literal->dataType().subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Void, literal->dataType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().subtypeAtIndex(0).access());
+    ASSERT_EQ(DataType::Kind::Void, literal->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Access::Read, literal->dataType().subtypeAtIndex(0).access());
 }
 
 TEST_F(ParserTests_Literals, StringLiteral) {
@@ -164,11 +164,11 @@ TEST_F(ParserTests_Literals, StringLiteral) {
     StringLiteralNode* literal = dynamic_cast<StringLiteralNode*>(node->childAtIndex(1));
 
     ASSERT_EQ("hello", literal->stringValue());
-    ASSERT_EQ(NewDataType::Kind::Pointer, literal->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::Read, literal->dataType().access());
+    ASSERT_EQ(DataType::Kind::Pointer, literal->dataType().kind());
+    ASSERT_EQ(DataType::Access::Read, literal->dataType().access());
     ASSERT_EQ(1, literal->dataType().subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Character, literal->dataType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::CharacterEncoding::UTF8, literal->dataType().subtypeAtIndex(0).characterEncoding());
+    ASSERT_EQ(DataType::Kind::Character, literal->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::CharacterEncoding::UTF8, literal->dataType().subtypeAtIndex(0).characterEncoding());
 }
 
 TEST_F(ParserTests_Literals, StringLiteralAscii) {
@@ -184,10 +184,10 @@ TEST_F(ParserTests_Literals, StringLiteralAscii) {
     StringLiteralNode* literal = dynamic_cast<StringLiteralNode*>(node->childAtIndex(1));
 
     ASSERT_EQ("hello", literal->stringValue());
-    ASSERT_EQ(NewDataType::Kind::Pointer, literal->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Pointer, literal->dataType().kind());
     ASSERT_EQ(1, literal->dataType().subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Character, literal->dataType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::CharacterEncoding::ASCII, literal->dataType().subtypeAtIndex(0).characterEncoding());
+    ASSERT_EQ(DataType::Kind::Character, literal->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::CharacterEncoding::ASCII, literal->dataType().subtypeAtIndex(0).characterEncoding());
 }
 
 TEST_F(ParserTests_Literals, StringLiteralUTF16LE) {
@@ -203,10 +203,10 @@ TEST_F(ParserTests_Literals, StringLiteralUTF16LE) {
     StringLiteralNode* literal = dynamic_cast<StringLiteralNode*>(node->childAtIndex(1));
 
     ASSERT_EQ("hello", literal->stringValue());
-    ASSERT_EQ(NewDataType::Kind::Pointer, literal->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Pointer, literal->dataType().kind());
     ASSERT_EQ(1, literal->dataType().subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Character, literal->dataType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::CharacterEncoding::UTF16LE, literal->dataType().subtypeAtIndex(0).characterEncoding());
+    ASSERT_EQ(DataType::Kind::Character, literal->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::CharacterEncoding::UTF16LE, literal->dataType().subtypeAtIndex(0).characterEncoding());
 }
 
 TEST_F(ParserTests_Literals, CharacterLiteral) {
@@ -222,8 +222,8 @@ TEST_F(ParserTests_Literals, CharacterLiteral) {
     CharacterLiteralNode* literal = dynamic_cast<CharacterLiteralNode*>(node->childAtIndex(1));
 
     ASSERT_EQ("h", literal->value());
-    ASSERT_EQ(NewDataType::Kind::Character, literal->dataType().kind());
-    ASSERT_EQ(NewDataType::CharacterEncoding::UTF8, literal->dataType().characterEncoding());
+    ASSERT_EQ(DataType::Kind::Character, literal->dataType().kind());
+    ASSERT_EQ(DataType::CharacterEncoding::UTF8, literal->dataType().characterEncoding());
     ASSERT_EQ(0, literal->dataType().subtypeCount());
 }
 
@@ -240,8 +240,8 @@ TEST_F(ParserTests_Literals, CharacterLiteralAscii) {
     CharacterLiteralNode* literal = dynamic_cast<CharacterLiteralNode*>(node->childAtIndex(1));
 
     ASSERT_EQ("h", literal->value());
-    ASSERT_EQ(NewDataType::Kind::Character, literal->dataType().kind());
-    ASSERT_EQ(NewDataType::CharacterEncoding::ASCII, literal->dataType().characterEncoding());
+    ASSERT_EQ(DataType::Kind::Character, literal->dataType().kind());
+    ASSERT_EQ(DataType::CharacterEncoding::ASCII, literal->dataType().characterEncoding());
     ASSERT_EQ(0, literal->dataType().subtypeCount());
 }
 
@@ -258,7 +258,7 @@ TEST_F(ParserTests_Literals, TrueLiteral) {
     BooleanLiteralNode* literal = dynamic_cast<BooleanLiteralNode*>(node->childAtIndex(1));
 
     ASSERT_TRUE(literal->value());
-    ASSERT_EQ(NewDataType::Kind::Boolean, literal->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Boolean, literal->dataType().kind());
     ASSERT_EQ(0, literal->dataType().subtypeCount());
 }
 
@@ -275,6 +275,6 @@ TEST_F(ParserTests_Literals, FalseLiteral) {
     BooleanLiteralNode* literal = dynamic_cast<BooleanLiteralNode*>(node->childAtIndex(1));
 
     ASSERT_FALSE(literal->value());
-    ASSERT_EQ(NewDataType::Kind::Boolean, literal->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Boolean, literal->dataType().kind());
     ASSERT_EQ(0, literal->dataType().subtypeCount());
 }

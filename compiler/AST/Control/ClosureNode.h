@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ASTNode.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 #include "compiler/constructs/NewVariable.h"
 
 namespace Three {
@@ -11,20 +11,20 @@ namespace Three {
 
     public:
         std::string nodeName() const;
-        NewDataType dataType() const;
+        DataType dataType() const;
         virtual std::string name() const;
         void accept(ASTVisitor& visitor);
 
         void eachCapturedVariable(std::function<void (NewVariable*, bool, bool)> func) const;
         std::string closureName() const;
         bool hasReferences() const;
-        NewDataType environmentStructureType() const;
+        DataType environmentStructureType() const;
 
     public:
-        NewDataType environmentType;
+        DataType environmentType;
 
     private:
-        NewDataType _dataType;
+        DataType _dataType;
         std::string _name;
         std::string _environmentName;
         std::vector<NewVariable*> _capturedNewVariables;

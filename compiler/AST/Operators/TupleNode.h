@@ -5,10 +5,10 @@
 namespace Three {
     class TupleNode : public ASTNode {
     public:
-        static TupleNode* parse(Parser& parser, ASTNode* firstElement, bool fullExpressions, const NewDataType* expectedType = nullptr);
+        static TupleNode* parse(Parser& parser, ASTNode* firstElement, bool fullExpressions, const DataType* expectedType = nullptr);
 
     public:
-        NewDataType dataType() const;
+        DataType dataType() const;
         virtual std::string nodeName() const;
         void accept(ASTVisitor& visitor);
 
@@ -16,6 +16,6 @@ namespace Three {
         std::string str() const;
 
     private:
-        NewDataType _type;
+        DataType _type;
     };
 }

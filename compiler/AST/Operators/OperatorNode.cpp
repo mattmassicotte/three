@@ -167,7 +167,7 @@ namespace Three {
         return nullptr;
     }
 
-    NewDataType OperatorNode::dataType() const {
+    DataType OperatorNode::dataType() const {
         assert(this->childCount() > 0);
 
         // TODO: is this correct?

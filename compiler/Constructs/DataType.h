@@ -5,7 +5,7 @@
 #include <functional>
 
 namespace Three {
-    class NewDataType {
+    class DataType {
     public:
         typedef enum {
             Undefined,
@@ -66,12 +66,12 @@ namespace Three {
         } Access;
 
     public:
-        static NewDataType wrapInType(Kind k, const NewDataType& subtype, const std::string& label = "");
-        static NewDataType wrapInPointer(const NewDataType& type, const std::string& label = "");
-        static NewDataType mutableVersion(const NewDataType& type);
+        static DataType wrapInType(Kind k, const DataType& subtype, const std::string& label = "");
+        static DataType wrapInPointer(const DataType& type, const std::string& label = "");
+        static DataType mutableVersion(const DataType& type);
 
     public:
-        NewDataType(Kind k=Kind::Undefined);
+        DataType(Kind k=Kind::Undefined);
 
     public:
         std::string name() const;
@@ -108,28 +108,28 @@ namespace Three {
         void setLabel(const std::string& value);
 
         uint32_t subtypeCount() const;
-        NewDataType subtypeAtIndex(uint32_t idx) const;
-        void addSubtype(NewDataType t);
-        void eachSubtypeWithLast(std::function<void (const NewDataType&, bool)> func) const;
+        DataType subtypeAtIndex(uint32_t idx) const;
+        void addSubtype(DataType t);
+        void eachSubtypeWithLast(std::function<void (const DataType&, bool)> func) const;
 
         uint32_t parameterCount() const;
-        NewDataType parameterAtIndex(uint32_t idx) const;
-        void addParameter(NewDataType t);
-        void eachParameterWithLast(std::function<void (const NewDataType&, bool)> func) const;
-        NewDataType returnType() const;
+        DataType parameterAtIndex(uint32_t idx) const;
+        void addParameter(DataType t);
+        void eachParameterWithLast(std::function<void (const DataType&, bool)> func) const;
+        DataType returnType() const;
         uint32_t returnCount() const;
-        NewDataType returnAtIndex(uint32_t idx) const;
-        void addReturn(NewDataType t);
-        void eachReturnWithLast(std::function<void (const NewDataType&, bool)> func) const;
+        DataType returnAtIndex(uint32_t idx) const;
+        void addReturn(DataType t);
+        void eachReturnWithLast(std::function<void (const DataType&, bool)> func) const;
 
         bool isGeneric() const;
         uint32_t genericParameterCount() const;
-        NewDataType genericParameterAtIndex(uint32_t idx) const;
-        void addGenericParameter(NewDataType t);
+        DataType genericParameterAtIndex(uint32_t idx) const;
+        void addGenericParameter(DataType t);
 
     public:
-        std::vector<NewDataType> subtypes;
-        std::vector<NewDataType> parameters;
+        std::vector<DataType> subtypes;
+        std::vector<DataType> parameters;
 
     private:
         Kind _kind;
@@ -148,8 +148,8 @@ namespace Three {
         bool _potentiallyAliased;
 
         // For functions/closures
-        std::vector<NewDataType> _returns;
+        std::vector<DataType> _returns;
 
-        std::vector<NewDataType> _genericParameters;
+        std::vector<DataType> _genericParameters;
     };
 }

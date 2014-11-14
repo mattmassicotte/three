@@ -4,8 +4,8 @@ namespace Three {
     CMacroNode::CMacroNode(const std::string& value) : _value(value) {
     }
 
-    NewDataType CMacroNode::dataType() const {
-        return NewDataType(NewDataType::Kind::CUnspecifiedMacro);
+    DataType CMacroNode::dataType() const {
+        return DataType(DataType::Kind::CUnspecifiedMacro);
     }
 
     std::string CMacroNode::name() const {

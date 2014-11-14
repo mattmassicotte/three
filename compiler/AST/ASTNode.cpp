@@ -1,5 +1,5 @@
 #include "ASTNode.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 
 #include <assert.h>
 #include <sstream>
@@ -67,8 +67,8 @@ namespace Three {
         return false;
     }
 
-    NewDataType ASTNode::dataType() const {
-        return NewDataType();
+    DataType ASTNode::dataType() const {
+        return DataType();
     }
 
     std::string ASTNode::nodeName() const {

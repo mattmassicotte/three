@@ -4,99 +4,99 @@ class CTypeCodeGeneratorTests : public testing::Test {
 };
 
 TEST_F(CTypeCodeGeneratorTests, Int) {
-    NewDataType type(NewDataType::Kind::Integer);
-    type.setAccess(NewDataType::Access::ReadWrite);
+    DataType type(DataType::Kind::Integer);
+    type.setAccess(DataType::Access::ReadWrite);
 
     EXPECT_EQ("int", CTypeCodeGenerator::codeGen(type));
 }
 
 TEST_F(CTypeCodeGeneratorTests, MutableInt) {
-    NewDataType type(NewDataType::Kind::Integer);
+    DataType type(DataType::Kind::Integer);
 
     EXPECT_EQ("const int", CTypeCodeGenerator::codeGen(type));
 }
 
 TEST_F(CTypeCodeGeneratorTests, MutablePointerToMutableInt) {
-    NewDataType type(NewDataType::Kind::Integer);
-    type.setAccess(NewDataType::Access::ReadWrite);
+    DataType type(DataType::Kind::Integer);
+    type.setAccess(DataType::Access::ReadWrite);
 
-    type = NewDataType::wrapInPointer(type);
-    type.setAccess(NewDataType::Access::ReadWrite);
+    type = DataType::wrapInPointer(type);
+    type.setAccess(DataType::Access::ReadWrite);
 
     EXPECT_EQ("int*", CTypeCodeGenerator::codeGen(type));
 }
 
 TEST_F(CTypeCodeGeneratorTests, PointerToInt) {
-    NewDataType type(NewDataType::Kind::Integer);
-    type.setAccess(NewDataType::Access::Read);
+    DataType type(DataType::Kind::Integer);
+    type.setAccess(DataType::Access::Read);
 
-    type = NewDataType::wrapInPointer(type);
-    type.setAccess(NewDataType::Access::Read);
+    type = DataType::wrapInPointer(type);
+    type.setAccess(DataType::Access::Read);
 
     EXPECT_EQ("const int* const", CTypeCodeGenerator::codeGen(type));
     EXPECT_EQ("const int* const x", CTypeCodeGenerator::codeGen(type, "x"));
 }
 
 TEST_F(CTypeCodeGeneratorTests, MutablePointerToPointerInt) {
-    NewDataType type(NewDataType::Kind::Integer);
-    type.setAccess(NewDataType::Access::Read);
+    DataType type(DataType::Kind::Integer);
+    type.setAccess(DataType::Access::Read);
 
-    type = NewDataType::wrapInPointer(type);
-    type.setAccess(NewDataType::Access::Read);
+    type = DataType::wrapInPointer(type);
+    type.setAccess(DataType::Access::Read);
 
-    type = NewDataType::wrapInPointer(type);
-    type.setAccess(NewDataType::Access::ReadWrite);
+    type = DataType::wrapInPointer(type);
+    type.setAccess(DataType::Access::ReadWrite);
 
     EXPECT_EQ("const int* const*", CTypeCodeGenerator::codeGen(type));
     EXPECT_EQ("const int* const* x", CTypeCodeGenerator::codeGen(type, "x"));
 }
 
 TEST_F(CTypeCodeGeneratorTests, FunctionPointer) {
-    NewDataType type(NewDataType::Kind::Function);
-    type.addSubtype(NewDataType(NewDataType::Kind::Void));
-    type.addReturn(NewDataType(NewDataType::Kind::Void));
-    type.setAccess(NewDataType::Access::Read);
+    DataType type(DataType::Kind::Function);
+    type.addSubtype(DataType(DataType::Kind::Void));
+    type.addReturn(DataType(DataType::Kind::Void));
+    type.setAccess(DataType::Access::Read);
 
-    type = NewDataType::wrapInPointer(type);
-    type.setAccess(NewDataType::Access::Read);
+    type = DataType::wrapInPointer(type);
+    type.setAccess(DataType::Access::Read);
 
     EXPECT_EQ("void (* const)(void)", CTypeCodeGenerator::codeGen(type));
     EXPECT_EQ("void (* const x)(void)", CTypeCodeGenerator::codeGen(type, "x"));
 }
 
 TEST_F(CTypeCodeGeneratorTests, Closure) {
-    NewDataType type(NewDataType::Kind::Closure);
-    type.addReturn(NewDataType(NewDataType::Kind::Void));
-    type.setAccess(NewDataType::Access::Read);
+    DataType type(DataType::Kind::Closure);
+    type.addReturn(DataType(DataType::Kind::Void));
+    type.setAccess(DataType::Access::Read);
 
     EXPECT_EQ("const three_closure_t x", CTypeCodeGenerator::codeGen(type, "x"));
 
-    type = NewDataType::wrapInPointer(type);
-    type.setAccess(NewDataType::Access::Read);
+    type = DataType::wrapInPointer(type);
+    type.setAccess(DataType::Access::Read);
 
     EXPECT_EQ("const three_closure_t* const x", CTypeCodeGenerator::codeGen(type, "x"));
 }
 
 TEST_F(CTypeCodeGeneratorTests, Structure) {
-    NewDataType type(NewDataType::Kind::Structure);
-    type.addSubtype(NewDataType(NewDataType::Kind::Integer));
-    type.setAccess(NewDataType::Access::Read);
+    DataType type(DataType::Kind::Structure);
+    type.addSubtype(DataType(DataType::Kind::Integer));
+    type.setAccess(DataType::Access::Read);
     type.setName("Foo");
 
     EXPECT_EQ("const Foo", CTypeCodeGenerator::codeGen(type));
     EXPECT_EQ("const Foo x", CTypeCodeGenerator::codeGen(type, "x"));
 
-    type = NewDataType::wrapInPointer(type);
-    type.setAccess(NewDataType::Access::Read);
+    type = DataType::wrapInPointer(type);
+    type.setAccess(DataType::Access::Read);
 
     EXPECT_EQ("const Foo* const", CTypeCodeGenerator::codeGen(type));
     EXPECT_EQ("const Foo* const x", CTypeCodeGenerator::codeGen(type, "x"));
 }
 
 TEST_F(CTypeCodeGeneratorTests, NullablePointer) {
-    NewDataType type(NewDataType::Kind::NullablePointer);
-    type.addSubtype(NewDataType(NewDataType::Kind::Integer));
-    type.setAccess(NewDataType::Access::Read);
+    DataType type(DataType::Kind::NullablePointer);
+    type.addSubtype(DataType(DataType::Kind::Integer));
+    type.setAccess(DataType::Access::Read);
 
     EXPECT_EQ("const int* THREE_ATTR_NULLABLE const", CTypeCodeGenerator::codeGen(type));
     EXPECT_EQ("const int* THREE_ATTR_NULLABLE const x", CTypeCodeGenerator::codeGen(type, "x"));

@@ -9,19 +9,19 @@
 namespace Three {
     CompositeTypeDefinitionNode* CompositeTypeDefinitionNode::parse(Parser& parser) {
         CompositeTypeDefinitionNode* node = nullptr;
-        NewDataType::Kind typeKind;
+        DataType::Kind typeKind;
 
         switch (parser.helper()->peek().type()) {
             case Token::Type::KeywordStructure:
-                typeKind = NewDataType::Kind::Structure;
+                typeKind = DataType::Kind::Structure;
                 node = new StructureNode();
                 break;
             case Token::Type::KeywordEnumeration:
-                typeKind = NewDataType::Kind::Enumeration;
+                typeKind = DataType::Kind::Enumeration;
                 node = new EnumerationNode();
                 break;
             case Token::Type::KeywordUnion:
-                typeKind = NewDataType::Kind::Union;
+                typeKind = DataType::Kind::Union;
                 node = new UnionNode();
                 break;
             default:
@@ -43,7 +43,7 @@ namespace Three {
 
         // parse the name and create the type
         node->_name = parser.context()->scope()->qualifiedNameWithIdentifier(parser.helper()->nextStr());
-        node->_definedType = NewDataType(typeKind);
+        node->_definedType = DataType(typeKind);
         node->_definedType.setName(node->fullName());
 
         if (parser.helper()->peek().type() == Token::Type::OperatorLessThan) {
@@ -69,7 +69,7 @@ namespace Three {
             }
 
             // make the members mutable, so mutability is controlled from the structure as a whole
-            node->_definedType.addSubtype(NewDataType::mutableVersion(member->dataType()));
+            node->_definedType.addSubtype(DataType::mutableVersion(member->dataType()));
             if (!node->addChild(member)) {
                 return true;
             }
@@ -101,7 +101,7 @@ namespace Three {
         return _name.lastComponent();
     }
 
-    NewDataType CompositeTypeDefinitionNode::definedType() const {
+    DataType CompositeTypeDefinitionNode::definedType() const {
         return _definedType;
     }
 

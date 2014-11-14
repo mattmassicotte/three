@@ -1,5 +1,5 @@
 #include "CallableOperatorNode.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 #include "compiler/Parser/Parser.h"
 #include "compiler/AST/Control/ClosureNode.h"
 
@@ -61,11 +61,11 @@ namespace Three {
         _receiver = node;
     }
 
-    NewDataType CallableOperatorNode::receiverDataType() const {
+    DataType CallableOperatorNode::receiverDataType() const {
         return _receiver->dataType();
     }
 
-    NewDataType CallableOperatorNode::dataType() const {
+    DataType CallableOperatorNode::dataType() const {
         return this->receiverDataType().returnType();
     }
 }

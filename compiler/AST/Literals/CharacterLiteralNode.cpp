@@ -10,7 +10,7 @@ namespace Three {
         assert(parser.helper()->peek().type() == Token::Type::LiteralCharacter);
         node->setValue(parser.helper()->next().strTrimmingFirstAndLast());
 
-        NewDataType charType = parser.context()->typeKindWithName("Char");
+        DataType charType = parser.context()->typeKindWithName("Char");
 
         // here we have to check for type specifiers
         if (parser.helper()->nextIf(Token::Type::PunctuationColon)) {

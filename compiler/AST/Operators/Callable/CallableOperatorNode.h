@@ -11,13 +11,13 @@ namespace Three {
         CallableOperatorNode();
         virtual ~CallableOperatorNode();
 
-        NewDataType dataType() const;
+        DataType dataType() const;
         virtual std::string nodeName() const;
         void accept(ASTVisitor& visitor);
 
         ASTNode* receiver() const;
         void setReceiver(ASTNode* node);
-        NewDataType receiverDataType() const;
+        DataType receiverDataType() const;
 
     private:
         ASTNode* _receiver;

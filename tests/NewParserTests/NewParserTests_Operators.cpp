@@ -1,5 +1,5 @@
 #include "../ParserTestsBase.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 
 class ParserTests_Operators : public ParserTestsBase {
 };
@@ -38,11 +38,11 @@ TEST_F(ParserTests_Operators, AssignmentExpression) {
     // root -> function
     ASSERT_EQ("Variable Declaration", node->childAtIndex(0)->nodeName());
     ASSERT_EQ("x", node->childAtIndex(0)->name());
-    ASSERT_EQ(NewDataType::Kind::Integer, node->childAtIndex(0)->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Integer, node->childAtIndex(0)->dataType().kind());
 
     ASSERT_EQ("Variable Declaration", node->childAtIndex(1)->nodeName());
     ASSERT_EQ("y", node->childAtIndex(1)->name());
-    ASSERT_EQ(NewDataType::Kind::Integer, node->childAtIndex(1)->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Integer, node->childAtIndex(1)->dataType().kind());
 
     OperatorNode* opNode = dynamic_cast<OperatorNode*>(node->childAtIndex(2));
 
@@ -115,7 +115,7 @@ TEST_F(ParserTests_Operators, DereferenceOperator) {
     OperatorNode* opNode = dynamic_cast<OperatorNode*>(node->childAtIndex(0));
 
     ASSERT_EQ("Dereference Operator", opNode->nodeName());
-    ASSERT_EQ(NewDataType::Kind::Integer, opNode->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Integer, opNode->dataType().kind());
     ASSERT_EQ("x", dynamic_cast<VariableNode*>(opNode->childAtIndex(0))->name());
 }
 

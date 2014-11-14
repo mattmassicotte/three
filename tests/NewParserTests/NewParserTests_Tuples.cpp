@@ -33,12 +33,12 @@ TEST_F(ParserTests_Tuples, ReturnTwoExpressions) {
     ASSERT_EQ("Addition Operator", node->childAtIndex(0)->nodeName());
     ASSERT_EQ("Local Variable", node->childAtIndex(1)->nodeName());
 
-    ASSERT_EQ(NewDataType::Kind::Tuple, node->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Tuple, node->dataType().kind());
     ASSERT_EQ(2, node->dataType().subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Integer, node->dataType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
-    ASSERT_EQ(NewDataType::Kind::Integer, node->dataType().subtypeAtIndex(1).kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(1).access());
+    ASSERT_EQ(DataType::Kind::Integer, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
+    ASSERT_EQ(DataType::Kind::Integer, node->dataType().subtypeAtIndex(1).kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().subtypeAtIndex(1).access());
 }
 
 TEST_F(ParserTests_Tuples, ReturnTwoExpressionsWithMutability) {
@@ -56,12 +56,12 @@ TEST_F(ParserTests_Tuples, ReturnTwoExpressionsWithMutability) {
     ASSERT_EQ("Addition Operator", node->childAtIndex(0)->nodeName());
     ASSERT_EQ("Local Variable", node->childAtIndex(1)->nodeName());
 
-    ASSERT_EQ(NewDataType::Kind::Tuple, node->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Tuple, node->dataType().kind());
     ASSERT_EQ(2, node->dataType().subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Integer, node->dataType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
-    ASSERT_EQ(NewDataType::Kind::Integer, node->dataType().subtypeAtIndex(1).kind());
-    ASSERT_EQ(NewDataType::Access::ReadWrite, node->dataType().subtypeAtIndex(1).access());
+    ASSERT_EQ(DataType::Kind::Integer, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
+    ASSERT_EQ(DataType::Kind::Integer, node->dataType().subtypeAtIndex(1).kind());
+    ASSERT_EQ(DataType::Access::ReadWrite, node->dataType().subtypeAtIndex(1).access());
 }
 
 TEST_F(ParserTests_Tuples, ReturnTwoExpressionsTailingIf) {

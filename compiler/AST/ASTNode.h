@@ -11,7 +11,7 @@
 // forward declarations
 namespace Three {
     class Parser;
-    class NewDataType;
+    class DataType;
 };
 
 namespace Three {
@@ -31,7 +31,7 @@ namespace Three {
         bool statement() const;
         void setStatement(bool value);
         virtual bool includesParentheses() const;
-        virtual NewDataType dataType() const;
+        virtual DataType dataType() const;
 
         virtual std::string name() const = 0;
         virtual std::string nodeName() const;

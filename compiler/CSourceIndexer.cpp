@@ -178,7 +178,7 @@ namespace Three {
         return result == 0;
     }
 
-    NewDataType CSourceIndexer::dataTypeForCType(void* typePtr) {
+    DataType CSourceIndexer::dataTypeForCType(void* typePtr) {
         assert(typePtr);
 
         CXType cType = *static_cast<CXType*>(typePtr);
@@ -188,45 +188,45 @@ namespace Three {
         // resolve to underlying type
         cType = clang_getCanonicalType(cType);
 
-        NewDataType type;
+        DataType type;
 
         switch (cType.kind) {
             case CXType_SChar:
-                type.setKind(NewDataType::Kind::CChar);
+                type.setKind(DataType::Kind::CChar);
                 break;
             case CXType_UChar:
-                type.setKind(NewDataType::Kind::CUnsignedChar);
+                type.setKind(DataType::Kind::CUnsignedChar);
                 break;
             case CXType_Short:
-                type.setKind(NewDataType::Kind::CShort);
+                type.setKind(DataType::Kind::CShort);
                 break;
             case CXType_UShort:
-                type.setKind(NewDataType::Kind::CUnsignedShort);
+                type.setKind(DataType::Kind::CUnsignedShort);
                 break;
             case CXType_Int:
-                type.setKind(NewDataType::Kind::CInt);
+                type.setKind(DataType::Kind::CInt);
                 break;
             case CXType_UInt:
-                type.setKind(NewDataType::Kind::CUnsignedInt);
+                type.setKind(DataType::Kind::CUnsignedInt);
                 break;
             case CXType_Long:
-                type.setKind(NewDataType::Kind::CLong);
+                type.setKind(DataType::Kind::CLong);
                 break;
             case CXType_ULong:
-                type.setKind(NewDataType::Kind::CUnsignedLong);
+                type.setKind(DataType::Kind::CUnsignedLong);
                 break;
             case CXType_LongLong:
-                type.setKind(NewDataType::Kind::CLongLong);
+                type.setKind(DataType::Kind::CLongLong);
                 break;
             case CXType_ULongLong:
-                type.setKind(NewDataType::Kind::CUnsignedLongLong);
+                type.setKind(DataType::Kind::CUnsignedLongLong);
                 break;
             case CXType_Record:
                 // if this is a typedef, we don't need the struct prefix
-                type.setKind(isTypeDef ? NewDataType::Kind::CStructure : NewDataType::Kind::CStructPrefixedStructure);
+                type.setKind(isTypeDef ? DataType::Kind::CStructure : DataType::Kind::CStructPrefixedStructure);
                 break;
             case CXType_Pointer:
-                type.setKind(NewDataType::Kind::Pointer);
+                type.setKind(DataType::Kind::Pointer);
                 cType = clang_getPointeeType(cType);
 
                 type.addSubtype(this->dataTypeForCType(static_cast<void*>(&cType)));
@@ -248,7 +248,7 @@ namespace Three {
             std::cout << "[Indexer] creating function '" << name << "'" << std::endl;
         }
 
-        NewDataType functionType(NewDataType::Kind::CFunction);
+        DataType functionType(DataType::Kind::CFunction);
 
         // std::cout << "defining function " << name << std::endl;
         if (!_context->defineFunctionForName(functionType, name)) {
@@ -288,10 +288,10 @@ namespace Three {
 
         CXType cType = clang_getCursorType(declInfo->cursor);
 
-        NewDataType type = this->dataTypeForCType(static_cast<void*>(&cType));
+        DataType type = this->dataTypeForCType(static_cast<void*>(&cType));
         type.setName(name);
 
-        if (type.kind() == NewDataType::Kind::Undefined) {
+        if (type.kind() == DataType::Kind::Undefined) {
             std::cout << "Unable to map C type '" << name << "' to 3 type" << std::endl;
             return;
         }
@@ -392,7 +392,7 @@ namespace Three {
         //     std::cout << "[Indexer] defining macro " << name << std::endl;
         // }
 
-        NewDataType type(NewDataType::Kind::CUnspecifiedMacro);
+        DataType type(DataType::Kind::CUnspecifiedMacro);
 
         if (!_context->rootScope()->defineVariableTypeForName(type, name)) {
             std::cout << "[Indexer] Failed to define macro variable '" << name << "'" << std::endl;

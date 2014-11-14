@@ -27,11 +27,11 @@ namespace Three {
         return nullptr;
     }
 
-    NewDataType LiteralNode::dataType() const {
+    DataType LiteralNode::dataType() const {
         return _dataType;
     }
 
-    void LiteralNode::setDataType(const NewDataType& type) {
+    void LiteralNode::setDataType(const DataType& type) {
         _dataType = type;
     }
 }

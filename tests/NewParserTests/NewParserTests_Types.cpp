@@ -10,8 +10,8 @@ TEST_F(ParserTests_Types, GlobalBoolean) {
 
     ASSERT_EQ("Variable Declaration", node->nodeName());
     ASSERT_EQ("value", node->name());
-    ASSERT_EQ(NewDataType::Boolean, node->dataType().kind());
-    ASSERT_EQ(NewDataType::Access::Read, node->dataType().access());
+    ASSERT_EQ(DataType::Boolean, node->dataType().kind());
+    ASSERT_EQ(DataType::Access::Read, node->dataType().access());
 }
 
 TEST_F(ParserTests_Types, GlobalUntyped) {
@@ -21,7 +21,7 @@ TEST_F(ParserTests_Types, GlobalUntyped) {
 
     ASSERT_EQ("Variable Declaration", node->nodeName());
     ASSERT_EQ("value", node->name());
-    ASSERT_EQ(NewDataType::Undefined, node->dataType().kind());
+    ASSERT_EQ(DataType::Undefined, node->dataType().kind());
 }
 
 TEST_F(ParserTests_Types, GlobalInt) {
@@ -29,7 +29,7 @@ TEST_F(ParserTests_Types, GlobalInt) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Integer, node->dataType().kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().widthSpecifier());
     ASSERT_EQ(0, node->dataType().alignmentSpecifier());
     ASSERT_EQ(0, node->dataType().vectorSizeSpecifier());
@@ -40,7 +40,7 @@ TEST_F(ParserTests_Types, GlobalIntWithWidthSpecifier) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Integer, node->dataType().kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().kind());
     ASSERT_EQ(32, node->dataType().widthSpecifier());
     ASSERT_EQ(0, node->dataType().alignmentSpecifier());
     ASSERT_EQ(0, node->dataType().vectorSizeSpecifier());
@@ -51,7 +51,7 @@ TEST_F(ParserTests_Types, GlobalIntWithAlignmentSpecifier) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Integer, node->dataType().kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().widthSpecifier());
     ASSERT_EQ(4, node->dataType().alignmentSpecifier());
     ASSERT_EQ(0, node->dataType().vectorSizeSpecifier());
@@ -62,7 +62,7 @@ TEST_F(ParserTests_Types, GlobalIntWithVectorSizeSpecifier) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Integer, node->dataType().kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().widthSpecifier());
     ASSERT_EQ(0, node->dataType().alignmentSpecifier());
     ASSERT_EQ(4, node->dataType().vectorSizeSpecifier());
@@ -73,7 +73,7 @@ TEST_F(ParserTests_Types, GlobalIntWithWidthAndAlignmentSpecifier) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Integer, node->dataType().kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().kind());
     ASSERT_EQ(32, node->dataType().widthSpecifier());
     ASSERT_EQ(4, node->dataType().alignmentSpecifier());
     ASSERT_EQ(0, node->dataType().vectorSizeSpecifier());
@@ -84,7 +84,7 @@ TEST_F(ParserTests_Types, GlobalIntWithWidthAndVectorSizeSpecifier) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Integer, node->dataType().kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().kind());
     ASSERT_EQ(32, node->dataType().widthSpecifier());
     ASSERT_EQ(0, node->dataType().alignmentSpecifier());
     ASSERT_EQ(4, node->dataType().vectorSizeSpecifier());
@@ -95,7 +95,7 @@ TEST_F(ParserTests_Types, GlobalIntWithAlignmentAndVectorSizeSpecifier) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Integer, node->dataType().kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().widthSpecifier());
     ASSERT_EQ(4, node->dataType().alignmentSpecifier());
     ASSERT_EQ(4, node->dataType().vectorSizeSpecifier());
@@ -106,7 +106,7 @@ TEST_F(ParserTests_Types, GlobalIntWithWidthAlignmentAndVectorSizeSpecifier) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Integer, node->dataType().kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().kind());
     ASSERT_EQ(16, node->dataType().widthSpecifier());
     ASSERT_EQ(4, node->dataType().alignmentSpecifier());
     ASSERT_EQ(4, node->dataType().vectorSizeSpecifier());
@@ -117,7 +117,7 @@ TEST_F(ParserTests_Types, GlobalNatural) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Natural, node->dataType().kind());
+    ASSERT_EQ(DataType::Natural, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().widthSpecifier());
     ASSERT_EQ(0, node->dataType().alignmentSpecifier());
     ASSERT_EQ(0, node->dataType().vectorSizeSpecifier());
@@ -128,7 +128,7 @@ TEST_F(ParserTests_Types, GlobalNaturalWithWidth) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Natural, node->dataType().kind());
+    ASSERT_EQ(DataType::Natural, node->dataType().kind());
     ASSERT_EQ(8, node->dataType().widthSpecifier());
     ASSERT_EQ(0, node->dataType().alignmentSpecifier());
     ASSERT_EQ(0, node->dataType().vectorSizeSpecifier());
@@ -139,7 +139,7 @@ TEST_F(ParserTests_Types, GlobalFloat) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Float, node->dataType().kind());
+    ASSERT_EQ(DataType::Float, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().widthSpecifier());
     ASSERT_EQ(0, node->dataType().alignmentSpecifier());
     ASSERT_EQ(0, node->dataType().vectorSizeSpecifier());
@@ -150,7 +150,7 @@ TEST_F(ParserTests_Types, GlobalReal) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Real, node->dataType().kind());
+    ASSERT_EQ(DataType::Real, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().widthSpecifier());
     ASSERT_EQ(0, node->dataType().alignmentSpecifier());
     ASSERT_EQ(0, node->dataType().vectorSizeSpecifier());
@@ -161,8 +161,8 @@ TEST_F(ParserTests_Types, GlobalChar) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Character, node->dataType().kind());
-    ASSERT_EQ(NewDataType::CharacterEncoding::UTF8, node->dataType().characterEncoding());
+    ASSERT_EQ(DataType::Character, node->dataType().kind());
+    ASSERT_EQ(DataType::CharacterEncoding::UTF8, node->dataType().characterEncoding());
 }
 
 TEST_F(ParserTests_Types, GlobalCharWithAscii) {
@@ -170,8 +170,8 @@ TEST_F(ParserTests_Types, GlobalCharWithAscii) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Character, node->dataType().kind());
-    ASSERT_EQ(NewDataType::CharacterEncoding::ASCII, node->dataType().characterEncoding());
+    ASSERT_EQ(DataType::Character, node->dataType().kind());
+    ASSERT_EQ(DataType::CharacterEncoding::ASCII, node->dataType().characterEncoding());
 }
 
 TEST_F(ParserTests_Types, GlobalCharWithUTF8) {
@@ -179,8 +179,8 @@ TEST_F(ParserTests_Types, GlobalCharWithUTF8) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Character, node->dataType().kind());
-    ASSERT_EQ(NewDataType::CharacterEncoding::UTF8, node->dataType().characterEncoding());
+    ASSERT_EQ(DataType::Character, node->dataType().kind());
+    ASSERT_EQ(DataType::CharacterEncoding::UTF8, node->dataType().characterEncoding());
 }
 
 TEST_F(ParserTests_Types, GlobalCharWithUTF16) {
@@ -188,8 +188,8 @@ TEST_F(ParserTests_Types, GlobalCharWithUTF16) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Character, node->dataType().kind());
-    ASSERT_EQ(NewDataType::CharacterEncoding::UTF16, node->dataType().characterEncoding());
+    ASSERT_EQ(DataType::Character, node->dataType().kind());
+    ASSERT_EQ(DataType::CharacterEncoding::UTF16, node->dataType().characterEncoding());
 }
 
 TEST_F(ParserTests_Types, GlobalCharWithUTF16LE) {
@@ -197,8 +197,8 @@ TEST_F(ParserTests_Types, GlobalCharWithUTF16LE) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Character, node->dataType().kind());
-    ASSERT_EQ(NewDataType::CharacterEncoding::UTF16LE, node->dataType().characterEncoding());
+    ASSERT_EQ(DataType::Character, node->dataType().kind());
+    ASSERT_EQ(DataType::CharacterEncoding::UTF16LE, node->dataType().characterEncoding());
 }
 
 TEST_F(ParserTests_Types, GlobalCharWithUTF16BE) {
@@ -206,8 +206,8 @@ TEST_F(ParserTests_Types, GlobalCharWithUTF16BE) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Character, node->dataType().kind());
-    ASSERT_EQ(NewDataType::CharacterEncoding::UTF16BE, node->dataType().characterEncoding());
+    ASSERT_EQ(DataType::Character, node->dataType().kind());
+    ASSERT_EQ(DataType::CharacterEncoding::UTF16BE, node->dataType().characterEncoding());
 }
 
 TEST_F(ParserTests_Types, GlobalCharWithUTF32) {
@@ -215,8 +215,8 @@ TEST_F(ParserTests_Types, GlobalCharWithUTF32) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Character, node->dataType().kind());
-    ASSERT_EQ(NewDataType::CharacterEncoding::UTF32, node->dataType().characterEncoding());
+    ASSERT_EQ(DataType::Character, node->dataType().kind());
+    ASSERT_EQ(DataType::CharacterEncoding::UTF32, node->dataType().characterEncoding());
 }
 
 TEST_F(ParserTests_Types, GlobalCharWithUTF32LE) {
@@ -224,8 +224,8 @@ TEST_F(ParserTests_Types, GlobalCharWithUTF32LE) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Character, node->dataType().kind());
-    ASSERT_EQ(NewDataType::CharacterEncoding::UTF32LE, node->dataType().characterEncoding());
+    ASSERT_EQ(DataType::Character, node->dataType().kind());
+    ASSERT_EQ(DataType::CharacterEncoding::UTF32LE, node->dataType().characterEncoding());
 }
 
 TEST_F(ParserTests_Types, GlobalCharWithUTF32BE) {
@@ -233,8 +233,8 @@ TEST_F(ParserTests_Types, GlobalCharWithUTF32BE) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Character, node->dataType().kind());
-    ASSERT_EQ(NewDataType::CharacterEncoding::UTF32BE, node->dataType().characterEncoding());
+    ASSERT_EQ(DataType::Character, node->dataType().kind());
+    ASSERT_EQ(DataType::CharacterEncoding::UTF32BE, node->dataType().characterEncoding());
 }
 
 TEST_F(ParserTests_Types, GlobalPointerToInt) {
@@ -242,9 +242,9 @@ TEST_F(ParserTests_Types, GlobalPointerToInt) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().kind());
+    ASSERT_EQ(DataType::Pointer, node->dataType().kind());
     ASSERT_EQ(1, node->dataType().subtypeCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().subtypeAtIndex(0).kind());
 }
 
 TEST_F(ParserTests_Types, GlobalPointerToPointerToInt) {
@@ -252,11 +252,11 @@ TEST_F(ParserTests_Types, GlobalPointerToPointerToInt) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().kind());
+    ASSERT_EQ(DataType::Pointer, node->dataType().kind());
     ASSERT_EQ(1, node->dataType().subtypeCount());
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Pointer, node->dataType().subtypeAtIndex(0).kind());
     ASSERT_EQ(1, node->dataType().subtypeAtIndex(0).subtypeCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().subtypeAtIndex(0).subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().subtypeAtIndex(0).subtypeAtIndex(0).kind());
 }
 
 TEST_F(ParserTests_Types, GlobalArrayOfInt) {
@@ -264,10 +264,10 @@ TEST_F(ParserTests_Types, GlobalArrayOfInt) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Array, node->dataType().kind());
+    ASSERT_EQ(DataType::Array, node->dataType().kind());
     ASSERT_EQ(3, node->dataType().arrayCount());
     ASSERT_EQ(1, node->dataType().subtypeCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().subtypeAtIndex(0).kind());
     ASSERT_EQ(0, node->dataType().subtypeAtIndex(0).subtypeCount());
 }
 
@@ -276,11 +276,11 @@ TEST_F(ParserTests_Types, GlobalArrayOfPointersToInt) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Array, node->dataType().kind());
+    ASSERT_EQ(DataType::Array, node->dataType().kind());
     ASSERT_EQ(3, node->dataType().arrayCount());
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Pointer, node->dataType().subtypeAtIndex(0).kind());
     ASSERT_EQ(1, node->dataType().subtypeAtIndex(0).subtypeCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().subtypeAtIndex(0).subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().subtypeAtIndex(0).subtypeAtIndex(0).kind());
 }
 
 TEST_F(ParserTests_Types, GlobalPointerToArrayOfInt) {
@@ -288,12 +288,12 @@ TEST_F(ParserTests_Types, GlobalPointerToArrayOfInt) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().kind());
+    ASSERT_EQ(DataType::Pointer, node->dataType().kind());
     ASSERT_EQ(1, node->dataType().subtypeCount());
-    ASSERT_EQ(NewDataType::Array, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Array, node->dataType().subtypeAtIndex(0).kind());
     ASSERT_EQ(1, node->dataType().subtypeAtIndex(0).subtypeCount());
     ASSERT_EQ(5, node->dataType().subtypeAtIndex(0).arrayCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().subtypeAtIndex(0).subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().subtypeAtIndex(0).subtypeAtIndex(0).kind());
 }
 
 TEST_F(ParserTests_Types, GlobalFunction) {
@@ -302,10 +302,10 @@ TEST_F(ParserTests_Types, GlobalFunction) {
     node = node->childAtIndex(0);
 
     ASSERT_EQ("value", node->name());
-    ASSERT_EQ(NewDataType::Function, node->dataType().kind());
+    ASSERT_EQ(DataType::Function, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
     ASSERT_EQ(0, node->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Void, node->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Void, node->dataType().returnType().kind());
 }
 
 TEST_F(ParserTests_Types, GlobalFunctionTakingSingleParam) {
@@ -313,11 +313,11 @@ TEST_F(ParserTests_Types, GlobalFunctionTakingSingleParam) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Function, node->dataType().kind());
+    ASSERT_EQ(DataType::Function, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
     ASSERT_EQ(1, node->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().parameterAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Void, node->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Void, node->dataType().returnType().kind());
 }
 
 TEST_F(ParserTests_Types, GlobalFunctionTakingTwoParams) {
@@ -325,12 +325,12 @@ TEST_F(ParserTests_Types, GlobalFunctionTakingTwoParams) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Function, node->dataType().kind());
+    ASSERT_EQ(DataType::Function, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
     ASSERT_EQ(2, node->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().parameterAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Float, node->dataType().parameterAtIndex(1).kind());
-    ASSERT_EQ(NewDataType::Void, node->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Float, node->dataType().parameterAtIndex(1).kind());
+    ASSERT_EQ(DataType::Void, node->dataType().returnType().kind());
 }
 
 TEST_F(ParserTests_Types, GlobalFunctionTakingAPointerParam) {
@@ -338,11 +338,11 @@ TEST_F(ParserTests_Types, GlobalFunctionTakingAPointerParam) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Function, node->dataType().kind());
+    ASSERT_EQ(DataType::Function, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
     ASSERT_EQ(1, node->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().parameterAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Void, node->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Pointer, node->dataType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Void, node->dataType().returnType().kind());
 }
 
 TEST_F(ParserTests_Types, GlobalFunctionWithReturn) {
@@ -350,11 +350,11 @@ TEST_F(ParserTests_Types, GlobalFunctionWithReturn) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Function, node->dataType().kind());
+    ASSERT_EQ(DataType::Function, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
     ASSERT_EQ(0, node->dataType().parameterCount());
     ASSERT_EQ(1, node->dataType().returnCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().returnType().kind());
 }
 
 TEST_F(ParserTests_Types, GlobalFunctionWithTwoReturns) {
@@ -362,14 +362,14 @@ TEST_F(ParserTests_Types, GlobalFunctionWithTwoReturns) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Function, node->dataType().kind());
+    ASSERT_EQ(DataType::Function, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
     ASSERT_EQ(0, node->dataType().parameterCount());
 
-    ASSERT_EQ(NewDataType::Tuple, node->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Tuple, node->dataType().returnType().kind());
     ASSERT_EQ(2, node->dataType().returnType().subtypeCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().returnType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().returnType().subtypeAtIndex(1).kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().returnType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().returnType().subtypeAtIndex(1).kind());
 }
 
 TEST_F(ParserTests_Types, GlobalPointerToFunction) {
@@ -377,9 +377,9 @@ TEST_F(ParserTests_Types, GlobalPointerToFunction) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().kind());
+    ASSERT_EQ(DataType::Pointer, node->dataType().kind());
     ASSERT_EQ(1, node->dataType().subtypeCount());
-    ASSERT_EQ(NewDataType::Function, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Function, node->dataType().subtypeAtIndex(0).kind());
 }
 
 TEST_F(ParserTests_Types, GlobalPointerToFunctionWithPointerArg) {
@@ -388,9 +388,9 @@ TEST_F(ParserTests_Types, GlobalPointerToFunctionWithPointerArg) {
     ASSERT_EQ(1, node->childCount());
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().kind());
+    ASSERT_EQ(DataType::Pointer, node->dataType().kind());
     ASSERT_EQ(1, node->dataType().subtypeCount());
-    ASSERT_EQ(NewDataType::Function, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Function, node->dataType().subtypeAtIndex(0).kind());
 }
 
 TEST_F(ParserTests_Types, GlobalClosure) {
@@ -399,13 +399,13 @@ TEST_F(ParserTests_Types, GlobalClosure) {
     node = node->childAtIndex(0);
 
     ASSERT_EQ("value", node->name());
-    ASSERT_EQ(NewDataType::Closure, node->dataType().kind());
+    ASSERT_EQ(DataType::Closure, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
     ASSERT_EQ(1, node->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Kind::Pointer, node->dataType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Pointer, node->dataType().parameterAtIndex(0).kind());
     ASSERT_EQ(1, node->dataType().parameterAtIndex(0).subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Void, node->dataType().parameterAtIndex(0).subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Void, node->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Kind::Void, node->dataType().parameterAtIndex(0).subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Void, node->dataType().returnType().kind());
 }
 
 TEST_F(ParserTests_Types, GlobalClosureTakingSingleParam) {
@@ -413,11 +413,11 @@ TEST_F(ParserTests_Types, GlobalClosureTakingSingleParam) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Closure, node->dataType().kind());
+    ASSERT_EQ(DataType::Closure, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
     ASSERT_EQ(2, node->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().parameterAtIndex(1).kind());
-    ASSERT_EQ(NewDataType::Void, node->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().parameterAtIndex(1).kind());
+    ASSERT_EQ(DataType::Void, node->dataType().returnType().kind());
 }
 
 TEST_F(ParserTests_Types, GlobalClosureTakingTwoParams) {
@@ -425,12 +425,12 @@ TEST_F(ParserTests_Types, GlobalClosureTakingTwoParams) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Closure, node->dataType().kind());
+    ASSERT_EQ(DataType::Closure, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
     ASSERT_EQ(3, node->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().parameterAtIndex(1).kind());
-    ASSERT_EQ(NewDataType::Float, node->dataType().parameterAtIndex(2).kind());
-    ASSERT_EQ(NewDataType::Void, node->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().parameterAtIndex(1).kind());
+    ASSERT_EQ(DataType::Float, node->dataType().parameterAtIndex(2).kind());
+    ASSERT_EQ(DataType::Void, node->dataType().returnType().kind());
 }
 
 TEST_F(ParserTests_Types, GlobalClosureTakingAPointerParam) {
@@ -438,11 +438,11 @@ TEST_F(ParserTests_Types, GlobalClosureTakingAPointerParam) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Closure, node->dataType().kind());
+    ASSERT_EQ(DataType::Closure, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
     ASSERT_EQ(2, node->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().parameterAtIndex(1).kind());
-    ASSERT_EQ(NewDataType::Void, node->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Pointer, node->dataType().parameterAtIndex(1).kind());
+    ASSERT_EQ(DataType::Void, node->dataType().returnType().kind());
 }
 
 TEST_F(ParserTests_Types, GlobalClosureWithReturn) {
@@ -450,11 +450,11 @@ TEST_F(ParserTests_Types, GlobalClosureWithReturn) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Closure, node->dataType().kind());
+    ASSERT_EQ(DataType::Closure, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
     ASSERT_EQ(1, node->dataType().parameterCount());
     ASSERT_EQ(1, node->dataType().returnCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().returnType().kind());
 }
 
 TEST_F(ParserTests_Types, GlobalClosureWithTwoReturns) {
@@ -462,13 +462,13 @@ TEST_F(ParserTests_Types, GlobalClosureWithTwoReturns) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Closure, node->dataType().kind());
+    ASSERT_EQ(DataType::Closure, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
     ASSERT_EQ(1, node->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Tuple, node->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Tuple, node->dataType().returnType().kind());
     ASSERT_EQ(2, node->dataType().returnType().subtypeCount());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().returnType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Integer, node->dataType().returnType().subtypeAtIndex(1).kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().returnType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().returnType().subtypeAtIndex(1).kind());
 }
 
 TEST_F(ParserTests_Types, GlobalPointerToClosure) {
@@ -476,9 +476,9 @@ TEST_F(ParserTests_Types, GlobalPointerToClosure) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Pointer, node->dataType().kind());
+    ASSERT_EQ(DataType::Pointer, node->dataType().kind());
     ASSERT_EQ(1, node->dataType().subtypeCount());
-    ASSERT_EQ(NewDataType::Closure, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Closure, node->dataType().subtypeAtIndex(0).kind());
 }
 
 TEST_F(ParserTests_Types, VarargVariable) {
@@ -486,7 +486,7 @@ TEST_F(ParserTests_Types, VarargVariable) {
 
     node = node->childAtIndex(0);
 
-    ASSERT_EQ(NewDataType::Vararg, node->dataType().kind());
+    ASSERT_EQ(DataType::Vararg, node->dataType().kind());
     ASSERT_EQ(0, node->dataType().subtypeCount());
 }
 
@@ -497,8 +497,8 @@ TEST_F(ParserTests_Types, GlobalMutableBoolean) {
 
     ASSERT_EQ("Variable Declaration", node->nodeName());
     ASSERT_EQ("value", node->name());
-    EXPECT_EQ(NewDataType::Boolean, node->dataType().kind());
-    EXPECT_EQ(NewDataType::Access::ReadWrite, node->dataType().access());
+    EXPECT_EQ(DataType::Boolean, node->dataType().kind());
+    EXPECT_EQ(DataType::Access::ReadWrite, node->dataType().access());
 }
 
 TEST_F(ParserTests_Types, GlobalOptionalBooleanPointer) {
@@ -508,11 +508,11 @@ TEST_F(ParserTests_Types, GlobalOptionalBooleanPointer) {
 
     ASSERT_EQ("Variable Declaration", node->nodeName());
     ASSERT_EQ("value", node->name());
-    EXPECT_EQ(NewDataType::NullablePointer, node->dataType().kind());
-    EXPECT_EQ(NewDataType::Access::Read, node->dataType().access());
+    EXPECT_EQ(DataType::NullablePointer, node->dataType().kind());
+    EXPECT_EQ(DataType::Access::Read, node->dataType().access());
     ASSERT_EQ(1, node->dataType().subtypeCount());
-    EXPECT_EQ(NewDataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
-    EXPECT_EQ(NewDataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
+    EXPECT_EQ(DataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
+    EXPECT_EQ(DataType::Access::Read, node->dataType().subtypeAtIndex(0).access());
 }
 
 TEST_F(ParserTests_Types, GlobalOptionalMutableBooleanPointer) {
@@ -522,11 +522,11 @@ TEST_F(ParserTests_Types, GlobalOptionalMutableBooleanPointer) {
 
     ASSERT_EQ("Variable Declaration", node->nodeName());
     ASSERT_EQ("value", node->name());
-    EXPECT_EQ(NewDataType::NullablePointer, node->dataType().kind());
-    EXPECT_EQ(NewDataType::Access::Read, node->dataType().access());
+    EXPECT_EQ(DataType::NullablePointer, node->dataType().kind());
+    EXPECT_EQ(DataType::Access::Read, node->dataType().access());
     ASSERT_EQ(1, node->dataType().subtypeCount());
-    EXPECT_EQ(NewDataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
-    EXPECT_EQ(NewDataType::Access::ReadWrite, node->dataType().subtypeAtIndex(0).access());
+    EXPECT_EQ(DataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
+    EXPECT_EQ(DataType::Access::ReadWrite, node->dataType().subtypeAtIndex(0).access());
 }
 
 TEST_F(ParserTests_Types, GlobalMutableBooleanPointer) {
@@ -536,11 +536,11 @@ TEST_F(ParserTests_Types, GlobalMutableBooleanPointer) {
 
     ASSERT_EQ("Variable Declaration", node->nodeName());
     ASSERT_EQ("value", node->name());
-    EXPECT_EQ(NewDataType::Pointer, node->dataType().kind());
-    EXPECT_EQ(NewDataType::Access::Read, node->dataType().access());
+    EXPECT_EQ(DataType::Pointer, node->dataType().kind());
+    EXPECT_EQ(DataType::Access::Read, node->dataType().access());
     ASSERT_EQ(1, node->dataType().subtypeCount());
-    EXPECT_EQ(NewDataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
-    EXPECT_EQ(NewDataType::Access::ReadWrite, node->dataType().subtypeAtIndex(0).access());
+    EXPECT_EQ(DataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
+    EXPECT_EQ(DataType::Access::ReadWrite, node->dataType().subtypeAtIndex(0).access());
 }
 
 TEST_F(ParserTests_Types, GlobalMutableBooleanMutablePointer) {
@@ -550,11 +550,11 @@ TEST_F(ParserTests_Types, GlobalMutableBooleanMutablePointer) {
 
     ASSERT_EQ("Variable Declaration", node->nodeName());
     ASSERT_EQ("value", node->name());
-    EXPECT_EQ(NewDataType::Pointer, node->dataType().kind());
-    EXPECT_EQ(NewDataType::Access::ReadWrite, node->dataType().access());
+    EXPECT_EQ(DataType::Pointer, node->dataType().kind());
+    EXPECT_EQ(DataType::Access::ReadWrite, node->dataType().access());
     ASSERT_EQ(1, node->dataType().subtypeCount());
-    EXPECT_EQ(NewDataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
-    EXPECT_EQ(NewDataType::Access::ReadWrite, node->dataType().subtypeAtIndex(0).access());
+    EXPECT_EQ(DataType::Boolean, node->dataType().subtypeAtIndex(0).kind());
+    EXPECT_EQ(DataType::Access::ReadWrite, node->dataType().subtypeAtIndex(0).access());
 }
 
 TEST_F(ParserTests_Types, GlobalMutableBooleanPointerToMutablePointer) {
@@ -562,19 +562,19 @@ TEST_F(ParserTests_Types, GlobalMutableBooleanPointerToMutablePointer) {
 
     node = node->childAtIndex(0);
 
-    NewDataType type = node->dataType();
+    DataType type = node->dataType();
     ASSERT_EQ("Variable Declaration", node->nodeName());
     ASSERT_EQ("value", node->name());
-    EXPECT_EQ(NewDataType::Pointer, type.kind());
-    EXPECT_EQ(NewDataType::Access::ReadWrite, type.access());
+    EXPECT_EQ(DataType::Pointer, type.kind());
+    EXPECT_EQ(DataType::Access::ReadWrite, type.access());
     ASSERT_EQ(1, node->dataType().subtypeCount());
 
     type = type.subtypeAtIndex(0);
-    EXPECT_EQ(NewDataType::Pointer, type.kind());
-    EXPECT_EQ(NewDataType::Access::Read, type.access());
+    EXPECT_EQ(DataType::Pointer, type.kind());
+    EXPECT_EQ(DataType::Access::Read, type.access());
     ASSERT_EQ(1, type.subtypeCount());
 
     type = type.subtypeAtIndex(0);
-    EXPECT_EQ(NewDataType::Boolean, type.kind());
-    EXPECT_EQ(NewDataType::Access::ReadWrite, type.access());
+    EXPECT_EQ(DataType::Boolean, type.kind());
+    EXPECT_EQ(DataType::Access::ReadWrite, type.access());
 }

@@ -1,5 +1,5 @@
 #include "../ParserTestsBase.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 
 class ParserTests_CustomTypes : public ParserTestsBase {
 };
@@ -14,12 +14,12 @@ TEST_F(ParserTests_CustomTypes, Structure) {
     ASSERT_EQ("MyStruct", structNode->name());
     ASSERT_EQ(0, structNode->packing());
 
-    ASSERT_EQ(NewDataType::Kind::Structure, structNode->definedType().kind());
-    ASSERT_EQ(NewDataType::Access::Read, structNode->definedType().access());
+    ASSERT_EQ(DataType::Kind::Structure, structNode->definedType().kind());
+    ASSERT_EQ(DataType::Access::Read, structNode->definedType().access());
     ASSERT_EQ(0, structNode->definedType().subtypeCount());
     ASSERT_EQ("MyStruct", structNode->definedType().name());
 
-    ASSERT_EQ(NewDataType::Kind::Structure, this->context()->typeKindWithName("MyStruct"));
+    ASSERT_EQ(DataType::Kind::Structure, this->context()->typeKindWithName("MyStruct"));
 }
 
 TEST_F(ParserTests_CustomTypes, NamespacedStructure) {
@@ -60,7 +60,7 @@ TEST_F(ParserTests_CustomTypes, NamespacedStructureUsedWithoutFullName) {
     // this is essentially testing that it is possible to parse a namespaced type
     auto var = dynamic_cast<VariableDeclarationNode*>(node->childAtIndex(1));
     ASSERT_EQ("global", var->name());
-    ASSERT_EQ(NewDataType::Kind::Structure, var->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Structure, var->dataType().kind());
     ASSERT_EQ("Foo_3_MyStruct", var->dataType().name());
 }
 
@@ -80,7 +80,7 @@ TEST_F(ParserTests_CustomTypes, NamespacedStructureUsedWithFullName) {
     // this is essentially testing that it is possible to parse a namespaced type
     auto var = dynamic_cast<VariableDeclarationNode*>(node);
     ASSERT_EQ("global", var->name());
-    ASSERT_EQ(NewDataType::Kind::Structure, var->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Structure, var->dataType().kind());
     ASSERT_EQ("Foo_3_MyStruct", var->dataType().name());
 }
 
@@ -94,10 +94,10 @@ TEST_F(ParserTests_CustomTypes, StructureWithPacking) {
     ASSERT_EQ("MyStruct", structNode->name());
     ASSERT_EQ(4, structNode->packing());
 
-    ASSERT_EQ(NewDataType::Kind::Structure, structNode->definedType().kind());
+    ASSERT_EQ(DataType::Kind::Structure, structNode->definedType().kind());
     ASSERT_EQ(0, structNode->definedType().subtypeCount());
 
-    ASSERT_EQ(NewDataType::Kind::Structure, this->context()->typeKindWithName("MyStruct"));
+    ASSERT_EQ(DataType::Kind::Structure, this->context()->typeKindWithName("MyStruct"));
 }
 
 TEST_F(ParserTests_CustomTypes, StructureWithOneTypedMember) {
@@ -111,10 +111,10 @@ TEST_F(ParserTests_CustomTypes, StructureWithOneTypedMember) {
     ASSERT_EQ("MyStruct", structNode->name());
     ASSERT_EQ(4, structNode->packing());
 
-    ASSERT_EQ(NewDataType::Kind::Structure, structNode->definedType().kind());
+    ASSERT_EQ(DataType::Kind::Structure, structNode->definedType().kind());
     ASSERT_EQ(1, structNode->definedType().subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Integer, structNode->definedType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Access::ReadWrite, structNode->definedType().subtypeAtIndex(0).access());
+    ASSERT_EQ(DataType::Kind::Integer, structNode->definedType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Access::ReadWrite, structNode->definedType().subtypeAtIndex(0).access());
 
     ASSERT_EQ(1, structNode->childCount());
 
@@ -122,7 +122,7 @@ TEST_F(ParserTests_CustomTypes, StructureWithOneTypedMember) {
     ASSERT_EQ("Variable Declaration", member->nodeName());
     ASSERT_EQ("a", member->name());
 
-    ASSERT_EQ(NewDataType::Kind::Structure, this->context()->typeKindWithName("MyStruct"));
+    ASSERT_EQ(DataType::Kind::Structure, this->context()->typeKindWithName("MyStruct"));
 }
 
 TEST_F(ParserTests_CustomTypes, StructureWithTwoTypedMembers) {
@@ -137,10 +137,10 @@ TEST_F(ParserTests_CustomTypes, StructureWithTwoTypedMembers) {
     ASSERT_EQ("MyStruct", structNode->name());
     ASSERT_EQ(4, structNode->packing());
 
-    ASSERT_EQ(NewDataType::Kind::Structure, structNode->definedType().kind());
+    ASSERT_EQ(DataType::Kind::Structure, structNode->definedType().kind());
     ASSERT_EQ(2, structNode->definedType().subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Integer, structNode->definedType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Kind::Float, structNode->definedType().subtypeAtIndex(1).kind());
+    ASSERT_EQ(DataType::Kind::Integer, structNode->definedType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Float, structNode->definedType().subtypeAtIndex(1).kind());
 
     ASSERT_EQ(2, structNode->childCount());
 
@@ -165,10 +165,10 @@ TEST_F(ParserTests_CustomTypes, StructureWithUntypedMembers) {
     ASSERT_EQ("MyStruct", structNode->name());
     ASSERT_EQ(4, structNode->packing());
 
-    ASSERT_EQ(NewDataType::Kind::Structure, structNode->definedType().kind());
+    ASSERT_EQ(DataType::Kind::Structure, structNode->definedType().kind());
     ASSERT_EQ(2, structNode->definedType().subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Undefined, structNode->definedType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Kind::Undefined, structNode->definedType().subtypeAtIndex(1).kind());
+    ASSERT_EQ(DataType::Kind::Undefined, structNode->definedType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Undefined, structNode->definedType().subtypeAtIndex(1).kind());
 
     ASSERT_EQ(2, structNode->childCount());
 
@@ -191,7 +191,7 @@ TEST_F(ParserTests_CustomTypes, Enumeration) {
     ASSERT_EQ("MyEnum", enumNode->name());
     ASSERT_EQ(0, enumNode->size());
 
-    ASSERT_EQ(NewDataType::Kind::Enumeration, enumNode->definedType().kind());
+    ASSERT_EQ(DataType::Kind::Enumeration, enumNode->definedType().kind());
     ASSERT_EQ(0, enumNode->definedType().subtypeCount());
 }
 
@@ -205,7 +205,7 @@ TEST_F(ParserTests_CustomTypes, EnumerationWithSize) {
     ASSERT_EQ("MyEnum", enumNode->name());
     ASSERT_EQ(4, enumNode->size());
 
-    ASSERT_EQ(NewDataType::Kind::Enumeration, enumNode->definedType().kind());
+    ASSERT_EQ(DataType::Kind::Enumeration, enumNode->definedType().kind());
     ASSERT_EQ(0, enumNode->definedType().subtypeCount());
 }
 
@@ -220,7 +220,7 @@ TEST_F(ParserTests_CustomTypes, EnumerationWithOneMember) {
     ASSERT_EQ("MyEnum", enumNode->name());
     ASSERT_EQ(0, enumNode->size());
 
-    ASSERT_EQ(NewDataType::Kind::Enumeration, enumNode->definedType().kind());
+    ASSERT_EQ(DataType::Kind::Enumeration, enumNode->definedType().kind());
 
     ASSERT_EQ(1, enumNode->childCount());
 }
@@ -234,7 +234,7 @@ TEST_F(ParserTests_CustomTypes, Union) {
     ASSERT_EQ("Union", unionNode->nodeName());
     ASSERT_EQ("MyUnion", unionNode->name());
 
-    ASSERT_EQ(NewDataType::Kind::Union, unionNode->definedType().kind());
+    ASSERT_EQ(DataType::Kind::Union, unionNode->definedType().kind());
     ASSERT_EQ(0, unionNode->definedType().subtypeCount());
 }
 
@@ -248,9 +248,9 @@ TEST_F(ParserTests_CustomTypes, UnionWithOneTypedMember) {
     ASSERT_EQ("Union", unionNode->nodeName());
     ASSERT_EQ("MyUnion", unionNode->name());
 
-    ASSERT_EQ(NewDataType::Kind::Union, unionNode->definedType().kind());
+    ASSERT_EQ(DataType::Kind::Union, unionNode->definedType().kind());
     ASSERT_EQ(1, unionNode->definedType().subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Integer, unionNode->definedType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Integer, unionNode->definedType().subtypeAtIndex(0).kind());
 
     ASSERT_EQ(1, unionNode->childCount());
 
@@ -270,10 +270,10 @@ TEST_F(ParserTests_CustomTypes, UnionWithTwoTypedMembers) {
     ASSERT_EQ("Union", unionNode->nodeName());
     ASSERT_EQ("MyUnion", unionNode->name());
 
-    ASSERT_EQ(NewDataType::Kind::Union, unionNode->definedType().kind());
+    ASSERT_EQ(DataType::Kind::Union, unionNode->definedType().kind());
     ASSERT_EQ(2, unionNode->definedType().subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Integer, unionNode->definedType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Kind::Float, unionNode->definedType().subtypeAtIndex(1).kind());
+    ASSERT_EQ(DataType::Kind::Integer, unionNode->definedType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Float, unionNode->definedType().subtypeAtIndex(1).kind());
 
     ASSERT_EQ(2, unionNode->childCount());
 

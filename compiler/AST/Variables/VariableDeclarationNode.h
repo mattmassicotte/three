@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ASTNode.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 #include "compiler/constructs/NewVariable.h"
 #include "compiler/constructs/TranslationUnit.h"
 
@@ -18,7 +18,7 @@ namespace Three {
         VariableDeclarationNode();
         virtual ~VariableDeclarationNode();
 
-        NewDataType dataType() const;
+        DataType dataType() const;
         std::string nodeName() const;
         void accept(ASTVisitor& visitor);
 
@@ -32,7 +32,7 @@ namespace Three {
 
     private:
         ASTNode* _initializerExpression;
-        NewDataType _declaredType;
+        DataType _declaredType;
         std::string _name;
         NewVariable* _variable;
     };

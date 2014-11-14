@@ -19,7 +19,7 @@ TEST_F(ParserTests_Closures, InlineClosureWithNoArguments) {
     ClosureNode* closure = dynamic_cast<ClosureNode*>(node->childAtIndex(0));
     ASSERT_EQ("Closure", closure->nodeName());
     ASSERT_EQ("test_closure_1", closure->name());
-    ASSERT_EQ(NewDataType::Kind::Closure, closure->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Closure, closure->dataType().kind());
     ASSERT_EQ(0, closure->dataType().subtypeCount());
     ASSERT_EQ(1, closure->dataType().parameterCount());
     ASSERT_EQ(0, closure->dataType().returnCount());
@@ -42,7 +42,7 @@ TEST_F(ParserTests_Closures, TailingClosureWithNoArguments) {
     ClosureNode* closure = dynamic_cast<ClosureNode*>(node->childAtIndex(0));
     ASSERT_EQ("Closure", closure->nodeName());
     ASSERT_EQ("test_closure_1", closure->name());
-    ASSERT_EQ(NewDataType::Kind::Closure, closure->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Closure, closure->dataType().kind());
     ASSERT_EQ(0, closure->dataType().subtypeCount());
     ASSERT_EQ(1, closure->dataType().parameterCount());
     ASSERT_EQ(0, closure->dataType().returnCount());
@@ -64,11 +64,11 @@ TEST_F(ParserTests_Closures, InlineClosureWithOneArgument) {
     ClosureNode* closure = dynamic_cast<ClosureNode*>(node->childAtIndex(0));
     ASSERT_EQ("Closure", closure->nodeName());
     ASSERT_EQ("test_closure_1", closure->name());
-    ASSERT_EQ(NewDataType::Kind::Closure, closure->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Closure, closure->dataType().kind());
     ASSERT_EQ(0, closure->dataType().subtypeCount());
     ASSERT_EQ(2, closure->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Kind::Integer, closure->dataType().parameterAtIndex(1).kind());
-    ASSERT_EQ(NewDataType::Kind::Void, closure->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Kind::Integer, closure->dataType().parameterAtIndex(1).kind());
+    ASSERT_EQ(DataType::Kind::Void, closure->dataType().returnType().kind());
 }
 
 TEST_F(ParserTests_Closures, InlineClosureWithTwoArguments) {
@@ -86,10 +86,10 @@ TEST_F(ParserTests_Closures, InlineClosureWithTwoArguments) {
 
     ClosureNode* closure = dynamic_cast<ClosureNode*>(node->childAtIndex(0));
     ASSERT_EQ("Closure", closure->nodeName());
-    ASSERT_EQ(NewDataType::Kind::Closure, closure->dataType().kind());
+    ASSERT_EQ(DataType::Kind::Closure, closure->dataType().kind());
     ASSERT_EQ(0, closure->dataType().subtypeCount());
     ASSERT_EQ(3, closure->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Kind::Void, closure->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Kind::Void, closure->dataType().returnType().kind());
 }
 
 TEST_F(ParserTests_Closures, ClosureVariableWithCapture) {
@@ -115,7 +115,7 @@ TEST_F(ParserTests_Closures, ClosureVariableWithCapture) {
     ClosureNode* closure = dynamic_cast<ClosureNode*>(node->childAtIndex(1));
     ASSERT_EQ("Closure", closure->nodeName());
     EXPECT_EQ("test_closure_1", closure->name());
-    EXPECT_EQ(NewDataType::Kind::Closure, closure->dataType().kind());
+    EXPECT_EQ(DataType::Kind::Closure, closure->dataType().kind());
     EXPECT_EQ(0, closure->dataType().subtypeCount());
     EXPECT_EQ(2, closure->dataType().parameterCount());
     EXPECT_EQ(1, closure->dataType().returnCount());
@@ -162,10 +162,10 @@ TEST_F(ParserTests_Closures, NestedClosureVariableWithCapture) {
     ClosureNode* closure = dynamic_cast<ClosureNode*>(node->childAtIndex(1));
     ASSERT_EQ("Closure", closure->nodeName());
     EXPECT_EQ("test_closure_1", closure->name());
-    EXPECT_EQ(NewDataType::Kind::Closure, closure->dataType().kind());
+    EXPECT_EQ(DataType::Kind::Closure, closure->dataType().kind());
     EXPECT_EQ(0, closure->dataType().subtypeCount());
     EXPECT_EQ(2, closure->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Kind::Void, closure->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Kind::Void, closure->dataType().returnType().kind());
 
     ASSERT_EQ(3, closure->childCount());
 
@@ -181,10 +181,10 @@ TEST_F(ParserTests_Closures, NestedClosureVariableWithCapture) {
     closure = dynamic_cast<ClosureNode*>(node->childAtIndex(1));
     ASSERT_EQ("Closure", closure->nodeName());
     EXPECT_EQ("test_closure_2", closure->name());
-    EXPECT_EQ(NewDataType::Kind::Closure, closure->dataType().kind());
+    EXPECT_EQ(DataType::Kind::Closure, closure->dataType().kind());
     EXPECT_EQ(0, closure->dataType().subtypeCount());
     EXPECT_EQ(2, closure->dataType().parameterCount());
-    ASSERT_EQ(NewDataType::Kind::Void, closure->dataType().returnType().kind());
+    ASSERT_EQ(DataType::Kind::Void, closure->dataType().returnType().kind());
 
     node = closure->childAtIndex(0);
     ASSERT_EQ("Assign Operator", node->nodeName()); // y = x

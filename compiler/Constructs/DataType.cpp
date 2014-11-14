@@ -1,8 +1,8 @@
-#include "NewDataType.h"
+#include "DataType.h"
 
 namespace Three {
-    NewDataType NewDataType::wrapInType(Kind k, const NewDataType& subtype, const std::string& label) {
-        NewDataType type(k);
+    DataType DataType::wrapInType(Kind k, const DataType& subtype, const std::string& label) {
+        DataType type(k);
 
         type.addSubtype(subtype);
         type.setLabel(label);
@@ -10,31 +10,31 @@ namespace Three {
         return type;
     }
 
-    NewDataType NewDataType::wrapInPointer(const NewDataType& type, const std::string& label) {
-        return wrapInType(NewDataType::Kind::Pointer, type, label);
+    DataType DataType::wrapInPointer(const DataType& type, const std::string& label) {
+        return wrapInType(DataType::Kind::Pointer, type, label);
     }
 
-    NewDataType NewDataType::mutableVersion(const NewDataType& type) {
-        NewDataType newType(type);
+    DataType DataType::mutableVersion(const DataType& type) {
+        DataType newType(type);
 
-        newType.setAccess(NewDataType::Access::ReadWrite);
+        newType.setAccess(DataType::Access::ReadWrite);
 
         return newType;
     }
 
-    NewDataType::NewDataType(Kind k) :
+    DataType::DataType(Kind k) :
         _kind(k),
         _widthSpecifier(0),
         _alignmentSpecifier(0),
         _vectorSizeSpecifier(0),
         _arrayCount(0),
-        _characterEncoding(NewDataType::CharacterEncoding::UTF8),
-        _access(NewDataType::Access::Read),
-        _volatility(NewDataType::Access::None),
+        _characterEncoding(DataType::CharacterEncoding::UTF8),
+        _access(DataType::Access::Read),
+        _volatility(DataType::Access::None),
         _potentiallyAliased(true) {
     }
 
-    std::string NewDataType::name() const {
+    std::string DataType::name() const {
         if (this->hasName()) {
             return _name;
         }
@@ -51,27 +51,27 @@ namespace Three {
         return "";
     }
 
-    void NewDataType::setName(const std::string& value) {
+    void DataType::setName(const std::string& value) {
         _name = value;
     }
 
-    bool NewDataType::hasName() const {
+    bool DataType::hasName() const {
         return _name.size() > 0;
     }
 
-    NewDataType::Kind NewDataType::kind() const {
+    DataType::Kind DataType::kind() const {
         return _kind;
     }
 
-    void NewDataType::setKind(Kind k) {
+    void DataType::setKind(Kind k) {
         _kind = k;
     }
 
-    bool NewDataType::defined() const {
+    bool DataType::defined() const {
         return _kind != Kind::Undefined && _kind != Kind::Unknown;
     }
 
-    bool NewDataType::isPointer() const {
+    bool DataType::isPointer() const {
         switch (this->kind()) {
             case Kind::Pointer:
             case Kind::NullablePointer:
@@ -85,7 +85,7 @@ namespace Three {
         return false;
     }
 
-    bool NewDataType::isCScalar() const {
+    bool DataType::isCScalar() const {
         switch (this->kind()) {
             case Kind::CChar:
             case Kind::CUnsignedChar:
@@ -103,90 +103,90 @@ namespace Three {
         }
     }
 
-    uint32_t NewDataType::widthSpecifier() const {
+    uint32_t DataType::widthSpecifier() const {
         return _widthSpecifier;
     }
 
-    void NewDataType::setWidthSpecifier(uint32_t width) {
+    void DataType::setWidthSpecifier(uint32_t width) {
         _widthSpecifier = width;
     }
 
-    uint32_t NewDataType::alignmentSpecifier() const {
+    uint32_t DataType::alignmentSpecifier() const {
         return _alignmentSpecifier;
     }
 
-    void NewDataType::setAlignmentSpecifier(uint32_t align) {
+    void DataType::setAlignmentSpecifier(uint32_t align) {
         _alignmentSpecifier = align;
     }
 
-    uint32_t NewDataType::vectorSizeSpecifier() const {
+    uint32_t DataType::vectorSizeSpecifier() const {
         return _vectorSizeSpecifier;
     }
 
-    void NewDataType::setVectorSizeSpecifier(uint32_t size) {
+    void DataType::setVectorSizeSpecifier(uint32_t size) {
         _vectorSizeSpecifier = size;
     }
 
-    NewDataType::CharacterEncoding NewDataType::characterEncoding() const {
+    DataType::CharacterEncoding DataType::characterEncoding() const {
         return _characterEncoding;
     }
 
-    void NewDataType::setCharacterEncoding(NewDataType::CharacterEncoding encoding) {
+    void DataType::setCharacterEncoding(DataType::CharacterEncoding encoding) {
         _characterEncoding = encoding;
     }
 
-    uint32_t NewDataType::arrayCount() const {
+    uint32_t DataType::arrayCount() const {
         return _arrayCount;
     }
 
-    void NewDataType::setArrayCount(uint32_t count) {
+    void DataType::setArrayCount(uint32_t count) {
         _arrayCount = count;
     }
 
-    NewDataType::Access NewDataType::access() const {
+    DataType::Access DataType::access() const {
         return _access;
     }
 
-    void NewDataType::setAccess(NewDataType::Access a) {
+    void DataType::setAccess(DataType::Access a) {
         _access = a;
     }
 
-    NewDataType::Access NewDataType::volatility() const {
+    DataType::Access DataType::volatility() const {
         return _volatility;
     }
 
-    void NewDataType::setVolatility(NewDataType::Access v) {
+    void DataType::setVolatility(DataType::Access v) {
         _volatility = v;
     }
 
-    bool NewDataType::potentiallyAliased() const {
+    bool DataType::potentiallyAliased() const {
         return _potentiallyAliased;
     }
 
-    void NewDataType::setPotentiallyAliased(bool a) {
+    void DataType::setPotentiallyAliased(bool a) {
         _potentiallyAliased = a;
     }
 
-    std::string NewDataType::label() const {
+    std::string DataType::label() const {
         return _label;
     }
-    void NewDataType::setLabel(const std::string& value) {
+    void DataType::setLabel(const std::string& value) {
         _label = value;
     }
 
-    uint32_t NewDataType::subtypeCount() const {
+    uint32_t DataType::subtypeCount() const {
         return subtypes.size();
     }
 
-    NewDataType NewDataType::subtypeAtIndex(uint32_t idx) const {
+    DataType DataType::subtypeAtIndex(uint32_t idx) const {
         return subtypes.at(idx);
     }
 
-    void NewDataType::addSubtype(NewDataType t) {
+    void DataType::addSubtype(DataType t) {
         subtypes.push_back(t);
     }
 
-    void NewDataType::eachSubtypeWithLast(std::function<void (const NewDataType&, bool)> func) const {
+    void DataType::eachSubtypeWithLast(std::function<void (const DataType&, bool)> func) const {
         uint32_t lastIndex = this->subtypeCount() - 1;
 
         for (uint32_t i = 0; i < this->subtypeCount(); ++i) {
@@ -194,19 +194,19 @@ namespace Three {
         }
     }
 
-    uint32_t NewDataType::parameterCount() const {
+    uint32_t DataType::parameterCount() const {
         return parameters.size();
     }
 
-    NewDataType NewDataType::parameterAtIndex(uint32_t idx) const {
+    DataType DataType::parameterAtIndex(uint32_t idx) const {
         return parameters.at(idx);
     }
 
-    void NewDataType::addParameter(NewDataType t) {
+    void DataType::addParameter(DataType t) {
         parameters.push_back(t);
     }
 
-    void NewDataType::eachParameterWithLast(std::function<void (const NewDataType&, bool)> func) const {
+    void DataType::eachParameterWithLast(std::function<void (const DataType&, bool)> func) const {
         uint32_t lastIndex = this->parameterCount() - 1;
 
         for (uint32_t i = 0; i < this->parameterCount(); ++i) {
@@ -214,23 +214,23 @@ namespace Three {
         }
     }
 
-    NewDataType NewDataType::returnType() const {
+    DataType DataType::returnType() const {
         return _returns.at(0);
     }
 
-    uint32_t NewDataType::returnCount() const {
+    uint32_t DataType::returnCount() const {
         return _returns.size();
     }
 
-    NewDataType NewDataType::returnAtIndex(uint32_t idx) const {
+    DataType DataType::returnAtIndex(uint32_t idx) const {
         return _returns.at(idx);
     }
 
-    void NewDataType::addReturn(NewDataType t) {
+    void DataType::addReturn(DataType t) {
         _returns.push_back(t);
     }
 
-    void NewDataType::eachReturnWithLast(std::function<void (const NewDataType&, bool)> func) const {
+    void DataType::eachReturnWithLast(std::function<void (const DataType&, bool)> func) const {
         uint32_t lastIndex = this->returnCount() - 1;
 
         for (uint32_t i = 0; i < this->returnCount(); ++i) {
@@ -238,19 +238,19 @@ namespace Three {
         }
     }
 
-    bool NewDataType::isGeneric() const {
+    bool DataType::isGeneric() const {
         return this->genericParameterCount() > 0;
     }
 
-    uint32_t NewDataType::genericParameterCount() const {
+    uint32_t DataType::genericParameterCount() const {
         return _genericParameters.size();
     }
 
-    NewDataType NewDataType::genericParameterAtIndex(uint32_t idx) const {
+    DataType DataType::genericParameterAtIndex(uint32_t idx) const {
         return _genericParameters.at(idx);
     }
 
-    void NewDataType::addGenericParameter(NewDataType t) {
+    void DataType::addGenericParameter(DataType t) {
         _genericParameters.push_back(t);
     }
 }

@@ -14,7 +14,7 @@ TEST_F(ParserTests_FunctionCalls, FunctionCallOperator) {
     ASSERT_EQ("Function Variable", fnCall->receiver()->nodeName());
     ASSERT_EQ(0, fnCall->childCount());
 
-    ASSERT_EQ(NewDataType::Void, fnCall->dataType().kind());
+    ASSERT_EQ(DataType::Void, fnCall->dataType().kind());
 }
 
 TEST_F(ParserTests_FunctionCalls, FunctionCallOperatorWithArgument) {
@@ -82,7 +82,7 @@ TEST_F(ParserTests_FunctionCalls, MethodInvocation) {
 
     ASSERT_EQ(2, node->childCount());
     ASSERT_EQ("Function Definition", node->childAtIndex(0)->nodeName());
-    ASSERT_EQ(NewDataType::Kind::Integer, dynamic_cast<Three::FunctionDefinitionNode*>(node->childAtIndex(0))->methodOnType().kind());
+    ASSERT_EQ(DataType::Kind::Integer, dynamic_cast<Three::FunctionDefinitionNode*>(node->childAtIndex(0))->methodOnType().kind());
 
     node = node->childAtIndex(1);
     ASSERT_EQ("Function Definition", node->nodeName());

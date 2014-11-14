@@ -8,7 +8,7 @@
 
 namespace Three {
     class NewVariable;
-    class NewDataType;
+    class DataType;
 }
 
 namespace Three {
@@ -29,8 +29,8 @@ namespace Three {
         void setCapturing(bool value);
         std::string scopedBasename() const;
         void setScopedBasename(const std::string& value);
-        void setCurrentFunctionReturnType(const NewDataType& type);
-        NewDataType currentFunctionReturnType() const;
+        void setCurrentFunctionReturnType(const DataType& type);
+        DataType currentFunctionReturnType() const;
         NewScope* parent() const;
         void setParent(NewScope* p);
 
@@ -39,7 +39,7 @@ namespace Three {
 
         NewVariable* variableForName(const std::string& name) const;
         bool defineVariable(NewVariable* variable);
-        bool defineVariableTypeForName(const NewDataType& type, const std::string& name);
+        bool defineVariableTypeForName(const DataType& type, const std::string& name);
 
         bool referencedVariable(const std::string& name, bool passedOverCapturing=false) const;
         void addReferencedVariable(const std::string& name);
@@ -54,7 +54,7 @@ namespace Three {
     private:
         NewScope* _parent;
         bool _capturing;
-        NewDataType _returnType;
+        DataType _returnType;
 
         QualifiedName _namespace;
 

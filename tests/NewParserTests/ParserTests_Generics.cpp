@@ -1,5 +1,5 @@
 #include "../ParserTestsBase.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 
 class ParserTests_Generics : public ParserTestsBase {
 };
@@ -16,16 +16,16 @@ TEST_F(ParserTests_Generics, OneParamGenericStructure) {
     ASSERT_EQ("MyStruct", structNode->name());
     ASSERT_EQ(0, structNode->packing());
 
-    NewDataType type = structNode->definedType();
+    DataType type = structNode->definedType();
 
-    ASSERT_EQ(NewDataType::Kind::Structure, type.kind());
-    ASSERT_EQ(NewDataType::Access::Read, type.access());
+    ASSERT_EQ(DataType::Kind::Structure, type.kind());
+    ASSERT_EQ(DataType::Access::Read, type.access());
     ASSERT_EQ(0, type.subtypeCount());
     ASSERT_TRUE(type.isGeneric());
     ASSERT_EQ(1, type.genericParameterCount());
 
     type = structNode->definedType().genericParameterAtIndex(0);
-    ASSERT_EQ(NewDataType::Kind::Generic, type.kind());
+    ASSERT_EQ(DataType::Kind::Generic, type.kind());
     ASSERT_EQ("T", type.name());
     ASSERT_EQ(0, type.widthSpecifier());
 }
@@ -42,21 +42,21 @@ TEST_F(ParserTests_Generics, TwoParamsGenericStructure) {
     ASSERT_EQ("MyStruct", structNode->name());
     ASSERT_EQ(0, structNode->packing());
 
-    NewDataType type = structNode->definedType();
+    DataType type = structNode->definedType();
 
-    ASSERT_EQ(NewDataType::Kind::Structure, type.kind());
-    ASSERT_EQ(NewDataType::Access::Read, type.access());
+    ASSERT_EQ(DataType::Kind::Structure, type.kind());
+    ASSERT_EQ(DataType::Access::Read, type.access());
     ASSERT_EQ(0, type.subtypeCount());
     ASSERT_TRUE(type.isGeneric());
     ASSERT_EQ(2, type.genericParameterCount());
 
     type = structNode->definedType().genericParameterAtIndex(0);
-    ASSERT_EQ(NewDataType::Kind::Generic, type.kind());
+    ASSERT_EQ(DataType::Kind::Generic, type.kind());
     ASSERT_EQ("T", type.name());
     ASSERT_EQ(0, type.widthSpecifier());
 
     type = structNode->definedType().genericParameterAtIndex(1);
-    ASSERT_EQ(NewDataType::Kind::Generic, type.kind());
+    ASSERT_EQ(DataType::Kind::Generic, type.kind());
     ASSERT_EQ("U", type.name());
     ASSERT_EQ(0, type.widthSpecifier());
 }
@@ -73,12 +73,12 @@ TEST_F(ParserTests_Generics, SizeConstrainedParam) {
     ASSERT_EQ("MyStruct", structNode->name());
     ASSERT_EQ(0, structNode->packing());
 
-    NewDataType type = structNode->definedType();
-    ASSERT_EQ(NewDataType::Kind::Structure, type.kind());
+    DataType type = structNode->definedType();
+    ASSERT_EQ(DataType::Kind::Structure, type.kind());
     ASSERT_EQ(1, type.genericParameterCount());
 
     type = structNode->definedType().genericParameterAtIndex(0);
-    ASSERT_EQ(NewDataType::Kind::Generic, type.kind());
+    ASSERT_EQ(DataType::Kind::Generic, type.kind());
     ASSERT_EQ("T", type.name());
     ASSERT_EQ(32, type.widthSpecifier());
 }
@@ -95,16 +95,16 @@ TEST_F(ParserTests_Generics, PointerConstrainedParam) {
     ASSERT_EQ("MyStruct", structNode->name());
     ASSERT_EQ(0, structNode->packing());
 
-    NewDataType type = structNode->definedType();
-    ASSERT_EQ(NewDataType::Kind::Structure, type.kind());
+    DataType type = structNode->definedType();
+    ASSERT_EQ(DataType::Kind::Structure, type.kind());
     ASSERT_EQ(1, type.genericParameterCount());
 
     type = structNode->definedType().genericParameterAtIndex(0);
-    ASSERT_EQ(NewDataType::Kind::GenericPointer, type.kind());
-    ASSERT_EQ(NewDataType::Access::Read, type.access());
+    ASSERT_EQ(DataType::Kind::GenericPointer, type.kind());
+    ASSERT_EQ(DataType::Access::Read, type.access());
     ASSERT_EQ(0, type.widthSpecifier());
     ASSERT_EQ(1, type.subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Generic, type.subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Generic, type.subtypeAtIndex(0).kind());
     ASSERT_EQ("T", type.subtypeAtIndex(0).name());
 }
 
@@ -120,16 +120,16 @@ TEST_F(ParserTests_Generics, NullablePointerConstrainedParam) {
     ASSERT_EQ("MyStruct", structNode->name());
     ASSERT_EQ(0, structNode->packing());
 
-    NewDataType type = structNode->definedType();
-    ASSERT_EQ(NewDataType::Kind::Structure, type.kind());
+    DataType type = structNode->definedType();
+    ASSERT_EQ(DataType::Kind::Structure, type.kind());
     ASSERT_EQ(1, type.genericParameterCount());
 
     type = structNode->definedType().genericParameterAtIndex(0);
-    ASSERT_EQ(NewDataType::Kind::GenericNullablePointer, type.kind());
-    ASSERT_EQ(NewDataType::Access::Read, type.access());
+    ASSERT_EQ(DataType::Kind::GenericNullablePointer, type.kind());
+    ASSERT_EQ(DataType::Access::Read, type.access());
     ASSERT_EQ(0, type.widthSpecifier());
     ASSERT_EQ(1, type.subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Generic, type.subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Generic, type.subtypeAtIndex(0).kind());
     ASSERT_EQ("T", type.subtypeAtIndex(0).name());
 }
 
@@ -145,16 +145,16 @@ TEST_F(ParserTests_Generics, QuestionOnlyNullablePointerConstrainedParam) {
     ASSERT_EQ("MyStruct", structNode->name());
     ASSERT_EQ(0, structNode->packing());
 
-    NewDataType type = structNode->definedType();
-    ASSERT_EQ(NewDataType::Kind::Structure, type.kind());
+    DataType type = structNode->definedType();
+    ASSERT_EQ(DataType::Kind::Structure, type.kind());
     ASSERT_EQ(1, type.genericParameterCount());
 
     type = structNode->definedType().genericParameterAtIndex(0);
-    ASSERT_EQ(NewDataType::Kind::GenericNullablePointer, type.kind());
-    ASSERT_EQ(NewDataType::Access::Read, type.access());
+    ASSERT_EQ(DataType::Kind::GenericNullablePointer, type.kind());
+    ASSERT_EQ(DataType::Access::Read, type.access());
     ASSERT_EQ(0, type.widthSpecifier());
     ASSERT_EQ(1, type.subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Generic, type.subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Generic, type.subtypeAtIndex(0).kind());
     ASSERT_EQ("T", type.subtypeAtIndex(0).name());
 }
 
@@ -170,13 +170,13 @@ TEST_F(ParserTests_Generics, MutableConstrainedParam) {
     ASSERT_EQ("MyStruct", structNode->name());
     ASSERT_EQ(0, structNode->packing());
 
-    NewDataType type = structNode->definedType();
-    ASSERT_EQ(NewDataType::Kind::Structure, type.kind());
+    DataType type = structNode->definedType();
+    ASSERT_EQ(DataType::Kind::Structure, type.kind());
     ASSERT_EQ(1, type.genericParameterCount());
 
     type = structNode->definedType().genericParameterAtIndex(0);
-    ASSERT_EQ(NewDataType::Kind::Generic, type.kind());
-    ASSERT_EQ(NewDataType::Access::ReadWrite, type.access());
+    ASSERT_EQ(DataType::Kind::Generic, type.kind());
+    ASSERT_EQ(DataType::Access::ReadWrite, type.access());
     ASSERT_EQ("T", type.name());
     ASSERT_EQ(0, type.widthSpecifier());
 }
@@ -193,17 +193,17 @@ TEST_F(ParserTests_Generics, ArrayConstrainedParam) {
     ASSERT_EQ("MyStruct", structNode->name());
     ASSERT_EQ(0, structNode->packing());
 
-    NewDataType type = structNode->definedType();
-    ASSERT_EQ(NewDataType::Kind::Structure, type.kind());
+    DataType type = structNode->definedType();
+    ASSERT_EQ(DataType::Kind::Structure, type.kind());
     ASSERT_EQ(1, type.genericParameterCount());
 
     type = structNode->definedType().genericParameterAtIndex(0);
-    ASSERT_EQ(NewDataType::Kind::GenericArray, type.kind());
-    ASSERT_EQ(NewDataType::Access::Read, type.access());
+    ASSERT_EQ(DataType::Kind::GenericArray, type.kind());
+    ASSERT_EQ(DataType::Access::Read, type.access());
     ASSERT_EQ(0, type.widthSpecifier());
     ASSERT_EQ(2, type.arrayCount());
     ASSERT_EQ(1, type.subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Generic, type.subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Generic, type.subtypeAtIndex(0).kind());
     ASSERT_EQ("T", type.subtypeAtIndex(0).name());
 }
 
@@ -219,17 +219,17 @@ TEST_F(ParserTests_Generics, UnsizedArrayConstrainedParam) {
     ASSERT_EQ("MyStruct", structNode->name());
     ASSERT_EQ(0, structNode->packing());
 
-    NewDataType type = structNode->definedType();
-    ASSERT_EQ(NewDataType::Kind::Structure, type.kind());
+    DataType type = structNode->definedType();
+    ASSERT_EQ(DataType::Kind::Structure, type.kind());
     ASSERT_EQ(1, type.genericParameterCount());
 
     type = structNode->definedType().genericParameterAtIndex(0);
-    ASSERT_EQ(NewDataType::Kind::GenericArray, type.kind());
-    ASSERT_EQ(NewDataType::Access::Read, type.access());
+    ASSERT_EQ(DataType::Kind::GenericArray, type.kind());
+    ASSERT_EQ(DataType::Access::Read, type.access());
     ASSERT_EQ(0, type.widthSpecifier());
     ASSERT_EQ(0, type.arrayCount());
     ASSERT_EQ(1, type.subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Generic, type.subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Generic, type.subtypeAtIndex(0).kind());
     ASSERT_EQ("T", type.subtypeAtIndex(0).name());
 }
 
@@ -243,17 +243,17 @@ TEST_F(ParserTests_Generics, OneParamGenericFunction) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
 
-    NewDataType type = func->functionType();
-    ASSERT_EQ(NewDataType::Kind::Function, type.kind());
+    DataType type = func->functionType();
+    ASSERT_EQ(DataType::Kind::Function, type.kind());
     ASSERT_EQ(0, type.subtypeCount());
     ASSERT_EQ(0, type.parameterCount());
-    ASSERT_EQ(NewDataType::Void, type.returnType().kind());
+    ASSERT_EQ(DataType::Void, type.returnType().kind());
 
     ASSERT_TRUE(type.isGeneric());
     ASSERT_EQ(1, type.genericParameterCount());
 
     type = type.genericParameterAtIndex(0);
-    ASSERT_EQ(NewDataType::Kind::Generic, type.kind());
+    ASSERT_EQ(DataType::Kind::Generic, type.kind());
     ASSERT_EQ("T", type.name());
     ASSERT_EQ(0, type.widthSpecifier());
 }

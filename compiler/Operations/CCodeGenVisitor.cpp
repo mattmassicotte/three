@@ -30,7 +30,7 @@ namespace Three {
 
         // Function Prototype
         this->sourceForVisibility(node.visibility(), [&] (CSource& source) {
-            if (node.functionType().returnType().kind() == NewDataType::Kind::Tuple) {
+            if (node.functionType().returnType().kind() == DataType::Kind::Tuple) {
                 this->createDefinitionForTuple(node.functionType().returnType(), source);
             }
 
@@ -45,7 +45,7 @@ namespace Three {
         _currentSource->printLineAndIndent(" {");
 
         // create locals for the named returns, if any
-        node.eachNamedReturn([&] (const NewDataType& type) {
+        node.eachNamedReturn([&] (const DataType& type) {
             (*_currentSource) << CTypeCodeGenerator::codeGen(type, type.label());
             _currentSource->printLine(";");
         });
@@ -169,9 +169,9 @@ namespace Three {
     }
 
     void CCodeGenVisitor::visit(FunctionCallOperatorNode& node) {
-        NewDataType receiverType = node.receiver()->dataType();
+        DataType receiverType = node.receiver()->dataType();
 
-        if (receiverType.kind() == NewDataType::Kind::Closure) {
+        if (receiverType.kind() == DataType::Kind::Closure) {
             *_currentSource << "THREE_CALL_CLOSURE(";
             // This is kind of abusing the CTypeCodeGenerator API a little. But, this bit of code-gen
             // is pretty weird.
@@ -318,7 +318,7 @@ namespace Three {
 
             assert(node.definedType().subtypeCount() == node.childCount());
 
-            node.definedType().eachSubtypeWithLast([&] (const NewDataType& subtype, bool last) {
+            node.definedType().eachSubtypeWithLast([&] (const DataType& subtype, bool last) {
                 source << CTypeCodeGenerator::codeGen(subtype, subtype.label());
                 source.printLine(";");
             });
@@ -387,8 +387,8 @@ namespace Three {
         std::string tmpVariableName = "tmp_return";
 
         // TODO: make this the data type of the right hand side
-        NewDataType tupleType = node.childAtIndex(1)->dataType();
-        assert(tupleType.kind() == NewDataType::Kind::Tuple);
+        DataType tupleType = node.childAtIndex(1)->dataType();
+        assert(tupleType.kind() == DataType::Kind::Tuple);
 
         // part one, a temporary variable to hold the right-hand side value
         *_currentSource << CTypeCodeGenerator::codeGen(tupleType, tmpVariableName);
@@ -814,7 +814,7 @@ namespace Three {
         source << "struct " << node.name() << "_env";
         source.printLineAndIndent(" {");
 
-        for (const NewDataType& type : node.environmentStructureType().subtypes) {
+        for (const DataType& type : node.environmentStructureType().subtypes) {
             source << CTypeCodeGenerator::codeGen(type, type.label());
             source.printLine(";");
         }
@@ -842,12 +842,12 @@ namespace Three {
         return s.str();
     }
 
-    void CCodeGenVisitor::createDefinitionForTuple(const NewDataType& tupleType, CSource& source) {
+    void CCodeGenVisitor::createDefinitionForTuple(const DataType& tupleType, CSource& source) {
         uint32_t unlabeledCount = 1;
 
         source.printLineAndIndent("typedef struct {");
 
-        tupleType.eachSubtypeWithLast([&] (const NewDataType& type, bool last) {
+        tupleType.eachSubtypeWithLast([&] (const DataType& type, bool last) {
             source << CTypeCodeGenerator::codeGen(type);
 
             if (type.label().size() == 0) {

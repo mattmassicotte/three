@@ -14,7 +14,7 @@ namespace Three {
         static OperatorNode* createOperator(Parser& parser, bool unary = false);
 
     public:
-        virtual NewDataType dataType() const;
+        virtual DataType dataType() const;
         virtual std::string nodeName() const;
         virtual std::string name() const;
 

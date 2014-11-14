@@ -12,7 +12,7 @@ namespace Three {
 
         node->_transactionName = parser.context()->scope()->currentScopedName("tx");
 
-        NewDataType returnType = parser.context()->scope()->currentFunctionReturnType();
+        DataType returnType = parser.context()->scope()->currentFunctionReturnType();
 
         ASTNode* child = nullptr;
 

@@ -7,7 +7,7 @@ namespace Three {
     public:
         CMacroNode(const std::string& value);
 
-        NewDataType dataType() const;
+        DataType dataType() const;
         std::string name() const;
         virtual std::string nodeName() const;
         void accept(ASTVisitor& visitor);

@@ -74,7 +74,7 @@ namespace Three {
         }
     }
 
-    NewDataType VariableDeclarationNode::dataType() const {
+    DataType VariableDeclarationNode::dataType() const {
         return _declaredType;
     }
 

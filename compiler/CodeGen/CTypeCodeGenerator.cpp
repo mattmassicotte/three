@@ -3,8 +3,8 @@
 #include <sstream>
 
 namespace Three {
-    std::string CTypeCodeGenerator::codeGen(const NewDataType& type, const std::string& varName) {
-        NewDataType usedType(type);
+    std::string CTypeCodeGenerator::codeGen(const DataType& type, const std::string& varName) {
+        DataType usedType(type);
 
         std::string innerStr;
 
@@ -14,7 +14,7 @@ namespace Three {
         while (usedType.isPointer() && !usedType.hasName()) {
             std::string pointerStr = "*";
 
-            if (usedType.kind() == NewDataType::Kind::NullablePointer) {
+            if (usedType.kind() == DataType::Kind::NullablePointer) {
                 pointerStr += " THREE_ATTR_NULLABLE";
             }
 
@@ -37,8 +37,8 @@ namespace Three {
         std::stringstream s;
 
         switch (usedType.kind()) {
-            case NewDataType::Kind::Function:
-            case NewDataType::Kind::CFunction:
+            case DataType::Kind::Function:
+            case DataType::Kind::CFunction:
                 s << CTypeCodeGenerator::codeGenFunctionType(usedType, innerStr);
                 break;
             default:
@@ -51,36 +51,36 @@ namespace Three {
 
     }
 
-    std::string CTypeCodeGenerator::codeGenType(const NewDataType& type) {
+    std::string CTypeCodeGenerator::codeGenType(const DataType& type) {
         std::stringstream s;
 
         switch (type.kind()) {
-            case NewDataType::Kind::Undefined: assert(0 && "Bug: cannot codegen an undefined type");
-            case NewDataType::Kind::Unknown:   assert(0 && "Bug: cannot codegen an unknown type");
-            case NewDataType::Kind::Void:
-            case NewDataType::Kind::Integer:
-            case NewDataType::Kind::Boolean:
-            case NewDataType::Kind::Natural:
-            case NewDataType::Kind::Float:
-            case NewDataType::Kind::Real:
-            case NewDataType::Kind::Character:
-            case NewDataType::Kind::Vararg:
-            case NewDataType::Kind::Tuple:
-            case NewDataType::Kind::CInt:
-            case NewDataType::Kind::CChar:
-            case NewDataType::Kind::CUnsignedInt:
-            case NewDataType::Kind::Closure:
-            case NewDataType::Kind::Structure:
-            case NewDataType::Kind::Enumeration:
-            case NewDataType::Kind::Union:
-            case NewDataType::Kind::CStructure:
-            case NewDataType::Kind::CStructPrefixedStructure:
+            case DataType::Kind::Undefined: assert(0 && "Bug: cannot codegen an undefined type");
+            case DataType::Kind::Unknown:   assert(0 && "Bug: cannot codegen an unknown type");
+            case DataType::Kind::Void:
+            case DataType::Kind::Integer:
+            case DataType::Kind::Boolean:
+            case DataType::Kind::Natural:
+            case DataType::Kind::Float:
+            case DataType::Kind::Real:
+            case DataType::Kind::Character:
+            case DataType::Kind::Vararg:
+            case DataType::Kind::Tuple:
+            case DataType::Kind::CInt:
+            case DataType::Kind::CChar:
+            case DataType::Kind::CUnsignedInt:
+            case DataType::Kind::Closure:
+            case DataType::Kind::Structure:
+            case DataType::Kind::Enumeration:
+            case DataType::Kind::Union:
+            case DataType::Kind::CStructure:
+            case DataType::Kind::CStructPrefixedStructure:
                 s << CTypeCodeGenerator::codeGenScalarType(type);
                 break;
-            case NewDataType::Kind::Array:
+            case DataType::Kind::Array:
                 break;
-            case NewDataType::Kind::Pointer:
-            case NewDataType::Kind::NullablePointer:
+            case DataType::Kind::Pointer:
+            case DataType::Kind::NullablePointer:
                 // Normally, we don't take this path. But,
                 // if a pointer is a named type (aliased), we want to use
                 // that in the C source.
@@ -101,7 +101,7 @@ namespace Three {
         return s.str();
     }
 
-    std::string CTypeCodeGenerator::codeGenScalarType(const NewDataType& type) {
+    std::string CTypeCodeGenerator::codeGenScalarType(const DataType& type) {
         std::stringstream s;
 
         if (CTypeCodeGenerator::typeCanBeConst(type)) {
@@ -114,49 +114,49 @@ namespace Three {
         }
 
         switch (type.kind()) {
-            case NewDataType::Kind::Void:
+            case DataType::Kind::Void:
                 s << "void";
                 break;
-            case NewDataType::Kind::Integer:
+            case DataType::Kind::Integer:
                 s << "int";
                 break;
-            case NewDataType::Kind::Boolean:
+            case DataType::Kind::Boolean:
                 s << "bool";
                 break;
-            case NewDataType::Kind::Natural:
+            case DataType::Kind::Natural:
                 if (type.widthSpecifier() > 16 && type.widthSpecifier() <= 32) {
                     s << "uint32_t";
                 } else {
                     s << "unsigned int";
                 }
                 break;
-            case NewDataType::Kind::Float:
-            case NewDataType::Kind::Real:
+            case DataType::Kind::Float:
+            case DataType::Kind::Real:
                 if (type.widthSpecifier() > 32) {
                     s << "double";
                 } else {
                     s << "float";
                 }
                 break;
-            case NewDataType::Kind::Character:
+            case DataType::Kind::Character:
                 s << "char";
                 break;
-            case NewDataType::Kind::Closure:
+            case DataType::Kind::Closure:
                 s << "three_closure_t";
                 break;
-            case NewDataType::Kind::Vararg:
+            case DataType::Kind::Vararg:
                 s << "va_list";
                 break;
-            case NewDataType::Kind::Tuple:
+            case DataType::Kind::Tuple:
                 s << CTypeCodeGenerator::codeGenTupleStructName(type);
                 break;
-            case NewDataType::Kind::Structure:
-            case NewDataType::Kind::Enumeration:
-            case NewDataType::Kind::Union:
-            case NewDataType::Kind::CStructure:
+            case DataType::Kind::Structure:
+            case DataType::Kind::Enumeration:
+            case DataType::Kind::Union:
+            case DataType::Kind::CStructure:
                 s << type.name();
                 break;
-            case NewDataType::Kind::CStructPrefixedStructure:
+            case DataType::Kind::CStructPrefixedStructure:
                 s << std::string("struct ") + type.name();
                 break;
             default:
@@ -167,7 +167,7 @@ namespace Three {
         return s.str();
     }
 
-    std::string CTypeCodeGenerator::codeGenCScalarType(const NewDataType& type) {
+    std::string CTypeCodeGenerator::codeGenCScalarType(const DataType& type) {
         assert(type.isCScalar());
 
         if (type.hasName()) {
@@ -178,11 +178,11 @@ namespace Three {
         }
 
         switch (type.kind()) {
-            case NewDataType::Kind::CUnsignedInt:
+            case DataType::Kind::CUnsignedInt:
                 return "unsigned int";
-            case NewDataType::Kind::CInt:
+            case DataType::Kind::CInt:
                 return "int";
-            case NewDataType::Kind::CChar:
+            case DataType::Kind::CChar:
                 return "char";
             default:
                 break;
@@ -193,7 +193,7 @@ namespace Three {
         return "";
     }
 
-    std::string CTypeCodeGenerator::codeGenFunction(const NewDataType& type, const std::string& leadingString) {
+    std::string CTypeCodeGenerator::codeGenFunction(const DataType& type, const std::string& leadingString) {
         std::stringstream s;
 
         // returnType function(param1, param2)
@@ -208,7 +208,7 @@ namespace Three {
         if (type.parameterCount() == 0) {
             s << "void";
         } else {
-            type.eachParameterWithLast([&s] (const NewDataType& paramType, bool last) {
+            type.eachParameterWithLast([&s] (const DataType& paramType, bool last) {
                 s << CTypeCodeGenerator::codeGen(paramType, paramType.label());
                 if (!last) {
                     s << ", ";
@@ -221,7 +221,7 @@ namespace Three {
         return s.str();
     }
 
-    std::string CTypeCodeGenerator::codeGenFunctionType(const NewDataType& type, const std::string& innerString) {
+    std::string CTypeCodeGenerator::codeGenFunctionType(const DataType& type, const std::string& innerString) {
         std::stringstream s;
 
         // returnType (*varName)(param1, param2)
@@ -231,13 +231,13 @@ namespace Three {
         return CTypeCodeGenerator::codeGenFunction(type, s.str());
     }
 
-    std::string CTypeCodeGenerator::codeGenTupleStructName(const NewDataType& type) {
+    std::string CTypeCodeGenerator::codeGenTupleStructName(const DataType& type) {
         std::stringstream s;
 
-        assert(type.kind() == NewDataType::Kind::Tuple);
+        assert(type.kind() == DataType::Kind::Tuple);
         assert(type.subtypeCount() > 0);
 
-        type.eachSubtypeWithLast([&] (const NewDataType& subtype, bool last) {
+        type.eachSubtypeWithLast([&] (const DataType& subtype, bool last) {
             s << CTypeCodeGenerator::codeGen(subtype);
             s << "_";
         });
@@ -252,16 +252,16 @@ namespace Three {
         return result;
     }
 
-    bool CTypeCodeGenerator::typeCanBeConst(const NewDataType& type) {
+    bool CTypeCodeGenerator::typeCanBeConst(const DataType& type) {
         switch (type.kind()) {
-            case NewDataType::Kind::Void:
-            case NewDataType::Kind::Vararg:
+            case DataType::Kind::Void:
+            case DataType::Kind::Vararg:
                 return false;
             default:
                 break;
         }
 
-        return type.access() == NewDataType::Access::Read;
+        return type.access() == DataType::Access::Read;
     }
 }
     

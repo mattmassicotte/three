@@ -43,7 +43,7 @@ namespace Three {
 
         // If this is a method, insert the Type name into to functions full name. I think
         // this is a bit of a hack actually.
-        if (node->_methodOnType.kind() != NewDataType::Kind::Undefined) {
+        if (node->_methodOnType.kind() != DataType::Kind::Undefined) {
             node->_name.prependName(QualifiedName(node->_methodOnType.name()));
         }
 
@@ -52,7 +52,7 @@ namespace Three {
         // Might be generic.
         // This part is a little weird, because we have to parse the generic
         // params before we have the function type.
-        NewDataType genericType;
+        DataType genericType;
         if (parser.helper()->peek().type() == Token::Type::OperatorLessThan) {
             if (!parser.parseGenericParameters(genericType)) {
                 assert(0 && "Message: Unable to parse generic parameters");
@@ -73,7 +73,7 @@ namespace Three {
 
         // insert the self parameter, if needed
         if (node->isMethod()) {
-            NewDataType selfPtr = NewDataType::wrapInPointer(node->_methodOnType);
+            DataType selfPtr = DataType::wrapInPointer(node->_methodOnType);
             selfPtr.setLabel("self");
 
             node->_functionType.parameters.insert(node->_functionType.parameters.cbegin(), selfPtr);
@@ -209,28 +209,28 @@ namespace Three {
         visitor.visit(*this);
     }
 
-    NewDataType FunctionDefinitionNode::functionType() const {
+    DataType FunctionDefinitionNode::functionType() const {
         return _functionType;
     }
 
-    NewDataType FunctionDefinitionNode::methodOnType() const {
+    DataType FunctionDefinitionNode::methodOnType() const {
         return _methodOnType;
     }
     
     bool FunctionDefinitionNode::isMethod() const {
-        return _methodOnType.kind() != NewDataType::Kind::Undefined;
+        return _methodOnType.kind() != DataType::Kind::Undefined;
     }
 
     std::stringstream* FunctionDefinitionNode::bodyStream() {
         return &_bodyString;
     }
 
-    void FunctionDefinitionNode::eachNamedReturn(std::function<void (const NewDataType&)> block) const {
+    void FunctionDefinitionNode::eachNamedReturn(std::function<void (const DataType&)> block) const {
         // tuples have to be treated special here
-        if (_functionType.returnType().kind() == NewDataType::Kind::Tuple) {
-            _functionType.returnType().eachSubtypeWithLast([&] (const NewDataType& type, bool last) {
+        if (_functionType.returnType().kind() == DataType::Kind::Tuple) {
+            _functionType.returnType().eachSubtypeWithLast([&] (const DataType& type, bool last) {
                 if (type.label().size() > 0) {
-                    block(NewDataType::mutableVersion(type));
+                    block(DataType::mutableVersion(type));
                 }
             });
 
@@ -239,11 +239,11 @@ namespace Three {
 
         // just a simple return type
         if (_functionType.returnType().label().size() > 0) {
-            block(NewDataType::mutableVersion(_functionType.returnType()));
+            block(DataType::mutableVersion(_functionType.returnType()));
         }
     }
 
-    void FunctionDefinitionNode::defineVariableForReturnType(NewScope* scope, const NewDataType& type) const {
+    void FunctionDefinitionNode::defineVariableForReturnType(NewScope* scope, const DataType& type) const {
         assert(type.label().size() != 0);
 
         scope->defineVariableTypeForName(type, type.label());
@@ -252,12 +252,12 @@ namespace Three {
     void FunctionDefinitionNode::defineParameterVariablesInScope(NewScope* scope) const {
         // create variables for all arguments in this scope, including the special self
         // variable if this is a method
-        _functionType.eachParameterWithLast([&] (const NewDataType& type, bool last) {
+        _functionType.eachParameterWithLast([&] (const DataType& type, bool last) {
             scope->defineVariableTypeForName(type, type.label());
         });
 
         // now, create variables for each named return
-        this->eachNamedReturn([&] (const NewDataType& type) {
+        this->eachNamedReturn([&] (const DataType& type) {
             this->defineVariableForReturnType(scope, type);
         });
     }
@@ -295,7 +295,7 @@ namespace Three {
     }
 
     std::string FunctionDefinitionNode::fullName() const {
-        if (_methodOnType.kind() != NewDataType::Kind::Undefined) {
+        if (_methodOnType.kind() != DataType::Kind::Undefined) {
         }
 
         return _name.to_s();

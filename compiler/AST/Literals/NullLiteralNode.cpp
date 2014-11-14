@@ -9,7 +9,7 @@ namespace Three {
 
         NullLiteralNode* node = new NullLiteralNode();
 
-        NewDataType type = NewDataType(NewDataType::Kind::Pointer);
+        DataType type = DataType(DataType::Kind::Pointer);
         type.addSubtype(parser.context()->typeKindWithName("Void"));
 
         node->setDataType(type);

@@ -21,7 +21,7 @@ namespace Three {
             return nullptr;
         }
 
-        if (parser.context()->functionForName(name.to_s()).kind() != NewDataType::Kind::Undefined) {
+        if (parser.context()->functionForName(name.to_s()).kind() != DataType::Kind::Undefined) {
             node = new FunctionVariableNode();
         } else if (parser.context()->scope()->referencedVariable(name.to_s())) {
             node = new ReferencedVariableNode();
@@ -45,10 +45,10 @@ namespace Three {
     VariableNode::VariableNode() : _referenced(false), _closed(false), _newVariable(nullptr) {
     }
 
-    NewDataType VariableNode::dataType() const {
+    DataType VariableNode::dataType() const {
         if (!_newVariable) {
             std::cout << "variable undefined!" << std::endl;
-            return NewDataType();
+            return DataType();
         }
 
         return _newVariable->type;

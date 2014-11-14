@@ -1,7 +1,7 @@
 #include "TupleNode.h"
 
 namespace Three {
-    TupleNode* TupleNode::parse(Parser& parser, ASTNode* firstElement, bool fullExpressions, const NewDataType* expectedType) {
+    TupleNode* TupleNode::parse(Parser& parser, ASTNode* firstElement, bool fullExpressions, const DataType* expectedType) {
         assert(firstElement);
 
         TupleNode* node = new TupleNode();
@@ -53,7 +53,7 @@ namespace Three {
             node->_type = *expectedType;
         } else {
             // we now need to construct the type
-            NewDataType type = NewDataType(NewDataType::Kind::Tuple);
+            DataType type = DataType(DataType::Kind::Tuple);
             node->eachChildWithLast([&] (const ASTNode* child, bool last) {
                 type.addSubtype(child->dataType());
             });
@@ -69,7 +69,7 @@ namespace Three {
         return node;
     }
 
-    NewDataType TupleNode::dataType() const {
+    DataType TupleNode::dataType() const {
         return _type;
     }
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ASTNode.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 
 namespace Three {
     class MetafunctionNode : public ASTNode {
@@ -12,6 +12,6 @@ namespace Three {
         virtual std::string nodeName() const;
         void accept(ASTVisitor& visitor);
 
-        NewDataType dataTypeArgument;
+        DataType dataTypeArgument;
     };
 }

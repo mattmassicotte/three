@@ -1,6 +1,6 @@
 #include "Parser.h"
 #include "ParseHelper.h"
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 #include "compiler/constructs/NewScope.h"
 #include "compiler/Lexer/Lexer.h"
 #include "compiler/Preprocessing/Preprocessor.h"
@@ -51,14 +51,14 @@ namespace Three {
     }
 
     Parser::Parser() {
-        _characterEncodingMap["ascii"]   = NewDataType::CharacterEncoding::ASCII;
-        _characterEncodingMap["utf8"]    = NewDataType::CharacterEncoding::UTF8;
-        _characterEncodingMap["utf16"]   = NewDataType::CharacterEncoding::UTF16;
-        _characterEncodingMap["utf16le"] = NewDataType::CharacterEncoding::UTF16LE;
-        _characterEncodingMap["utf16be"] = NewDataType::CharacterEncoding::UTF16BE;
-        _characterEncodingMap["utf32"]   = NewDataType::CharacterEncoding::UTF32;
-        _characterEncodingMap["utf32le"] = NewDataType::CharacterEncoding::UTF32LE;
-        _characterEncodingMap["utf32be"] = NewDataType::CharacterEncoding::UTF32BE;
+        _characterEncodingMap["ascii"]   = DataType::CharacterEncoding::ASCII;
+        _characterEncodingMap["utf8"]    = DataType::CharacterEncoding::UTF8;
+        _characterEncodingMap["utf16"]   = DataType::CharacterEncoding::UTF16;
+        _characterEncodingMap["utf16le"] = DataType::CharacterEncoding::UTF16LE;
+        _characterEncodingMap["utf16be"] = DataType::CharacterEncoding::UTF16BE;
+        _characterEncodingMap["utf32"]   = DataType::CharacterEncoding::UTF32;
+        _characterEncodingMap["utf32le"] = DataType::CharacterEncoding::UTF32LE;
+        _characterEncodingMap["utf32be"] = DataType::CharacterEncoding::UTF32BE;
     }
 
     Parser::~Parser() {
@@ -304,7 +304,7 @@ namespace Three {
         return node;
     }
 
-    ASTNode* Parser::parseExpressionWithTuples(const NewDataType* expectedType) {
+    ASTNode* Parser::parseExpressionWithTuples(const DataType* expectedType) {
         ASTNode* node = this->parseExpression();
 
         if (!node) {
@@ -455,7 +455,7 @@ namespace Three {
         // with C symbols is tough, and that could reduce the number of heurestics needed.
         NewVariable* variable = _context->variableForName(name.to_s());
         if (variable) {
-            if (variable->type.kind() == NewDataType::Kind::CUnspecifiedMacro) {
+            if (variable->type.kind() == DataType::Kind::CUnspecifiedMacro) {
                 return new CMacroNode(name.to_s());
             }
         }
@@ -837,22 +837,22 @@ namespace Three {
         return false;
     }
 
-    NewDataType Parser::parseType(bool genericParam) {
+    DataType Parser::parseType(bool genericParam) {
         if (this->verbose()) {
             std::cout << "Parser: parseType '" << this->helper()->peek().str() << "'" << std::endl;
         }
         return this->parseAndApplyTypeAnnotations(genericParam);
     }
 
-    NewDataType Parser::parseAndApplyTypeAnnotations(bool genericParam) {
+    DataType Parser::parseAndApplyTypeAnnotations(bool genericParam) {
         bool foundConst = false;
         bool foundRestrict = false;
         bool foundVolatile = false;
         bool foundAccess = false;
         bool foundAlias = false;
 
-        NewDataType::Access volatility = NewDataType::Access::ReadWrite;
-        NewDataType::Access access = NewDataType::Access::None;
+        DataType::Access volatility = DataType::Access::ReadWrite;
+        DataType::Access access = DataType::Access::None;
 
         for (;;) {
             switch (_helper->peek().type()) {
@@ -922,7 +922,7 @@ namespace Three {
         }
 
         // now that we've parsed all the annotations, we can proceed to the type itself
-        NewDataType type = this->parseTypeWithoutAnnotations(genericParam);
+        DataType type = this->parseTypeWithoutAnnotations(genericParam);
         type = this->parseTypePostfixes(type);
 
         if (foundConst && foundAccess) {
@@ -934,11 +934,11 @@ namespace Three {
         }
 
         if (foundConst) {
-            type.setAccess(NewDataType::Access::Read);
+            type.setAccess(DataType::Access::Read);
         }
 
         if (foundRestrict) {
-            if (type.kind() != NewDataType::Kind::Pointer) {
+            if (type.kind() != DataType::Kind::Pointer) {
                 assert(0 && "Message: @restrict applies to Pointer types only");
             }
 
@@ -960,7 +960,7 @@ namespace Three {
         return type;
     }
 
-    NewDataType Parser::parseTypeWithoutAnnotations(bool genericParam) {
+    DataType Parser::parseTypeWithoutAnnotations(bool genericParam) {
         // Non-recurisve, so should be a type name
         if (this->verbose()) {
             std::cout << "Parser: parseTypeWithoutAnnotations '" << this->helper()->peek().str() << "'" << std::endl;
@@ -979,7 +979,7 @@ namespace Three {
             case Token::Type::KeywordVararg:
                 assert(!genericParam && "Message: vararg cannot be a generic parameter");
                 _helper->next();
-                return NewDataType(NewDataType::Kind::Vararg);
+                return DataType(DataType::Kind::Vararg);
             default:
                 break;
         }
@@ -991,9 +991,9 @@ namespace Three {
 
         QualifiedName name = this->parseMultiPartIdentifierComponents();
 
-        NewDataType type;
+        DataType type;
         if (genericParam) {
-            type = NewDataType(NewDataType::Kind::Generic);
+            type = DataType(DataType::Kind::Generic);
             if (!_context->identifierAvailableForDefinition(name.to_s())) {
                 assert(0 && "Message: generic parameter identifier already defined in this scope");
             }
@@ -1003,13 +1003,13 @@ namespace Three {
             type = _context->dataTypeForName(name.to_s());
         }
 
-        if (type.kind() == NewDataType::Kind::Undefined) {
+        if (type.kind() == DataType::Kind::Undefined) {
             std::cout << name.to_s() << std::endl;
             assert(0 && "Message: failed to parse type");
         }
 
         // handle character specifiers
-        if (type.kind() == NewDataType::Kind::Character) {
+        if (type.kind() == DataType::Kind::Character) {
             if (_helper->nextIf(Token::Type::PunctuationColon)) {
                 type.setCharacterEncoding(this->parseCharacterEncodingSpecifier());
             }
@@ -1022,7 +1022,7 @@ namespace Three {
         return type;
     }
 
-    void Parser::parseTypeSpecifiers(NewDataType& type) {
+    void Parser::parseTypeSpecifiers(DataType& type) {
         // width specifier (or, colon)
         if (_helper->nextIf(Token::Type::PunctuationColon)) {
             if (_helper->peek().type() != Token::Type::PunctuationColon) {
@@ -1043,26 +1043,26 @@ namespace Three {
         }
     }
 
-    NewDataType Parser::parseTypePostfixes(const NewDataType& type) {
-        NewDataType newType(type);
+    DataType Parser::parseTypePostfixes(const DataType& type) {
+        DataType newType(type);
 
         if (_helper->nextIf(Token::Type::OperatorNot)) {
-            newType.setAccess(NewDataType::Access::ReadWrite);
+            newType.setAccess(DataType::Access::ReadWrite);
         }
 
         if (_helper->nextIf(Token::Type::OperatorQuestionMark)) {
             switch (type.kind()) {
-                case NewDataType::Kind::Pointer:
-                    newType.setKind(NewDataType::Kind::NullablePointer);
+                case DataType::Kind::Pointer:
+                    newType.setKind(DataType::Kind::NullablePointer);
                     break;
-                case NewDataType::Kind::GenericPointer:
-                    newType.setKind(NewDataType::Kind::GenericNullablePointer);
+                case DataType::Kind::GenericPointer:
+                    newType.setKind(DataType::Kind::GenericNullablePointer);
                     break;
-                case NewDataType::Kind::Generic:
-                    newType = NewDataType::wrapInType(NewDataType::Kind::GenericNullablePointer, newType);
+                case DataType::Kind::Generic:
+                    newType = DataType::wrapInType(DataType::Kind::GenericNullablePointer, newType);
                     break;
                 default:
-                    newType = NewDataType::wrapInType(NewDataType::Kind::NullablePointer, newType);
+                    newType = DataType::wrapInType(DataType::Kind::NullablePointer, newType);
                     break;
             }
         }
@@ -1070,10 +1070,10 @@ namespace Three {
         return newType;
     }
 
-    NewDataType Parser::parsePointerType(bool genericParam) {
+    DataType Parser::parsePointerType(bool genericParam) {
         assert(_helper->next().type() == Token::Type::OperatorStar);
 
-        NewDataType type = NewDataType(genericParam ? NewDataType::Kind::GenericPointer : NewDataType::Kind::Pointer);
+        DataType type = DataType(genericParam ? DataType::Kind::GenericPointer : DataType::Kind::Pointer);
 
         type = this->parseTypePostfixes(type);
 
@@ -1082,10 +1082,10 @@ namespace Three {
         return type;
     }
 
-    NewDataType Parser::parseArrayType(bool genericParam) {
+    DataType Parser::parseArrayType(bool genericParam) {
         assert(_helper->next().type() == Token::Type::PunctuationOpenBracket);
 
-        NewDataType type = NewDataType(genericParam ? NewDataType::Kind::GenericArray : NewDataType::Kind::Array);
+        DataType type = DataType(genericParam ? DataType::Kind::GenericArray : DataType::Kind::Array);
 
         if (_helper->peek().type() != Token::Type::PunctuationCloseBracket) {
             type.setArrayCount(this->parseIntegerSpecifier());
@@ -1100,19 +1100,19 @@ namespace Three {
         return type;
     }
 
-    NewDataType Parser::parseFunctionType(bool signature, std::vector<std::string>* references) {
-        NewDataType type;
+    DataType Parser::parseFunctionType(bool signature, std::vector<std::string>* references) {
+        DataType type;
         Token::Type closingPunctuation = _helper->peek().closingCounterpart();
 
         switch (_helper->next().type()) {
             case Token::Type::PunctuationOpenParen:
-                type = NewDataType(NewDataType::Kind::Function);
+                type = DataType(DataType::Kind::Function);
                 break;
             case Token::Type::PunctuationOpenBrace:
-                type = NewDataType(NewDataType::Kind::Closure);
+                type = DataType(DataType::Kind::Closure);
 
                 // make sure to define the environment pointer
-                type.addParameter(NewDataType::wrapInPointer(NewDataType::Kind::Void));
+                type.addParameter(DataType::wrapInPointer(DataType::Kind::Void));
                 break;
             default:
                 assert(0 && "Message: failed to parse a function type");
@@ -1120,7 +1120,7 @@ namespace Three {
 
         // check for ending punctuation
         if (_helper->nextIf(closingPunctuation)) {
-            type.addReturn(NewDataType::Kind::Void);
+            type.addReturn(DataType::Kind::Void);
             return type;
         }
 
@@ -1147,12 +1147,12 @@ namespace Three {
                 }
             }
 
-            NewDataType paramType;
+            DataType paramType;
 
             if (signature) {
                 std::string label = this->parseTypeIdentifierPair(paramType);
                 if (label.size() == 0) {
-                    return NewDataType();
+                    return DataType();
                 }
 
                 paramType.setLabel(label);
@@ -1168,12 +1168,12 @@ namespace Three {
 
         // now, again, check for ending punctuation
         if (_helper->nextIf(closingPunctuation)) {
-            type.addReturn(NewDataType::Kind::Void);
+            type.addReturn(DataType::Kind::Void);
             return type;
         }
 
         // finally, we have returns
-        NewDataType returnTuple = NewDataType(NewDataType::Kind::Tuple);
+        DataType returnTuple = DataType(DataType::Kind::Tuple);
 
         for (int i = 0;; ++i) {
             bool mustParseType = false;
@@ -1188,7 +1188,7 @@ namespace Three {
                 }
             }
 
-            NewDataType returnType = this->parseType();
+            DataType returnType = this->parseType();
 
             if (signature && _helper->peek().type() == Token::Type::Identifier) {
                 if (!this->isAtIdentifierAvailableForDefinition()) {
@@ -1207,7 +1207,7 @@ namespace Three {
         // fix up the return type
         switch (returnTuple.subtypeCount()) {
             case 0:
-                type.addReturn(NewDataType::Kind::Void);
+                type.addReturn(DataType::Kind::Void);
                 break;
             case 1:
                 // unwrap the tuple
@@ -1241,7 +1241,7 @@ namespace Three {
         return type;
     }
 
-    NewDataType Parser::parseFunctionSignatureType() {
+    DataType Parser::parseFunctionSignatureType() {
         return this->parseFunctionType(true);
     }
 
@@ -1254,7 +1254,7 @@ namespace Three {
         return strtol(_helper->next().str().c_str(), NULL, 10);
     }
 
-    std::string Parser::parseTypeIdentifierPair(NewDataType& type) {
+    std::string Parser::parseTypeIdentifierPair(DataType& type) {
         if (this->verbose()) {
             std::cout << "Parser: parseTypeIdentifierPair '" << this->helper()->peek().str() << "'" << std::endl;
         }
@@ -1286,41 +1286,41 @@ namespace Three {
         return "";
     }
 
-    NewDataType::Access Parser::parseAnnotationAccess() {
+    DataType::Access Parser::parseAnnotationAccess() {
         if (_helper->peek().type() != Token::Type::Identifier) {
             assert(0 && "Message: annotation argument should be r/read, w/write, rw/readwrite, or n/none");
-            return NewDataType::Access::None;
+            return DataType::Access::None;
         }
 
         std::string str = _helper->next().str();
         if (str == "r" || str == "read") {
-            return NewDataType::Access::Read;
+            return DataType::Access::Read;
         } else if (str == "w" || str == "write") {
-            return NewDataType::Access::Write;
+            return DataType::Access::Write;
         } else if (str == "rw" || str == "readwrite") {
-            return NewDataType::Access::ReadWrite;
+            return DataType::Access::ReadWrite;
         } else if (str == "n" || str == "none") {
-            return NewDataType::Access::None;
+            return DataType::Access::None;
         }
 
         assert(0 && "Message: annotation argument should be r/read, w/write, rw/readwrite, or n/none");
-        return NewDataType::Access::None;
+        return DataType::Access::None;
     }
 
-    NewDataType::CharacterEncoding Parser::parseCharacterEncodingSpecifier() {
+    DataType::CharacterEncoding Parser::parseCharacterEncodingSpecifier() {
         assert(_helper->peek().type() == Token::Type::Identifier);
 
         auto it = _characterEncodingMap.find(_helper->next().str());
 
         if (it == _characterEncodingMap.cend()) {
             assert(0 && "Message about invalid character encoding");
-            return NewDataType::CharacterEncoding::UTF8;
+            return DataType::CharacterEncoding::UTF8;
         }
 
         return it->second;
     }
 
-    bool Parser::parseGenericParameters(NewDataType& type) {
+    bool Parser::parseGenericParameters(DataType& type) {
         assert(_helper->nextIf(Token::Type::OperatorLessThan));
 
         type.addGenericParameter(Parser::parseType(true));

@@ -41,11 +41,11 @@ namespace Three {
         _scopedBasename = value;
     }
 
-    void NewScope::setCurrentFunctionReturnType(const NewDataType& type) {
+    void NewScope::setCurrentFunctionReturnType(const DataType& type) {
         _returnType = type;
     }
 
-    NewDataType NewScope::currentFunctionReturnType() const {
+    DataType NewScope::currentFunctionReturnType() const {
         if (_returnType.defined()) {
             return _returnType;
         }
@@ -117,7 +117,7 @@ namespace Three {
         return true;
     }
 
-    bool NewScope::defineVariableTypeForName(const NewDataType& type, const std::string& name) {
+    bool NewScope::defineVariableTypeForName(const DataType& type, const std::string& name) {
         NewVariable* variable = new NewVariable();
 
         variable->name = name;

@@ -1,12 +1,12 @@
 #include "DereferenceOperatorNode.h"
 
 namespace Three {
-    NewDataType DereferenceOperatorNode::dataType() const {
+    DataType DereferenceOperatorNode::dataType() const {
         // we have to actually deref the type, to figure out
         // what this node resolves to
-        NewDataType type = this->childAtIndex(0)->dataType();
+        DataType type = this->childAtIndex(0)->dataType();
 
-        assert(type.kind() == NewDataType::Kind::Pointer);
+        assert(type.kind() == DataType::Kind::Pointer);
 
         return type.subtypeAtIndex(0);
     }

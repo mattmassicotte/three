@@ -19,20 +19,20 @@ namespace Three {
             node->_dataType = parser.parseFunctionType(true, &referenceNames);
 
             // this will (correctly) parse as a function signature
-            assert(node->_dataType.kind() == NewDataType::Kind::Function);
+            assert(node->_dataType.kind() == DataType::Kind::Function);
         }
 
         parser.context()->pushScope();
         parser.context()->scope()->setCapturing(true);
 
         // define variables for the closure params
-        node->_dataType.eachParameterWithLast([&] (const NewDataType& paramType, bool last) {
+        node->_dataType.eachParameterWithLast([&] (const DataType& paramType, bool last) {
             // TODO: this should probably create and hold a reference to a variable
             parser.context()->scope()->defineVariableTypeForName(paramType, paramType.label());
         });
 
         // setup our environment type
-        NewDataType envStruct = NewDataType(NewDataType::Kind::CStructPrefixedStructure);
+        DataType envStruct = DataType(DataType::Kind::CStructPrefixedStructure);
         envStruct.setName(node->_name + "_env");
 
         // handle references
@@ -40,10 +40,10 @@ namespace Three {
             NewVariable* v = parser.context()->variableForName(name);
 
             // this must be writable, because that's the point
-            NewDataType type = v->type;
-            type.setAccess(NewDataType::Access::ReadWrite);
+            DataType type = v->type;
+            type.setAccess(DataType::Access::ReadWrite);
 
-            envStruct.addSubtype(NewDataType::wrapInPointer(type, name));
+            envStruct.addSubtype(DataType::wrapInPointer(type, name));
 
             // track the variable as referenced in this scope
             parser.context()->scope()->addReferencedVariable(name);
@@ -52,7 +52,7 @@ namespace Three {
         }
 
         // fix up the type, which was a function
-        node->_dataType.setKind(NewDataType::Kind::Closure);
+        node->_dataType.setKind(DataType::Kind::Closure);
         node->_dataType.setLabel(node->_name);
 
         if (!parser.helper()->nextIf(Token::Type::PunctuationOpenBrace)) {
@@ -77,8 +77,8 @@ namespace Three {
         for (const std::string& name : parser.context()->scope()->capturedVariables()) {
             NewVariable* v = parser.context()->variableForName(name);
 
-            NewDataType capturedType = v->type;
-            capturedType.setAccess(NewDataType::Access::Read); // make contant
+            DataType capturedType = v->type;
+            capturedType.setAccess(DataType::Access::Read); // make contant
             capturedType.setLabel(v->name);
 
             // add it to the closure's environment struct
@@ -87,7 +87,7 @@ namespace Three {
             node->_capturedNewVariables.push_back(v);
         }
 
-        node->environmentType = NewDataType::wrapInPointer(envStruct);
+        node->environmentType = DataType::wrapInPointer(envStruct);
         node->environmentType.setLabel("self_env");
 
         // insert that type as the first parameter
@@ -102,7 +102,7 @@ namespace Three {
         return "Closure";
     }
 
-    NewDataType ClosureNode::dataType() const {
+    DataType ClosureNode::dataType() const {
         return _dataType;
     }
     std::string ClosureNode::name() const {
@@ -117,7 +117,7 @@ namespace Three {
         return _referencedNewVariables.size() > 0;
     }
 
-    NewDataType ClosureNode::environmentStructureType() const {
+    DataType ClosureNode::environmentStructureType() const {
         return this->environmentType.subtypeAtIndex(0);
     }
 

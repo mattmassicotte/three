@@ -1,6 +1,6 @@
 #pragma once
 
-#include "compiler/constructs/NewDataType.h"
+#include "compiler/constructs/DataType.h"
 
 #include <string>
 
@@ -17,6 +17,6 @@ namespace Three {
 
     public:
         std::string name;
-        NewDataType type;
+        DataType type;
     };
 }

@@ -31,7 +31,7 @@ namespace Three {
         bool indexFileAtUnresolvedPath(const std::string& path, ParseContext* context);
         bool indexFileAtPath(const std::string& path, ParseContext* context);
 
-        NewDataType dataTypeForCType(void* typePtr);
+        DataType dataTypeForCType(void* typePtr);
 
         void addFunction(const std::string& name, const void* declInfoPtr);
         void addType(const std::string& name, const void* declInfoPtr);

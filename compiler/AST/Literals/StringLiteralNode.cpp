@@ -11,14 +11,14 @@ namespace Three {
         assert(parser.helper()->peek().type() == Token::Type::LiteralString);
         node->setStringValue(parser.helper()->next().strTrimmingFirstAndLast());
 
-        NewDataType charType = parser.context()->typeKindWithName("Char");
+        DataType charType = parser.context()->typeKindWithName("Char");
 
         // here we have to check for type specifiers
         if (parser.helper()->nextIf(Token::Type::PunctuationColon)) {
             charType.setCharacterEncoding(parser.parseCharacterEncodingSpecifier());
         }
 
-        NewDataType type = NewDataType(NewDataType::Kind::Pointer);
+        DataType type = DataType(DataType::Kind::Pointer);
         type.addSubtype(charType);
 
         node->setDataType(type);

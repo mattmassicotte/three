@@ -11,10 +11,10 @@ TEST_F(ParserTests_Functions, FunctionDefinition) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(0, func->functionType().parameterCount());
-    ASSERT_EQ(NewDataType::Void, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Void, func->functionType().returnType().kind());
 }
 
 TEST_F(ParserTests_Functions, FunctionWithOneTypedParameter) {
@@ -25,13 +25,13 @@ TEST_F(ParserTests_Functions, FunctionWithOneTypedParameter) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(1, func->functionType().parameterCount());
-    ASSERT_EQ(NewDataType::Void, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Void, func->functionType().returnType().kind());
 
-    ASSERT_EQ(NewDataType::Kind::Integer, func->functionType().parameterAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Access::Read, func->functionType().parameterAtIndex(0).access());
+    ASSERT_EQ(DataType::Kind::Integer, func->functionType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Access::Read, func->functionType().parameterAtIndex(0).access());
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
 }
 
@@ -43,14 +43,14 @@ TEST_F(ParserTests_Functions, FunctionWithTwoTypedParameter) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(2, func->functionType().parameterCount());
-    ASSERT_EQ(NewDataType::Void, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Void, func->functionType().returnType().kind());
 
-    ASSERT_EQ(NewDataType::Kind::Integer, func->functionType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Integer, func->functionType().parameterAtIndex(0).kind());
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
-    ASSERT_EQ(NewDataType::Kind::Float, func->functionType().parameterAtIndex(1).kind());
+    ASSERT_EQ(DataType::Kind::Float, func->functionType().parameterAtIndex(1).kind());
     ASSERT_EQ("b", func->functionType().parameterAtIndex(1).label());
 }
 
@@ -62,14 +62,14 @@ TEST_F(ParserTests_Functions, FunctionWithTwoUntypedParameter) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(2, func->functionType().parameterCount());
-    ASSERT_EQ(NewDataType::Void, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Void, func->functionType().returnType().kind());
 
-    ASSERT_EQ(NewDataType::Kind::Undefined, func->functionType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Undefined, func->functionType().parameterAtIndex(0).kind());
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
-    ASSERT_EQ(NewDataType::Kind::Undefined, func->functionType().parameterAtIndex(1).kind());
+    ASSERT_EQ(DataType::Kind::Undefined, func->functionType().parameterAtIndex(1).kind());
     ASSERT_EQ("b", func->functionType().parameterAtIndex(1).label());
 }
 
@@ -81,12 +81,12 @@ TEST_F(ParserTests_Functions, FunctionWithOneUntypedParameter) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(1, func->functionType().parameterCount());
-    ASSERT_EQ(NewDataType::Void, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Void, func->functionType().returnType().kind());
 
-    ASSERT_EQ(NewDataType::Kind::Undefined, func->functionType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Undefined, func->functionType().parameterAtIndex(0).kind());
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
 }
 
@@ -98,14 +98,14 @@ TEST_F(ParserTests_Functions, FunctionWithOneUntypedAndOneTypedParameter) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(2, func->functionType().parameterCount());
-    ASSERT_EQ(NewDataType::Void, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Void, func->functionType().returnType().kind());
 
-    ASSERT_EQ(NewDataType::Kind::Undefined, func->functionType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Undefined, func->functionType().parameterAtIndex(0).kind());
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
-    ASSERT_EQ(NewDataType::Kind::Integer, func->functionType().parameterAtIndex(1).kind());
+    ASSERT_EQ(DataType::Kind::Integer, func->functionType().parameterAtIndex(1).kind());
     ASSERT_EQ("b", func->functionType().parameterAtIndex(1).label());
 }
 
@@ -117,14 +117,14 @@ TEST_F(ParserTests_Functions, FunctionWithOneTypedAndOneUnypedParameter) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(2, func->functionType().parameterCount());
-    ASSERT_EQ(NewDataType::Void, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Void, func->functionType().returnType().kind());
 
-    ASSERT_EQ(NewDataType::Kind::Integer, func->functionType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Integer, func->functionType().parameterAtIndex(0).kind());
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
-    ASSERT_EQ(NewDataType::Kind::Undefined, func->functionType().parameterAtIndex(1).kind());
+    ASSERT_EQ(DataType::Kind::Undefined, func->functionType().parameterAtIndex(1).kind());
     ASSERT_EQ("b", func->functionType().parameterAtIndex(1).label());
 }
 
@@ -136,10 +136,10 @@ TEST_F(ParserTests_Functions, FunctionWithOneReturn) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(0, func->functionType().parameterCount());
-    ASSERT_EQ(NewDataType::Integer, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Integer, func->functionType().returnType().kind());
     ASSERT_EQ("", func->functionType().returnType().label());
 }
 
@@ -151,14 +151,14 @@ TEST_F(ParserTests_Functions, FunctionWithTwoReturns) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(0, func->functionType().parameterCount());
 
-    ASSERT_EQ(NewDataType::Kind::Tuple, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Kind::Tuple, func->functionType().returnType().kind());
     ASSERT_EQ(2, func->functionType().returnType().subtypeCount());
-    ASSERT_EQ(NewDataType::Kind::Integer, func->functionType().returnType().subtypeAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Kind::Float, func->functionType().returnType().subtypeAtIndex(1).kind());
+    ASSERT_EQ(DataType::Kind::Integer, func->functionType().returnType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Float, func->functionType().returnType().subtypeAtIndex(1).kind());
 }
 
 TEST_F(ParserTests_Functions, FunctionWithTypedParamAndReturn) {
@@ -169,15 +169,15 @@ TEST_F(ParserTests_Functions, FunctionWithTypedParamAndReturn) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(1, func->functionType().parameterCount());
-    ASSERT_EQ(NewDataType::Kind::Integer, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Kind::Integer, func->functionType().returnType().kind());
 
-    ASSERT_EQ(NewDataType::Kind::Integer, func->functionType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Integer, func->functionType().parameterAtIndex(0).kind());
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
 
-    ASSERT_EQ(NewDataType::Kind::Integer, func->functionType().returnAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Integer, func->functionType().returnAtIndex(0).kind());
     ASSERT_EQ("", func->functionType().returnAtIndex(0).label());
 }
 
@@ -189,12 +189,12 @@ TEST_F(ParserTests_Functions, FunctionWithOneNamedReturn) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(0, func->functionType().parameterCount());
-    ASSERT_EQ(NewDataType::Kind::Integer, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Kind::Integer, func->functionType().returnType().kind());
 
-    ASSERT_EQ(NewDataType::Kind::Integer, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Kind::Integer, func->functionType().returnType().kind());
     ASSERT_EQ("x", func->functionType().returnType().label());
 }
 
@@ -210,7 +210,7 @@ TEST_F(ParserTests_Functions, FunctionNamedReturnIsALocal) {
     node = node->childAtIndex(0);
     ASSERT_EQ("Assign Operator", node->nodeName());
     ASSERT_EQ("Local Variable", node->childAtIndex(0)->nodeName());
-    ASSERT_EQ(NewDataType::Access::ReadWrite, node->childAtIndex(0)->dataType().access());
+    ASSERT_EQ(DataType::Access::ReadWrite, node->childAtIndex(0)->dataType().access());
     ASSERT_EQ("Integer Literal", node->childAtIndex(1)->nodeName());
 }
 
@@ -222,12 +222,12 @@ TEST_F(ParserTests_Functions, FunctionWithFunctionParam) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(1, func->functionType().parameterCount());
-    ASSERT_EQ(NewDataType::Kind::Void, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Kind::Void, func->functionType().returnType().kind());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().parameterAtIndex(0).kind());
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
 }
 
@@ -239,12 +239,12 @@ TEST_F(ParserTests_Functions, FunctionWithClosureParam) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(1, func->functionType().parameterCount());
-    ASSERT_EQ(NewDataType::Kind::Void, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Kind::Void, func->functionType().returnType().kind());
 
-    ASSERT_EQ(NewDataType::Kind::Closure, func->functionType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Closure, func->functionType().parameterAtIndex(0).kind());
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
 }
 
@@ -269,7 +269,7 @@ TEST_F(ParserTests_Functions, MethodDefinition) {
     Three::FunctionDefinitionNode* func = dynamic_cast<Three::FunctionDefinitionNode*>(node);
     ASSERT_EQ("test", func->name());
     ASSERT_TRUE(func->isMethod());
-    ASSERT_EQ(NewDataType::Kind::Integer, func->methodOnType().kind());
+    ASSERT_EQ(DataType::Kind::Integer, func->methodOnType().kind());
     
 }
 
@@ -293,8 +293,8 @@ TEST_F(ParserTests_Functions, MutableSelfInMethodDefinition) {
     ASSERT_EQ("Function Definition", node->nodeName());
 
     auto fnNode = dynamic_cast<FunctionDefinitionNode*>(node);
-    ASSERT_EQ(NewDataType::Kind::Integer, fnNode->methodOnType().kind());
-    ASSERT_EQ(NewDataType::Access::ReadWrite, fnNode->methodOnType().access());
+    ASSERT_EQ(DataType::Kind::Integer, fnNode->methodOnType().kind());
+    ASSERT_EQ(DataType::Access::ReadWrite, fnNode->methodOnType().access());
 
     node = node->childAtIndex(0);
     ASSERT_EQ("Addition Operator", node->nodeName());
@@ -319,12 +319,12 @@ TEST_F(ParserTests_Functions, Varargs) {
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("test", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(1, func->functionType().parameterCount());
-    ASSERT_EQ(NewDataType::Void, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Void, func->functionType().returnType().kind());
 
-    ASSERT_EQ(NewDataType::Kind::Vararg, func->functionType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Kind::Vararg, func->functionType().parameterAtIndex(0).kind());
     ASSERT_EQ("ap", func->functionType().parameterAtIndex(0).label());
 }
 
@@ -342,13 +342,13 @@ TEST_F(ParserTests_Functions, FunctionWithStructParam) {
     FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node);
     ASSERT_EQ("foo", func->name());
 
-    ASSERT_EQ(NewDataType::Kind::Function, func->functionType().kind());
+    ASSERT_EQ(DataType::Kind::Function, func->functionType().kind());
     ASSERT_EQ(0, func->functionType().subtypeCount());
     ASSERT_EQ(1, func->functionType().parameterCount());
-    ASSERT_EQ(NewDataType::Kind::Void, func->functionType().returnType().kind());
+    ASSERT_EQ(DataType::Kind::Void, func->functionType().returnType().kind());
 
-    ASSERT_EQ(NewDataType::Kind::Structure, func->functionType().parameterAtIndex(0).kind());
-    ASSERT_EQ(NewDataType::Access::Read, func->functionType().parameterAtIndex(0).access());
+    ASSERT_EQ(DataType::Kind::Structure, func->functionType().parameterAtIndex(0).kind());
+    ASSERT_EQ(DataType::Access::Read, func->functionType().parameterAtIndex(0).access());
     ASSERT_EQ("arg", func->functionType().parameterAtIndex(0).label());
 }
 
