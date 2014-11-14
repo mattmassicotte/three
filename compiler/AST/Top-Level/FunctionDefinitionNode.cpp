@@ -49,9 +49,27 @@ namespace Three {
 
         node->_name.prependName(parser.context()->scope()->fullNamespace());
 
+        // Might be generic.
+        // This part is a little weird, because we have to parse the generic
+        // params before we have the function type.
+        NewDataType genericType;
+        if (parser.helper()->peek().type() == Token::Type::OperatorLessThan) {
+            if (!parser.parseGenericParameters(genericType)) {
+                assert(0 && "Message: Unable to parse generic parameters");
+            }
+        }
+
         // parse signature
         node->_functionType = parser.parseFunctionSignatureType();
         node->_functionType.setLabel(node->fullName());
+
+        if (genericType.isGeneric()) {
+            // and now, if we really did parse generic params, we need to "merge"
+            // them into the function type.
+            for (uint32_t i = 0; i < genericType.genericParameterCount(); ++i) {
+                node->_functionType.addGenericParameter(genericType.genericParameterAtIndex(i));
+            }
+        }
 
         // insert the self parameter, if needed
         if (node->isMethod()) {

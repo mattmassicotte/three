@@ -232,3 +232,28 @@ TEST_F(ParserTests_Generics, UnsizedArrayConstrainedParam) {
     ASSERT_EQ(NewDataType::Kind::Generic, type.subtypeAtIndex(0).kind());
     ASSERT_EQ("T", type.subtypeAtIndex(0).name());
 }
+
+TEST_F(ParserTests_Generics, OneParamGenericFunction) {
+    ASTNode* node = this->parseNode("def foo<T>()\nend\n");
+
+    ASSERT_TRUE(node != nullptr);
+    ASSERT_EQ(1, node->childCount());
+    FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node->childAtIndex(0));
+
+    ASSERT_EQ("Function Definition", func->nodeName());
+    ASSERT_EQ("foo", func->name());
+
+    NewDataType type = func->functionType();
+    ASSERT_EQ(NewDataType::Kind::Function, type.kind());
+    ASSERT_EQ(0, type.subtypeCount());
+    ASSERT_EQ(0, type.parameterCount());
+    ASSERT_EQ(NewDataType::Void, type.returnType().kind());
+
+    ASSERT_TRUE(type.isGeneric());
+    ASSERT_EQ(1, type.genericParameterCount());
+
+    type = type.genericParameterAtIndex(0);
+    ASSERT_EQ(NewDataType::Kind::Generic, type.kind());
+    ASSERT_EQ("T", type.name());
+    ASSERT_EQ(0, type.widthSpecifier());
+}
