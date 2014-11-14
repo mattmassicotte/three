@@ -272,6 +272,7 @@ namespace Three {
             case KeywordStructure:
             case KeywordEnumeration:
             case KeywordUnion:
+            case KeywordDebug:
                 return true;
             default:
                 break;
@@ -299,6 +300,7 @@ namespace Three {
             case KeywordStructure:
             case KeywordEnumeration:
             case KeywordUnion:
+            case KeywordDebug:
                 return KeywordEnd;
             default:
                 break;

@@ -122,6 +122,7 @@ namespace Three {
             KeywordLinkage,
             KeywordABI,
             KeywordAssert,
+            KeywordDebug,
 
             AnnotationAccess,
             AnnotationVolatile,

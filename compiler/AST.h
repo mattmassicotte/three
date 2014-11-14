@@ -14,6 +14,7 @@
 #include "AST/Control/IfNode.h"
 #include "AST/Control/ReturnNode.h"
 #include "AST/Control/ClosureNode.h"
+#include "AST/Directives/DebugNode.h"
 #include "AST/Directives/ImportNode.h"
 #include "AST/Directives/ModuleImportNode.h"
 #include "AST/Directives/IncludeNode.h"

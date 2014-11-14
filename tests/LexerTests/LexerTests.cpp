@@ -729,6 +729,13 @@ TEST_F(LexerTest, KeywordAssert) {
     ASSERT_NEXT_TOKEN(Undefined, "");
 }
 
+TEST_F(LexerTest, KeywordDebug) {
+    this->lex("debug");
+
+    ASSERT_NEXT_TOKEN(KeywordDebug, "debug");
+    ASSERT_NEXT_TOKEN(Undefined, "");
+}
+
 // Annotations
 TEST_F(LexerTest, AnnotationAccess) {
     this->lex("@access");

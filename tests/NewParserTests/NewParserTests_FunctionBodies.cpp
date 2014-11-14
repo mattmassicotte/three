@@ -53,6 +53,15 @@ TEST_F(ParserTests_FunctionBodies, If) {
     ASSERT_EQ("  if abc\n  end\n", func->bodyStream()->str());
 }
 
+TEST_F(ParserTests_FunctionBodies, Debug) {
+    FunctionDefinitionNode* func = this->parseFunction("def foo()\n"
+                                                       "  debug\n"
+                                                       "  end\n"
+                                                       "end\n");
+
+    ASSERT_EQ("  debug\n  end\n", func->bodyStream()->str());
+}
+
 TEST_F(ParserTests_FunctionBodies, IfWithLeadingNewline) {
     FunctionDefinitionNode* func = this->parseFunction("def foo()\n"
                                                        "\n"

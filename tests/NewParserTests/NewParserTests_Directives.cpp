@@ -76,3 +76,32 @@ TEST_F(ParserTests_Directives, EmptyNamespaceWithWhitespace) {
     ASSERT_EQ("Foo", dynamic_cast<NamespaceNode*>(node)->name());
 }
 
+TEST_F(ParserTests_Directives, EmptyDebug) {
+    ASTNode* node = this->parseNode("debug\n"
+                                    "end\n");
+
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Debug", node->nodeName());
+}
+
+TEST_F(ParserTests_Directives, EmptyTopLevelDebug) {
+    ASTNode* node = this->parseNode("debug\n"
+                                    "end\n");
+
+    ASSERT_EQ(1, node->childCount());
+    ASSERT_EQ("Debug", node->childAtIndex(0)->nodeName());
+}
+
+TEST_F(ParserTests_Directives, DebugWithinFunction) {
+    ASTNode* node = this->parseSingleFunction("def test(Int x)\n"
+                                              "  debug\n"
+                                              "    x = 5\n"
+                                              "  end\n"
+                                              "end\n");
+
+    ASSERT_EQ("Function Definition", node->nodeName());
+    ASSERT_EQ(1, node->childCount());
+    ASSERT_EQ("Debug", node->childAtIndex(0)->nodeName());
+}

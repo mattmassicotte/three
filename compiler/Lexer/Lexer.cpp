@@ -52,6 +52,7 @@ namespace Three {
         _keywordMap["linkage"] = Token::Type::KeywordLinkage;
         _keywordMap["abi"] = Token::Type::KeywordABI;
         _keywordMap["assert"] = Token::Type::KeywordAssert;
+        _keywordMap["debug"] = Token::Type::KeywordDebug;
 
         _annotationMap["access"] = Token::Type::AnnotationAccess;
         _annotationMap["volatile"] = Token::Type::AnnotationVolatile;

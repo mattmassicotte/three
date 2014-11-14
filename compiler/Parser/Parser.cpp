@@ -194,6 +194,9 @@ namespace Three {
             case Token::Type::KeywordNamespace:
                 node = NamespaceNode::parse(*this);
                 break;
+            case Token::Type::KeywordDebug:
+                node = DebugNode::parse(*this);
+                break;
             case Token::Type::KeywordEnd:
                 // Tokens that are invalid in a top-level context should go here.
                 // TODO: There are lots more.
@@ -255,6 +258,9 @@ namespace Three {
                 break;
             case Token::Type::KeywordBarrier:
                 node = IfNode::parseTailing(*this, BarrierNode::parse(*this));
+                break;
+            case Token::Type::KeywordDebug:
+                node = DebugNode::parse(*this);
                 break;
             default:
                 if (this->isAtType()) {
