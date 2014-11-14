@@ -1,7 +1,7 @@
 #include "FunctionDefinitionNode.h"
 #include "compiler/Parser/Parser.h"
 #include "compiler/Lexer/Lexer.h"
-#include "compiler/constructs/NewScope.h"
+#include "compiler/constructs/Scope.h"
 #include "compiler/constructs/QualifiedName.h"
 #include "compiler/AST/Atomics/AtomicNode.h"
 
@@ -243,13 +243,13 @@ namespace Three {
         }
     }
 
-    void FunctionDefinitionNode::defineVariableForReturnType(NewScope* scope, const DataType& type) const {
+    void FunctionDefinitionNode::defineVariableForReturnType(Scope* scope, const DataType& type) const {
         assert(type.label().size() != 0);
 
         scope->defineVariableTypeForName(type, type.label());
     }
 
-    void FunctionDefinitionNode::defineParameterVariablesInScope(NewScope* scope) const {
+    void FunctionDefinitionNode::defineParameterVariablesInScope(Scope* scope) const {
         // create variables for all arguments in this scope, including the special self
         // variable if this is a method
         _functionType.eachParameterWithLast([&] (const DataType& type, bool last) {

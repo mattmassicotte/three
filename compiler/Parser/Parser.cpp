@@ -1,7 +1,7 @@
 #include "Parser.h"
 #include "ParseHelper.h"
 #include "compiler/constructs/DataType.h"
-#include "compiler/constructs/NewScope.h"
+#include "compiler/constructs/Scope.h"
 #include "compiler/Lexer/Lexer.h"
 #include "compiler/Preprocessing/Preprocessor.h"
 

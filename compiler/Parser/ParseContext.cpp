@@ -2,7 +2,7 @@
 #include "compiler/Messages/Message.h"
 #include "compiler/AST/RootNode.h"
 #include "compiler/constructs/DataType.h"
-#include "compiler/constructs/NewScope.h"
+#include "compiler/constructs/Scope.h"
 #include "compiler/constructs/QualifiedName.h"
 #include "compiler/constructs/NewVariable.h"
 #include "compiler/CSourceIndexer.h"
@@ -14,7 +14,7 @@
 namespace Three {
     ParseContext::ParseContext() : skipIncludes(false), skipImports(false) {
         _rootNode = new RootNode();
-        _rootScope = new NewScope();
+        _rootScope = new Scope();
         _currentScope = _rootScope;
         _visibility = TranslationUnit::Visibility::Default;
 
@@ -354,12 +354,12 @@ namespace Three {
         return this->defineVariable(variable, scoped);
     }
 
-    NewScope* ParseContext::scope() const {
+    Scope* ParseContext::scope() const {
         return _currentScope;
     }
 
     void ParseContext::pushScope() {
-        NewScope* scope = new NewScope();
+        Scope* scope = new Scope();
 
         scope->setParent(_currentScope);
 
@@ -369,7 +369,7 @@ namespace Three {
     void ParseContext::popScope() {
         assert(_currentScope != _rootScope);
 
-        NewScope* old = _currentScope;
+        Scope* old = _currentScope;
 
         assert(old->parent());
         _currentScope = old->parent();
@@ -377,7 +377,7 @@ namespace Three {
         delete old;
     }
 
-    NewScope* ParseContext::rootScope() const {
+    Scope* ParseContext::rootScope() const {
         return _rootScope;
     }
 

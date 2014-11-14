@@ -1,21 +1,21 @@
-#include "NewScope.h"
+#include "Scope.h"
 #include "NewVariable.h"
 #include "QualifiedName.h"
 
 #include <sstream>
 
 namespace Three {
-    NewScope::NewScope() : _capturing(false), _parent(nullptr) {
+    Scope::Scope() : _capturing(false), _parent(nullptr) {
     }
 
-    NewScope::~NewScope() {
+    Scope::~Scope() {
     }
 
-    bool NewScope::capturing() const {
+    bool Scope::capturing() const {
         return _capturing;
     }
 
-    bool NewScope::capturingOrParentCapturing() const {
+    bool Scope::capturingOrParentCapturing() const {
         if (_capturing) {
             return true;
         }
@@ -29,23 +29,23 @@ namespace Three {
 
     }
 
-    void NewScope::setCapturing(bool value) {
+    void Scope::setCapturing(bool value) {
         _capturing = value;
     }
 
-    std::string NewScope::scopedBasename() const {
+    std::string Scope::scopedBasename() const {
         return _scopedBasename;
     }
 
-    void NewScope::setScopedBasename(const std::string& value) {
+    void Scope::setScopedBasename(const std::string& value) {
         _scopedBasename = value;
     }
 
-    void NewScope::setCurrentFunctionReturnType(const DataType& type) {
+    void Scope::setCurrentFunctionReturnType(const DataType& type) {
         _returnType = type;
     }
 
-    DataType NewScope::currentFunctionReturnType() const {
+    DataType Scope::currentFunctionReturnType() const {
         if (_returnType.defined()) {
             return _returnType;
         }
@@ -55,15 +55,15 @@ namespace Three {
         return _parent->currentFunctionReturnType();
     }
 
-    NewScope* NewScope::parent() const {
+    Scope* Scope::parent() const {
         return _parent;
     }
 
-    void NewScope::setParent(NewScope* p) {
+    void Scope::setParent(Scope* p) {
         _parent = p;
     }
 
-    std::string NewScope::scopedName(const std::string& name) {
+    std::string Scope::scopedName(const std::string& name) {
         if (_scopedBasename.length() == 0) {
             assert(_parent);
             return _parent->scopedName(name);
@@ -82,7 +82,7 @@ namespace Three {
         return s.str();
     }
 
-    std::string NewScope::currentScopedName(const std::string& basename) {
+    std::string Scope::currentScopedName(const std::string& basename) {
         auto it = _scopedNames.find(basename);
 
         if (it == _scopedNames.cend()) {
@@ -96,7 +96,7 @@ namespace Three {
         return s.str();
     }
 
-    NewVariable* NewScope::variableForName(const std::string& name) const {
+    NewVariable* Scope::variableForName(const std::string& name) const {
         auto it = _variables.find(name);
 
         if (it != _variables.cend()) {
@@ -111,13 +111,13 @@ namespace Three {
         return _parent->variableForName(name);
     }
 
-    bool NewScope::defineVariable(NewVariable* variable) {
+    bool Scope::defineVariable(NewVariable* variable) {
         _variables[variable->name] = variable;
 
         return true;
     }
 
-    bool NewScope::defineVariableTypeForName(const DataType& type, const std::string& name) {
+    bool Scope::defineVariableTypeForName(const DataType& type, const std::string& name) {
         NewVariable* variable = new NewVariable();
 
         variable->name = name;
@@ -126,7 +126,7 @@ namespace Three {
         return this->defineVariable(variable);
     }
 
-    bool NewScope::referencedVariable(const std::string& name, bool passedOverCapturing) const {
+    bool Scope::referencedVariable(const std::string& name, bool passedOverCapturing) const {
         if (std::find(_referencedVariables.cbegin(), _referencedVariables.cend(), name) != _referencedVariables.cend()) {
             return true;
         }
@@ -152,13 +152,13 @@ namespace Three {
         return _parent->referencedVariable(name, passedOverCapturing);
     }
 
-    void NewScope::addReferencedVariable(const std::string& name) {
+    void Scope::addReferencedVariable(const std::string& name) {
         assert(!this->referencedVariable(name));
 
         _referencedVariables.push_back(name);
     }
 
-    bool NewScope::capturedVariable(const std::string& name, bool passedOverCapturing) const {
+    bool Scope::capturedVariable(const std::string& name, bool passedOverCapturing) const {
         // if this scope defined the variable, it is only captured if we've passed over
         // a closure
         if (_variables.find(name) != _variables.cend()) {
@@ -176,7 +176,7 @@ namespace Three {
         return _parent->capturedVariable(name, passedOverCapturing);
     }
 
-    void NewScope::captureVariable(const std::string& name) {
+    void Scope::captureVariable(const std::string& name) {
         if (std::find(_capturedVariables.cbegin(), _capturedVariables.cend(), name) != _capturedVariables.cend()) {
             return;
         }
@@ -184,14 +184,14 @@ namespace Three {
         _capturedVariables.push_back(name);
     }
 
-    std::vector<std::string> NewScope::capturedVariables() const {
+    std::vector<std::string> Scope::capturedVariables() const {
         return _capturedVariables;
     }
 
-    QualifiedName NewScope::fullNamespace() const {
+    QualifiedName Scope::fullNamespace() const {
         QualifiedName name(_namespace);
 
-        NewScope* scope = this->parent();
+        Scope* scope = this->parent();
         while (scope) {
             name.prependName(scope->_namespace);
 
@@ -201,11 +201,11 @@ namespace Three {
         return name;
     }
 
-    void NewScope::setNamespace(const QualifiedName& name) {
+    void Scope::setNamespace(const QualifiedName& name) {
         _namespace = name;
     }
 
-    QualifiedName NewScope::qualifiedNameWithIdentifier(const std::string& name) {
+    QualifiedName Scope::qualifiedNameWithIdentifier(const std::string& name) {
         QualifiedName fullName(name);
 
         fullName.prependName(this->fullNamespace());

@@ -1,6 +1,6 @@
 #include "CompositeTypeDefinitionNode.h"
 #include "compiler/Parser/Parser.h"
-#include "compiler/Constructs/NewScope.h"
+#include "compiler/Constructs/Scope.h"
 #include "../Variables/VariableDeclarationNode.h"
 #include "StructureNode.h"
 #include "EnumerationNode.h"

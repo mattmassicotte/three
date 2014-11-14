@@ -10,7 +10,7 @@ namespace Three {
     class ASTNode;
     class RootNode;
     class Message;
-    class NewScope;
+    class Scope;
     class NewVariable;
     class QualifiedName;
 }
@@ -56,10 +56,10 @@ namespace Three {
         bool defineVariable(NewVariable* variable, bool scoped=true);
         bool defineVariableTypeForName(const DataType& type, const std::string& name, bool scoped=true);
 
-        NewScope* scope() const;
+        Scope* scope() const;
         void pushScope();
         void popScope();
-        NewScope* rootScope() const;
+        Scope* rootScope() const;
 
         void postProcessAST();
 
@@ -74,8 +74,8 @@ namespace Three {
 
     private:
         RootNode* _rootNode;
-        NewScope* _rootScope;
-        NewScope* _currentScope;
+        Scope* _rootScope;
+        Scope* _currentScope;
         TranslationUnit::Visibility _visibility;
 
         std::vector<Message*> _messages;

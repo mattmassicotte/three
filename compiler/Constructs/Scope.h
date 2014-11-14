@@ -12,16 +12,16 @@ namespace Three {
 }
 
 namespace Three {
-    class NewScope {
+    class Scope {
     public:
-        NewScope();
-        virtual ~NewScope();
+        Scope();
+        virtual ~Scope();
 
     private:
-        NewScope(const NewScope& other);
-        NewScope(NewScope&& other);
-        NewScope& operator=(NewScope other);
-        NewScope& operator=(NewScope&& other);
+        Scope(const Scope& other);
+        Scope(Scope&& other);
+        Scope& operator=(Scope other);
+        Scope& operator=(Scope&& other);
 
     public:
         bool capturing() const;
@@ -31,8 +31,8 @@ namespace Three {
         void setScopedBasename(const std::string& value);
         void setCurrentFunctionReturnType(const DataType& type);
         DataType currentFunctionReturnType() const;
-        NewScope* parent() const;
-        void setParent(NewScope* p);
+        Scope* parent() const;
+        void setParent(Scope* p);
 
         std::string scopedName(const std::string& basename);
         std::string currentScopedName(const std::string& basename);
@@ -52,7 +52,7 @@ namespace Three {
         QualifiedName qualifiedNameWithIdentifier(const std::string& name);
 
     private:
-        NewScope* _parent;
+        Scope* _parent;
         bool _capturing;
         DataType _returnType;
 

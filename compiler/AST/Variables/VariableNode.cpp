@@ -1,6 +1,6 @@
 #include "VariableNode.h"
 #include "compiler/Parser/Parser.h"
-#include "compiler/constructs/NewScope.h"
+#include "compiler/constructs/Scope.h"
 #include "LocalVariableNode.h"
 #include "FunctionVariableNode.h"
 #include "ReferencedVariableNode.h"

@@ -6,7 +6,7 @@
 #include "compiler/Lexer/Token.h"
 
 namespace Three {
-    class NewScope;
+    class Scope;
 }
 
 namespace Three {
@@ -35,8 +35,8 @@ namespace Three {
         void eachNamedReturn(std::function<void (const DataType&)> block) const;
 
     private:
-        void defineVariableForReturnType(NewScope* scope, const DataType& type) const;
-        void defineParameterVariablesInScope(NewScope* scope) const;
+        void defineVariableForReturnType(Scope* scope, const DataType& type) const;
+        void defineParameterVariablesInScope(Scope* scope) const;
 
     private:
         DataType _functionType;
