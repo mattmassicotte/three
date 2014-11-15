@@ -78,3 +78,42 @@ TEST_F(ParserTests_Atomics, AtomicStatementWithAbort) {
     ASSERT_EQ("Atomic Statement", node->nodeName());
     ASSERT_EQ("Abort", node->childAtIndex(0)->nodeName());
 }
+
+TEST_F(ParserTests_Atomics, AtomicStatementWithFallbackFunctions) {
+    ASTNode* node = this->parseNodeWithBodies("def fn_1(*Void ptr; Bool)\n"
+                                              "  return true\n"
+                                              "end\n"
+                                              "def fn_2(*Void ptr; Bool)\n"
+                                              "  return true\n"
+                                              "end\n"
+                                              "def test(*Void ptr)\n"
+                                              "  atomic:fallback(fn_1, fn_2, ptr)\n"
+                                              "    abort\n"
+                                              "  end\n"
+                                              "end\n");
+
+    ASSERT_EQ(3, node->childCount());
+    node = node->childAtIndex(2);
+
+    ASSERT_EQ("Function Definition", node->nodeName());
+    ASSERT_EQ(1, node->childCount());
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ("Atomic Statement", node->nodeName());
+    auto atomicNode = dynamic_cast<AtomicStatementNode*>(node);
+
+    node = atomicNode->lockFunction();
+    ASSERT_TRUE(node != nullptr);
+    ASSERT_EQ("Function Variable", node->nodeName());
+    ASSERT_EQ("fn_1", node->name());
+
+    node = atomicNode->unlockFunction();
+    ASSERT_TRUE(node != nullptr);
+    ASSERT_EQ("Function Variable", node->nodeName());
+    ASSERT_EQ("fn_2", node->name());
+
+    node = atomicNode->lockContext();
+    ASSERT_TRUE(node != nullptr);
+    ASSERT_EQ("Local Variable", node->nodeName());
+    ASSERT_EQ("ptr", node->name());
+}

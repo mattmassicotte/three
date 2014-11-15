@@ -704,6 +704,10 @@ b = <span class="keyword">atomic</span>:<span class="keyword">ordered</span>(a <
     <span class="keyword">abort</span> <span class="keyword">if</span> b > 10
   <span class="keyword">end</span>
 <span class="keyword">end</span>
+
+<span class="keyword">atomic</span>:<span class="keyword">fallback</span>(lock_fn, unlock_fn, context_ptr)
+  <span class="comment"># body</span>
+<span class="keyword">end</span>
                     </code></pre>
                 </td>
                 <td>

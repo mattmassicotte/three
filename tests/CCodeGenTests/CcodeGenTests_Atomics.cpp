@@ -72,6 +72,41 @@ TEST_F(CCodeGenTests_Atomics, AtomicStatementWithAbort) {
               "}\n\n", visitor->bodyString());
 }
 
+TEST_F(CCodeGenTests_Atomics, AtomicStatementWithFallback) {
+    Three::CCodeGenVisitor* visitor = this->visit("def fn_1(*Void ptr; Bool)\n"
+                                                  "  return true\n"
+                                                  "end\n"
+                                                  "def fn_2(*Void ptr; Bool)\n"
+                                                  "  return true\n"
+                                                  "end\n"
+                                                  "def test(*Void ptr)\n"
+                                                  "  atomic:fallback(fn_1, fn_2, ptr)\n"
+                                                  "    Int x = 5\n"
+                                                  "  end\n"
+                                                  "end\n");
+
+    EXPECT_EQ("#include <assert.h>\n"
+              "#include <three/runtime/transactional_memory.h>\n\n", visitor->declarationsString());
+    EXPECT_EQ("const bool fn_1(void* const ptr);\n"
+              "const bool fn_2(void* const ptr);\n"
+              "void test(void* const ptr);\n", visitor->internalHeaderString());
+    EXPECT_EQ("const bool fn_1(void* const ptr) {\n"
+              "    return true;\n"
+              "}\n\n"
+              "const bool fn_2(void* const ptr) {\n"
+              "    return true;\n"
+              "}\n\n"
+              "void test(void* const ptr) {\n"
+              "    three_transaction_t test_tx_1 = THREE_MAKE_TRANSACTION(ptr,fn_1,fn_2);\n"
+              "    if (three_transaction_begin(&test_tx_1)) {\n"
+              "        const int x = 5;\n"
+              "        three_transaction_end(&test_tx_1);\n"
+              "    } else {\n"
+              "        assert(0 && \"transaction 'test_tx_1' failed without any fallback path\");\n"
+              "    }\n"
+              "}\n\n", visitor->bodyString());
+}
+
 TEST_F(CCodeGenTests_Atomics, MemoryBarrier) {
     Three::CCodeGenVisitor* visitor = this->visit("def test()\n"
                                                   "  barrier\n"

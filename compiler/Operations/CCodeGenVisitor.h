@@ -77,7 +77,7 @@ namespace Three {
         void returnStatementArgument(class ReturnNode& node);
         void prepareForAtomicExpressions();
         void prepareForTransactions();
-        void transactionAllocation(const std::string& name);
+        void transactionAllocation(const std::string& name, ASTNode* lockFunction, ASTNode* unlockFunction, ASTNode* context);
         void endCurrentTransaction(const std::string& name);
         std::string c11MemoryOrderString(AtomicNode::Ordering order) const;
         void atomicVariable(class OperatorNode* op);

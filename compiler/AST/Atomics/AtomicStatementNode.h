@@ -15,8 +15,15 @@ namespace Three {
         std::string transactionName() const;
         ASTNode* elseClause() const;
 
+        ASTNode* lockFunction() const;
+        ASTNode* unlockFunction() const;
+        ASTNode* lockContext() const;
+
     private:
         ASTNode* _elseNode;
         std::string _transactionName;
+        ASTNode* _lockFunctionNode;
+        ASTNode* _unlockFunctionNode;
+        ASTNode* _lockContextNode;
     };
 }

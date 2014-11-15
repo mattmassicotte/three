@@ -642,7 +642,7 @@ namespace Three {
     void CCodeGenVisitor::visit(AtomicStatementNode& node) {
         this->prepareForTransactions();
 
-        this->transactionAllocation(node.transactionName());
+        this->transactionAllocation(node.transactionName(), node.lockFunction(), node.unlockFunction(), node.lockContext());
 
         *_currentSource << "if (three_transaction_begin(&" << node.transactionName();
         _currentSource->printLineAndIndent(")) {");
@@ -750,10 +750,20 @@ namespace Three {
         _declaractionsSource.addHeader(false, "three/runtime/transactional_memory.h");
     }
 
-    void CCodeGenVisitor::transactionAllocation(const std::string& name) {
+    void CCodeGenVisitor::transactionAllocation(const std::string& name, ASTNode* lockFunction, ASTNode* unlockFunction, ASTNode* context) {
         *_currentSource << "three_transaction_t ";
         *_currentSource << name;
-        *_currentSource << " = THREE_MAKE_DEFAULT_TRANSACTION()";
+        if (lockFunction == nullptr) {
+            *_currentSource << " = THREE_MAKE_DEFAULT_TRANSACTION()";
+        } else {
+            *_currentSource << " = THREE_MAKE_TRANSACTION(";
+            context->accept(*this);
+            *_currentSource << ",";
+            lockFunction->accept(*this);
+            *_currentSource << ",";
+            unlockFunction->accept(*this);
+            *_currentSource << ")";
+        }
         _currentSource->printLine(";");
     }
 
