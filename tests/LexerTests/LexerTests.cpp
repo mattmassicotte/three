@@ -491,6 +491,13 @@ TEST_F(LexerTest, MetafunctionOffsetof) {
     ASSERT_NEXT_TOKEN(Undefined, "");
 }
 
+TEST_F(LexerTest, MetafunctionABIof) {
+    this->lex("abiof");
+
+    ASSERT_NEXT_TOKEN(MetafunctionABIof, "abiof");
+    ASSERT_NEXT_TOKEN(Undefined, "");
+}
+
 TEST_F(LexerTest, MetafunctionTypeof) {
     this->lex("typeof");
 

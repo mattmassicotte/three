@@ -10,11 +10,17 @@ namespace Three {
             case Token::Type::MetafunctionCast:
                 return CastNode::parse(parser);
             case Token::Type::MetafunctionAlignof:
+                return AlignofNode::parse(parser);
             case Token::Type::MetafunctionOffsetof:
+                return OffsetofNode::parse(parser);
+            case Token::Type::MetafunctionABIof:
+                return ABIofNode::parse(parser);
             case Token::Type::MetafunctionTypeof:
+                return TypeofNode::parse(parser);
             case Token::Type::MetafunctionNameof:
+                return NameofNode::parse(parser);
             case Token::Type::MetafunctionCardinalityof:
-                break;
+                return CardinalityofNode::parse(parser);
             case Token::Type::MetafunctionNextarg:
                 return NextargNode::parse(parser);
             default:

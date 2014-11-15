@@ -17,16 +17,20 @@ TEST_F(ParserTests_Metafunctions, Sizeof) {
     EXPECT_EQ(0, metaFn->childCount());
 }
 
-TEST_F(ParserTests_Metafunctions, DISABLED_Alignof) {
+TEST_F(ParserTests_Metafunctions, Alignof) {
     Three::ASTNode* node = this->parseSingleFunction("def test()\n"
                                                      "  alignof(Int)\n"
                                                      "end\n");
 
-    std::cout << node->recursiveStr() << std::endl;
-    ASSERT_TRUE(false);
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Alignof Metafunction", node->nodeName());
+
+    auto metaFn = dynamic_cast<Three::AlignofNode*>(node);
+    EXPECT_EQ(DataType::Kind::Integer, metaFn->dataTypeArgument.kind());
+    EXPECT_EQ(0, metaFn->childCount());
 }
 
-TEST_F(ParserTests_Metafunctions, DISABLED_Offsetof) {
+TEST_F(ParserTests_Metafunctions, Offsetof) {
     Three::ASTNode* node = this->parseNodeWithBodies("struct MyStruct\n"
                                                      "  a\n"
                                                      "end\n"
@@ -34,35 +38,71 @@ TEST_F(ParserTests_Metafunctions, DISABLED_Offsetof) {
                                                      "  offsetof(MyStruct, a)\n"
                                                      "end\n");
 
-    std::cout << node->recursiveStr() << std::endl;
-    ASSERT_TRUE(false);
+    ASSERT_EQ(2, node->childCount());
+    node = node->childAtIndex(1);
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    ASSERT_EQ(1, node->childCount());
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Offsetof Metafunction", node->nodeName());
+    
+    auto metaFn = dynamic_cast<Three::OffsetofNode*>(node);
+    EXPECT_EQ(DataType::Kind::Structure, metaFn->dataTypeArgument.kind());
+    EXPECT_EQ("a", metaFn->memberName);
+    EXPECT_EQ(0, metaFn->childCount());
 }
 
-TEST_F(ParserTests_Metafunctions, DISABLED_Nameof) {
+TEST_F(ParserTests_Metafunctions, Nameof) {
     Three::ASTNode* node = this->parseSingleFunction("def test()\n"
                                                      "  nameof(Int)\n"
                                                      "end\n");
-    
-    std::cout << node->recursiveStr() << std::endl;
-    ASSERT_TRUE(false);
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Nameof Metafunction", node->nodeName());
+
+    auto metaFn = dynamic_cast<Three::NameofNode*>(node);
+    EXPECT_EQ(DataType::Kind::Integer, metaFn->dataTypeArgument.kind());
+    EXPECT_EQ(0, metaFn->childCount());
 }
 
-TEST_F(ParserTests_Metafunctions, DISABLED_Cardinalityof) {
+TEST_F(ParserTests_Metafunctions, Typeof) {
+    Three::ASTNode* node = this->parseSingleFunction("def test()\n"
+                                                     "  typeof(Int)\n"
+                                                     "end\n");
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Typeof Metafunction", node->nodeName());
+
+    auto metaFn = dynamic_cast<Three::TypeofNode*>(node);
+    EXPECT_EQ(DataType::Kind::Integer, metaFn->dataTypeArgument.kind());
+    EXPECT_EQ(0, metaFn->childCount());
+}
+
+TEST_F(ParserTests_Metafunctions, Cardinalityof) {
     Three::ASTNode* node = this->parseSingleFunction("def test([5]Int array)\n"
                                                      "  cardinalityof(array)\n"
                                                      "end\n");
-    
-    std::cout << node->recursiveStr() << std::endl;
-    ASSERT_TRUE(false);
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Cardinalityof Metafunction", node->nodeName());
+
+    auto metaFn = dynamic_cast<Three::CardinalityofNode*>(node);
+    ASSERT_EQ(1, metaFn->childCount());
+    EXPECT_EQ("Local Variable", metaFn->childAtIndex(0)->nodeName());
 }
 
-TEST_F(ParserTests_Metafunctions, DISABLED_abiof) {
+TEST_F(ParserTests_Metafunctions, abiof) {
     Three::ASTNode* node = this->parseSingleFunction("def test()\n"
                                                      "  abiof(test)\n"
                                                      "end\n");
+
+    ASSERT_EQ(1, node->childCount());
+    node = node->childAtIndex(0);
+    ASSERT_EQ("ABIof Metafunction", node->nodeName());
     
-    std::cout << node->recursiveStr() << std::endl;
-    ASSERT_TRUE(false);
+    auto metaFn = dynamic_cast<Three::ABIofNode*>(node);
+    ASSERT_EQ(1, metaFn->childCount());
+    EXPECT_EQ("Function Variable", metaFn->childAtIndex(0)->nodeName());
+    EXPECT_EQ("test", metaFn->childAtIndex(0)->name());
 }
 
 TEST_F(ParserTests_Metafunctions, Cast) {

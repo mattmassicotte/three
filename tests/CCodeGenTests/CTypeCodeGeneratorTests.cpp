@@ -101,3 +101,12 @@ TEST_F(CTypeCodeGeneratorTests, NullablePointer) {
     EXPECT_EQ("const int* THREE_ATTR_NULLABLE const", CTypeCodeGenerator::codeGen(type));
     EXPECT_EQ("const int* THREE_ATTR_NULLABLE const x", CTypeCodeGenerator::codeGen(type, "x"));
 }
+
+TEST_F(CTypeCodeGeneratorTests, ConstIntArray) {
+    DataType type(DataType::Kind::Array);
+    type.setAccess(DataType::Access::ReadWrite);
+    type.setArrayCount(5);
+    type.addSubtype(DataType(DataType::Kind::Integer));
+
+    EXPECT_EQ("const int[5]", CTypeCodeGenerator::codeGen(type));
+}

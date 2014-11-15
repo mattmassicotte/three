@@ -11,7 +11,5 @@ namespace Three {
     public:
         virtual std::string nodeName() const;
         void accept(ASTVisitor& visitor);
-
-        DataType dataTypeArgument;
     };
 }

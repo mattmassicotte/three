@@ -567,6 +567,37 @@ namespace Three {
         *_currentSource << ")";
     }
 
+    void CCodeGenVisitor::visit(AlignofNode& node) {
+        *_currentSource << "alignof(";
+        *_currentSource << CTypeCodeGenerator::codeGen(node.dataTypeArgument);
+        *_currentSource << ")";
+    }
+
+    void CCodeGenVisitor::visit(OffsetofNode& node) {
+        *_currentSource << "offsetof(";
+        *_currentSource << CTypeCodeGenerator::codeGen(node.dataTypeArgument);
+        *_currentSource << ",";
+        *_currentSource << node.memberName;
+        *_currentSource << ")";
+    }
+
+    void CCodeGenVisitor::visit(TypeofNode& node) {
+        *_currentSource << "typeof(";
+        *_currentSource << CTypeCodeGenerator::codeGen(node.dataTypeArgument);
+        *_currentSource << ")";
+    }
+
+    void CCodeGenVisitor::visit(CardinalityofNode& node) {
+        *_currentSource << "sizeof(";
+        if (node.dataTypeArgument.defined()) {
+            *_currentSource << CTypeCodeGenerator::codeGen(node.dataTypeArgument);
+        } else {
+            assert(node.childCount() == 1);
+            node.childAtIndex(0)->accept(*this);
+        }
+        *_currentSource << ")";
+    }
+
     void CCodeGenVisitor::visit(CastNode& node) {
         assert(node.childCount() == 1);
 

@@ -78,6 +78,15 @@ namespace Three {
                 s << CTypeCodeGenerator::codeGenScalarType(type);
                 break;
             case DataType::Kind::Array:
+                s << CTypeCodeGenerator::codeGenType(type.subtypeAtIndex(0));
+
+                s << "[";
+                if (type.arrayCount() > 0) {
+                    s << type.arrayCount();
+                }
+                s << "]";
+
+                assert(type.subtypeCount() > 0);
                 break;
             case DataType::Kind::Pointer:
             case DataType::Kind::NullablePointer:

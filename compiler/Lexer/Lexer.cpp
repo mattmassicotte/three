@@ -18,6 +18,7 @@ namespace Three {
         _keywordMap["cardinalityof"] = Token::Type::MetafunctionCardinalityof;
         _keywordMap["alignof"] = Token::Type::MetafunctionAlignof;
         _keywordMap["offsetof"] = Token::Type::MetafunctionOffsetof;
+        _keywordMap["abiof"] = Token::Type::MetafunctionABIof;
         _keywordMap["typeof"] = Token::Type::MetafunctionTypeof;
         _keywordMap["nameof"] = Token::Type::MetafunctionNameof;
         _keywordMap["nextarg"] = Token::Type::MetafunctionNextarg;

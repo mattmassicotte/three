@@ -11,5 +11,7 @@ namespace Three {
         std::string nodeName() const;
         std::string name() const;
         void accept(ASTVisitor& visitor);
+
+        DataType dataTypeArgument;
     };
 }

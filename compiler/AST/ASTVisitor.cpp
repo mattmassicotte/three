@@ -140,6 +140,22 @@ namespace Three {
         std::cout << "Visiting sizeof" << std::endl;
     }
 
+    void ASTVisitor::visit(class AlignofNode& node) {
+        std::cout << "Visiting alignof" << std::endl;
+    }
+
+    void ASTVisitor::visit(class OffsetofNode& node) {
+        std::cout << "Visiting offsetof" << std::endl;
+    }
+
+    void ASTVisitor::visit(class TypeofNode& node) {
+        std::cout << "Visiting typeof" << std::endl;
+    }
+
+    void ASTVisitor::visit(class CardinalityofNode& node) {
+        std::cout << "Visiting cardinalityof" << std::endl;
+    }
+
     void ASTVisitor::visit(class CastNode& node) {
         std::cout << "Visiting cast" << std::endl;
     }

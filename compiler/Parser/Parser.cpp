@@ -424,6 +424,7 @@ namespace Three {
             case Token::Type::MetafunctionCast:
             case Token::Type::MetafunctionAlignof:
             case Token::Type::MetafunctionOffsetof:
+            case Token::Type::MetafunctionABIof:
             case Token::Type::MetafunctionTypeof:
             case Token::Type::MetafunctionNameof:
             case Token::Type::MetafunctionCardinalityof:

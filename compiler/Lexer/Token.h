@@ -88,6 +88,7 @@ namespace Three {
             MetafunctionAlignof,
             MetafunctionOffsetof,
             MetafunctionTypeof,
+            MetafunctionABIof,
             MetafunctionNameof,
             MetafunctionCardinalityof,
             MetafunctionNextarg,

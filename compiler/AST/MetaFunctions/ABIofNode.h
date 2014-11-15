@@ -3,15 +3,13 @@
 #include "MetafunctionNode.h"
 
 namespace Three {
-    class NextargNode : public MetafunctionNode {
+    class ABIofNode : public MetafunctionNode {
     public:
-        static NextargNode* parse(Parser& parser);
+        static ABIofNode* parse(Parser& parser);
 
     public:
-        std::string name() const;
         std::string nodeName() const;
+        std::string name() const;
         void accept(ASTVisitor& visitor);
-
-        DataType dataTypeArgument;
     };
 }

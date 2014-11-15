@@ -51,6 +51,10 @@ namespace Three {
         void visit(class BreakNode& node);
         void visit(class ContinueNode& node);
         void visit(class SizeofNode& node);
+        void visit(class AlignofNode& node);
+        void visit(class OffsetofNode& node);
+        void visit(class TypeofNode& node);
+        void visit(class CardinalityofNode& node);
         void visit(class CastNode& node);
         void visit(class NextargNode& node);
         void visit(class AbortStatementNode& node);
