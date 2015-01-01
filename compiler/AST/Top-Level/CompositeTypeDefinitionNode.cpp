@@ -5,6 +5,7 @@
 #include "StructureNode.h"
 #include "EnumerationNode.h"
 #include "UnionNode.h"
+#include "CompositeTypeMemberNode.h"
 
 namespace Three {
     CompositeTypeDefinitionNode* CompositeTypeDefinitionNode::parse(Parser& parser) {
@@ -62,24 +63,19 @@ namespace Three {
 
         bool success = true;
         parser.helper()->parseUntilEnd([&] () {
-            VariableDeclarationNode* member = VariableDeclarationNode::parse(parser, false);
+            auto member = CompositeTypeMemberNode::parse(parser);
+
             if (!member) {
                 success = false;
                 return true;
             }
 
-            // make the members mutable, so mutability is controlled from the structure as a whole
-            node->_definedType.addSubtype(DataType::mutableVersion(member->dataType()));
-            if (!node->addChild(member)) {
-                return true;
+            // no subtypes for enumerations
+            if (typeKind != DataType::Kind::Enumeration) {
+                node->_definedType.addSubtype(DataType::mutableVersion(member->dataType()));
             }
 
-            if (!parser.helper()->parseNewline()) {
-                std::cout << parser.helper()->peek().str() << std::endl;
-                assert(0 && "Message: composite type member must be followed by a newline");
-            }
-
-            return false;
+            return !node->addChild(member);
         });
 
         if (!success) {

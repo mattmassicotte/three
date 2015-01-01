@@ -52,7 +52,7 @@ TEST_F(ParserTests_CustomTypes, NamespacedStructureUsedWithoutFullName) {
 
     node = node->childAtIndex(0);
     ASSERT_EQ("Namespace", node->nodeName());
-    // ASSERT_EQ(2, node->childCount());
+    ASSERT_EQ(2, node->childCount());
 
     ASSERT_EQ("Structure Definition", node->childAtIndex(0)->nodeName());
     ASSERT_EQ("Variable Declaration", node->childAtIndex(1)->nodeName());
@@ -118,8 +118,8 @@ TEST_F(ParserTests_CustomTypes, StructureWithOneTypedMember) {
 
     ASSERT_EQ(1, structNode->childCount());
 
-    VariableDeclarationNode* member = dynamic_cast<VariableDeclarationNode*>(structNode->childAtIndex(0));
-    ASSERT_EQ("Variable Declaration", member->nodeName());
+    auto member = dynamic_cast<CompositeTypeMemberNode*>(structNode->childAtIndex(0));
+    ASSERT_EQ("Composite Type Member", member->nodeName());
     ASSERT_EQ("a", member->name());
 
     ASSERT_EQ(DataType::Kind::Structure, this->context()->typeKindWithName("MyStruct"));
@@ -144,12 +144,12 @@ TEST_F(ParserTests_CustomTypes, StructureWithTwoTypedMembers) {
 
     ASSERT_EQ(2, structNode->childCount());
 
-    VariableDeclarationNode* member = dynamic_cast<VariableDeclarationNode*>(structNode->childAtIndex(0));
-    ASSERT_EQ("Variable Declaration", member->nodeName());
+    auto member = dynamic_cast<CompositeTypeMemberNode*>(structNode->childAtIndex(0));
+    ASSERT_EQ("Composite Type Member", member->nodeName());
     ASSERT_EQ("a", member->name());
 
-    member = dynamic_cast<VariableDeclarationNode*>(structNode->childAtIndex(1));
-    ASSERT_EQ("Variable Declaration", member->nodeName());
+    member = dynamic_cast<CompositeTypeMemberNode*>(structNode->childAtIndex(1));
+    ASSERT_EQ("Composite Type Member", member->nodeName());
     ASSERT_EQ("b", member->name());
 }
 
@@ -172,19 +172,22 @@ TEST_F(ParserTests_CustomTypes, StructureWithUntypedMembers) {
 
     ASSERT_EQ(2, structNode->childCount());
 
-    VariableDeclarationNode* member = dynamic_cast<VariableDeclarationNode*>(structNode->childAtIndex(0));
-    ASSERT_EQ("Variable Declaration", member->nodeName());
+    auto member = dynamic_cast<CompositeTypeMemberNode*>(structNode->childAtIndex(0));
+    ASSERT_EQ("Composite Type Member", member->nodeName());
     ASSERT_EQ("a", member->name());
 
-    member = dynamic_cast<VariableDeclarationNode*>(structNode->childAtIndex(1));
-    ASSERT_EQ("Variable Declaration", member->nodeName());
+    member = dynamic_cast<CompositeTypeMemberNode*>(structNode->childAtIndex(1));
+    ASSERT_EQ("Composite Type Member", member->nodeName());
     ASSERT_EQ("b", member->name());
 }
 
 TEST_F(ParserTests_CustomTypes, Enumeration) {
     ASTNode* node = this->parseNode("enum MyEnum\n"
+                                    "  Value\n"
                                     "end\n");
 
+    ASSERT_TRUE(node != nullptr);
+    ASSERT_EQ(1, node->childCount());
     EnumerationNode* enumNode = dynamic_cast<EnumerationNode*>(node->childAtIndex(0));
 
     ASSERT_EQ("Enumeration", enumNode->nodeName());
@@ -225,6 +228,36 @@ TEST_F(ParserTests_CustomTypes, EnumerationWithOneMember) {
     ASSERT_EQ(1, enumNode->childCount());
 }
 
+TEST_F(ParserTests_CustomTypes, NamespacedEnumeration) {
+    ASTNode* node = this->parseNode("namespace Foo\n"
+                                    "  enum MyEnum\n"
+                                    "    Value\n"
+                                    "  end\n"
+                                    "end\n");
+
+    ASSERT_TRUE(node != nullptr);
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Namespace", node->nodeName());
+    ASSERT_EQ(1, node->childCount());
+
+    EnumerationNode* enumNode = dynamic_cast<EnumerationNode*>(node->childAtIndex(0));
+
+    ASSERT_EQ("Enumeration", enumNode->nodeName());
+    ASSERT_EQ("MyEnum", enumNode->name());
+    ASSERT_EQ(0, enumNode->size());
+
+    ASSERT_EQ(DataType::Kind::Enumeration, enumNode->definedType().kind());
+
+    ASSERT_EQ(1, enumNode->childCount());
+
+    auto member = dynamic_cast<CompositeTypeMemberNode*>(enumNode->childAtIndex(0));
+    ASSERT_EQ("Composite Type Member", member->nodeName());
+    ASSERT_EQ("Value", member->name());
+    ASSERT_EQ("Value", member->qualifiedName().to_s());
+}
+
 TEST_F(ParserTests_CustomTypes, Union) {
     ASTNode* node = this->parseNode("union MyUnion\n"
                                     "end\n");
@@ -254,8 +287,8 @@ TEST_F(ParserTests_CustomTypes, UnionWithOneTypedMember) {
 
     ASSERT_EQ(1, unionNode->childCount());
 
-    VariableDeclarationNode* member = dynamic_cast<VariableDeclarationNode*>(unionNode->childAtIndex(0));
-    ASSERT_EQ("Variable Declaration", member->nodeName());
+    auto member = dynamic_cast<CompositeTypeMemberNode*>(unionNode->childAtIndex(0));
+    ASSERT_EQ("Composite Type Member", member->nodeName());
     ASSERT_EQ("a", member->name());
 }
 
@@ -277,11 +310,11 @@ TEST_F(ParserTests_CustomTypes, UnionWithTwoTypedMembers) {
 
     ASSERT_EQ(2, unionNode->childCount());
 
-    VariableDeclarationNode* member = dynamic_cast<VariableDeclarationNode*>(unionNode->childAtIndex(0));
-    ASSERT_EQ("Variable Declaration", member->nodeName());
+    auto member = dynamic_cast<CompositeTypeMemberNode*>(unionNode->childAtIndex(0));
+    ASSERT_EQ("Composite Type Member", member->nodeName());
     ASSERT_EQ("a", member->name());
 
-    member = dynamic_cast<VariableDeclarationNode*>(unionNode->childAtIndex(1));
-    ASSERT_EQ("Variable Declaration", member->nodeName());
+    member = dynamic_cast<CompositeTypeMemberNode*>(unionNode->childAtIndex(1));
+    ASSERT_EQ("Composite Type Member", member->nodeName());
     ASSERT_EQ("b", member->name());
 }

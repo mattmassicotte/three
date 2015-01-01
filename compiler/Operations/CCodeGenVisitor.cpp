@@ -338,7 +338,7 @@ namespace Three {
             source.printLineAndIndent("enum {");
 
             node.eachMemberWithLast([&] (const std::string& memberName, bool last) {
-                source << node.name() << "_3_" << memberName;
+                source << node.qualifiedName().to_s() << "_3_" << memberName;
 
                 if (!last) {
                     source << ",";
@@ -348,7 +348,7 @@ namespace Three {
             });
 
             source.outdentAndPrintLine("};");
-            source << "typedef uint32_t " << node.name();
+            source << "typedef uint32_t " << node.qualifiedName().to_s();
             source.printLine(";");
             source.printLine("");
         });

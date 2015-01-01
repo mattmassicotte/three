@@ -1,4 +1,5 @@
 #include "EnumerationNode.h"
+#include "CompositeTypeMemberNode.h"
 #include "../Variables/VariableDeclarationNode.h"
 #include "compiler/Parser/Parser.h"
 
@@ -23,9 +24,7 @@ namespace Three {
 
     void EnumerationNode::eachMemberWithLast(std::function<void (const std::string&, bool)> func) {
         this->eachChildWithLast([&] (ASTNode* child, bool last) {
-            VariableDeclarationNode* member = dynamic_cast<VariableDeclarationNode*>(child);
-
-            assert(!member->initializerExpression());
+            auto member = dynamic_cast<CompositeTypeMemberNode*>(child);
 
             func(member->name(), last);
         });

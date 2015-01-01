@@ -38,4 +38,5 @@
 #include "AST/Top-Level/StructureNode.h"
 #include "AST/Top-Level/UnionNode.h"
 #include "AST/Top-Level/CMacroNode.h"
+#include "AST/Top-Level/CompositeTypeMemberNode.h"
 #include "AST/Variables/Variables.h"
