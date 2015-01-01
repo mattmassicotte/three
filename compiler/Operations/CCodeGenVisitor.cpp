@@ -581,6 +581,19 @@ namespace Three {
         *_currentSource << ")";
     }
 
+    void CCodeGenVisitor::visit(ContainerofNode& node) {
+        *_currentSource << "THREE_CONTAINER_OF(";
+
+        assert(node.childCount() == 1);
+        node.childAtIndex(0)->accept(*this);
+
+        *_currentSource << ",";
+        *_currentSource << CTypeCodeGenerator::codeGen(node.dataTypeArgument);
+        *_currentSource << ",";
+        *_currentSource << node.memberName;
+        *_currentSource << ")";
+    }
+
     void CCodeGenVisitor::visit(TypeofNode& node) {
         *_currentSource << "typeof(";
         *_currentSource << CTypeCodeGenerator::codeGen(node.dataTypeArgument);

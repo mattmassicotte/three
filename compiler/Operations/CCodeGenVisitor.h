@@ -53,6 +53,7 @@ namespace Three {
         void visit(class SizeofNode& node);
         void visit(class AlignofNode& node);
         void visit(class OffsetofNode& node);
+        void visit(class ContainerofNode& node);
         void visit(class TypeofNode& node);
         void visit(class CardinalityofNode& node);
         void visit(class CastNode& node);

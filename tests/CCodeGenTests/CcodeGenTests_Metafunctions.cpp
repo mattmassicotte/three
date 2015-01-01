@@ -47,6 +47,25 @@ TEST_F(CCodeGenTests_Metafunctions, Typeof) {
               "}\n\n", visitor->bodyString());
 }
 
+TEST_F(CCodeGenTests_Metafunctions, Containerof) {
+    Three::CCodeGenVisitor* visitor = this->visit("struct MyStruct\n"
+                                                  "  Int a\n"
+                                                  "  Int b\n"
+                                                  "end\n"
+                                                  "def test(*Int ptrB)\n"
+                                                  "  containerof(ptrB, MyStruct, b)\n"
+                                                  "end\n");
+
+    EXPECT_EQ("typedef struct MyStruct {\n"
+              "    int a;\n"
+              "    int b;\n"
+              "} MyStruct;\n\n"
+              "void test(const int* const ptrB);\n", visitor->internalHeaderString());
+    EXPECT_EQ("void test(const int* const ptrB) {\n"
+              "    THREE_CONTAINER_OF(ptrB,const MyStruct,b);\n"
+              "}\n\n", visitor->bodyString());
+}
+
 TEST_F(CCodeGenTests_Metafunctions, Offsetof) {
     Three::CCodeGenVisitor* visitor = this->visit("struct MyStruct\n"
                                                   "  Int a\n"
