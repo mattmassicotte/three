@@ -429,6 +429,7 @@ namespace Three {
             case Token::Type::MetafunctionNameof:
             case Token::Type::MetafunctionCardinalityof:
             case Token::Type::MetafunctionNextarg:
+            case Token::Type::MetafunctionContainerof:
                 return MetafunctionNode::parse(*this);
             default:
                 break;

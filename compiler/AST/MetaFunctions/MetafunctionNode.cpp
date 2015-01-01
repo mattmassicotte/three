@@ -23,6 +23,8 @@ namespace Three {
                 return CardinalityofNode::parse(parser);
             case Token::Type::MetafunctionNextarg:
                 return NextargNode::parse(parser);
+            case Token::Type::MetafunctionContainerof:
+                return ContainerofNode::parse(parser);
             default:
                 assert(0 && "Invalid metafunction token");
                 break;

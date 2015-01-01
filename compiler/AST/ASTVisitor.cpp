@@ -148,6 +148,10 @@ namespace Three {
         std::cout << "Visiting offsetof" << std::endl;
     }
 
+    void ASTVisitor::visit(class ContainerofNode& node) {
+        std::cout << "Visiting containerof" << std::endl;
+    }
+
     void ASTVisitor::visit(class TypeofNode& node) {
         std::cout << "Visiting typeof" << std::endl;
     }

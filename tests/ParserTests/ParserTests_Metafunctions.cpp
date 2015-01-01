@@ -90,7 +90,32 @@ TEST_F(ParserTests_Metafunctions, Cardinalityof) {
     EXPECT_EQ("Local Variable", metaFn->childAtIndex(0)->nodeName());
 }
 
-TEST_F(ParserTests_Metafunctions, abiof) {
+TEST_F(ParserTests_Metafunctions, Containerof) {
+    Three::ASTNode* node = this->parseNodeWithBodies("struct MyStruct\n"
+                                                     "  Int a\n"
+                                                     "  Int b\n"
+                                                     "end\n"
+                                                     "def test(*Int ptrB)\n"
+                                                     "  containerof(ptrB, MyStruct, b)\n"
+                                                     "end\n");
+
+    ASSERT_TRUE(node != nullptr);
+    ASSERT_EQ(2, node->childCount());
+    node = node->childAtIndex(1);
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    ASSERT_EQ(1, node->childCount());
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Containerof Metafunction", node->nodeName());
+    
+    auto metaFn = dynamic_cast<Three::ContainerofNode*>(node);
+    EXPECT_EQ(DataType::Kind::Structure, metaFn->dataTypeArgument.kind());
+    EXPECT_EQ("b", metaFn->memberName);
+    ASSERT_EQ(1, metaFn->childCount());
+    EXPECT_EQ("Local Variable", metaFn->childAtIndex(0)->nodeName());
+}
+
+TEST_F(ParserTests_Metafunctions, Abiof) {
     Three::ASTNode* node = this->parseSingleFunction("def test()\n"
                                                      "  abiof(test)\n"
                                                      "end\n");

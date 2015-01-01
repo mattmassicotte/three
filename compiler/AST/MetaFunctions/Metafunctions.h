@@ -7,3 +7,4 @@
 #include "NameofNode.h"
 #include "CardinalityofNode.h"
 #include "TypeofNode.h"
+#include "ContainerofNode.h"

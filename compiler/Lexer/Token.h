@@ -92,6 +92,7 @@ namespace Three {
             MetafunctionNameof,
             MetafunctionCardinalityof,
             MetafunctionNextarg,
+            MetafunctionContainerof,
 
             KeywordDef,
             KeywordEnd,

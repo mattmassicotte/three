@@ -42,6 +42,7 @@ namespace Three {
         virtual void visit(class TypeofNode& node);
         virtual void visit(class CardinalityofNode& node);
         virtual void visit(class OffsetofNode& node);
+        virtual void visit(class ContainerofNode& node);
         virtual void visit(class CastNode& node);
         virtual void visit(class NextargNode& node);
         virtual void visit(class AbortStatementNode& node);

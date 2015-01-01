@@ -22,6 +22,7 @@ namespace Three {
         _keywordMap["typeof"] = Token::Type::MetafunctionTypeof;
         _keywordMap["nameof"] = Token::Type::MetafunctionNameof;
         _keywordMap["nextarg"] = Token::Type::MetafunctionNextarg;
+        _keywordMap["containerof"] = Token::Type::MetafunctionContainerof;
 
         _keywordMap["def"] = Token::Type::KeywordDef;
         _keywordMap["end"] = Token::Type::KeywordEnd;
