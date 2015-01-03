@@ -162,6 +162,7 @@ TEST_F(ParserTests_Operators, MemberAccessOperator) {
     ASSERT_EQ("Member Access Operator", node->nodeName());
     ASSERT_EQ("a", dynamic_cast<MemberAccessNode*>(node)->name());
     ASSERT_FALSE(dynamic_cast<MemberAccessNode*>(node)->indirect());
+    ASSERT_EQ(DataType::Kind::Integer, node->dataType().kind());
 
     node = node->childAtIndex(0);
     ASSERT_EQ("Local Variable", node->nodeName());
@@ -184,6 +185,7 @@ TEST_F(ParserTests_Operators, IndirectMemberAccessOperator) {
     ASSERT_EQ("Member Access Operator", node->nodeName());
     ASSERT_EQ("a", dynamic_cast<MemberAccessNode*>(node)->name());
     ASSERT_TRUE(dynamic_cast<MemberAccessNode*>(node)->indirect());
+    ASSERT_EQ(DataType::Kind::Integer, node->dataType().kind());
 
     node = node->childAtIndex(0);
     ASSERT_EQ("Local Variable", node->nodeName());

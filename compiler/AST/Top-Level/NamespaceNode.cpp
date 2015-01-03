@@ -11,7 +11,7 @@ namespace Three {
 
         NamespaceNode* node = new NamespaceNode();
 
-        node->_name = parser.parseMultiPartIdentifierComponents();
+        node->_name = parser.parseMultiPartIdentifierComponents(false);
 
         if (!parser.helper()->parseNewline()) {
             assert(0 && "Message: new line expected after namespace definition");

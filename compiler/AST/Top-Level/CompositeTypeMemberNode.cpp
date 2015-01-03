@@ -33,7 +33,7 @@ namespace Three {
     }
 
     std::string CompositeTypeMemberNode::name() const {
-        return _name.lastComponent();
+        return _name.name();
     }
 
     QualifiedName CompositeTypeMemberNode::qualifiedName() const {

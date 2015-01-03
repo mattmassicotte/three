@@ -1,5 +1,7 @@
 #pragma once
 
+#include "QualifiedName.h"
+
 #include <string>
 #include <vector>
 #include <functional>
@@ -74,8 +76,9 @@ namespace Three {
         DataType(Kind k=Kind::Undefined);
 
     public:
+        QualifiedName qualifiedName() const;
         std::string name() const;
-        void setName(const std::string& value);
+        void setName(const QualifiedName& value);
         bool hasName() const;
         Kind kind() const;
         void setKind(Kind k);
@@ -111,6 +114,7 @@ namespace Three {
         DataType subtypeAtIndex(uint32_t idx) const;
         void addSubtype(DataType t);
         void eachSubtypeWithLast(std::function<void (const DataType&, bool)> func) const;
+        DataType subtypeWithLabel(const std::string& label) const;
 
         uint32_t parameterCount() const;
         DataType parameterAtIndex(uint32_t idx) const;
@@ -133,7 +137,7 @@ namespace Three {
 
     private:
         Kind _kind;
-        std::string _name;
+        QualifiedName _name;
         std::string _label;
 
         uint32_t _widthSpecifier;

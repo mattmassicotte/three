@@ -48,7 +48,7 @@ namespace Three {
         ASTNode* parseExpressionIdentifier();
         bool parseParentheses(std::function<void (void)> func);
         std::string parseMultiPartIdentifier();
-        QualifiedName parseMultiPartIdentifierComponents();
+        QualifiedName parseMultiPartIdentifierComponents(bool adjustForIdentifier = true);
         bool parseBodyWithElse(const std::string& label, ASTNode** elseNode, std::function<void (void)> func);
         bool parseBodyWithElse(ASTNode* node, ASTNode** elseNode);
 

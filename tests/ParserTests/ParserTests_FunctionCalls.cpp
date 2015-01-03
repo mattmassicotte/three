@@ -128,6 +128,45 @@ TEST_F(ParserTests_FunctionCalls, InvokeMethodDefinedInPreviousNamespace) {
     ASSERT_EQ("something", method->name());
 }
 
+TEST_F(ParserTests_FunctionCalls, InvokingNamespacedMethodOnNestedPointerType) {
+    ASTNode* node = this->parseNodeWithBodies("namespace Foo\n"
+                                              "  struct Bar\n"
+                                              "  end\n"
+                                              "  struct Baz\n"
+                                              "    *Bar member\n"
+                                              "  end\n"
+                                              "  def Bar.method()\n"
+                                              "  end\n"
+                                              "  def test(*Baz a)\n"
+                                              "     a->member.method()"
+                                              "  end\n"
+                                              "end\n");
+
+    ASSERT_EQ(1, node->childCount());
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ("Namespace", node->nodeName());
+    ASSERT_EQ(4, node->childCount());
+
+    node = node->childAtIndex(3);
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node);
+    ASSERT_EQ("test", func->name());
+    ASSERT_EQ("Foo_3_test", func->fullName());
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Method Call Operator", node->nodeName());
+    Three::MethodCallOperatorNode* method = dynamic_cast<Three::MethodCallOperatorNode*>(node);
+
+    ASSERT_EQ("method", method->name());
+    ASSERT_EQ("Member Access Operator", method->receiver()->nodeName());
+    ASSERT_EQ(DataType::Kind::Pointer, method->receiverDataType().kind());
+    ASSERT_EQ(1, method->receiverDataType().subtypeCount());
+    ASSERT_EQ("Foo_3_Bar", method->receiverDataType().subtypeAtIndex(0).name());
+}
+
 TEST_F(ParserTests_FunctionCalls, InvokeVariableAsFunction) {
     Three::ASTNode* node = this->parseSingleFunction("def test()\n"
                                                      "  (Int) func\n"

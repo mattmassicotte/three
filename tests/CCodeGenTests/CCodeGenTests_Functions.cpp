@@ -120,3 +120,27 @@ TEST_F(CCodeGenTests_Functions, CallingNamespacedFunction) {
               "    One_3_Two_3_foo();\n"
               "}\n\n", visitor->bodyString());
 }
+
+TEST_F(CCodeGenTests_Functions, CallingNamespacedMethodOnType) {
+    Three::CCodeGenVisitor* visitor = this->visit("namespace One::Two\n"
+                                                  "  struct Foo\n"
+                                                  "  end\n"
+                                                  "  def Foo.method()\n"
+                                                  "  end\n"
+                                                  "end\n"
+                                                  "def test(*One::Two::Foo i)\n"
+                                                  "  i.method()\n"
+                                                  "end\n");
+
+    EXPECT_EQ("", visitor->declarationsString());
+    EXPECT_EQ("typedef struct One_3_Two_3_Foo {\n"
+              "} One_3_Two_3_Foo;\n\n"
+              "void One_3_Two_3_Foo_3_method(const One_3_Two_3_Foo* const self);\n"
+              "void test(const One_3_Two_3_Foo* const i);\n", visitor->internalHeaderString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
+    EXPECT_EQ("void One_3_Two_3_Foo_3_method(const One_3_Two_3_Foo* const self) {\n"
+              "}\n\n"
+              "void test(const One_3_Two_3_Foo* const i) {\n"
+              "    One_3_Two_3_Foo_3_method(i);\n"
+              "}\n\n", visitor->bodyString());
+}

@@ -36,6 +36,20 @@ namespace Three {
         return node;
     }
 
+    DataType MemberAccessNode::dataType() const {
+        // the data type of this node is not the child, but the actual member we are referring to.
+
+        assert(this->childCount() == 1);
+        DataType type = this->childAtIndex(0)->dataType();
+
+        if (_indirect) {
+            assert(type.isPointer());
+            type = type.subtypeAtIndex(0);
+        }
+
+        return type.subtypeWithLabel(_memberName);
+    }
+
     std::string MemberAccessNode::nodeName() const {
         return "Member Access Operator";
     }

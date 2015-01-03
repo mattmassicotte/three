@@ -173,6 +173,7 @@ namespace Three {
         // TODO: is this correct?
         return this->childAtIndex(0)->dataType();
     }
+
     std::string OperatorNode::nodeName() const {
         return "Operator";
     }

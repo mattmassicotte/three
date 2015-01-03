@@ -13,7 +13,7 @@ namespace Three {
             assert(0 && "Message: method name should be an identifier");
         }
 
-        if (receiver->dataType().kind() != DataType::Kind::Pointer) {
+        if (!receiver->dataType().isPointer()) {
             assert(0 && "Message: Method receiver type must be a pointer");
         }
 

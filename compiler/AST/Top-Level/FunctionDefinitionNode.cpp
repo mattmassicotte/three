@@ -41,13 +41,28 @@ namespace Three {
 
         node->_name = QualifiedName(parser.helper()->nextStr());
 
-        // If this is a method, insert the Type name into to functions full name. I think
-        // this is a bit of a hack actually.
+        // If this is a method, insert the Type name into to functions full name.  This
+        // is a little tricky though, as the two could share a namespace, or even
+        // some of a namespace.
+        // Type.method => Type,method
+        // Name::Spaced::Type.method => Name,Spaced,Type,method
+        // Name::Spaced::Type.Name::Spaced::method => Name,Spaced,Type,method
         if (node->_methodOnType.kind() != DataType::Kind::Undefined) {
-            node->_name.prependName(QualifiedName(node->_methodOnType.name()));
+            // We have to prepend *both* the type name and its namespace. This
+            // is kind of a messy way to do that.
+            QualifiedName typeNameAsNamespace;
+
+            typeNameAsNamespace.prependName(node->_methodOnType.qualifiedName());
+            typeNameAsNamespace.appendComponent(node->_methodOnType.qualifiedName().name());
+
+            node->_name.prependName(typeNameAsNamespace);
         }
 
-        node->_name.prependName(parser.context()->scope()->fullNamespace());
+        // now, put the entire name in a namespace. But, not if the type is in the
+        // exact same space.
+        if (!node->_methodOnType.qualifiedName().sameNamespaceAs(node->_scopedNamespace)) {
+            node->_name.prependName(node->_scopedNamespace);
+        }
 
         // Might be generic.
         // This part is a little weird, because we have to parse the generic
@@ -194,7 +209,7 @@ namespace Three {
     }
 
     std::string FunctionDefinitionNode::name() const {
-        return _name.lastComponent();
+        return _name.name();
     }
 
     std::string FunctionDefinitionNode::str() const {

@@ -81,7 +81,7 @@ TEST_F(CTypeCodeGeneratorTests, Structure) {
     DataType type(DataType::Kind::Structure);
     type.addSubtype(DataType(DataType::Kind::Integer));
     type.setAccess(DataType::Access::Read);
-    type.setName("Foo");
+    type.setName(QualifiedName("Foo"));
 
     EXPECT_EQ("const Foo", CTypeCodeGenerator::codeGen(type));
     EXPECT_EQ("const Foo x", CTypeCodeGenerator::codeGen(type, "x"));

@@ -442,8 +442,6 @@ namespace Three {
         assert(_helper->peek().type() == Token::Type::Identifier);
 
         QualifiedName name = this->parseMultiPartIdentifierComponents();
-    
-        assert(name.components.size() > 0);
 
         // at this point, we could have:
         // - function
@@ -481,7 +479,7 @@ namespace Three {
         return this->parseMultiPartIdentifierComponents().to_s();
     }
 
-    QualifiedName Parser::parseMultiPartIdentifierComponents() {
+    QualifiedName Parser::parseMultiPartIdentifierComponents(bool adjustForIdentifier) {
         QualifiedName name;
 
         for (;;) {
@@ -508,6 +506,11 @@ namespace Three {
 
             _helper->next();
             _helper->next();
+        }
+
+        if (adjustForIdentifier) {
+            // do an adjustment to seperate the name from the namspace parts
+            name.shiftLastComponentToName();
         }
 
         return name;
@@ -820,23 +823,27 @@ namespace Three {
 
             // check for "::"
             if (_helper->peek(*peekDepth).type() != Token::Type::PunctuationColon) {
-                return true;
+                break;
             }
 
             if (_helper->peek(*peekDepth + 1).type() != Token::Type::PunctuationColon) {
-                return true;
+                break;
             }
 
             // Check for the empty specifier case of "Int::4"
             if (_helper->peek(*peekDepth + 2).type() != Token::Type::Identifier) {
-                return true;
+                break;
             }
 
             // move past the "::", and check for the next identifier part
             *peekDepth += 2;
         }
 
-        return false;
+        // We've treated every identifier as a namespace, because its convenient. But,
+        // the last component is really the identifier itself (ie the name).
+        peekedName.shiftLastComponentToName();
+
+        return true;
     }
 
     DataType Parser::parseType(bool genericParam) {
@@ -1000,7 +1007,7 @@ namespace Three {
                 assert(0 && "Message: generic parameter identifier already defined in this scope");
             }
 
-            type.setName(name.to_s());
+            type.setName(name);
         } else {
             type = _context->dataTypeForName(name.to_s());
         }

@@ -270,7 +270,50 @@ TEST_F(ParserTests_Functions, MethodDefinition) {
     ASSERT_EQ("test", func->name());
     ASSERT_TRUE(func->isMethod());
     ASSERT_EQ(DataType::Kind::Integer, func->methodOnType().kind());
-    
+}
+
+TEST_F(ParserTests_Functions, NamespacedMethodDefinition) {
+    ASTNode* node = this->parseNode("namespace Bar\n"
+                                    "  def Int.test()\nend\n"
+                                    "end\n");
+
+
+    ASSERT_EQ(1, node->childCount());
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Namespace", node->nodeName());
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    Three::FunctionDefinitionNode* func = dynamic_cast<Three::FunctionDefinitionNode*>(node);
+    ASSERT_EQ("test", func->name());
+    ASSERT_EQ("Bar_3_Int_3_test", func->fullName());
+    ASSERT_TRUE(func->isMethod());
+    ASSERT_EQ(DataType::Kind::Integer, func->methodOnType().kind());
+}
+
+TEST_F(ParserTests_Functions, NamespacedMethodDefinitionOnNamespacedType) {
+    ASTNode* node = this->parseNode("namespace Bar\n"
+                                    "  struct Foo\n"
+                                    "  end\n"
+                                    "  def Foo.test()\nend\n"
+                                    "end\n");
+
+
+    ASSERT_EQ(1, node->childCount());
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Namespace", node->nodeName());
+    ASSERT_EQ(2, node->childCount());
+
+    node = node->childAtIndex(1);
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    Three::FunctionDefinitionNode* func = dynamic_cast<Three::FunctionDefinitionNode*>(node);
+    ASSERT_EQ("test", func->name());
+    ASSERT_EQ("Bar_3_Foo_3_test", func->fullName());
+    ASSERT_TRUE(func->isMethod());
+    ASSERT_EQ(DataType::Kind::Structure, func->methodOnType().kind());
 }
 
 TEST_F(ParserTests_Functions, SelfInMethodDefinition) {

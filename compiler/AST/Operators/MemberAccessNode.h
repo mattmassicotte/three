@@ -8,6 +8,7 @@ namespace Three {
         static MemberAccessNode* parse(Parser& parser, ASTNode* operand);
         
     public:
+        DataType dataType() const;
         std::string nodeName() const;
         void accept(ASTVisitor& visitor);
 

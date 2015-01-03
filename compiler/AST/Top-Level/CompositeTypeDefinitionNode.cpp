@@ -45,7 +45,7 @@ namespace Three {
         // parse the name and create the type
         node->_name = parser.context()->scope()->qualifiedNameWithIdentifier(parser.helper()->nextStr());
         node->_definedType = DataType(typeKind);
-        node->_definedType.setName(node->fullName());
+        node->_definedType.setName(node->qualifiedName());
 
         if (parser.helper()->peek().type() == Token::Type::OperatorLessThan) {
             if (!parser.parseGenericParameters(node->_definedType)) {
@@ -94,7 +94,7 @@ namespace Three {
     }
 
     std::string CompositeTypeDefinitionNode::name() const {
-        return _name.lastComponent();
+        return _name.name();
     }
 
     DataType CompositeTypeDefinitionNode::definedType() const {

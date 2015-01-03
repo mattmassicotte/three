@@ -32,31 +32,30 @@ namespace Three {
         _access(DataType::Access::Read),
         _volatility(DataType::Access::None),
         _potentiallyAliased(true) {
+        switch (_kind) {
+            case Kind::Integer: _name = QualifiedName("Int");     break;
+            case Kind::Boolean: _name = QualifiedName("Bool");    break;
+            case Kind::Natural: _name = QualifiedName("Natural"); break;
+            case Kind::Float:   _name = QualifiedName("Float");   break;
+            case Kind::Real:    _name = QualifiedName("Real");    break;
+            default: break;
+        }
+    }
+
+    QualifiedName DataType::qualifiedName() const {
+        return _name;
     }
 
     std::string DataType::name() const {
-        if (this->hasName()) {
-            return _name;
-        }
-
-        switch (_kind) {
-            case Kind::Integer: return "Int";
-            case Kind::Boolean: return "Bool";
-            case Kind::Natural: return "Natural";
-            case Kind::Float:   return "Float";
-            case Kind::Real:    return "Real";
-            default: break;
-        }
-
-        return "";
+        return _name.to_s();
     }
 
-    void DataType::setName(const std::string& value) {
+    void DataType::setName(const QualifiedName& value) {
         _name = value;
     }
 
     bool DataType::hasName() const {
-        return _name.size() > 0;
+        return _name.valid();
     }
 
     DataType::Kind DataType::kind() const {
@@ -192,6 +191,16 @@ namespace Three {
         for (uint32_t i = 0; i < this->subtypeCount(); ++i) {
             func(this->subtypeAtIndex(i), lastIndex == i);
         }
+    }
+
+    DataType DataType::subtypeWithLabel(const std::string& label) const {
+        for (const DataType& subtype : subtypes) {
+            if (subtype.label() == label) {
+                return subtype;
+            }
+        }
+
+        return DataType();
     }
 
     uint32_t DataType::parameterCount() const {
