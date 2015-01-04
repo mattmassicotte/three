@@ -192,6 +192,29 @@ TEST_F(ParserTests_Operators, IndirectMemberAccessOperator) {
     ASSERT_EQ("value", dynamic_cast<VariableNode*>(node)->name());
 }
 
+TEST_F(ParserTests_Operators, IndirectMemberAccessOperatorOnOptional) {
+    ASTNode* node = this->parseNodeWithBodies("struct MyStruct\n"
+                                              "  Int a\n"
+                                              "end\n"
+                                              "def test(MyStruct? value, Int b)\n"
+                                              "  value->a = b\n"
+                                              "end\n");
+    node = node->childAtIndex(1)->childAtIndex(0);
+
+    ASSERT_EQ("Assign Operator", node->nodeName());
+    ASSERT_EQ("b", dynamic_cast<VariableNode*>(node->childAtIndex(1))->name());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Member Access Operator", node->nodeName());
+    ASSERT_EQ("a", dynamic_cast<MemberAccessNode*>(node)->name());
+    ASSERT_TRUE(dynamic_cast<MemberAccessNode*>(node)->indirect());
+    ASSERT_EQ(DataType::Kind::Integer, node->dataType().kind());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Local Variable", node->nodeName());
+    ASSERT_EQ("value", dynamic_cast<VariableNode*>(node)->name());
+}
+
 TEST_F(ParserTests_Operators, AddressOfAndArrowPrecedence) {
     ASTNode* node = this->parseNodeWithBodies("struct MyStruct\n"
                                               "  Int x\n"
