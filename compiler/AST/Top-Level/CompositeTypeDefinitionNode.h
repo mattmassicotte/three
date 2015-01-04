@@ -10,6 +10,9 @@ namespace Three {
     public:
         static CompositeTypeDefinitionNode* parse(Parser& parser);
 
+    private:
+        static bool defineConstantForEnumerationMember(const CompositeTypeDefinitionNode& node, const class CompositeTypeMemberNode& member, Parser& parser);
+
     public:
         std::string name() const;
         DataType definedType() const;

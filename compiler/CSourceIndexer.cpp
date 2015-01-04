@@ -252,7 +252,9 @@ namespace Three {
 
         // std::cout << "defining function " << name << std::endl;
         if (!_context->defineFunctionForName(functionType, name)) {
-            std::cout << "Failed to define C function '" << name << "'" << std::endl;
+            if (verbose) {
+                std::cout << "Failed to define C function '" << name << "'" << std::endl;
+            }
         }
 
         // Function* fn;
@@ -292,7 +294,9 @@ namespace Three {
         type.setName(name);
 
         if (type.kind() == DataType::Kind::Undefined) {
-            std::cout << "Unable to map C type '" << name << "' to 3 type" << std::endl;
+            if (verbose) {
+                std::cout << "Unable to map C type '" << name << "' to 3 type" << std::endl;
+            }
             return;
         }
 
@@ -302,7 +306,9 @@ namespace Three {
         }
 
         if (!_context->defineTypeForName(type, name)) {
-            std::cout << "Failed to define C type '" << name << "'" << std::endl;
+            if (verbose) {
+                std::cout << "Failed to define C type '" << name << "'" << std::endl;
+            }
             return;
         }
 

@@ -12,6 +12,7 @@ namespace Three {
     class Message;
     class Scope;
     class Variable;
+    class Constant;
     class QualifiedName;
 }
 
@@ -56,6 +57,9 @@ namespace Three {
         bool defineVariable(Variable* variable, bool scoped=true);
         bool defineVariableTypeForName(const DataType& type, const std::string& name, bool scoped=true);
 
+        Constant* constantForName(const QualifiedName& name) const;
+        bool defineConstant(Constant* constant);
+
         Scope* scope() const;
         void pushScope();
         void popScope();
@@ -82,6 +86,7 @@ namespace Three {
         std::map<std::string, DataType> _dataTypeMap;
         std::map<std::string, DataType> _functions;
         std::map<std::string, Variable*> _variables;
+        std::map<std::string, Constant*> _constants;
 
         std::vector<ParseContext*> _importedContexts;
         std::vector<std::string> _importedPaths;

@@ -1,6 +1,7 @@
 #include "CompositeTypeDefinitionNode.h"
 #include "compiler/Parser/Parser.h"
 #include "compiler/Constructs/Scope.h"
+#include "compiler/Constructs/Constant.h"
 #include "../Variables/VariableDeclarationNode.h"
 #include "StructureNode.h"
 #include "EnumerationNode.h"
@@ -70,8 +71,15 @@ namespace Three {
                 return true;
             }
 
-            // no subtypes for enumerations
-            if (typeKind != DataType::Kind::Enumeration) {
+            // enumerations are special - they don't define subtypes
+            // they define values
+            if (typeKind == DataType::Kind::Enumeration) {
+                if (!defineConstantForEnumerationMember(*node, *member, parser)) {
+                    assert(0 && "Message: unable to define constants for enumeration");
+                    success = false;
+                    return true;
+                }
+            } else {
                 node->_definedType.addSubtype(DataType::mutableVersion(member->dataType()));
             }
 
@@ -91,6 +99,22 @@ namespace Three {
         parser.context()->redefineTypeForName(node->_definedType, node->fullName());
 
         return node;
+    }
+
+    bool CompositeTypeDefinitionNode::defineConstantForEnumerationMember(const CompositeTypeDefinitionNode& node, const CompositeTypeMemberNode& member, Parser& parser) {
+        Constant* c = new Constant();
+
+        c->type = parser.context()->dataTypeForName(QualifiedName("Int"));
+        c->name = QualifiedName(member.name());
+        c->name.prependName(parser.context()->scope()->fullNamespace());
+        c->name.appendComponent(node._name.name());
+
+        if (!parser.context()->defineConstant(c)) {
+            delete c;
+            return false;
+        }
+
+        return true;
     }
 
     std::string CompositeTypeDefinitionNode::name() const {

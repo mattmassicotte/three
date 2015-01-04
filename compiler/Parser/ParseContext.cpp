@@ -5,6 +5,7 @@
 #include "compiler/constructs/Scope.h"
 #include "compiler/constructs/QualifiedName.h"
 #include "compiler/constructs/Variable.h"
+#include "compiler/constructs/Constant.h"
 #include "compiler/CSourceIndexer.h"
 #include "compiler/CSourceEmitter.h"
 #include "compiler/Parser/Parser.h"
@@ -85,10 +86,12 @@ namespace Three {
         }
 
         std::unique_ptr<ParseContext> importedContext(new ParseContext());
+        importedContext.get()->_importSearchPaths = this->_importSearchPaths;
 
         // if we find a .3 file, but not a .h file, we have to compile it first
+        std::cout << "Importing: " << path << std::endl;
         if (!Parser::parse(std::string(path + ".3").c_str(), importedContext.get())) {
-            std::cout << "Unable to parse import" << std::endl;
+            std::cout << "Unable to parse import '" << name << "'" << std::endl;
             return false;
         }
 
@@ -352,6 +355,34 @@ namespace Three {
         variable->type = type;
 
         return this->defineVariable(variable, scoped);
+    }
+
+    Constant* ParseContext::constantForName(const QualifiedName& name) const {
+        auto it = _constants.find(name.to_s());
+
+        if (it != _constants.cend()) {
+            return it->second;
+        }
+
+        for (ParseContext* subcontext : _importedContexts) {
+            Constant* c = subcontext->constantForName(name.to_s());
+
+            if (c) {
+                return c;
+            }
+        }
+
+        return nullptr;
+    }
+
+    bool ParseContext::defineConstant(Constant* constant) {
+        if (this->constantForName(constant->name)) {
+            return false;
+        }
+
+        _constants[constant->name.to_s()] = constant;
+
+        return true;
     }
 
     Scope* ParseContext::scope() const {

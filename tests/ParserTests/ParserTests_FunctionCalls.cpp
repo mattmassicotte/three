@@ -206,3 +206,33 @@ TEST_F(ParserTests_FunctionCalls, FunctionCallDereference) {
     ASSERT_EQ("Dereference Operator", node->nodeName());
     ASSERT_EQ("Function Call Operator", node->childAtIndex(0)->nodeName());
 }
+
+TEST_F(ParserTests_FunctionCalls, InvokingNamespacedFunctionWithoutFullName) {
+    ASTNode* node = this->parseNodeWithBodies("namespace Bar\n"
+                                              "  def foo(Int a)\n"
+                                              "     foo(a)"
+                                              "  end\n"
+                                              "end\n");
+
+    ASSERT_EQ(1, node->childCount());
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ("Namespace", node->nodeName());
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    FunctionDefinitionNode* func = dynamic_cast<FunctionDefinitionNode*>(node);
+    ASSERT_EQ("foo", func->name());
+    ASSERT_EQ("Bar_3_foo", func->fullName());
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    FunctionCallOperatorNode* fnCall = dynamic_cast<FunctionCallOperatorNode*>(node);
+    ASSERT_EQ("Function Call Operator", node->nodeName());
+    ASSERT_EQ(1, fnCall->childCount());
+    ASSERT_EQ("Local Variable", fnCall->childAtIndex(0)->nodeName());
+
+    std::cout << fnCall->receiver()->recursiveStr() << std::endl;
+}

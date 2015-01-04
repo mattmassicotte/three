@@ -318,3 +318,28 @@ TEST_F(ParserTests_CustomTypes, UnionWithTwoTypedMembers) {
     ASSERT_EQ("Composite Type Member", member->nodeName());
     ASSERT_EQ("b", member->name());
 }
+
+TEST_F(ParserTests_CustomTypes, ReferringToEnumValue) {
+    ASTNode* node = this->parseNodeWithBodies("enum MyEnum\n"
+                                              "  Member\n"
+                                              "end\n"
+                                              "def test(Int! a)\n"
+                                              "  a = MyEnum::Member\n"
+                                              "end\n");
+
+    ASSERT_EQ(2, node->childCount());
+    ASSERT_EQ("Enumeration", node->childAtIndex(0)->nodeName());
+
+    node = node->childAtIndex(1);
+    ASSERT_EQ("Function Definition", node->nodeName());
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Assign Operator", node->nodeName());
+
+    ASSERT_EQ("Local Variable", node->childAtIndex(0)->nodeName());
+    ASSERT_EQ("Value", node->childAtIndex(1)->nodeName());
+
+    auto value = dynamic_cast<ValueNode*>(node->childAtIndex(1));
+    ASSERT_EQ("MyEnum_3_Member", value->value());
+}

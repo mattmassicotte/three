@@ -450,6 +450,7 @@ namespace Three {
         // - C macro
         // - global variable
         // - local variable
+        // - constant
 
         // TODO: I think at this point we really need some kind of symbol table. Dealing
         // with C symbols is tough, and that could reduce the number of heurestics needed.
@@ -458,6 +459,12 @@ namespace Three {
             if (variable->type.kind() == DataType::Kind::CUnspecifiedMacro) {
                 return new CMacroNode(name.to_s());
             }
+        }
+
+        // check for a constant, before creating a variable
+        Constant* constant = _context->constantForName(name.to_s());
+        if (constant) {
+            return new ValueNode(name.to_s());
         }
 
         ASTNode* node = VariableNode::parse(*this, name);
