@@ -1,6 +1,6 @@
 #include "Variable.h"
 
 namespace Three {
-    Variable::Variable() {
+    Variable::Variable() : global(false) {
     }
 }

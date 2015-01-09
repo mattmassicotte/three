@@ -55,7 +55,7 @@ namespace Three {
 
         Variable* variableForName(const QualifiedName& name) const;
         bool defineVariable(Variable* variable, bool scoped=true);
-        bool defineVariableTypeForName(const DataType& type, const std::string& name, bool scoped=true);
+        bool defineVariableTypeForName(const DataType& type, const QualifiedName& name, bool scoped=true);
 
         Constant* constantForName(const QualifiedName& name) const;
         bool defineConstant(Constant* constant);
@@ -68,7 +68,7 @@ namespace Three {
         void postProcessAST();
 
     private:
-        Variable* variableForExactName(const std::string& name) const;
+        Variable* variableForExactName(const QualifiedName& name) const;
         DataType dataTypeForExactName(const std::string& name) const;
 
     public:

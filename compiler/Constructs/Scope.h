@@ -37,9 +37,9 @@ namespace Three {
         std::string scopedName(const std::string& basename);
         std::string currentScopedName(const std::string& basename);
 
-        Variable* variableForName(const std::string& name) const;
+        Variable* variableForName(const QualifiedName& name) const;
         bool defineVariable(Variable* variable);
-        bool defineVariableTypeForName(const DataType& type, const std::string& name);
+        bool defineVariableTypeForName(const DataType& type, const QualifiedName& name);
 
         bool referencedVariable(const std::string& name, bool passedOverCapturing=false) const;
         void addReferencedVariable(const std::string& name);

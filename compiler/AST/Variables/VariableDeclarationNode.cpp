@@ -5,31 +5,25 @@
 #include <assert.h>
 
 namespace Three {
-    VariableDeclarationNode* VariableDeclarationNode::parse(Parser& parser, bool createVariable) {
+    VariableDeclarationNode* VariableDeclarationNode::parse(Parser& parser, bool global) {
         VariableDeclarationNode* node = new VariableDeclarationNode();
 
-        if (!VariableDeclarationNode::parseVariable(parser, *node, createVariable)) {
+        if (!VariableDeclarationNode::parseVariable(parser, *node, global)) {
             delete node;
             node = nullptr;
+            return node;
+        }
+
+        if (global) {
+            node->global = true;
+            node->visibility = parser.context()->visibility();
+            node->setStatement(true);
         }
 
         return node;
     }
 
-    VariableDeclarationNode* VariableDeclarationNode::parseGlobal(Parser& parser) {
-        VariableDeclarationNode* node = VariableDeclarationNode::parse(parser, true);
-        if (!node) {
-            return nullptr;
-        }
-
-        node->global = true;
-        node->visibility = parser.context()->visibility();
-        node->setStatement(true);
-
-        return node;
-    }
-
-    bool VariableDeclarationNode::parseVariable(Parser& parser, VariableDeclarationNode& node, bool createVariable) {
+    bool VariableDeclarationNode::parseVariable(Parser& parser, VariableDeclarationNode& node, bool global) {
         // Here's the form of a variable declaration:
         // (<type>) var (= <expression>)\n
 
@@ -45,16 +39,18 @@ namespace Three {
             node._initializerExpression = parser.parseExpression();
         }
 
-        if (!createVariable) {
-            return true;
-        }
+        // apply the namespace here
+        QualifiedName qualifiedName = parser.context()->scope()->fullNamespace();
+        qualifiedName.setName(node.name());
 
         node._variable = new Variable();
 
-        node._variable->name = node.name();
+        node._variable->name = qualifiedName;
         node._variable->type = node.dataType();
+        node._variable->global = global;
 
-        return parser.context()->scope()->defineVariable(node._variable);
+        // make this variable scoped *only* if it is not global
+        return parser.context()->defineVariable(node._variable, global == false);
     }
 
     VariableDeclarationNode::VariableDeclarationNode() :

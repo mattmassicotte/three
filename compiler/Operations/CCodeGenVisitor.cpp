@@ -153,19 +153,19 @@ namespace Three {
     void CCodeGenVisitor::visit(VariableNode& node) {
         assert(node.newVariable());
 
-        (*_currentSource) << node.newVariable()->name;
+        (*_currentSource) << node.newVariable()->name.to_s();
     }
 
     void CCodeGenVisitor::visit(CapturedVariableNode& node) {
         assert(node.newVariable());
 
-        (*_currentSource) << "(self_env->" << node.newVariable()->name << ")";
+        (*_currentSource) << "(self_env->" << node.newVariable()->name.to_s() << ")";
     }
 
     void CCodeGenVisitor::visit(ReferencedVariableNode& node) {
         assert(node.newVariable());
 
-        (*_currentSource) << "*(self_env->" << node.newVariable()->name << ")";
+        (*_currentSource) << "*(self_env->" << node.newVariable()->name.to_s() << ")";
     }
 
     void CCodeGenVisitor::visit(FunctionCallOperatorNode& node) {
@@ -745,7 +745,7 @@ namespace Three {
         assert(node.rangeStartExpression() && node.rangeEndExpression());
 
         *_currentSource << "(";
-        *_currentSource << node.rangeLoopVariable()->name;
+        *_currentSource << node.rangeLoopVariable()->name.to_s();
         *_currentSource << " < ";
 
         node.rangeEndExpression()->accept(*this);
@@ -778,7 +778,7 @@ namespace Three {
 
         assert(node.rangeStartExpression() && node.rangeEndExpression());
 
-        *_currentSource << "++" << node.rangeLoopVariable()->name;
+        *_currentSource << "++" << node.rangeLoopVariable()->name.to_s();
     }
 
     void CCodeGenVisitor::returnStatementArgument(ReturnNode& node) {
@@ -888,7 +888,7 @@ namespace Three {
                 s << "&";
             }
 
-            s << v->name;
+            s << v->name.to_s();
         });
 
         s << ");";

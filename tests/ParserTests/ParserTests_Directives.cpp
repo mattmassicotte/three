@@ -94,6 +94,20 @@ TEST_F(ParserTests_Directives, EmptyTopLevelDebug) {
     ASSERT_EQ("Debug", node->childAtIndex(0)->nodeName());
 }
 
+TEST_F(ParserTests_Directives, TopLevelDebugWithFunctionDefinitionInside) {
+    ASTNode* node = this->parseNode("debug\n"
+                                    "  def test()\n"
+                                    "  end\n"
+                                    "end\n");
+
+    ASSERT_EQ(1, node->childCount());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Debug", node->nodeName());
+    ASSERT_EQ(1, node->childCount());
+    ASSERT_EQ("Function Definition", node->childAtIndex(0)->nodeName());
+}
+
 TEST_F(ParserTests_Directives, DebugWithinFunction) {
     ASTNode* node = this->parseSingleFunction("def test(Int x)\n"
                                               "  debug\n"
@@ -104,4 +118,5 @@ TEST_F(ParserTests_Directives, DebugWithinFunction) {
     ASSERT_EQ("Function Definition", node->nodeName());
     ASSERT_EQ(1, node->childCount());
     ASSERT_EQ("Debug", node->childAtIndex(0)->nodeName());
+    ASSERT_EQ(1, node->childAtIndex(0)->childCount());
 }

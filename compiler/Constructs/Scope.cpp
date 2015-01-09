@@ -96,8 +96,8 @@ namespace Three {
         return s.str();
     }
 
-    Variable* Scope::variableForName(const std::string& name) const {
-        auto it = _variables.find(name);
+    Variable* Scope::variableForName(const QualifiedName& name) const {
+        auto it = _variables.find(name.to_s());
 
         if (it != _variables.cend()) {
             return it->second;
@@ -112,12 +112,12 @@ namespace Three {
     }
 
     bool Scope::defineVariable(Variable* variable) {
-        _variables[variable->name] = variable;
+        _variables[variable->name.to_s()] = variable;
 
         return true;
     }
 
-    bool Scope::defineVariableTypeForName(const DataType& type, const std::string& name) {
+    bool Scope::defineVariableTypeForName(const DataType& type, const QualifiedName& name) {
         Variable* variable = new Variable();
 
         variable->name = name;

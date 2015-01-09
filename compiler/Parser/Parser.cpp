@@ -195,7 +195,7 @@ namespace Three {
                 node = NamespaceNode::parse(*this);
                 break;
             case Token::Type::KeywordDebug:
-                node = DebugNode::parse(*this);
+                node = DebugNode::parse(*this, true);
                 break;
             case Token::Type::KeywordEnd:
                 // Tokens that are invalid in a top-level context should go here.
@@ -205,7 +205,7 @@ namespace Three {
                 // last possibility, global variable definition
                 // TODO: similar to the comment above, there are only some
                 // tokens that could possibly allow for a global.
-                node = VariableDeclarationNode::parseGlobal(*this);
+                node = VariableDeclarationNode::parse(*this, true);
                 break;
         }
 
@@ -260,7 +260,7 @@ namespace Three {
                 node = IfNode::parseTailing(*this, BarrierNode::parse(*this));
                 break;
             case Token::Type::KeywordDebug:
-                node = DebugNode::parse(*this);
+                node = DebugNode::parse(*this, false);
                 break;
             default:
                 if (this->isAtType()) {

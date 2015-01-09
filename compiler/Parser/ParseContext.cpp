@@ -299,7 +299,7 @@ namespace Three {
 
     Variable* ParseContext::variableForName(const QualifiedName& name) const {
         // first, search for given name
-        Variable* v = this->variableForExactName(name.to_s());
+        Variable* v = this->variableForExactName(name);
         if (v) {
             return v;
         }
@@ -313,11 +313,11 @@ namespace Three {
 
         namespacedName.prependName(this->scope()->fullNamespace());
 
-        return this->variableForExactName(namespacedName.to_s());
+        return this->variableForExactName(namespacedName);
     }
 
-    Variable* ParseContext::variableForExactName(const std::string& name) const {
-        auto it = _variables.find(name);
+    Variable* ParseContext::variableForExactName(const QualifiedName& name) const {
+        auto it = _variables.find(name.to_s());
 
         if (it != _variables.cend()) {
             return it->second;
@@ -339,16 +339,16 @@ namespace Three {
             return this->scope()->defineVariable(variable);
         }
 
-        if (this->variableForName(QualifiedName(variable->name))) {
+        if (this->variableForName(variable->name)) {
             return false;
         }
 
-        _variables[variable->name] = variable;
+        _variables[variable->name.to_s()] = variable;
 
         return true;
     }
 
-    bool ParseContext::defineVariableTypeForName(const DataType& type, const std::string& name, bool scoped) {
+    bool ParseContext::defineVariableTypeForName(const DataType& type, const QualifiedName& name, bool scoped) {
         Variable* variable = new Variable();
 
         variable->name = name;

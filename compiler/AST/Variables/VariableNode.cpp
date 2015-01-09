@@ -2,6 +2,7 @@
 #include "compiler/Parser/Parser.h"
 #include "compiler/constructs/Scope.h"
 #include "LocalVariableNode.h"
+#include "GlobalVariableNode.h"
 #include "FunctionVariableNode.h"
 #include "ReferencedVariableNode.h"
 #include "CapturedVariableNode.h"
@@ -33,11 +34,15 @@ namespace Three {
         } else if (name.to_s() == "self") {
             node = new SelfVariableNode();
         } else {
-            node = new LocalVariableNode();
+            if (variable->global) {
+                node = new GlobalVariableNode();
+            } else {
+                node = new LocalVariableNode();
+            }
         }
 
         node->_name = name.to_s();
-        node->_newVariable= variable;
+        node->_newVariable = variable;
 
         return node;
     }

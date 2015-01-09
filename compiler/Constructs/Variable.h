@@ -1,6 +1,7 @@
 #pragma once
 
 #include "compiler/constructs/DataType.h"
+#include "compiler/constructs/QualifiedName.h"
 
 #include <string>
 
@@ -16,7 +17,8 @@ namespace Three {
         Variable& operator=(Variable&& other);
 
     public:
-        std::string name;
+        QualifiedName name;
         DataType type;
+        bool global;
     };
 }

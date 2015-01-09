@@ -79,7 +79,7 @@ namespace Three {
 
             DataType capturedType = v->type;
             capturedType.setAccess(DataType::Access::Read); // make contant
-            capturedType.setLabel(v->name);
+            capturedType.setLabel(v->name.to_s());
 
             // add it to the closure's environment struct
             envStruct.addSubtype(capturedType);

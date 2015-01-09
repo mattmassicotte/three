@@ -6,7 +6,7 @@
 #include <sstream>
 
 namespace Three {
-	DebugNode* DebugNode::parse(Parser& parser) {
+	DebugNode* DebugNode::parse(Parser& parser, bool topLevel) {
 		assert(parser.helper()->nextIf(Token::Type::KeywordDebug));
 
 		DebugNode* node = new DebugNode();
@@ -19,34 +19,43 @@ namespace Three {
 
 		bool parsedSuccessfully = true;
 
-		// TODO: the success conditions need to be improved here
-		parser.helper()->parseUntilEnd([&] () {
-			bool success = false;
+        // TODO: the success conditions need to be improved here
+        parser.helper()->parseUntilEnd([&] () {
+            bool success = false;
 
-			if (!node->addChild(parser.parseTopLevelNode(&success))) {
-				parsedSuccessfully = success;
-				return true;
-			}
+            // This debug statement could be nested inside a function
+            // definition.  Parsing needs to be aware of this.
+            ASTNode* child = nullptr;
+            if (topLevel) {
+                child = parser.parseTopLevelNode(&success);
+            } else {
+                child = parser.parseStatement();
+            }
 
-			return false;
-		});
+            if (!node->addChild(child)) {
+                parsedSuccessfully = success;
+                return true;
+            }
 
-		if (!parsedSuccessfully) {
-			delete node;
+            return false;
+        });
 
-			return nullptr;
-		}
+        if (!parsedSuccessfully) {
+            delete node;
 
-		parser.context()->popScope();
+            return nullptr;
+        }
 
-		return node;
-	}
+        parser.context()->popScope();
 
-	std::string DebugNode::nodeName() const {
-		return "Debug";
-	}
+        return node;
+    }
 
-	std::string DebugNode::name() const {
-		return this->nodeName();
-	}
+    std::string DebugNode::nodeName() const {
+        return "Debug";
+    }
+
+    std::string DebugNode::name() const {
+        return this->nodeName();
+    }
 }
