@@ -19,6 +19,44 @@ TEST_F(CCodeGenTests_Operators, MemberAccess) {
     EXPECT_EQ("void test(Foo f) {\n    f.a = 0;\n}\n\n", visitor->bodyString());
 }
 
+TEST_F(CCodeGenTests_Operators, IndirectMemberAccess) {
+    Three::CCodeGenVisitor* visitor = this->visit("struct Foo\n"
+                                                  "  Natural:32 a\n"
+                                                  "end\n"
+                                                  "def test(*Foo f)\n"
+                                                  "  f->a = 0\n"
+                                                  "end\n");
+
+    EXPECT_EQ("typedef struct Foo {\n"
+              "    uint32_t a;\n"
+              "} Foo;\n\n"
+              "void test(const Foo* const f);\n", visitor->internalHeaderString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
+    EXPECT_EQ("void test(const Foo* const f) {\n    f->a = 0;\n}\n\n", visitor->bodyString());
+}
+
+TEST_F(CCodeGenTests_Operators, NamespacedMemberAccess) {
+    Three::CCodeGenVisitor* visitor = this->visit("namespace Bar\n"
+                                                  "  struct Foo\n"
+                                                  "    Natural:32 a\n"
+                                                  "  end\n"
+                                                  "  def test(*Void p)\n"
+                                                  "    Foo f = (*p)\n"
+                                                  "    f.a = 0\n"
+                                                  "  end\n"
+                                                  "end\n");
+
+    EXPECT_EQ("typedef struct Bar_3_Foo {\n"
+              "    uint32_t a;\n"
+              "} Bar_3_Foo;\n\n"
+              "void Bar_3_test(void* const p);\n", visitor->internalHeaderString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
+    EXPECT_EQ("void Bar_3_test(void* const p) {\n"
+              "    const Bar_3_Foo f = (*p);\n"
+              "    f.a = 0;\n"
+              "}\n\n", visitor->bodyString());
+}
+
 TEST_F(CCodeGenTests_Operators, FunctionCallOperator) {
     Three::CCodeGenVisitor* visitor = this->visit("struct Foo\n"
                                                   "  *(Int) fn\n"

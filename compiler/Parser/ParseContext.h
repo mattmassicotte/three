@@ -2,6 +2,7 @@
 
 #include "compiler/constructs/DataType.h"
 #include "compiler/Constructs/TranslationUnit.h"
+#include "compiler/Constructs/SymbolContainer.h"
 
 #include <string>
 #include <vector>
@@ -50,8 +51,8 @@ namespace Three {
         bool defineTypeForName(DataType type, const std::string& name);
         bool redefineTypeForName(DataType type, const std::string& name);
 
-        DataType functionForName(const std::string& name) const;
-        bool defineFunctionForName(const DataType& type, const std::string& name);
+        DataType functionForName(const QualifiedName& name) const;
+        bool defineFunctionForName(const DataType& type, const QualifiedName& name);
 
         Variable* variableForName(const QualifiedName& name) const;
         bool defineVariable(Variable* variable, bool scoped=true);
@@ -84,8 +85,9 @@ namespace Three {
 
         std::vector<Message*> _messages;
         std::map<std::string, DataType> _dataTypeMap;
-        std::map<std::string, DataType> _functions;
-        std::map<std::string, Variable*> _variables;
+
+        SymbolContainer<DataType> _functions;
+        SymbolContainer<Variable*> _variables;
         std::map<std::string, Constant*> _constants;
 
         std::vector<ParseContext*> _importedContexts;

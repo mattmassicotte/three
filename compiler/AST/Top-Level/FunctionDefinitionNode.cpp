@@ -94,7 +94,7 @@ namespace Three {
             node->_functionType.parameters.insert(node->_functionType.parameters.cbegin(), selfPtr);
         }
 
-        if (!parser.context()->defineFunctionForName(node->_functionType, node->fullName())) {
+        if (!parser.context()->defineFunctionForName(node->_functionType, node->_name)) {
             parser.context()->addMessage(new DuplicateFunctionMessage(node->fullName()));
 
             delete node;

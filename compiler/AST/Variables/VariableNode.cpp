@@ -22,26 +22,31 @@ namespace Three {
             return nullptr;
         }
 
-        if (parser.context()->functionForName(name.to_s()).kind() != DataType::Kind::Undefined) {
+        if (parser.context()->functionForName(name).kind() != DataType::Kind::Undefined) {
             node = new FunctionVariableNode();
+            node->_name = variable->name.to_s();
         } else if (parser.context()->scope()->referencedVariable(name.to_s())) {
             node = new ReferencedVariableNode();
+            node->_name = name.to_s();
         } else if (parser.context()->scope()->capturedVariable(name.to_s())) {
             node = new CapturedVariableNode();
+            node->_name = name.to_s();
 
             // TODO: this is weird
             parser.context()->scope()->captureVariable(name.to_s());
         } else if (name.to_s() == "self") {
             node = new SelfVariableNode();
+            node->_name = name.to_s();
         } else {
             if (variable->global) {
                 node = new GlobalVariableNode();
+                node->_name = variable->name.to_s();
             } else {
                 node = new LocalVariableNode();
+                node->_name = name.to_s();
             }
         }
 
-        node->_name = name.to_s();
         node->_newVariable = variable;
 
         return node;

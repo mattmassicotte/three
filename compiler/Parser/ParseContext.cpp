@@ -13,7 +13,11 @@
 #include <fstream>
 
 namespace Three {
-    ParseContext::ParseContext() : skipIncludes(false), skipImports(false) {
+    ParseContext::ParseContext() :
+        skipIncludes(false),
+        skipImports(false),
+        _functions(DataType()),
+        _variables(nullptr) {
         _rootNode = new RootNode();
         _rootScope = new Scope();
         _currentScope = _rootScope;
@@ -262,11 +266,15 @@ namespace Three {
         return true;
     }
 
-    DataType ParseContext::functionForName(const std::string& name) const {
-        auto it = _functions.find(name);
+    DataType ParseContext::functionForName(const QualifiedName& name) const {
+        DataType fnType = _functions.symbolForName(name);
+        if (fnType.defined()) {
+            return fnType;
+        }
 
-        if (it != _functions.cend()) {
-            return it->second;
+        fnType = _functions.symbolForName(name, this->scope()->fullNamespace());
+        if (fnType.defined()) {
+            return fnType;
         }
 
         for (ParseContext* subcontext : _importedContexts) {
@@ -280,51 +288,30 @@ namespace Three {
         return DataType();
     }
 
-    bool ParseContext::defineFunctionForName(const DataType& type, const std::string& name) {
+    bool ParseContext::defineFunctionForName(const DataType& type, const QualifiedName& name) {
         assert((type.kind() == DataType::Kind::Function) || (type.kind() == DataType::Kind::CFunction));
 
-        if (this->functionForName(name).kind() != DataType::Kind::Undefined) {
+        if (!_functions.defineSymbolForName(type, name)) {
             return false;
         }
 
-        // now, define this function as a "variable" in the global scope
-        if (!this->defineVariableTypeForName(type, name, false)) {
-            return false;
-        }
-
-        _functions[name] = type;
-
-        return true;
+        return this->defineVariableTypeForName(type, name, false);
     }
 
     Variable* ParseContext::variableForName(const QualifiedName& name) const {
-        // first, search for given name
-        Variable* v = this->variableForExactName(name);
+        Variable* v = _variables.symbolForName(name);
         if (v) {
             return v;
         }
 
         // ok, not found. Try applying this scope's namespace
-        if (this->scope()->fullNamespace().numberOfComponents() == 0) {
-            return nullptr;
-        }
-
-        QualifiedName namespacedName(name);
-
-        namespacedName.prependName(this->scope()->fullNamespace());
-
-        return this->variableForExactName(namespacedName);
-    }
-
-    Variable* ParseContext::variableForExactName(const QualifiedName& name) const {
-        auto it = _variables.find(name.to_s());
-
-        if (it != _variables.cend()) {
-            return it->second;
+        v = _variables.symbolForName(name, this->scope()->fullNamespace());
+        if (v) {
+            return v;
         }
 
         for (ParseContext* subcontext : _importedContexts) {
-            Variable* v = subcontext->variableForName(name);
+            v = subcontext->variableForName(name);
 
             if (v) {
                 return v;
@@ -339,13 +326,7 @@ namespace Three {
             return this->scope()->defineVariable(variable);
         }
 
-        if (this->variableForName(variable->name)) {
-            return false;
-        }
-
-        _variables[variable->name.to_s()] = variable;
-
-        return true;
+        return _variables.defineSymbolForName(variable, variable->name);
     }
 
     bool ParseContext::defineVariableTypeForName(const DataType& type, const QualifiedName& name, bool scoped) {

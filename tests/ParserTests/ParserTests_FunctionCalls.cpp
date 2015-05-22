@@ -234,5 +234,6 @@ TEST_F(ParserTests_FunctionCalls, InvokingNamespacedFunctionWithoutFullName) {
     ASSERT_EQ(1, fnCall->childCount());
     ASSERT_EQ("Local Variable", fnCall->childAtIndex(0)->nodeName());
 
-    std::cout << fnCall->receiver()->recursiveStr() << std::endl;
+    ASSERT_EQ("Function Variable", fnCall->receiver()->nodeName());
+    ASSERT_EQ("Bar_3_foo", fnCall->receiver()->name());
 }

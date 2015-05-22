@@ -39,13 +39,18 @@ namespace Three {
             node._initializerExpression = parser.parseExpression();
         }
 
-        // apply the namespace here
-        QualifiedName qualifiedName = parser.context()->scope()->fullNamespace();
-        qualifiedName.setName(node.name());
-
         node._variable = new Variable();
 
-        node._variable->name = qualifiedName;
+        if (global) {
+            // apply the namespace here
+            QualifiedName qualifiedName = parser.context()->scope()->fullNamespace();
+            qualifiedName.setName(node.name());
+
+            node._variable->name = qualifiedName;
+        } else {
+            node._variable->name.setName(node.name());
+        }
+
         node._variable->type = node.dataType();
         node._variable->global = global;
 
