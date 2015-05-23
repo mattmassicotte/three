@@ -176,9 +176,6 @@ TEST_F(ParserTests_Functions, FunctionWithTypedParamAndReturn) {
 
     ASSERT_EQ(DataType::Kind::Integer, func->functionType().parameterAtIndex(0).kind());
     ASSERT_EQ("a", func->functionType().parameterAtIndex(0).label());
-
-    ASSERT_EQ(DataType::Kind::Integer, func->functionType().returnAtIndex(0).kind());
-    ASSERT_EQ("", func->functionType().returnAtIndex(0).label());
 }
 
 TEST_F(ParserTests_Functions, FunctionWithOneNamedReturn) {

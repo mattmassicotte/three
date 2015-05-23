@@ -231,20 +231,8 @@ namespace Three {
         return _returns.size();
     }
 
-    DataType DataType::returnAtIndex(uint32_t idx) const {
-        return _returns.at(idx);
-    }
-
     void DataType::addReturn(DataType t) {
         _returns.push_back(t);
-    }
-
-    void DataType::eachReturnWithLast(std::function<void (const DataType&, bool)> func) const {
-        uint32_t lastIndex = this->returnCount() - 1;
-
-        for (uint32_t i = 0; i < this->returnCount(); ++i) {
-            func(this->returnAtIndex(i), lastIndex == i);
-        }
     }
 
     bool DataType::isGeneric() const {

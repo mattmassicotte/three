@@ -395,6 +395,8 @@ namespace Three {
                 return this->parseExpressionIdentifier();
             case Token::Type::KeywordClosure:
                 return ClosureNode::parse(*this);
+            case Token::Type::KeywordTransposeClosure:
+                return TransposeClosureNode::parse(*this);
             case Token::Type::LiteralString:
                 return StringLiteralNode::parse(*this);
             case Token::Type::LiteralInteger:

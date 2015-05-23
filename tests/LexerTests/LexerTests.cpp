@@ -617,6 +617,13 @@ TEST_F(LexerTest, KeywordClosure) {
     ASSERT_NEXT_TOKEN(Undefined, "");
 }
 
+TEST_F(LexerTest, KeywordTransposeClosure) {
+    this->lex("await");
+
+    ASSERT_NEXT_TOKEN(KeywordTransposeClosure, "await");
+    ASSERT_NEXT_TOKEN(Undefined, "");
+}
+
 TEST_F(LexerTest, KeywordStructure) {
     this->lex("struct");
 

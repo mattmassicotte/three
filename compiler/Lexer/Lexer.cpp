@@ -37,6 +37,7 @@ namespace Three {
         _keywordMap["continue"] = Token::Type::KeywordContinue;
         _keywordMap["import"] = Token::Type::KeywordImport;
         _keywordMap["do"] = Token::Type::KeywordClosure;
+        _keywordMap["await"] = Token::Type::KeywordTransposeClosure;
         _keywordMap["struct"] = Token::Type::KeywordStructure;
         _keywordMap["enum"] = Token::Type::KeywordEnumeration;
         _keywordMap["union"] = Token::Type::KeywordUnion;

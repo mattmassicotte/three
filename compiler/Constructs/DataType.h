@@ -122,9 +122,7 @@ namespace Three {
         void eachParameterWithLast(std::function<void (const DataType&, bool)> func) const;
         DataType returnType() const;
         uint32_t returnCount() const;
-        DataType returnAtIndex(uint32_t idx) const;
         void addReturn(DataType t);
-        void eachReturnWithLast(std::function<void (const DataType&, bool)> func) const;
 
         bool isGeneric() const;
         uint32_t genericParameterCount() const;

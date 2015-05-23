@@ -213,3 +213,38 @@ TEST_F(ParserTests_Closures, ClosureWithEmptyBody) {
 
     ASSERT_EQ("Closure", varDecl->initializerExpression()->nodeName());
 }
+
+TEST_F(ParserTests_Closures, TransposedClosure) {
+    ASTNode* node = this->parseNodeWithBodies("def foo({} c)\n"
+                                              "end\n"
+                                              "def test()\n"
+                                              "  await foo()\n"
+                                              "end\n");
+
+    node = node->childAtIndex(1);
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    node = node->childAtIndex(0);
+    ASSERT_EQ("Transpose Closure Node", node->nodeName());
+    ASSERT_EQ(DataType::Kind::Void, node->dataType().kind());
+
+    ASSERT_EQ("Function Call Operator", node->childAtIndex(0)->nodeName());
+}
+
+TEST_F(ParserTests_Closures, AssignToTransposedClosure) {
+    ASTNode* node = this->parseNodeWithBodies("def foo({;Int} c)\n"
+                                              "end\n"
+                                              "def test()\n"
+                                              "  Int x = await foo()\n"
+                                              "end\n");
+
+    node = node->childAtIndex(1);
+    ASSERT_EQ("Function Definition", node->nodeName());
+
+    VariableDeclarationNode* varDecl = dynamic_cast<VariableDeclarationNode*>(node->childAtIndex(0));
+    ASSERT_EQ("Variable Declaration", varDecl->nodeName());
+
+    node = varDecl->initializerExpression();
+    ASSERT_EQ("Transpose Closure Node", node->nodeName());
+    ASSERT_EQ(DataType::Kind::Integer, node->dataType().kind());
+}

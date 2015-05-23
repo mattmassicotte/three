@@ -107,6 +107,7 @@ namespace Three {
             KeywordContinue,
             KeywordImport,
             KeywordClosure,
+            KeywordTransposeClosure,
             KeywordStructure,
             KeywordEnumeration,
             KeywordUnion,
