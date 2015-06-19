@@ -12,6 +12,11 @@ namespace Three {
 
         node->addChild(parser.parseExpressionElement());
 
+        // create actual closure here
+        // ClosureNode* closure = new ClosureNode();
+        // 
+        // closure->_name = parser.context()->scope()->scopedName("closure");
+
         return node;
     }
 

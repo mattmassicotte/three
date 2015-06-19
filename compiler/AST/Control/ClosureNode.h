@@ -8,6 +8,7 @@ namespace Three {
     class ClosureNode : public ASTNode {
     public:
         static ClosureNode* parse(Parser& parser);
+        static ASTNode* parseTransposed(Parser& parser);
 
     public:
         std::string nodeName() const;

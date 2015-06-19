@@ -98,6 +98,20 @@ namespace Three {
         return node;
     }
 
+    ASTNode* ClosureNode::parseTransposed(Parser& parser) {
+        assert(parser.helper()->nextIf(Token::Type::KeywordTransposeClosure));
+
+        ASTNode* node = parser.parseExpressionElement();
+        if (!node) {
+            assert(0 && "Message: unable to parse transposed closure function");
+            return nullptr;
+        }
+
+        std::cout << node->nodeName() << std::endl;
+
+        return nullptr;
+    }
+
     std::string ClosureNode::nodeName() const {
         return "Closure";
     }

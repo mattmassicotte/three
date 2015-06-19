@@ -108,3 +108,31 @@ TEST_F(CCodeGenTests_Closures, NestedClosures) {
               "    const three_closure_t closure = THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_DEFAULT);\n"
               "}\n\n", visitor->bodyString());
 }
+
+TEST_F(CCodeGenTests_Closures, DISABLED_TransposedClosure) {
+    Three::CCodeGenVisitor* visitor = this->visit("def foo({} c)\n"
+                                                  "end\n"
+                                                  "def test()\n"
+                                                  "  await foo()\n"
+                                                  "  Int x = 0\n"
+                                                  "end\n");
+
+    EXPECT_EQ("// test_closure_1\n"
+    "struct test_closure_1_env {\n"
+    "};\n"
+    "static void test_closure_1(const struct test_closure_1_env* const self_env) {\n"
+    "    const int x = 0;\n"
+    "}\n"
+    "THREE_CHECK_CLOSURE_FUNCTION(test_closure_1);\n\n", visitor->declarationsString());
+
+    EXPECT_EQ("void foo(three_closure_t c);\n", visitor->internalHeaderString());
+    EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());
+    EXPECT_EQ("void foo(three_closure_t c) {\n"
+              "}\n\n"
+              "void test(void) {\n"
+              "    THREE_CAPTURE_ENV(test_closure_1_env);\n"
+              "    THREE_CALL_CLOSURE(void (*)(void* const), (*closure), 1);\n"
+              
+              "    THREE_CALL_CLOSURE(void (*)(void* const), THREE_MAKE_CLOSURE(test_closure_1, THREE_CLOSURE_FLAGS_DEFAULT));\n"
+              "}\n\n", visitor->bodyString());
+}
