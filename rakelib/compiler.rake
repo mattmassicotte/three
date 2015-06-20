@@ -65,9 +65,13 @@ namespace :compiler do
   end
 
   desc "Run the compiler tests"
-  task :test => :define_tasks do
-    Rake::Task[COMPILER_TEST_BIN].invoke
+  task :test => :build_test do
     Rake::sh("#{COMPILER_TEST_BIN} --gtest_catch_exceptions=0")
+  end
+
+  desc "Build the compiler tests"
+  task :build_test => :define_tasks do
+    Rake::Task[COMPILER_TEST_BIN].invoke
   end
 
   desc "Build the compiler frontend"

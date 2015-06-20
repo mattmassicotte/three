@@ -185,7 +185,7 @@ TEST_F(ParserTests_FunctionCalls, InvokeVariableAsFunction) {
 }
 
 TEST_F(ParserTests_FunctionCalls, FunctionCallDereference) {
-    Three::ASTNode* node = this->parseNodeWithBodies("def foo(;*Int)\n"
+    Three::ASTNode* node = this->parseNodeWithBodies("def foo() -> *Int\n"
                                                      "  return null\n"
                                                      "end\n"
                                                      "def test()\n"

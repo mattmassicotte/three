@@ -404,12 +404,12 @@ x ? y : z
                 <td>
                     <pre><code>
 <span class="comment"># plain function</span>
-<span class="keyword">def</span> foo(*<span class="entity">Int</span> x, <span class="entity">Int</span> y; <span class="entity">Int</span>)
+<span class="keyword">def</span> foo(*<span class="entity">Int</span> x, <span class="entity">Int</span> y) -> <span class="entity">Int</span>
   <span class="keyword">return</span> *x + y
 <span class="keyword">end</span>
 
 <span class="comment"># multiple return values</span>
-<span class="keyword">def</span> foo(<span class="entity">Int</span> x, <span class="entity">Int</span> y; <span class="entity">Int</span>, <span class="entity">Int</span>)
+<span class="keyword">def</span> foo(<span class="entity">Int</span> x, <span class="entity">Int</span> y) -> (<span class="entity">Int</span>, <span class="entity">Int</span>)
   <span class="keyword">return</span> x, y
 <span class="keyword">end</span>
 
@@ -418,7 +418,7 @@ x ? y : z
 
 
 <span class="comment"># pre-defined locals for return values</span>
-<span class="keyword">def</span> foo(<span class="entity">Int</span> x; <span class="entity">Int</span> result)
+<span class="keyword">def</span> foo(<span class="entity">Int</span> x) -> (<span class="entity">Int</span> result)
   result += x
   <span class="keyword">return</span> result
 <span class="keyword">end</span>
@@ -493,7 +493,7 @@ x ? y : z
 <span class="entity">MyStructure</span>&lt;<span class="entity">Int</span>, <span class="entity">Natural</span>&gt; x
 
 <span class="comment"># Generic Function</span>
-<span class="keyword">def</span> foo&lt;<span class="entity">T</span>&gt;(<span class="entity">T</span> x; <span class="entity">T</span>)
+<span class="keyword">def</span> foo&lt;<span class="entity">T</span>&gt;(<span class="entity">T</span> x) -> <span class="entity">T</span>
   <span class="keyword">return</span> x
 <span class="keyword">end</span>
 
@@ -517,15 +517,15 @@ x ? y : z
             <tr>
                 <td>
                     <pre><code>
-<span class="entity">Int</span>             x
-<span class="entity">Int</span>             y
-{<span class="entity">Int</span>, <span class="entity">Int</span>; <span class="entity">Int</span>} closure
+<span class="entity">Int</span> x
+<span class="entity">Int</span> y
+{<span class="entity">Int</span>, <span class="entity">Int</span>} -> <span class="entity">Int</span> closure
 
 x = <span class="literal">42</span>
 y = <span class="literal">43</span>
 
 <span class="comment"># captures x by reference, y by value</span>
-closure = (<span class="entity">Int</span> a, <span class="entity">Int</span> b; <span class="entity">Int</span>; x) {
+closure = <span class="keyword">do</span> (<span class="entity">Int</span> a, <span class="entity">Int</span> b; x) -> <span class="entity">Int</span> {
   x = a + b + y
 
   <span class="keyword">return</span> a + b
@@ -547,9 +547,9 @@ foo(<span class="literal">4</span>) <span class="keyword">do</span> {
             <tr>
                 <td>
                     <pre><code>
-*(<span class="entity">Int</span>, <span class="entity">Int</span>; <span class="entity">Int</span>) function_ptr_a
+*(<span class="entity">Int</span>, <span class="entity">Int</span>) -> <span class="entity">Int</span> function_ptr_a
 *(<span class="entity">Int</span>, <span class="entity">Int</span>)      function_ptr_b
-*{<span class="entity">Int</span>, <span class="entity">Int</span>; <span class="entity">Int</span>} closure_ptr
+*{<span class="entity">Int</span>, <span class="entity">Int</span>} -> <span class="entity">Int</span> closure_ptr
                     </code></pre>
                 </td>
                 <td>
@@ -807,8 +807,8 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
                   input
 <span class="annotation">@return</span>  The value of x + the value
          pointed to by y
-<span class="annotation">@check   @pure @success(return == 0)</span>
-<span class="keyword">def</span>:func foo(<span class="entity">Int</span> x, *<span class="entity">Int</span> y; <span class="entity">Int</span>)
+<span class="annotation">@check   @success(return == 0)</span>
+<span class="keyword">def</span>:func foo(<span class="entity">Int</span> x, *<span class="entity">Int</span> y) -> <span class="entity">Int</span>
                     </code></pre>
                 </td>
                 <td>
@@ -829,7 +829,7 @@ b = atomic_compare_exchange_strong_explicit(&amp;a,
 
 <span class="directive">linkage</span>(none)
 <span class="directive">abi</span>(cdecl)
-<span class="keyword">def</span>:func foo(; <span class="entity">Int</span>)
+<span class="keyword">def</span>:func foo() -> <span class="entity">Int</span>
 
 <span class="directive">version</span> architecture
 <span class="directive">case</span> x86

@@ -36,6 +36,8 @@ namespace Three {
         bool parseNewline();
         bool parseNewlines();
 
+        bool parseMatchingTokens(Token::Type opening, Token::Type closing, std::function<void (void)> func);
+
     private:
         Lexer* _lexer;
     };

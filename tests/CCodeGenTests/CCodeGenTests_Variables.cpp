@@ -35,7 +35,7 @@ TEST_F(CCodeGenTests_Variables, PublicGlobalVariable) {
 }
 
 TEST_F(CCodeGenTests_Variables, FunctionPointerVariable) {
-    Three::CCodeGenVisitor* visitor = this->visit("*(*Void; *Void) fn_ptr\n");
+    Three::CCodeGenVisitor* visitor = this->visit("*(*Void) -> *Void fn_ptr\n");
 
     EXPECT_EQ("extern void* const (* const fn_ptr)(void* const);\n", visitor->internalHeaderString());
     EXPECT_EQ("#include <three/runtime/types.h>\n\n", visitor->externalHeaderString());

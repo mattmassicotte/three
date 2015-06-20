@@ -235,6 +235,11 @@ namespace Three {
         _returns.push_back(t);
     }
 
+    void DataType::setReturnType(const DataType& t) {
+        _returns.clear();
+        _returns.push_back(t);
+    }
+
     bool DataType::isGeneric() const {
         return this->genericParameterCount() > 0;
     }

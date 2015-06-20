@@ -24,14 +24,14 @@ TEST_F(CCodeGenTests_Functions, PrivateFunctionDefinition) {
 }
 
 TEST_F(CCodeGenTests_Functions, FunctionDefinitionWithArguments) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(Int a, Int b; *Int)\nend\n");
+    Three::CCodeGenVisitor* visitor = this->visit("def test(Int a, Int b) -> *Int\nend\n");
 
     EXPECT_EQ("const int* const test(const int a, const int b);\n", visitor->internalHeaderString());
     EXPECT_EQ("const int* const test(const int a, const int b) {\n}\n\n", visitor->bodyString());
 }
 
 TEST_F(CCodeGenTests_Functions, FunctionDefinitionWithNamedReturn) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(; Int x)\nend\n");
+    Three::CCodeGenVisitor* visitor = this->visit("def test() -> Int x\nend\n");
 
     EXPECT_EQ("const int test(void);\n", visitor->internalHeaderString());
     EXPECT_EQ("const int test(void) {\n"
