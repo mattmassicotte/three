@@ -2,6 +2,7 @@
 
 #include "ParseContext.h"
 #include "ParseHelper.h"
+#include "TypeParser.h"
 #include "compiler/constructs/DataType.h"
 
 #include <string>
@@ -32,6 +33,7 @@ namespace Three {
     public:
         ParseContext* context() const;
         ParseHelper* helper() const;
+        TypeParser* typeParser() const;
         bool verbose() const;
 
     public:
@@ -52,24 +54,13 @@ namespace Three {
         bool parseBodyWithElse(const std::string& label, ASTNode** elseNode, std::function<void (void)> func);
         bool parseBodyWithElse(ASTNode* node, ASTNode** elseNode);
 
-        uint32_t peekDepthIfAtType(uint32_t peekDepth = 1);
         bool isAtType();
         bool peekType(unsigned int* peekDepth);
-        bool peekTypePrefixes(unsigned int* peekDepth);
-        bool peekTypePostfixes(unsigned int* peekDepth);
-        bool peekTypeAnnotations(unsigned int* peekDepth);
-        bool peekFunctionType(unsigned int* peekDepth);
-        bool peekNonFunctionType(unsigned int* peekDepth);
         bool peekScopedIdentifier(unsigned int* peekDepth, QualifiedName& peekedName);
         DataType parseType(bool genericParam = false);
         DataType parseAndApplyTypeAnnotations(bool genericParam = false);
         DataType parseTypeWithoutAnnotations(bool genericParam = false);
-        void parseTypeSpecifiers(DataType& type);
-        DataType parseTypePostfixes(const DataType& type);
-        DataType parsePointerType(bool genericParam = false);
-        DataType parseArrayType(bool genericParam = false);
-        DataType parseFunctionType(bool signature = false, std::vector<std::string>* references = nullptr);
-        DataType parseFunctionSignatureType();
+        DataType parseCallableSignature(std::vector<std::string>* references = nullptr);
         uint32_t parseIntegerSpecifier();
         std::string parseTypeIdentifierPair(DataType& type);
         DataType::Access parseAnnotationAccess();
@@ -87,6 +78,7 @@ namespace Three {
     private:
         ParseContext* _context;
         ParseHelper* _helper;
+        TypeParser* _typeParser;
 
         std::map<std::string, DataType::CharacterEncoding> _characterEncodingMap;
 

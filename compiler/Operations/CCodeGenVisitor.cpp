@@ -44,8 +44,10 @@ namespace Three {
         _currentSource->print(functionString);
         _currentSource->printLineAndIndent(" {");
 
-        // create locals for the named returns, if any
+        // create locals for the named return, if there is one
         node.eachNamedReturn([&] (const DataType& type) {
+            std::cout << "return " << type.label() << std::endl;
+
             (*_currentSource) << CTypeCodeGenerator::codeGen(type, type.label());
             _currentSource->printLine(";");
         });

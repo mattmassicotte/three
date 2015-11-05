@@ -16,7 +16,7 @@ namespace Three {
 
         // this is optional for closures that are (Void; Void)
         if (parser.helper()->peek().type() == Token::Type::PunctuationOpenParen) {
-            node->_dataType = parser.parseFunctionType(true, &referenceNames);
+            node->_dataType = parser.parseCallableSignature(&referenceNames);
 
             // this will (correctly) parse as a function signature
             assert(node->_dataType.kind() == DataType::Kind::Function);

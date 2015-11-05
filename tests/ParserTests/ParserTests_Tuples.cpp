@@ -4,7 +4,7 @@ class ParserTests_Tuples : public ParserTestsBase {
 };
 
 TEST_F(ParserTests_Tuples, FunctionNamedReturnsAreLocal) {
-    ASTNode* node = this->parseSingleFunction("def foo(; Int! x, Int y)\n"
+    ASTNode* node = this->parseSingleFunction("def foo() -> (Int! x, Int y)\n"
                                               "  x = y\n"
                                               "  return x, y\n"
                                               "end\n");
@@ -19,7 +19,7 @@ TEST_F(ParserTests_Tuples, FunctionNamedReturnsAreLocal) {
 }
 
 TEST_F(ParserTests_Tuples, ReturnTwoExpressions) {
-    ASTNode* node = this->parseSingleFunction("def test(Int a; Int, Int)\n"
+    ASTNode* node = this->parseSingleFunction("def test(Int a) -> (Int, Int)\n"
                                               "  return a + a, a\n"
                                               "end\n");
 
@@ -42,7 +42,7 @@ TEST_F(ParserTests_Tuples, ReturnTwoExpressions) {
 }
 
 TEST_F(ParserTests_Tuples, ReturnTwoExpressionsWithMutability) {
-    ASTNode* node = this->parseSingleFunction("def test(Int a; Int, Int!)\n"
+    ASTNode* node = this->parseSingleFunction("def test(Int a) -> (Int, Int!)\n"
                                               "  return a + a, a\n"
                                               "end\n");
 
@@ -65,7 +65,7 @@ TEST_F(ParserTests_Tuples, ReturnTwoExpressionsWithMutability) {
 }
 
 TEST_F(ParserTests_Tuples, ReturnTwoExpressionsTailingIf) {
-    ASTNode* node = this->parseSingleFunction("def test(Int a; Int, Int)\n"
+    ASTNode* node = this->parseSingleFunction("def test(Int a) -> (Int, Int)\n"
                                               "  return a + a, a if a\n"
                                               "end\n");
 
@@ -85,7 +85,7 @@ TEST_F(ParserTests_Tuples, ReturnTwoExpressionsTailingIf) {
 }
 
 TEST_F(ParserTests_Tuples, DestructuringAssignment) {
-    ASTNode* node = this->parseNodeWithBodies("def foo(; Int a, Int b)\n"
+    ASTNode* node = this->parseNodeWithBodies("def foo() -> (Int a, Int b)\n"
                                               "  return 1, 2\n"
                                               "end\n"
                                               "def test(Int a, Int b)\n"

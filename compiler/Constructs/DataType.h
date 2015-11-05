@@ -123,6 +123,7 @@ namespace Three {
         DataType returnType() const;
         uint32_t returnCount() const;
         void addReturn(DataType t);
+        void setReturnType(const DataType& t);
 
         bool isGeneric() const;
         uint32_t genericParameterCount() const;

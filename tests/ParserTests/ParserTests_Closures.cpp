@@ -96,8 +96,8 @@ TEST_F(ParserTests_Closures, ClosureVariableWithCapture) {
     ASTNode* node = this->parseNodeWithBodies("def test()\n"
                                               "  Int x = 42\n"
                                               "  Int y = 43\n"
-                                              "  {Int; Int} closure\n"
-                                              "  closure = do (Int a; Int; x) {\n"
+                                              "  {Int} -> Int closure\n"
+                                              "  closure = do (Int a; x) -> Int {\n"
                                               "    x = a + y\n"
                                               "  }\n"
                                               "end\n");
@@ -139,10 +139,10 @@ TEST_F(ParserTests_Closures, NestedClosureVariableWithCapture) {
                                               "  Int x = 42\n"
                                               "  Int y = 43\n"
                                               "  {} closure_a\n"
-                                              "  closure_a = do (Int a;; x) {\n"
+                                              "  closure_a = do (Int a; x) {\n"
                                               "    x = a\n"
                                               "    {} closure_b\n"
-                                              "    closure_b = do (Int b;; y) {\n"
+                                              "    closure_b = do (Int b; y) {\n"
                                               "      y = x\n"
                                               "      y = b\n"
                                               "    }\n"
@@ -232,7 +232,7 @@ TEST_F(ParserTests_Closures, TransposedClosure) {
 }
 
 TEST_F(ParserTests_Closures, AssignToTransposedClosure) {
-    ASTNode* node = this->parseNodeWithBodies("def foo({;Int} c)\n"
+    ASTNode* node = this->parseNodeWithBodies("def foo({} -> Int c)\n"
                                               "end\n"
                                               "def test()\n"
                                               "  Int x = await foo()\n"

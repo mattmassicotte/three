@@ -73,10 +73,10 @@ TEST_F(CCodeGenTests_Atomics, AtomicStatementWithAbort) {
 }
 
 TEST_F(CCodeGenTests_Atomics, AtomicStatementWithFallback) {
-    Three::CCodeGenVisitor* visitor = this->visit("def fn_1(*Void ptr; Bool)\n"
+    Three::CCodeGenVisitor* visitor = this->visit("def fn_1(*Void ptr) -> Bool\n"
                                                   "  return true\n"
                                                   "end\n"
-                                                  "def fn_2(*Void ptr; Bool)\n"
+                                                  "def fn_2(*Void ptr) -> Bool\n"
                                                   "  return true\n"
                                                   "end\n"
                                                   "def test(*Void ptr)\n"
@@ -199,7 +199,7 @@ TEST_F(CCodeGenTests_Atomics, ReturnStatementInAtomic) {
 }
 
 TEST_F(CCodeGenTests_Atomics, ReturnBooleanInAtomic) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(; Bool)\n"
+    Three::CCodeGenVisitor* visitor = this->visit("def test() -> Bool\n"
                                                   "  atomic\n"
                                                   "    return true\n"
                                                   "  end\n"

@@ -78,7 +78,7 @@ TEST_F(CCodeGenTests_Control, SwitchStatementWithElse) {
 }
 
 TEST_F(CCodeGenTests_Control, Return) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(; Int!)\n"
+    Three::CCodeGenVisitor* visitor = this->visit("def test() -> Int!\n"
                                                   "  return\n"
                                                   "end\n");
 
@@ -87,7 +87,7 @@ TEST_F(CCodeGenTests_Control, Return) {
 }
 
 TEST_F(CCodeGenTests_Control, ReturnWithExpression) {
-    Three::CCodeGenVisitor* visitor = this->visit("def test(; Int!)\n"
+    Three::CCodeGenVisitor* visitor = this->visit("def test() -> Int!\n"
                                                   "  return 1 + 1\n"
                                                   "end\n");
 

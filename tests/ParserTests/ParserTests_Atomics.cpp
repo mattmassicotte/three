@@ -80,10 +80,10 @@ TEST_F(ParserTests_Atomics, AtomicStatementWithAbort) {
 }
 
 TEST_F(ParserTests_Atomics, AtomicStatementWithFallbackFunctions) {
-    ASTNode* node = this->parseNodeWithBodies("def fn_1(*Void ptr; Bool)\n"
+    ASTNode* node = this->parseNodeWithBodies("def fn_1(*Void ptr) -> Bool\n"
                                               "  return true\n"
                                               "end\n"
-                                              "def fn_2(*Void ptr; Bool)\n"
+                                              "def fn_2(*Void ptr) -> Bool\n"
                                               "  return true\n"
                                               "end\n"
                                               "def test(*Void ptr)\n"

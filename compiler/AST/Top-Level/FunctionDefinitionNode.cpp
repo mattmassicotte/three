@@ -33,7 +33,7 @@ namespace Three {
         // use the name selected
         assert(parser.helper()->peek().type() == Token::Type::Identifier);
         if (!parser.isAtIdentifierAvailableForDefinition()) {
-            assert(0 && "Message: function name isn't avaiable for definition");
+            assert(0 && "Message: function name isn't available for definition");
         }
 
         // We have to store this, because we loose the scope when we pass over the function body.
@@ -75,7 +75,7 @@ namespace Three {
         }
 
         // parse signature
-        node->_functionType = parser.parseFunctionSignatureType();
+        node->_functionType = parser.parseCallableSignature();
         node->_functionType.setLabel(node->fullName());
 
         if (genericType.isGeneric()) {

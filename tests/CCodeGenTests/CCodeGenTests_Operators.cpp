@@ -59,7 +59,7 @@ TEST_F(CCodeGenTests_Operators, NamespacedMemberAccess) {
 
 TEST_F(CCodeGenTests_Operators, FunctionCallOperator) {
     Three::CCodeGenVisitor* visitor = this->visit("struct Foo\n"
-                                                  "  *(Int) fn\n"
+                                                  "  *(Int) -> Void fn\n"
                                                   "end\n"
                                                   "def test(Foo f)\n"
                                                   "  f.fn(1)\n"

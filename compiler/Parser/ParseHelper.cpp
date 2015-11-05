@@ -117,4 +117,14 @@ namespace Three {
 
         return true;
     }
+
+    bool ParseHelper::parseMatchingTokens(Token::Type opening, Token::Type closing, std::function<void (void)> func) {
+        if (!this->nextIf(opening)) {
+            return false;
+        }
+
+        func();
+
+        return this->nextIf(closing);
+    }
 }

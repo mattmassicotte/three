@@ -296,8 +296,29 @@ TEST_F(ParserTests_Types, GlobalPointerToArrayOfInt) {
     ASSERT_EQ(DataType::Integer, node->dataType().subtypeAtIndex(0).subtypeAtIndex(0).kind());
 }
 
+TEST_F(ParserTests_Types, TupleOfSingleInt) {
+    ASTNode* node = this->parseNode("(Int) value\n");
+
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ(DataType::Tuple, node->dataType().kind());
+    ASSERT_EQ(1, node->dataType().subtypeCount());
+    ASSERT_EQ(DataType::Integer, node->dataType().subtypeAtIndex(0).kind());
+}
+
+TEST_F(ParserTests_Types, TupleOfTwoInts) {
+    ASTNode* node = this->parseNode("(Int, Int) value\n");
+
+    node = node->childAtIndex(0);
+
+    ASSERT_EQ(DataType::Tuple, node->dataType().kind());
+    ASSERT_EQ(2, node->dataType().subtypeCount());
+    ASSERT_EQ(DataType::Integer, node->dataType().subtypeAtIndex(0).kind());
+    ASSERT_EQ(DataType::Integer, node->dataType().subtypeAtIndex(1).kind());
+}
+
 TEST_F(ParserTests_Types, GlobalFunction) {
-    ASTNode* node = this->parseNode("() value\n");
+    ASTNode* node = this->parseNode("() -> Void value\n");
 
     node = node->childAtIndex(0);
 
@@ -309,7 +330,7 @@ TEST_F(ParserTests_Types, GlobalFunction) {
 }
 
 TEST_F(ParserTests_Types, GlobalFunctionTakingSingleParam) {
-    ASTNode* node = this->parseNode("(Int) value\n");
+    ASTNode* node = this->parseNode("(Int) -> Void value\n");
 
     node = node->childAtIndex(0);
 
@@ -321,7 +342,7 @@ TEST_F(ParserTests_Types, GlobalFunctionTakingSingleParam) {
 }
 
 TEST_F(ParserTests_Types, GlobalFunctionTakingTwoParams) {
-    ASTNode* node = this->parseNode("(Int, Float) value\n");
+    ASTNode* node = this->parseNode("(Int, Float) -> Void value\n");
 
     node = node->childAtIndex(0);
 
@@ -334,7 +355,7 @@ TEST_F(ParserTests_Types, GlobalFunctionTakingTwoParams) {
 }
 
 TEST_F(ParserTests_Types, GlobalFunctionTakingAPointerParam) {
-    ASTNode* node = this->parseNode("(*Int) value\n");
+    ASTNode* node = this->parseNode("(*Int) -> Void value\n");
 
     node = node->childAtIndex(0);
 
@@ -346,7 +367,7 @@ TEST_F(ParserTests_Types, GlobalFunctionTakingAPointerParam) {
 }
 
 TEST_F(ParserTests_Types, GlobalFunctionWithReturn) {
-    ASTNode* node = this->parseNode("(;Int) value\n");
+    ASTNode* node = this->parseNode("() -> Int value\n");
 
     node = node->childAtIndex(0);
 
@@ -358,7 +379,7 @@ TEST_F(ParserTests_Types, GlobalFunctionWithReturn) {
 }
 
 TEST_F(ParserTests_Types, GlobalFunctionWithTwoReturns) {
-    ASTNode* node = this->parseNode("(;Int, Int) value\n");
+    ASTNode* node = this->parseNode("() -> (Int, Int) value\n");
 
     node = node->childAtIndex(0);
 
@@ -373,7 +394,7 @@ TEST_F(ParserTests_Types, GlobalFunctionWithTwoReturns) {
 }
 
 TEST_F(ParserTests_Types, GlobalPointerToFunction) {
-    ASTNode* node = this->parseNode("*(Int) value\n");
+    ASTNode* node = this->parseNode("*(Int) -> Void value\n");
 
     node = node->childAtIndex(0);
 
@@ -383,7 +404,7 @@ TEST_F(ParserTests_Types, GlobalPointerToFunction) {
 }
 
 TEST_F(ParserTests_Types, GlobalPointerToFunctionWithPointerArg) {
-    ASTNode* node = this->parseNode("*(*Void) value\n");
+    ASTNode* node = this->parseNode("*(*Void) -> Void value\n");
 
     ASSERT_EQ(1, node->childCount());
     node = node->childAtIndex(0);
@@ -394,7 +415,7 @@ TEST_F(ParserTests_Types, GlobalPointerToFunctionWithPointerArg) {
 }
 
 TEST_F(ParserTests_Types, GlobalClosure) {
-    ASTNode* node = this->parseNode("{} value\n");
+    ASTNode* node = this->parseNode("{} -> Void value\n");
 
     node = node->childAtIndex(0);
 
@@ -409,7 +430,7 @@ TEST_F(ParserTests_Types, GlobalClosure) {
 }
 
 TEST_F(ParserTests_Types, GlobalClosureTakingSingleParam) {
-    ASTNode* node = this->parseNode("{Int} value\n");
+    ASTNode* node = this->parseNode("{Int} -> Void value\n");
 
     node = node->childAtIndex(0);
 
@@ -421,7 +442,7 @@ TEST_F(ParserTests_Types, GlobalClosureTakingSingleParam) {
 }
 
 TEST_F(ParserTests_Types, GlobalClosureTakingTwoParams) {
-    ASTNode* node = this->parseNode("{Int, Float} value\n");
+    ASTNode* node = this->parseNode("{Int, Float} -> Void value\n");
 
     node = node->childAtIndex(0);
 
@@ -434,7 +455,7 @@ TEST_F(ParserTests_Types, GlobalClosureTakingTwoParams) {
 }
 
 TEST_F(ParserTests_Types, GlobalClosureTakingAPointerParam) {
-    ASTNode* node = this->parseNode("{*Int} value\n");
+    ASTNode* node = this->parseNode("{*Int} -> Void value\n");
 
     node = node->childAtIndex(0);
 
@@ -446,7 +467,7 @@ TEST_F(ParserTests_Types, GlobalClosureTakingAPointerParam) {
 }
 
 TEST_F(ParserTests_Types, GlobalClosureWithReturn) {
-    ASTNode* node = this->parseNode("{;Int} value\n");
+    ASTNode* node = this->parseNode("{} -> Int value\n");
 
     node = node->childAtIndex(0);
 
@@ -458,7 +479,7 @@ TEST_F(ParserTests_Types, GlobalClosureWithReturn) {
 }
 
 TEST_F(ParserTests_Types, GlobalClosureWithTwoReturns) {
-    ASTNode* node = this->parseNode("{;Int, Int} value\n");
+    ASTNode* node = this->parseNode("{} -> (Int, Int) value\n");
 
     node = node->childAtIndex(0);
 
@@ -472,7 +493,7 @@ TEST_F(ParserTests_Types, GlobalClosureWithTwoReturns) {
 }
 
 TEST_F(ParserTests_Types, GlobalPointerToClosure) {
-    ASTNode* node = this->parseNode("*{Int} value\n");
+    ASTNode* node = this->parseNode("*{Int} -> Void value\n");
 
     node = node->childAtIndex(0);
 

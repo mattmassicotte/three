@@ -72,8 +72,12 @@ namespace Three {
         return _helper;
     }
 
+    TypeParser* Parser::typeParser() const {
+        return _typeParser;
+    }
+
     bool Parser::verbose() const {
-        return false;
+        return true;
     }
 
     bool Parser::parse(Lexer* lexer, ParseContext* context) {
@@ -85,10 +89,14 @@ namespace Three {
         ParseHelper helper(lexer);
         _helper = &helper;
 
+        TypeParser typeParser(&helper, context);
+        _typeParser = &typeParser;
+
         // do stuff here
         this->startParse();
 
         _helper = nullptr;
+        _typeParser = nullptr;
 
         if (context->rootNode()->childCount() == 0) {
             context->addMessage(new EmptyInputMessage());
@@ -135,10 +143,14 @@ namespace Three {
         ParseHelper helper(&lexer);
         _helper = &helper;
 
+        TypeParser typeParser(&helper, _context);
+        _typeParser = &typeParser;
+
         if (!func->parseBody(*this)) {
             assert(false && "Message: unable to parse function body");
         }
 
+        _typeParser = nullptr;
         _helper = nullptr;
     }
 
@@ -556,266 +568,12 @@ namespace Three {
         });
     }
 
-    uint32_t Parser::peekDepthIfAtType(uint32_t peekDepth) {
-        if (this->peekType(&peekDepth)) {
-            return peekDepth;
-        }
-
-        return 0;
-    }
-
     bool Parser::isAtType() {
-        return this->peekDepthIfAtType() > 0;
+        return this->typeParser()->isAtType();
     }
 
     bool Parser::peekType(unsigned int* peekDepth) {
-        // move past any type prefixes
-        this->peekTypePrefixes(peekDepth);
-
-        if (this->peekNonFunctionType(peekDepth)) {
-            this->peekTypePostfixes(peekDepth);
-            return true;
-        }
-
-        if (this->peekFunctionType(peekDepth)) {
-            this->peekTypePostfixes(peekDepth);
-            return true;
-        }
-
-        return false;
-    }
-
-    bool Parser::peekTypePrefixes(unsigned int* peekDepth) {
-        unsigned int originalDepth = *peekDepth;
-
-        // Pointers, arrays, annotations could be intermixed.
-        for (;;) {
-            switch (_helper->peek(*peekDepth).type()) {
-                case Token::Type::OperatorStar:
-                    *peekDepth += 1;
-                    this->peekTypePostfixes(peekDepth);
-                    continue;
-                case Token::Type::PunctuationOpenBracket:
-                    *peekDepth += 1;
-
-                    if (_helper->peek(*peekDepth).type() != Token::Type::LiteralInteger) {
-                        return false;
-                    }
-                    *peekDepth += 1;
-
-                    if (_helper->peek(*peekDepth).type() != Token::Type::PunctuationCloseBracket) {
-                        return false;
-                    }
-                    *peekDepth += 1;
-
-                    continue;
-                case Token::Type::AnnotationAccess:
-                case Token::Type::AnnotationVolatile:
-                case Token::Type::AnnotationAlias:
-                case Token::Type::AnnotationConst:
-                case Token::Type::AnnotationRestrict:
-                    this->peekTypeAnnotations(peekDepth);
-                    continue;
-                default:
-                    return false;
-            }
-
-            break; // kill the loop
-        }
-
-        // return true if we've advanced at all
-        return *peekDepth > originalDepth;
-    }
-
-    bool Parser::peekTypePostfixes(unsigned int* peekDepth) {
-        unsigned int originalDepth = *peekDepth;
-
-        for (;;) {
-            switch (_helper->peek(*peekDepth).type()) {
-                case Token::Type::OperatorNot:
-                case Token::Type::OperatorQuestionMark:
-                    *peekDepth += 1;
-                    continue;
-                default:
-                    break;
-            }
-
-            break; // kill the loop
-        }
-
-        // return true if we've advanced at all
-        return *peekDepth > originalDepth;
-    }
-
-    bool Parser::peekTypeAnnotations(unsigned int* peekDepth) {
-        unsigned int originalDepth = *peekDepth;
-
-        for (;;) {
-            switch (_helper->peek(*peekDepth).type()) {
-                case Token::Type::AnnotationConst:
-                case Token::Type::AnnotationRestrict:
-                    // these two area easy, because they take no arguments
-                    *peekDepth += 1;
-                    continue;
-                case Token::Type::AnnotationVolatile:
-                    // volatile can appear with no argument
-                    if (_helper->peek(*peekDepth+1).type() != Token::Type::PunctuationOpenParen) {
-                        *peekDepth += 1;
-                        continue;
-                    }
-                    // intentional fall-through
-                case Token::Type::AnnotationAccess:
-                case Token::Type::AnnotationAlias:
-                    if (_helper->peek(*peekDepth+1).type() != Token::Type::PunctuationOpenParen) {
-                        return false;
-                    }
-
-                    // TODO: this isn't particularly strict syntax checking
-
-                    if (_helper->peek(*peekDepth+3).type() != Token::Type::PunctuationCloseParen) {
-                        return false;
-                    }
-
-                    *peekDepth += 4;
-                    continue;
-                default:
-                    return false;
-            }
-
-            break;
-        }
-
-        return *peekDepth > originalDepth;
-    }
-
-    bool Parser::peekFunctionType(unsigned int* peekDepth) {
-        Token::Type closingPunctuation;
-
-        // "{} Identifier"
-        // "() Identifier"
-        // "{; Type} Identifier"
-        // "(; Type) Identifier"
-
-        // first, figure out if we have a closure or function, and what
-        // the ending punctuation is
-        switch (_helper->peek(*peekDepth).type()) {
-            case Token::Type::PunctuationOpenParen:
-            case Token::Type::PunctuationOpenBrace:
-                closingPunctuation = _helper->peek(*peekDepth).closingCounterpart();
-                break;
-            default:
-                return false;
-        }
-
-        *peekDepth += 1;
-
-        // We need to advance past the parameters and returns, if any. Just for safety,
-        // add a sanity check to prevent loops.
-        for (int i = 0;; ++i) {
-            assert(i < 100 && "Trapped potential infinite loop checking for function type");
-
-            Token::Type type = _helper->peek(*peekDepth).type();
-
-            if (type == closingPunctuation) {
-                *peekDepth += 1;
-                return true;
-            }
-
-            if (type == Token::Type::PunctuationSemicolon) {
-                // advance past this, but we now are definitely expecting a type
-                *peekDepth += 1;
-            }
-
-            // there must be a type here
-            if (!this->peekType(peekDepth)) {
-                return false;
-            }
-
-            // advance past the comma, and continue
-            if (_helper->peek(*peekDepth).type() == Token::Type::PunctuationComma) {
-                *peekDepth += 1;
-
-                // there must be a type here too
-                if (!this->peekType(peekDepth)) {
-                    return false;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    bool Parser::peekNonFunctionType(unsigned int* peekDepth) {
-        if (_helper->peek(*peekDepth).type() == Token::Type::KeywordVararg) {
-            *peekDepth += 1;
-            return true;
-        }
-
-        // We have to lead with an identifier. We also need to do a little
-        // dance with the peekDepth, because we could be at an identifier
-        // that isn't a type, and that will change peekDepth;
-        QualifiedName name;
-        unsigned int depth = *peekDepth;
-        if (!this->peekScopedIdentifier(&depth, name)) {
-            return false;
-        }
-
-        if (!_context->definesTypeWithName(name)) {
-            return false;
-        }
-
-        // assign the depth value, now that we have a confirmed type
-        *peekDepth = depth;
-
-        if (_helper->peek(*peekDepth).type() != Token::Type::PunctuationColon) {
-            return true;
-        }
-        
-        *peekDepth += 1;
-
-        // First specifier, could be an identifier, a number, or another colon
-        switch (_helper->peek(*peekDepth).type()) {
-            case Token::Type::Identifier:
-            case Token::Type::LiteralInteger:
-                *peekDepth += 1;
-                break;
-            case Token::Type::PunctuationColon:
-                break;
-            default:
-                return false; // not a type
-        }
-
-        if (_helper->peek(*peekDepth).type() != Token::Type::PunctuationColon) {
-            return true;
-        }
-
-        *peekDepth += 1;
-
-        // Second specifier, could be a number or another colon
-        switch (_helper->peek(*peekDepth).type()) {
-            case Token::Type::LiteralInteger:
-                *peekDepth += 1;
-                break;
-            case Token::Type::PunctuationColon:
-                break;
-            default:
-                return false; // not a type
-        }
-
-        if (_helper->peek(*peekDepth).type() != Token::Type::PunctuationColon) {
-            return true;
-        }
-
-        *peekDepth += 1;
-
-        // Third specifier - must be a number
-        if (_helper->peek(*peekDepth).type() != Token::Type::LiteralInteger) {
-            return false;
-        }
-
-        *peekDepth += 1;
-
-        return true;
+        return this->typeParser()->peekType(peekDepth);
     }
 
     bool Parser::peekScopedIdentifier(unsigned int* peekDepth, QualifiedName& peekedName) {
@@ -859,7 +617,8 @@ namespace Three {
         if (this->verbose()) {
             std::cout << "Parser: parseType '" << this->helper()->peek().str() << "'" << std::endl;
         }
-        return this->parseAndApplyTypeAnnotations(genericParam);
+
+        return this->typeParser()->parseType(genericParam);
     }
 
     DataType Parser::parseAndApplyTypeAnnotations(bool genericParam) {
@@ -940,8 +699,7 @@ namespace Three {
         }
 
         // now that we've parsed all the annotations, we can proceed to the type itself
-        DataType type = this->parseTypeWithoutAnnotations(genericParam);
-        type = this->parseTypePostfixes(type);
+        DataType type = _typeParser->parseType();
 
         if (foundConst && foundAccess) {
             assert(0 && "Message: @const and @access cannot be applied at the same time");
@@ -979,267 +737,32 @@ namespace Three {
     }
 
     DataType Parser::parseTypeWithoutAnnotations(bool genericParam) {
-        // Non-recurisve, so should be a type name
         if (this->verbose()) {
             std::cout << "Parser: parseTypeWithoutAnnotations '" << this->helper()->peek().str() << "'" << std::endl;
         }
 
-        // Handle recursive types (pointer and array)
-        switch (_helper->peek().type()) {
-            case Token::Type::OperatorStar:
-                return this->parsePointerType(genericParam);
-            case Token::Type::PunctuationOpenBracket:
-                return this->parseArrayType(genericParam);
-            case Token::Type::PunctuationOpenParen:
-            case Token::Type::PunctuationOpenBrace:
-                assert(!genericParam && "Message: function types be a generic parameter");
-                return this->parseFunctionType();
-            case Token::Type::KeywordVararg:
-                assert(!genericParam && "Message: vararg cannot be a generic parameter");
-                _helper->next();
-                return DataType(DataType::Kind::Vararg);
-            default:
-                break;
-        }
-
-        if (this->helper()->peek().type() != Token::Type::Identifier) {
-            std::cout << this->helper()->peek().str() << std::endl;
-            assert(0 && "Message: type should always be an identifier");
-        }
-
-        QualifiedName name = this->parseMultiPartIdentifierComponents();
-
-        DataType type;
-        if (genericParam) {
-            type = DataType(DataType::Kind::Generic);
-            if (!_context->identifierAvailableForDefinition(name.to_s())) {
-                assert(0 && "Message: generic parameter identifier already defined in this scope");
-            }
-
-            type.setName(name);
-        } else {
-            type = _context->dataTypeForName(name.to_s());
-        }
-
-        if (type.kind() == DataType::Kind::Undefined) {
-            std::cout << name.to_s() << std::endl;
-            assert(0 && "Message: failed to parse type");
-        }
-
-        // handle character specifiers
-        if (type.kind() == DataType::Kind::Character) {
-            if (_helper->nextIf(Token::Type::PunctuationColon)) {
-                type.setCharacterEncoding(this->parseCharacterEncodingSpecifier());
-            }
-
-            return type;
-        }
-
-        this->parseTypeSpecifiers(type);
-
-        return type;
+        return _typeParser->parseType();
     }
 
-    void Parser::parseTypeSpecifiers(DataType& type) {
-        // width specifier (or, colon)
-        if (_helper->nextIf(Token::Type::PunctuationColon)) {
-            if (_helper->peek().type() != Token::Type::PunctuationColon) {
-                type.setWidthSpecifier(this->parseIntegerSpecifier());
-            }
+    DataType Parser::parseCallableSignature(std::vector<std::string>* references) {
+        const Token::Type closingToken = _helper->peek().closingCounterpart();
+
+        DataType type(DataType::Kind::Function);
+
+        if (!_helper->nextIf(Token::Type::PunctuationOpenParen)) {
+            assert(0 && "Message: failed to parse a callable signature's opening punctuation");
         }
 
-        // alignment (or, colon)
-        if (_helper->nextIf(Token::Type::PunctuationColon)) {
-            if (_helper->peek().type() != Token::Type::PunctuationColon) {
-                type.setAlignmentSpecifier(this->parseIntegerSpecifier());
-            }
-        }
-
-        // vector
-        if (_helper->nextIf(Token::Type::PunctuationColon)) {
-            type.setVectorSizeSpecifier(this->parseIntegerSpecifier());
-        }
-    }
-
-    DataType Parser::parseTypePostfixes(const DataType& type) {
-        DataType newType(type);
-
-        if (_helper->nextIf(Token::Type::OperatorNot)) {
-            newType.setAccess(DataType::Access::ReadWrite);
-        }
-
-        if (_helper->nextIf(Token::Type::OperatorQuestionMark)) {
-            switch (type.kind()) {
-                case DataType::Kind::Pointer:
-                    newType.setKind(DataType::Kind::NullablePointer);
-                    break;
-                case DataType::Kind::GenericPointer:
-                    newType.setKind(DataType::Kind::GenericNullablePointer);
-                    break;
-                case DataType::Kind::Generic:
-                    newType = DataType::wrapInType(DataType::Kind::GenericNullablePointer, newType);
-                    break;
-                default:
-                    newType = DataType::wrapInType(DataType::Kind::NullablePointer, newType);
-                    break;
-            }
-        }
-
-        return newType;
-    }
-
-    DataType Parser::parsePointerType(bool genericParam) {
-        assert(_helper->next().type() == Token::Type::OperatorStar);
-
-        DataType type = DataType(genericParam ? DataType::Kind::GenericPointer : DataType::Kind::Pointer);
-
-        type = this->parseTypePostfixes(type);
-
-        type.addSubtype(this->parseType(genericParam));
-
-        return type;
-    }
-
-    DataType Parser::parseArrayType(bool genericParam) {
-        assert(_helper->next().type() == Token::Type::PunctuationOpenBracket);
-
-        DataType type = DataType(genericParam ? DataType::Kind::GenericArray : DataType::Kind::Array);
-
-        if (_helper->peek().type() != Token::Type::PunctuationCloseBracket) {
-            type.setArrayCount(this->parseIntegerSpecifier());
-        }
-
-        if (!_helper->nextIf(Token::Type::PunctuationCloseBracket)) {
-            assert(0 && "Message: array type element count should be followed by a close bracket");
-        }
-
-        type.addSubtype(this->parseType(genericParam));
-
-        return type;
-    }
-
-    DataType Parser::parseFunctionType(bool signature, std::vector<std::string>* references) {
-        DataType type;
-        Token::Type closingPunctuation = _helper->peek().closingCounterpart();
-
-        switch (_helper->next().type()) {
-            case Token::Type::PunctuationOpenParen:
-                type = DataType(DataType::Kind::Function);
-                break;
-            case Token::Type::PunctuationOpenBrace:
-                type = DataType(DataType::Kind::Closure);
-
-                // make sure to define the environment pointer
-                type.addParameter(DataType::wrapInPointer(DataType::Kind::Void));
-                break;
-            default:
-                assert(0 && "Message: failed to parse a function type");
-        }
-
-        // check for ending punctuation
-        if (_helper->nextIf(closingPunctuation)) {
-            type.addReturn(DataType::Kind::Void);
-            return type;
-        }
-
-        // now, we could have some parameters, so deal with those.
-        // Type identifier,
-        // Type identifier;
-        // Type identifier)
-        // identifier,
-        // identifier;
-        // identifier)
-        for (int i = 0;; ++i) {
-            bool mustParseType = false;
-
-            assert(i < 100 && "Trapped potential infinite loop parsing function type parameters");
-
-            if (!mustParseType) {
-                if (_helper->nextIf(Token::Type::PunctuationSemicolon)) {
-                    // move on to returns
-                    break;
-                }
-
-                if (_helper->peek().type() == closingPunctuation) {
-                    break;
-                }
-            }
-
-            DataType paramType;
-
-            if (signature) {
-                std::string label = this->parseTypeIdentifierPair(paramType);
-                if (label.size() == 0) {
-                    return DataType();
-                }
-
-                paramType.setLabel(label);
-            } else {
-                paramType = this->parseType();
-            }
-
+        this->typeParser()->parseTypeListWithLabels(closingToken, [&] (const DataType& paramType) {
             type.addParameter(paramType);
-
-            // if we encounter a comma, make sure the next thing we do is try to parse a type
-            mustParseType = _helper->nextIf(Token::Type::PunctuationComma);
-        }
-
-        // now, again, check for ending punctuation
-        if (_helper->nextIf(closingPunctuation)) {
-            type.addReturn(DataType::Kind::Void);
-            return type;
-        }
-
-        // finally, we have returns
-        DataType returnTuple = DataType(DataType::Kind::Tuple);
-
-        for (int i = 0;; ++i) {
-            bool mustParseType = false;
-
-            assert(i < 100 && "Trapped potential infinite loop parsing function type returns");
-
-            if (!mustParseType) {
-                if (_helper->peek().type() == Token::Type::PunctuationSemicolon) {
-                    break; // move on to references
-                } else if (_helper->peek().type() == closingPunctuation) {
-                    break;
-                }
-            }
-
-            DataType returnType = this->parseType();
-
-            if (signature && _helper->peek().type() == Token::Type::Identifier) {
-                if (!this->isAtIdentifierAvailableForDefinition()) {
-                    assert(0 && "Message: function return label invalid");
-                }
-
-                returnType.setLabel(_helper->nextStr());
-            }
-
-            returnTuple.addSubtype(returnType);
-
-            // if we encounter a common, make sure the next thing we do is try to parse a type
-            mustParseType = _helper->nextIf(Token::Type::PunctuationComma);
-        }
-
-        // fix up the return type
-        switch (returnTuple.subtypeCount()) {
-            case 0:
-                type.addReturn(DataType::Kind::Void);
-                break;
-            case 1:
-                // unwrap the tuple
-                type.addReturn(returnTuple.subtypeAtIndex(0));
-                break;
-            default:
-                type.addReturn(returnTuple);
-                break;
-        }
+        });
 
         // parse references
         if (_helper->nextIf(Token::Type::PunctuationSemicolon)) {
             assert(references && "Must have references at this point");
             for (int i = 0;; ++i) {
+                assert(i < 100);
+
                 if (_helper->peek().type() != Token::Type::Identifier) {
                     break;
                 }
@@ -1252,15 +775,46 @@ namespace Three {
             }
         }
 
-        if (!_helper->nextIf(closingPunctuation)) {
-            assert(0 && "Message: failed to find valid close punctuation for function type");
+        if (!_helper->nextIf(closingToken)) {
+            assert(0 && "Message: failed to parse a callable type, closing punctuation missing");
+
+            return DataType();
         }
 
-        return type;
-    }
+        // assume a return type of void for now
+        type.setReturnType(DataType(DataType::Kind::Void));
 
-    DataType Parser::parseFunctionSignatureType() {
-        return this->parseFunctionType(true);
+        // check for pre-arrow termination
+        // TODO: using presense of reference pointer here to know if this is a closure
+        switch (_helper->peek().type()) {
+            case Token::Type::Newline:
+                if (!references) {
+                    return type;
+                }
+                break;
+            case Token::Type::PunctuationOpenBrace:
+                if (references) {
+                    return type;
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (!_helper->nextIf(Token::Type::OperatorArrow)) {
+            assert(0 && "Message: failed to parse a callable signature, missing arrow");
+
+            return DataType();
+        }
+
+        DataType returnType = this->parseType();
+        if (_helper->peek().type() == Token::Type::Identifier) {
+            returnType.setLabel(_helper->next().str());
+        }
+
+        type.setReturnType(returnType);
+
+        return type;
     }
 
     uint32_t Parser::parseIntegerSpecifier() {
@@ -1278,7 +832,7 @@ namespace Three {
         }
 
         // depth could be zero for untyped variables
-        uint32_t depth = this->peekDepthIfAtType();
+        uint32_t depth = this->typeParser()->peekDepthIfAtType();
         if (depth > 0) {
             if (this->verbose()) {
                 std::cout << "Parser: parseTypeIdentifierPair parsing type" << std::endl;
@@ -1290,6 +844,7 @@ namespace Three {
                     type = this->parseType();
                     break;
                 default:
+                    std::cout <<  _helper->peek(depth).str() << std::endl;
                     assert(0 && "Message: should have been at type-identifier pair");
                     break;
             }

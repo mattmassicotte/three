@@ -10,7 +10,7 @@ protected:
 };
 
 TEST_F(ParserTests_FunctionBodies, EmptyFunction) {
-    FunctionDefinitionNode* func = this->parseFunction("def foo()\nend\n");
+    FunctionDefinitionNode* func = this->parseFunction("def foo() -> Void\nend\n");
 
     ASSERT_EQ("Function Definition", func->nodeName());
     ASSERT_EQ("foo", func->name());
@@ -131,17 +131,17 @@ TEST_F(ParserTests_FunctionBodies, CASOperatorWithType) {
 
 TEST_F(ParserTests_FunctionBodies, Closure) {
     FunctionDefinitionNode* func = this->parseFunction("def test(Int a)\n"
-                                                       "  fn(do (Int b;; a) {})\n"
+                                                       "  fn(do (Int b; a) {})\n"
                                                        "end\n");
 
-    ASSERT_EQ("  fn(do (Int b;; a) {})\n", func->bodyStream()->str());
+    ASSERT_EQ("  fn(do (Int b; a) {})\n", func->bodyStream()->str());
 }
 
 TEST_F(ParserTests_FunctionBodies, TailingClosure) {
     FunctionDefinitionNode* func = this->parseFunction("def test(Int a)\n"
-                                                       "  fn() do (Int b;; a) {\n"
+                                                       "  fn() do (Int b; a) {\n"
                                                        "  }\n"
                                                        "end\n");
 
-    ASSERT_EQ("  fn() do (Int b;; a) {\n  }\n", func->bodyStream()->str());
+    ASSERT_EQ("  fn() do (Int b; a) {\n  }\n", func->bodyStream()->str());
 }

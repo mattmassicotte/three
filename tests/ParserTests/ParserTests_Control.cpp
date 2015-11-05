@@ -28,7 +28,7 @@ TEST_F(ParserTests_Control, ReturnStatementTailingIf) {
 }
 
 TEST_F(ParserTests_Control, ReturnOneExpression) {
-    ASTNode* node = this->parseSingleFunction("def test(Int a; Int)\n"
+    ASTNode* node = this->parseSingleFunction("def test(Int a) -> Int\n"
                                               "  return a + a\n"
                                               "end\n");
 

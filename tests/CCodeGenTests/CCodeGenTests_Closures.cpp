@@ -7,7 +7,7 @@ TEST_F(CCodeGenTests_Closures, ClosureVariableCapture) {
     Three::CCodeGenVisitor* visitor = this->visit("def test()\n"
                                                   "  Int x = 0\n"
                                                   "  Int y = 0\n"
-                                                  "  {Int} closure = do (Int arg1) {\n"
+                                                  "  {Int} -> Void closure = do (Int arg1) {\n"
                                                   "    x + y\n"
                                                   "  }\n"
                                                   "end\n");
@@ -34,7 +34,7 @@ TEST_F(CCodeGenTests_Closures, ClosureVariableCapture) {
 TEST_F(CCodeGenTests_Closures, ClosureVariableCaptureWithReference) {
     Three::CCodeGenVisitor* visitor = this->visit("def test()\n"
                                                   "  Int x = 0\n"
-                                                  "  {Int} closure = do (Int arg1; Void; x) {\n"
+                                                  "  {Int} -> Void closure = do (Int arg1; x) {\n"
                                                   "    x = 5\n"
                                                   "  }\n"
                                                   "end\n");
