@@ -77,7 +77,7 @@ namespace Three {
     }
 
     bool Parser::verbose() const {
-        return true;
+        return false;
     }
 
     bool Parser::parse(Lexer* lexer, ParseContext* context) {

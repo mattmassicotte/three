@@ -218,7 +218,7 @@ TEST_F(ParserTests_Closures, TransposedClosure) {
     ASTNode* node = this->parseNodeWithBodies("def foo({} c)\n"
                                               "end\n"
                                               "def test()\n"
-                                              "  await foo()\n"
+                                              "  transpose foo()\n"
                                               "end\n");
 
     node = node->childAtIndex(1);
@@ -235,7 +235,7 @@ TEST_F(ParserTests_Closures, AssignToTransposedClosure) {
     ASTNode* node = this->parseNodeWithBodies("def foo({} -> Int c)\n"
                                               "end\n"
                                               "def test()\n"
-                                              "  Int x = await foo()\n"
+                                              "  Int x = transpose foo()\n"
                                               "end\n");
 
     node = node->childAtIndex(1);

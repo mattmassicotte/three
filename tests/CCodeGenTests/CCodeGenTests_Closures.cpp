@@ -113,7 +113,7 @@ TEST_F(CCodeGenTests_Closures, DISABLED_TransposedClosure) {
     Three::CCodeGenVisitor* visitor = this->visit("def foo({} c)\n"
                                                   "end\n"
                                                   "def test()\n"
-                                                  "  await foo()\n"
+                                                  "  transpose foo()\n"
                                                   "  Int x = 0\n"
                                                   "end\n");
 

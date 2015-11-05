@@ -618,9 +618,9 @@ TEST_F(LexerTest, KeywordClosure) {
 }
 
 TEST_F(LexerTest, KeywordTransposeClosure) {
-    this->lex("await");
+    this->lex("transpose");
 
-    ASSERT_NEXT_TOKEN(KeywordTransposeClosure, "await");
+    ASSERT_NEXT_TOKEN(KeywordTransposeClosure, "transpose");
     ASSERT_NEXT_TOKEN(Undefined, "");
 }
 
