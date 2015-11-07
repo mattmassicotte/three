@@ -44,12 +44,12 @@ TEST_F(CCodeGenTests_CInterop, StructureTypeDefinedInCHeader) {
 }
 
 TEST_F(CCodeGenTests_CInterop, UsingTypedefTypeDefinedInCHeader) {
-    Three::CCodeGenVisitor* visitor = this->visit("include \"/tmp/ThreeTestData/CSources/Typedefs.h\"\n\n"
+    Three::CCodeGenVisitor* visitor = this->visit("include \"tests/TestData/CSources/Typedefs.h\"\n\n"
                                                   "def test()\n"
                                                   "  pointer_typedef x = null\n"
                                                   "end\n");
 
-    EXPECT_EQ("#include \"/tmp/ThreeTestData/CSources/Typedefs.h\"\n\n"
+    EXPECT_EQ("#include \"tests/TestData/CSources/Typedefs.h\"\n\n"
               "void test(void);\n", visitor->internalHeaderString());
     EXPECT_EQ("void test(void) {\n"
               "    const pointer_typedef x = NULL;\n"

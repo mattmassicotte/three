@@ -6,7 +6,6 @@ COMPILER_TEST_SOURCES = FileList['tests/**/*.cpp']
 COMPILER_TEST_SOURCES.exclude('tests/CheckerTests/*.cpp')
 COMPILER_TEST_PCH = 'tests/test_prefix.hpp'
 COMPILER_TEST_BIN = "#{BUILD_DIR}/three_compiler_test"
-COMPILER_TEST_DATA_DIR = '/tmp/ThreeTestData'
 
 FRONTEND_SOURCES = FileList['frontend/**/*.cpp']
 FRONTEND_BIN = "#{BUILD_DIR}/three"
@@ -34,10 +33,6 @@ namespace :compiler do
       target.add_objects_from_sources COMPILER_SOURCES
     end
 
-    directory COMPILER_TEST_DATA_DIR do
-      FileUtils.cp_r('tests/TestData', COMPILER_TEST_DATA_DIR)
-    end
-
     pch COMPILER_TEST_PCH
     cpp_flags "-I#{GTEST_INCLUDE_DIR} -DGTEST_HAS_TR1_TUPLE=0"
     link_library COMPILER_LIB
@@ -47,9 +42,6 @@ namespace :compiler do
     executable COMPILER_TEST_BIN do |target|
       target.add_objects_from_sources COMPILER_TEST_SOURCES
     end
-
-    # add a dependency to copy over the test data
-    task COMPILER_TEST_BIN => COMPILER_TEST_DATA_DIR
 
     link_library COMPILER_LIB
     link_library LLVM_LIB
