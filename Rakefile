@@ -10,6 +10,9 @@ VENDOR_DIR        = File.absolute_path('vendor')
 THREE_LIB_DIR     = '/usr/local/lib'
 THREE_BIN_DIR     = '/usr/local/bin'
 THREE_INCLUDE_DIR = '/usr/local/include/three'
+LLVM_DIR          = '/usr/local/opt/llvm35/lib/llvm-3.5'
+LLVM_LIB_DIR      = File.join(LLVM_DIR, 'lib')
+LLVM_INCLUDE_PATH = File.join(LLVM_DIR, 'include')
 
 #RAKE_FILES = FileList['Rakefile', 'rakelib/**/*.rake']
 

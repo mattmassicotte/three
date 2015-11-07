@@ -25,22 +25,25 @@ C is an awesome and unparalleled language.  But, it can get a little messy at ti
 
 ####Building and Installing
 
-Three uses a custom build system written with [Rake](http://rake.rubyforge.org/).  That means you need ruby, rake, and the ruby gem rake-compile.  In addition to those, you also need a C++ compiler that supports C++11.  The build system will automatically download an install other dependencies.  These include LLVM, so be ready for a rather lengthy build the first time through.
+Three uses a custom build system written with [Rake](http://rake.rubyforge.org/).  That means you need ruby, rake, and the ruby gem rake-compile.  In addition to those, you also need a C++ compiler that supports C++11.  Three depends on LLVM, so be ready for a rather lengthy install the first time through.
 
 To build and install:
 
     $ git clone git@github.com:mattmassicotte/three.git
     $ cd three
-	$ gem install rake-compile
+    $ brew install homebrew/versions/llvm35 --with-clang
+    $ gem install rake-compile
     $ rake install
 
 ####Contributing
 
 You are, of course, very welcome to contribute.  Pull requests are great, but so are issues.  Everything helps!
 
+This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+
 - @mattmassicotte
 - @kb
 
 ####License
 
-MIT, see license.txt
+The project is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).

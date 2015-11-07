@@ -10,7 +10,7 @@ COMPILER_TEST_BIN = "#{BUILD_DIR}/three_compiler_test"
 FRONTEND_SOURCES = FileList['frontend/**/*.cpp']
 FRONTEND_BIN = "#{BUILD_DIR}/three"
 
-LLVM_REQUIRED_LIBS = '-lpthread -ldl -lz -lcurses'
+LD_FLAGS = "-L#{LLVM_LIB_DIR} -lpthread -ldl -lz -lcurses -lclang -lLLVM-3.5"
 
 # These dependencies are defined here, in this way, for two reasons:
 # - these tasks cannot even be defined without first downloading llvm and gtest
@@ -19,16 +19,9 @@ LLVM_REQUIRED_LIBS = '-lpthread -ldl -lz -lcurses'
 namespace :compiler do
   task :define_tasks => 'gtest:define_tasks' do
     Rake::Task[GTEST_HEADER].invoke
-    Rake::Task[LIBCLANG_HEADER].invoke
-
-    # Its quite inefficient to invoke the llvm lib task here.  Especially since
-    # it will be invoked implicitly by the tasks defined below.  The problem is
-    # that task actually involves mutating process-local state (the current working directory).
-    # Changing the working directory will cause all the tasks below to fail.
-    #Rake::Task[LLVM_LIB].invoke
 
     pch COMPILER_PCH
-    cpp_flags "-I#{LIBCLANG_INCLUDE_PATH}"
+    cpp_flags "-I#{LLVM_INCLUDE_PATH}"
     static_library COMPILER_LIB do |target|
       target.add_objects_from_sources COMPILER_SOURCES
     end
@@ -37,15 +30,13 @@ namespace :compiler do
     cpp_flags "-I#{GTEST_INCLUDE_DIR} -DGTEST_HAS_TR1_TUPLE=0"
     link_library COMPILER_LIB
     link_library GTEST_LIB
-    link_library LLVM_LIB
-    ld_flags LLVM_REQUIRED_LIBS
+    ld_flags LD_FLAGS
     executable COMPILER_TEST_BIN do |target|
       target.add_objects_from_sources COMPILER_TEST_SOURCES
     end
 
     link_library COMPILER_LIB
-    link_library LLVM_LIB
-    ld_flags LLVM_REQUIRED_LIBS
+    ld_flags LD_FLAGS
     executable FRONTEND_BIN do |target|
       target.add_objects_from_sources FRONTEND_SOURCES
     end
