@@ -14,6 +14,6 @@ before_install:
 
 install:
   - gem install rake-compile
-  - if [ $TRAVIS_OS_NAME == osx ]; then brew update && homebrew/versions/llvm35 --with-clang; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install homebrew/versions/llvm35 --with-clang; fi
 
 script: rake
